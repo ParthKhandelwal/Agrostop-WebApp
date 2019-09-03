@@ -3,11 +3,11 @@ const path = require('path');
 const app = express();
 
 // Serve static files....
-app.use(express.static(__dirname + '/dist/Agrostop-Webapp'));
+app.use(express.static(__dirname + '/dist/Agrostop-WebApp'));
 
 // Send all requests to index.html
 app.get('/*', function(req, res) {
-  res.sendFile(path.join(__dirname + '/dist/Agrostop-Webapp/index.html'));
+  res.sendFile(path.join(__dirname + '/dist/Agrostop-WebApp/index.html'));
 });
 
 // default Heroku PORT
