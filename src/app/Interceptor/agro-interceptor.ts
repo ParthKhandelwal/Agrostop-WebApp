@@ -9,7 +9,7 @@ import {
   HttpResponse,
   HttpErrorResponse
 } from "@angular/common/http";
-import { Observable } from "rxjs/observable";
+import { Observable } from 'rxjs';
 
 @Injectable()
 export class AgroInterceptor implements HttpInterceptor {
