@@ -48,7 +48,6 @@ import {MatAutocompleteModule} from '@angular/material/autocomplete';
 import {MatDatepickerModule} from '@angular/material/datepicker';
 import {MatNativeDateModule} from '@angular/material';
 import {MatCardModule} from '@angular/material/card';
-import { UpdateCustomerComponent } from './Products/update-customer/update-customer.component';
 import {MatListModule} from '@angular/material/list';
 import {MatToolbarModule} from '@angular/material/toolbar';
 import { CustomerListViewComponent } from './CustomerPackage/customer-list-view/customer-list-view.component';
@@ -100,7 +99,7 @@ import { CreateTaxDetailsFormComponent } from './create-form/create-tax-details-
     OrderViewComponent,
     BatchTableComponent,
     ExpiredProductsComponent,
-    UpdateCustomerComponent,
+    
     CustomerListViewComponent,
     AddressListViewComponent,
     AddressTableComponent,

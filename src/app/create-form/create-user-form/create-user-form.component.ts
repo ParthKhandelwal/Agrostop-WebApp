@@ -15,6 +15,7 @@ import { User } from '../../Model/user';
 export class CreateUserFormComponent implements OnInit {
   hide = true;
   user: User = {
+    name: "",
    password: "",
    lastLogin: null,
    emailId: "",

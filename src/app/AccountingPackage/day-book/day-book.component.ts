@@ -14,7 +14,7 @@ import { VoucherService } from '../../shared/voucher.service';
 export class DayBookComponent implements OnInit {
   vouchers: TallyVoucher[] = [];
     @ViewChild(VoucherTableComponent, {static: false}) table: VoucherTableComponent;
-    constructor(private apiService?: ApiService, private voucherService?: VoucherService) { }
+    constructor(private apiService?: ApiService, public voucherService?: VoucherService) { }
 
     ngOnInit() {
       this.getCurrentVoucher();
