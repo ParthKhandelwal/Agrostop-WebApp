@@ -18,11 +18,11 @@ import { TaxDetails } from '../Model/tax-details';
 })
 export class ApiService {
 
-  //public WEB_SOCKET_URL = "https://agrostop-server.herokuapp.com"
-  //private BASE_URL = "https://agrostop-server.herokuapp.com/api/";
+  public WEB_SOCKET_URL = "https://agrostop-server.herokuapp.com"
+  private BASE_URL = "https://agrostop-server.herokuapp.com/api/";
 
-  private BASE_URL = "http://localhost:8080/api/";
-  public WEB_SOCKET_URL = "http://localhost:8080"
+  //private BASE_URL = "http://localhost:8080/api/";
+  //public WEB_SOCKET_URL = "http://localhost:8080"
 
   constructor(private httpClient: HttpClient, private cookie?: CookieService) {
   }
