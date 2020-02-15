@@ -48,9 +48,9 @@ export class CreateVoucherComponent implements OnInit {
   };
 
   voucher: VOUCHER;
-  IsSalesVoucher: false;
-  IsPaymentVoucher: false;
-  IsReceiptVoucher: false;
+  IsSalesVoucher: boolean = false;
+  IsPaymentVoucher: boolean = false;
+  IsReceiptVoucher: boolean = false;
 
   tallyVoucher: TallyVoucher = {
     _id: "",

@@ -3,9 +3,10 @@
     "",
     "\\src",
     "\\src\\app",
-    "\\src\\app\\AccountingPackage\\day-book",
-    "\\src\\app\\dashboard"
+    "\\src\\app\\create-form",
+    "\\src\\app\\create-form\\create-user-form",
+    "\\src\\app\\tables\\user-table"
   ],
-  "SelectedNode": "\\src\\app\\dashboard\\dashboard.component.html",
+  "SelectedNode": "\\src\\app\\create-form\\create-user-form\\create-user-form.component.ts",
   "PreviewInSolutionExplorer": false
 }

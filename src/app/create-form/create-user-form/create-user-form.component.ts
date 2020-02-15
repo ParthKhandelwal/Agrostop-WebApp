@@ -14,6 +14,7 @@ import { MatTableDataSource } from '@angular/material';
   styleUrls: ['./create-user-form.component.css']
 })
 export class CreateUserFormComponent implements OnInit {
+  isUserValid = true;
   hide = true;
   updateMode = false;
   user: User = {
@@ -241,5 +242,17 @@ addPOSClass(voucherTypeName: string){
     }
   }
 }
+
+  /*validUserId() {
+    this.apiService.validUserId(this.user.id).subscribe(
+      res => {
+        this.isUserValid = res;
+      },
+      err => {
+        this.isUserValid = false;
+        console.log(err);
+      }
+    );
+  }*/
 
 }
