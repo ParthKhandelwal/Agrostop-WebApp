@@ -5,7 +5,7 @@ import { MatSort } from '@angular/material/sort';
 import { MatTable } from '@angular/material/table';
 import { ConfirmationBoxComponent } from '../../confirmation-box/confirmation-box.component';
 import { CreateUserFormComponent } from '../../create-form/create-user-form/create-user-form.component';
-import { User } from '../../Model/User';
+import { User } from '../../Model/user';
 import { ApiService } from '../../shared/api.service';
 
 
