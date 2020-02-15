@@ -1,14 +1,12 @@
-import { AfterViewInit, Input, Component, OnInit, ViewChild, Inject, Output } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { MatDialog, MatDialogConfig, MatTableDataSource } from '@angular/material';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTable } from '@angular/material/table';
-import { MatTableDataSource } from '@angular/material';
-import { ApiService } from '../../shared/api.service';
-import { User } from '../../Model/User';
-import { filter } from 'rxjs/operators';
-import {MatDialog, MatDialogConfig, MAT_DIALOG_DATA} from '@angular/material';
-import { CreateUserFormComponent } from '../../create-form/create-user-form/create-user-form.component';
 import { ConfirmationBoxComponent } from '../../confirmation-box/confirmation-box.component';
+import { CreateUserFormComponent } from '../../create-form/create-user-form/create-user-form.component';
+import { User } from '../../Model/User';
+import { ApiService } from '../../shared/api.service';
 
 
 @Component({

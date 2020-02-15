@@ -1,4 +1,4 @@
-export interface User {
+export class User {
       baseEntity:          string;
       password:            string;
       lastLogin:           string;
