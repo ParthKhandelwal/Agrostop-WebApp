@@ -1,5 +1,5 @@
 import { Component, OnInit, Inject, ViewChild } from '@angular/core';
-import { Voucher } from '../../Model/voucher';
+import { VOUCHER } from '../../Model/voucher';
 import { ApiService } from '../../shared/api.service';
 import { VoucherTableComponent } from '../../tables/voucher-table/voucher-table.component';
 import { TallyVoucher } from '../../Model/tally-voucher';

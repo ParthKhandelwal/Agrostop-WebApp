@@ -1,19 +1,29 @@
 export interface User {
-  name: string;
-   password: string;
-   lastLogin: Date;
-   emailId: string;
-   contactNumber: string;
-   _id: string;
-   role: string;
-   tallyUserName: string;
-   posCashLedgerName: string;
-   cashLedgerName: string;
-   basicBasePartyName: string;
-   placeOfSupply: string;
-   voucherTypeName: string;
-   godownName: string;
-   salesVoucherHeader: string;
-   salesVoucherFooter: string;
+      baseEntity:          string;
+      password:            string;
+      lastLogin:           string;
+      emailId:             string;
+      contactNumber:       string;
+      id:                  string;
+      name:                string;
+      role:                string;
+      userName:            string;
+      tallyUserName:       string;
+      godownList:          string[];
+      defaultGodown:       string;
+      salesVocherSettings: SalesVoucherSettings;
+}
 
+export interface SalesVoucherSettings{
+  voucherTypeList: VoucherTypeClass[];
+  defaultVoucherType: string;
+  defaultClass: string;
+  cashLedgerList: string[];
+  defaultCashLedger: string;
+  placeOfSupply: string;
+}
+
+export interface VoucherTypeClass{
+  voucherTypeName: string;
+  classes: string[];
 }

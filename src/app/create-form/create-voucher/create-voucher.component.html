@@ -1,9 +1,64 @@
-<div class="invoice" >
+<!--Display for initializing POS Service -->
+
+<div class="initializing" >
+  <button  mat-raised-button color="primary" name="activateSales"
+  (click)= "IsSalesVoucher = true; IsReceiptVoucher = false; IsPaymentVoucher = false"
+  class="voucherTypeButton" [(disabled)]= 'IsSalesVoucher'>
+      <mat-icon aria-hidden="false" aria-label="Example home icon">register</mat-icon> Sales Voucher
+  </button>
+  <button  mat-raised-button color="warn" name="activatePayment"
+  (click)= "IsSalesVoucher = false; IsReceiptVoucher = false; IsPaymentVoucher = true"
+  class="voucherTypeButton" [(disabled)]= 'IsPaymentVoucher'>
+      <mat-icon aria-hidden="false" aria-label="Example home icon">register</mat-icon> Payment Voucher
+  </button>
+  <button  mat-raised-button color="accent" name="activateReciept"
+  (click)= "IsSalesVoucher = false; IsReceiptVoucher = true; IsPaymentVoucher = false"
+  class="voucherTypeButton" [(disabled)]= 'IsReceiptVoucher'>
+      <mat-icon aria-hidden="false" aria-label="Example home icon">register</mat-icon> Recipt Voucher
+  </button>
+
+  <button  mat-raised-button color="accent" name="posSettings"
+  (click)= "IsSalesVoucher = false; IsReceiptVoucher = false; IsPaymentVoucher = false"
+  class="voucherTypeButton" [(disabled)]= '!IsSalesVoucher && !IsPaymentVoucher && !IsReceiptVoucher'>
+      <mat-icon aria-hidden="false" aria-label="Example home icon">register</mat-icon> POS Settings
+  </button>
+
+<div class="initializingTypeClass">
+  <select #batchField *ngIf = "" (keydown.enter)="addStockItem();false" [(ngModel)]="voucher.VOUCHERTYPENAME"  name = "voucherTypeSelect">
+    <option *ngFor="let item of user.salesVoucherSettings.voucherTypeList" [(ngValue)]="item" >
+      {{item.name}}
+    </option>
+  </select>
+</div>
+
+</div>
+
+<div *ngIf = "!IsSalesVoucher && !IsPaymentVoucher && !IsReceiptVoucher">
+  <div class="salesSettings">
+    <mat-card>
+      <mat-card-header> Sales Voucher Settings</mat-card-header>
+      <mat-card-content>
+
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+<div class="invoice" *ngIf = 'IsSalesVoucher && !IsPaymentVoucher && !IsReceiptVoucher' >
   <form id="voucherForm">
     <div class="invoiceInformation invoice">
       <mat-card>
         <mat-card-content>
-          <button  mat-button color="warn" name="button" (click)= "sync()" class="invoice">
+          <button  mat-button color="warn" name="button" (click)= "sync()" class="invoice" [(disabled)]= 'isOnline'>
               <mat-icon aria-hidden="false" aria-label="Example home icon">sync</mat-icon>
           </button>
         <mat-form-field>
@@ -12,10 +67,35 @@
           <mat-datepicker #picker></mat-datepicker>
         </mat-form-field>
 
-
-        <label for="Voucher Number" class="headline voucherNumber">{{tallyVoucher.customVoucherDetails.voucherNumber}}</label>
-
-
+<div class="headline voucherNumber">
+  <label for="Voucher Number">{{tallyVoucher.customVoucherDetails.voucherNumber}}</label>
+</div>
+        <div class="status">
+          <tr *ngIf = '!tallyServerStatus'>
+            <td style="color: red;" class="textIconAlign">
+              <mat-icon aria-hidden="false" aria-label="internetActive">wifi_off</mat-icon>
+              Tally Server Not Active
+            </td>
+          </tr>
+          <tr *ngIf = '!internetStatus'>
+            <td style="color: red;" class="textIconAlign">
+              <mat-icon aria-hidden="false" aria-label="internetActive">wifi_off</mat-icon>
+              Internet Not Active
+            </td>
+          </tr>
+          <tr *ngIf = 'tallyServerStatus'>
+            <td style="color: green;" class="textIconAlign">
+              <mat-icon aria-hidden="false" aria-label="internetActive">wifi</mat-icon>
+              Tally Server Active
+            </td>
+          </tr>
+          <tr *ngIf = 'internetStatus'>
+            <td style="color: green;" class="textIconAlign">
+              <mat-icon aria-hidden="false" aria-label="internetActive">wifi</mat-icon>
+              Internet Active
+            </td>
+          </tr>
+        </div>
 
       </mat-card-content>
       </mat-card>
@@ -25,7 +105,7 @@
       <div class="customerInformation invoice">
       <mat-card>
         <mat-card-header>
-        <mat-form-field class="full-width">
+        <mat-form-field class="customerHeaderSelection">
 
           <input type="text" #customerField (keyup.enter)= "validateCustomer()" placeholder="Enter customer id" aria-label="Assignee" matInput [formControl]="myControl" [matAutocomplete]="auto">
           <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn">
@@ -35,7 +115,10 @@
           </mat-autocomplete>
 
         </mat-form-field>
-        </mat-card-header>
+        <button mat-button color="accent" (click) = 'createCustomer()' name="button">
+            <mat-icon aria-hidden="false" aria-label="Example home icon">add</mat-icon>
+        </button>
+              </mat-card-header>
         <mat-card-content>
 
               <tr>
@@ -48,7 +131,7 @@
               </tr>
               <tr>
                 <td>Address: </td>
-                <td><label for="" *ngIf = "this.myControl.value">{{this.myControl.value.fullAddress.name}}</label></td>
+                <td><label for="" *ngIf = "this.myControl.value">{{this.myControl.value.addressName}}</label></td>
               </tr>
               <tr>
                 <td>Total Land: </td>
@@ -156,7 +239,7 @@
             <input #productField (keydown.enter) = "validateProduct();false" type="text" placeholder="Enter product name" aria-label="Assignee" matInput [formControl]="invControl" [matAutocomplete]="autoInv">
             <mat-autocomplete  #autoInv="matAutocomplete" [displayWith]="displayFnProduct">
               <mat-option *ngFor="let product of productFilteredOptions | async" [(value)]="product">
-                {{product.name}}
+                {{product._NAME}}
               </mat-option>
             </mat-autocomplete>
 
@@ -236,5 +319,5 @@
 
 </div>
 <div id="printView" class="printView">
-<app-invoice-print-view #printView [(tallyVoucher)] = "tallyVoucher" customer= "myControl.value"></app-invoice-print-view>
+<app-invoice-print-view #printView [(tallyVoucher)] = "tallyVoucher" [(customer)]= "customer"></app-invoice-print-view>
 </div>

@@ -4,7 +4,7 @@ import { MatSort } from '@angular/material/sort';
 import { MatTable } from '@angular/material/table';
 import { MatTableDataSource } from '@angular/material';
 import { ApiService } from '../../shared/api.service';
-import { Voucher } from '../../Model/voucher';
+import { VOUCHER } from '../../Model/voucher';
 import { filter } from 'rxjs/operators';
 import {MatDialog, MatDialogConfig, MAT_DIALOG_DATA} from '@angular/material';
 import {CreateCustomerFormComponent} from '../../create-form/create-customer-form/create-customer-form.component';

@@ -64,6 +64,7 @@ import { SideNavigationBarComponent } from './side-navigation-bar/side-navigatio
 import { ProductListViewComponent } from './Products/product-list-view/product-list-view.component';
 import { TaxDetailsTableComponent } from './tables/tax-details-table/tax-details-table.component';
 import { CreateTaxDetailsFormComponent } from './create-form/create-tax-details-form/create-tax-details-form.component';
+import { UserTableComponent } from './tables/user-table/user-table.component';
 
 
 
@@ -111,7 +112,8 @@ import { CreateTaxDetailsFormComponent } from './create-form/create-tax-details-
     SideNavigationBarComponent,
     ProductListViewComponent,
     TaxDetailsTableComponent,
-    CreateTaxDetailsFormComponent
+    CreateTaxDetailsFormComponent,
+    UserTableComponent
   ],
   imports: [
     BrowserAnimationsModule,

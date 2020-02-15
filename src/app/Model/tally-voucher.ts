@@ -14,7 +14,7 @@ export class CustomVoucherDetails{
   basicBuyerName: string;
   address: string;
   posCashRecieved:number;
-  customerId: string;
+  customerId: any;
   voucherNumber: string;
   createdBy: string;
 }

@@ -1,13 +1,44 @@
+.initializing{
+padding-left: 10px;
+}
+
+.initializingTypeClass{
+  float: right;
+}
+
 .headline{
   font-size: 28px;
   font-style: italic;
 }
+
+.status{
+  align-content: flex-end;
+  float: right;
+  padding-right: 30px;
+}
+
 .invoice{
   margin: 5px;
 }
 
+.textIconAlign{
+  display: inline-flex;
+  vertical-align: middle;
+}
+
 .full-width{
   width: 100%;
+}
+
+.customerHeaderSelection{
+  width: 60%;
+}
+.createCustomerButton{
+  width:30%;
+  padding-left: 10px;
+  height: 45px;
+  align-self: center;
+  align-content: center;
 }
 
 .rightPart{
@@ -21,7 +52,7 @@
 
 .invoiceTotalDetails{
   width: 100%;
-  float:right;
+  float:center;
 }
 
 .customerInformation{

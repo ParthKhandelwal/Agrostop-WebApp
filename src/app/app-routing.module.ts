@@ -20,6 +20,7 @@ import { CreateVoucherComponent } from './create-form/create-voucher/create-vouc
 import { DayBookComponent } from './AccountingPackage/day-book/day-book.component';
 import { ProductListViewComponent } from './Products/product-list-view/product-list-view.component';
 import { TaxDetailsTableComponent } from './tables/tax-details-table/tax-details-table.component';
+import { UserTableComponent } from './tables/user-table/user-table.component';
 
 
 const routes: Routes = [
@@ -50,7 +51,11 @@ const routes: Routes = [
   },
   {
     path: "users",
-    component: UsersComponent
+    component: UsersComponent,
+    children: [
+      {path: 'userListView', component: UserTableComponent},
+      {path: 'create-user', component: CreateUserFormComponent}
+    ]
   },
   {
     path: "products",

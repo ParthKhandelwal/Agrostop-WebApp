@@ -5,6 +5,17 @@
   padding: 10px;
 }
 
+.voucherTypeDescription{
+  padding-right: 50px;
+  padding-top: 50px;
+  padding-bottom: 10px;
+}
+
+.salesDiv{
+  width: 100%;
+  padding-top: 20px;
+}
+
 .input{
   width: 100%
 }
@@ -18,4 +29,9 @@
 }
 .additionalUserDetails{
   margin-bottom: 10px;
+}
+
+.full-width-table {
+  width: 100%;
+
 }

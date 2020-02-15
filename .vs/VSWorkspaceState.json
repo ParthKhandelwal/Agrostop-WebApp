@@ -1,0 +1,12 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\src",
+    "\\src\\app",
+    "\\src\\app\\AccountingPackage",
+    "\\src\\app\\AccountingPackage\\day-book",
+    "\\src\\app\\complaints"
+  ],
+  "SelectedNode": "\\src\\app\\AccountingPackage\\day-book\\day-book.component.html",
+  "PreviewInSolutionExplorer": false
+}

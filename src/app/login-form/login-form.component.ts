@@ -3,6 +3,7 @@ import { HttpClient, HttpResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { CookieService } from 'ngx-cookie-service';
 import { ApiService } from '../shared/api.service';
+import { AuthenticationService } from '../shared/authentication.service';
 
 @Component({
   selector: 'app-login-form',
@@ -14,23 +15,18 @@ export class LoginFormComponent implements OnInit {
     username: '',
     password: ''
   };
-  constructor(private apiService?: ApiService, private router?:Router, private cookie?: CookieService) { }
+  constructor(private apiService?: ApiService, private router?:Router, private cookie?: CookieService,
+    private authenticationService?: AuthenticationService) { }
 
   ngOnInit() {
   }
 
   validate(): void{
-    let url= 'http://localhost:3838/authenticate';
-    this.apiService.authenticate(this.user).subscribe(
-      res =>{
-        this.cookie.set("token", res.token);
-        this.cookie.set("currentUser", this.user.username);
-        this.router.navigateByUrl('/home');
-      },
-      err =>{
-        alert("An error has ocurred while sending your request");
-      }
-    );
+    alert("some");
+    this.authenticationService.authenticate(this.user);
+    if(this.authenticationService.isUserLoggedIn()){
+      this.router.navigateByUrl('home');
+    }
   }
 
 }

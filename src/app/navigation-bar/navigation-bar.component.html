@@ -43,8 +43,12 @@
     </ul>
     <!-- Links -->
 
+    <button  mat-button color = "gray" (click)='a' name="button">
+        <mat-icon aria-hidden="false" aria-label="Example home icon">build</mat-icon>
+    </button>
     <span class="navbar-text">
       {{user}}
+
     </span>
   <a class="nav-link" (click) = "logout()" href="/">Log Out</a>
   </div>

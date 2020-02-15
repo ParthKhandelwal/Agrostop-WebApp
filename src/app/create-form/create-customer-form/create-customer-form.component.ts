@@ -5,7 +5,7 @@ import { Router } from '@angular/router';
 import { Customer } from '../../Model/customer';
 import { Address } from '../../Model/address';
 import { ApiService } from '../../shared/api.service';
-import { MAT_DIALOG_DATA} from '@angular/material';
+import { MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
 
 
 @Component({
@@ -17,16 +17,22 @@ export class CreateCustomerFormComponent implements OnInit {
 
   addresses: Address[] = [];
   customer : Customer = {
-    _id: '',
+    id: '',
     name:'',
     fatherName:'',
     phoneNumber:'',
     addressId:'',
     landHolding:0
   };
-  constructor( @Inject(MAT_DIALOG_DATA) public data?: Customer, private router? :Router, @Inject(ApiService) private apiService? : ApiService) {
+  constructor( @Inject(MAT_DIALOG_DATA) public data?: any, private dialogRef?: MatDialogRef<CreateCustomerFormComponent>,
+  private router? :Router, @Inject(ApiService) private apiService? : ApiService) {
     if (data != null){
-      this.customer = data;
+      this.customer.id = data._id;
+      this.customer.name= data.name;
+      this.customer.fatherName= data.fatherName;
+      this.customer.phoneNumber= data.phoneNumber;
+      this.customer.addressId = data.addressId;
+      this.customer.landHolding = data.landHolding;
     }
    }
 
@@ -46,10 +52,17 @@ export class CreateCustomerFormComponent implements OnInit {
     this.apiService.addCustomer(this.customer).subscribe(
       res =>{
         alert(res);
+        this.dialogRef.close();
       },
       err =>{
+        if(err.status == 200){
+          this.dialogRef.close();
+        }else{
+          this.dialogRef.close();
+
         console.log(this.customer);
         console.log(err);
+      }
       }
     );
   }

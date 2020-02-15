@@ -30,7 +30,7 @@
 
 		  <label>Address</label>
       <select class="form-control" name="address" [(ngModel)] = 'customer.addressId'>
-      <option *ngFor="let address of addresses" [value]="address._id">{{address.name}}, {{address.stateName}}</option>
+      <option *ngFor="let address of addresses" [value]="address.id">{{address.name}}, {{address.stateName}}</option>
       </select>
 	</div>
   <div data-type="default" class="form-group">

@@ -9,7 +9,7 @@ import { MAT_DIALOG_DATA} from '@angular/material';
 })
 export class CustomerViewComponent implements OnInit {
 customer: Customer = {
-  _id: "",
+  id: "",
   name: "",
   fatherName: "",
   landHolding: 0,

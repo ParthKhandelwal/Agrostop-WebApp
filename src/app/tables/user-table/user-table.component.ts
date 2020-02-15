@@ -4,47 +4,56 @@ import { MatSort } from '@angular/material/sort';
 import { MatTable } from '@angular/material/table';
 import { MatTableDataSource } from '@angular/material';
 import { ApiService } from '../../shared/api.service';
-import { Customer } from '../../Model/customer';
+import { User } from '../../Model/User';
 import { filter } from 'rxjs/operators';
 import {MatDialog, MatDialogConfig, MAT_DIALOG_DATA} from '@angular/material';
-import {CreateCustomerFormComponent} from '../../create-form/create-customer-form/create-customer-form.component';
+import { CreateUserFormComponent } from '../../create-form/create-user-form/create-user-form.component';
 import { ConfirmationBoxComponent } from '../../confirmation-box/confirmation-box.component';
 
 
 @Component({
-  selector: 'app-customer-table',
-  templateUrl: './customer-table.component.html',
-  styleUrls: ['./customer-table.component.css']
+  selector: 'app-user-table',
+  templateUrl: './user-table.component.html',
+  styleUrls: ['./user-table.component.css']
 })
-export class CustomerTableComponent implements AfterViewInit, OnInit {
+export class UserTableComponent implements OnInit {
+
   @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator;
   @ViewChild(MatSort, {static: false}) sort: MatSort;
-  @ViewChild(MatTable, {static: false}) table: MatTable<Customer>;
-  dataSource: MatTableDataSource<Customer>;
-  @Input('customers') customers: Customer[];
+  @ViewChild(MatTable, {static: false}) table: MatTable<User>;
+  dataSource: MatTableDataSource<User>;
+  users: User[];
 
 
   /** Columns displayed in the table. Columns IDs can be added, removed, or reordered. */
-  displayedColumns = ['phoneNumber', 'name', 'fatherName', 'address', 'landHolding', 'update'];
+  displayedColumns = ['name', 'username', 'role', 'update'];
 
 constructor(private apiService: ApiService, private dialog?: MatDialog, private dialogConfig?: MatDialogConfig){
 
 }
 
   ngOnInit() {
-    this.dataSource = new MatTableDataSource<Customer>(this.customers);
-    //this.dataSource.data = this.customers;//this.getAllCustomers();
+    this.apiService.getAllUsers().subscribe(
+      res => {
+        this.users = res;
+        this.dataSource = new MatTableDataSource<User>(this.users);
+        this.dataSource.sort = this.sort;
+        this.dataSource.paginator = this.paginator;
+        this.table.dataSource = this.dataSource;
+        this.table.renderRows();
+      },
+      err => {
+        alert("Could not get Users. Try again later");
+      },
+    );
   }
 
   ngAfterViewInit() {
-    this.dataSource.sort = this.sort;
-    this.dataSource.paginator = this.paginator;
-    this.table.dataSource = this.dataSource;
+
   }
 
   renderRows(){
-    this.dataSource = new MatTableDataSource<Customer>(this.customers);
-    this.table.dataSource = this.dataSource;
+    this.dataSource = new MatTableDataSource<User>(this.users);
     this.table.renderRows();
   }
 
@@ -52,29 +61,26 @@ constructor(private apiService: ApiService, private dialog?: MatDialog, private 
    this.dataSource.filter = filterValue.trim().toLowerCase();
  }
 
- viewCustomer(){
-
- }
 
 
 
- updateCustomer(data){
+ updateUser(data){
    const dialogConfig = new MatDialogConfig();
    dialogConfig.autoFocus = true;
    dialogConfig.width = "50%";
-   this.dialog.open(CreateCustomerFormComponent, {data});
+   this.dialog.open(CreateUserFormComponent, {data, maxHeight: '90vh'});
  }
 
- deleteCustomer(data){
+ deleteUser(data){
    const dialogRef = this.dialog.open(ConfirmationBoxComponent, {
       width: '350px',
-      data: "Do you confirm the deletion of this customer: " + data.name + " ?"
+      data: "Do you confirm the deletion of this User:" + data.name + " ?"
     });
 dialogRef.afterClosed().subscribe(result => {
       if(result) {
-        this.apiService.deleteCustomer(data).subscribe(
+        this.apiService.deleteUser(data).subscribe(
           res =>{
-            alert("Customer deleted successfully");
+            alert("User deleted successfully");
           },
           err =>{
             console.log(err);
@@ -86,12 +92,14 @@ dialogRef.afterClosed().subscribe(result => {
   }
 
 
- createCustomer(){
+ createUser() {
    const dialogConfig = new MatDialogConfig();
    dialogConfig.autoFocus = true;
    dialogConfig.width = "50%";
-   this.dialog.open(CreateCustomerFormComponent);
+   dialogConfig.height = "150%";
+   this.dialog.open(CreateUserFormComponent, { maxHeight: '90vh'});
 
  }
+
 
 }
