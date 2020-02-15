@@ -3,10 +3,9 @@
     "",
     "\\src",
     "\\src\\app",
-    "\\src\\app\\AccountingPackage",
     "\\src\\app\\AccountingPackage\\day-book",
-    "\\src\\app\\complaints"
+    "\\src\\app\\dashboard"
   ],
-  "SelectedNode": "\\src\\app\\AccountingPackage\\day-book\\day-book.component.html",
+  "SelectedNode": "\\src\\app\\dashboard\\dashboard.component.html",
   "PreviewInSolutionExplorer": false
 }
