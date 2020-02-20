@@ -1,0 +1,130 @@
+
+
+
+
+
+
+
+  
+  <div>
+ 
+      
+    <div class="ml-3 d-inline-block align-middle" style="float:left;">
+      <h6 class="mb-0 font-weight-bold"> {{productName}}</h6>
+    </div>
+
+
+
+    <!--PRODUCT SEARCH-->
+
+    <div *ngIf ="!showBatchDropDown" style="padding-left: 20px;">
+      <mat-form-field class="example-full-width">
+        <input #invField type="text"
+               placeholder="Pick one"
+               (keydown.enter) ="goToPayment($event.target.value); false "
+               aria-label="Number"
+               matInput
+               [formControl]="productControl"
+               [matAutocomplete]="auto"
+               [(ngModel)]="product"
+               style="width:100% !important" >
+        <mat-autocomplete [panelWidth]="300" #auto="matAutocomplete"
+                          (optionSelected)='selectProduct($event.option.value);'
+                          [displayWith]="displayFnProduct">
+          <mat-option *ngFor="let option of filteredOptions | async" [value]="option">
+            <th scope="row">
+              <div class="p-2">
+                <div class="ml-3 d-inline-block align-middle">
+                  <h6 class="mb-0 font-weight-bold">{{option._id}}</h6>
+                </div>
+              </div>
+            </th>
+          </mat-option>
+        </mat-autocomplete>
+      </mat-form-field>
+    </div>
+
+    <div *ngIf ="showBatchDropDown" style="display:inline-block; float: left; padding-left: 20px;">
+      <div class="ml-3 d-inline-block align-middle" style="float: right;">
+        <h6 class="mb-0 font-weight-bold"> {{productName}}</h6>
+      </div>
+      <div *ngIf =" product != null">
+        <mat-form-field>
+          <mat-label>Select a Batch</mat-label>
+          <mat-select #batchField autoActiveFirstOption [(value)]="batch" (selectionChange) ="validateBatch($event)">
+            <ng-container *ngFor="let item of product.bATCHALLOCATIONS">
+              <mat-option [(value)]="item">{{item.name}} {{item.expiryDate  | date: "dd-MMM-yyyy"}}</mat-option>
+            </ng-container>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div>
+        <mat-form-field>
+          <input #quantityField (keydown.enter)="validateProduct($event.target.value);false" type="number" placeholder="Enter qty" aria-label="Quantity" matInput [(ngModel)] =" qty">
+        </mat-form-field>
+      </div>
+     
+    </div>
+
+  </div>
+
+
+
+
+
+
+
+
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead class="">
+          <th>
+            S.No.
+          </th>
+          <th>
+            Name
+          </th>
+          <th>
+            Batch
+          </th>
+          <th>
+            Qty
+          </th>
+          <th>
+            Rate
+          </th>
+          <th>
+            Amount
+          </th>
+          </thead>
+          <tbody>
+            <ng-container *ngFor=" let product of voucher.ALLINVENTORYENTRIES_LIST">
+              <tr>
+                <td>
+                  <button mat-button color="warn" name="button" (click)="deleteItem(product)">
+                    <mat-icon aria-hidden="false" aria-label="Example home icon">delete</mat-icon>
+                  </button>
+                </td>
+                <td>
+                  {{product.STOCKITEMNAME}}
+                </td>
+                <td>
+                  {{product.BATCHALLOCATIONS_LIST.BATCHNAME}}
+                </td>
+                <td>
+                  {{product.BILLEDQTY}}
+                </td>
+                <td>
+                  {{product.RATE}}
+                </td>
+                <td>
+                  {{product.AMOUNT}}
+                </td>
+              </tr>
+            </ng-container>
+          </tbody>
+        </table>
+      </div>
+   
+
+

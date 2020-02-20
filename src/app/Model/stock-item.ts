@@ -21,3 +21,23 @@ export interface PriceListItem{
   godownName: string;
   price: number;
 }
+
+export class RateDetail {
+  gSTRATEDUTYHEAD: string;
+  gSTRATEVALUATIONTYPE: string;
+  taxPercentage: number;
+
+  constructor() {
+  }
+}
+
+export class UpdateStockItemData {
+  priceList: PriceListItem[];
+  taxDetail: RateDetail[];
+
+  constructor(pricelist: PriceListItem[], tasDetails: RateDetail[]) {
+    this.priceList = pricelist;
+    this.taxDetail = tasDetails;
+
+  }
+}

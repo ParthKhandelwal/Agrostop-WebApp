@@ -14,7 +14,6 @@ import { MatTableDataSource } from '@angular/material';
   styleUrls: ['./create-user-form.component.css']
 })
 export class CreateUserFormComponent implements OnInit {
-  
   hide = true;
   updateMode = false;
   user: User = {
@@ -23,14 +22,13 @@ export class CreateUserFormComponent implements OnInit {
     password:            "",
     emailId:             "",
     contactNumber:       "",
-    id:                  "",
     name:                "",
     role:                "",
     userName:            "",
     tallyUserName:       "",
     godownList:          [],
     defaultGodown:       "",
-    salesVocherSettings: {
+    salesVoucherSettings: {
       voucherTypeList:  [],
       defaultVoucherType: "",
       defaultClass: "",
@@ -50,12 +48,12 @@ export class CreateUserFormComponent implements OnInit {
   @ViewChild('posClass', { static: false }) posClass:ElementRef;
 
 
-  posCashLedgers: string[] = [];
-  cashLedgers: string[]= [];
-  basicBasePartyNames: string[]= [];
-  placeOfSupplies: string[]= [];
-  voucherTypeNames: VoucherTypeClass[] = [];
-  godownNames: string[] = [];
+  posCashLedgers: any[] = [];
+  cashLedgers: any[]= [];
+  basicBasePartyNames: any[]= [];
+  placeOfSupplies: any[]= [];
+  voucherTypeNames: any[] = [];
+  godownNames: any[] = [];
   url = '';
   selectedFile = '';
 
@@ -79,7 +77,6 @@ export class CreateUserFormComponent implements OnInit {
     this.apiService.getCashLedgers().subscribe(
       res =>{
         if(res != null){
-          console.log(res)
         this.posCashLedgers = res;
         this.cashLedgers = res;
         this.basicBasePartyNames = res;
@@ -91,18 +88,10 @@ export class CreateUserFormComponent implements OnInit {
     );
 
     this.apiService.getSalesVoucherTypeName().subscribe(
-      res =>{
-        if (res != null){
-          for (var i = 0; i < res.length; i++) {
-              var c : VoucherTypeClass = {
-                voucherTypeName: res[i]._id,
-                classes:[]
-              }
+      res => {
+        this.voucherTypeNames = res;
 
-            this.voucherTypeNames.push(c);
-          }
-
-      }
+      
       },
       err =>{
         console.log(err);
@@ -123,11 +112,8 @@ export class CreateUserFormComponent implements OnInit {
     );
 
     this.godownDataSource = new MatTableDataSource<string>(this.user.godownList);
-    this.voucherTypeDataSource = new MatTableDataSource<VoucherTypeClass>(this.user.salesVocherSettings.voucherTypeList);
-    this.cashLedgerDataSource = new MatTableDataSource<string>(this.user.salesVocherSettings.cashLedgerList);
-
-
-
+    this.voucherTypeDataSource = new MatTableDataSource<VoucherTypeClass>(this.user.salesVoucherSettings.voucherTypeList);
+    this.cashLedgerDataSource = new MatTableDataSource<string>(this.user.salesVoucherSettings.cashLedgerList);
   }
 
   submit(){
@@ -180,30 +166,30 @@ deleteGodown(godown: string){
   this.godownDataSource._updateChangeSubscription();
 }
 
-addVoucherType(voucherType: VoucherTypeClass){
+addVoucherType(voucherType: string){
   var voucherExists: boolean = false;
-  var num:number = this.user.salesVocherSettings.voucherTypeList.length;
-  for (var i = 0; i < this.user.salesVocherSettings.voucherTypeList.length; i++) {
-    if (this.user.salesVocherSettings.voucherTypeList[i] == voucherType) {
+  var num:number = this.user.salesVoucherSettings.voucherTypeList.length;
+  for (var i = 0; i < this.user.salesVoucherSettings.voucherTypeList.length; i++) {
+    if (this.user.salesVoucherSettings.voucherTypeList[i].voucherTypeName == voucherType) {
       voucherExists = true;
     }
   }
   if(!voucherExists){
-    //const voucherTypeObject : VoucherTypeClass = {
-    // voucherTypeName: voucherType,
-      //classes:[]
-    //}
-    this.user.salesVocherSettings.voucherTypeList.push(voucherType)
+    const voucherTypeObject : VoucherTypeClass = {
+     voucherTypeName: voucherType,
+    classes:[]
+    }
+    this.user.salesVoucherSettings.voucherTypeList.push(voucherTypeObject)
   }
-  this.posClassDataSource = new MatTableDataSource(this.user.salesVocherSettings.voucherTypeList[i].classes);
+  this.posClassDataSource = new MatTableDataSource(this.user.salesVoucherSettings.voucherTypeList[i].classes);
 
   this.voucherTypeDataSource._updateChangeSubscription();
 }
 
-deleteVoucherType(voucherType: VoucherTypeClass){
-  for (var i = 0; i < this.user.salesVocherSettings.voucherTypeList.length; i++) {
-    if (this.user.salesVocherSettings.voucherTypeList[i] === voucherType) {
-      this.user.salesVocherSettings.voucherTypeList.splice(i, 1);
+deleteVoucherType(voucherType: string){
+  for (var i = 0; i < this.user.salesVoucherSettings.voucherTypeList.length; i++) {
+    if (this.user.salesVoucherSettings.voucherTypeList[i].voucherTypeName === voucherType) {
+      this.user.salesVoucherSettings.voucherTypeList.splice(i, 1);
     }
   }
   this.voucherTypeDataSource._updateChangeSubscription();
@@ -211,13 +197,13 @@ deleteVoucherType(voucherType: VoucherTypeClass){
 
 addCashLedger(cashLedger: string){
   var voucherExists: boolean = false;
-  for (var i = 0; i < this.user.salesVocherSettings.cashLedgerList.length; i++) {
-    if (this.user.salesVocherSettings.cashLedgerList[i] == cashLedger) {
+  for (var i = 0; i < this.user.salesVoucherSettings.cashLedgerList.length; i++) {
+    if (this.user.salesVoucherSettings.cashLedgerList[i] == cashLedger) {
       voucherExists = true;
     }
   }
   if(!voucherExists){
-    this.user.salesVocherSettings.cashLedgerList.push(cashLedger)
+    this.user.salesVoucherSettings.cashLedgerList.push(cashLedger)
   }
 
 
@@ -225,9 +211,9 @@ addCashLedger(cashLedger: string){
 }
 
 deleteCashLedger(cashLedger: string){
-  for (var i = 0; i < this.user.salesVocherSettings.cashLedgerList.length; i++) {
-    if (this.user.salesVocherSettings.cashLedgerList[i] === cashLedger) {
-      this.user.salesVocherSettings.cashLedgerList.splice(i, 1);
+  for (var i = 0; i < this.user.salesVoucherSettings.cashLedgerList.length; i++) {
+    if (this.user.salesVoucherSettings.cashLedgerList[i] === cashLedger) {
+      this.user.salesVoucherSettings.cashLedgerList.splice(i, 1);
     }
   }
   this.cashLedgerDataSource._updateChangeSubscription();
@@ -235,24 +221,11 @@ deleteCashLedger(cashLedger: string){
 
 addPOSClass(voucherTypeName: string){
   console.log("addPOSClass called");
-  for (var i = 0; i < this.user.salesVocherSettings.voucherTypeList.length; i++) {
-    if (this.user.salesVocherSettings.voucherTypeList[i].voucherTypeName === voucherTypeName) {
-      this.user.salesVocherSettings.voucherTypeList[i]
+  for (var i = 0; i < this.user.salesVoucherSettings.voucherTypeList.length; i++) {
+    if (this.user.salesVoucherSettings.voucherTypeList[i].voucherTypeName === voucherTypeName) {
+      this.user.salesVoucherSettings.voucherTypeList[i]
       .classes.push(this.posClass.nativeElement.value);
     }
   }
 }
-
-  /*validUserId() {
-    this.apiService.validUserId(this.user.id).subscribe(
-      res => {
-        this.isUserValid = res;
-      },
-      err => {
-        this.isUserValid = false;
-        console.log(err);
-      }
-    );
-  }*/
-
 }

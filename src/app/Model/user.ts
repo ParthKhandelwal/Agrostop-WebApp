@@ -4,14 +4,13 @@ export interface User {
       lastLogin:           string;
       emailId:             string;
       contactNumber:       string;
-      id:                  string;
       name:                string;
       role:                string;
       userName:            string;
       tallyUserName:       string;
       godownList:          string[];
       defaultGodown:       string;
-      salesVocherSettings: SalesVoucherSettings;
+      salesVoucherSettings: SalesVoucherSettings;
 }
 
 export interface SalesVoucherSettings{

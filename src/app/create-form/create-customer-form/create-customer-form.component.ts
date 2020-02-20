@@ -16,14 +16,7 @@ import { MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
 export class CreateCustomerFormComponent implements OnInit {
 
   addresses: Address[] = [];
-  customer : Customer = {
-    id: '',
-    name:'',
-    fatherName:'',
-    phoneNumber:'',
-    addressId:'',
-    landHolding:0
-  };
+  customer: Customer = new Customer();
   constructor( @Inject(MAT_DIALOG_DATA) public data?: any, private dialogRef?: MatDialogRef<CreateCustomerFormComponent>,
   private router? :Router, @Inject(ApiService) private apiService? : ApiService) {
     if (data != null){

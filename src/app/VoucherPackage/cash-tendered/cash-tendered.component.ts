@@ -10,13 +10,14 @@ export class CashTenderedComponent implements OnInit {
 
 @ViewChild('continueButtonRef',{static: false}) buttonRef: ElementRef;
 
-  data: any;
+  data: number;
   isValid:boolean = false;
   amountRecieved: number;
 
-  constructor(@Inject(MAT_DIALOG_DATA) public messageInjected: any,
+  constructor(@Inject(MAT_DIALOG_DATA) public messageInjected: number,
   public dialogRef?: MatDialogRef<CashTenderedComponent>
-     ) {
+  ) {
+    console.log("message: " + messageInjected);
         this.data = messageInjected;
     }
 

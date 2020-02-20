@@ -8,7 +8,7 @@
         </mat-card-header>
         <mat-card-content>
       <mat-form-field class="input">
-        <input matInput type="text" name="userName" [(ngModel)]= 'user.id' required [readonly] = 'updateMode' placeholder="Enter username">
+        <input matInput type="text" name="userName" [(ngModel)]= 'user.userName' required [readonly] = 'updateMode' placeholder="Enter username">
       </mat-form-field>
       <mat-form-field class="input">
         <input matInput name = 'password'  [(ngModel)] = 'user.password' placeholder="Enter password" [type]="hide ? 'password' : 'text'">
@@ -48,7 +48,7 @@
           <div class="salesDiv">
           <mat-form-field class="input">
             <mat-select placeholder = "Choose Godown" name = 'godownName' required (selectionChange)="this.addGodown($event.value)">
-              <mat-option *ngFor = 'let name of godownNames' [value] = 'name._id'>{{name._id}}</mat-option>
+              <mat-option *ngFor = 'let name of godownNames' [value] = 'name._NAME'>{{name._NAME}}</mat-option>
             </mat-select>
           </mat-form-field>
           <table mat-table class="" aria-label="Elements" [(dataSource)]='godownDataSource'>
@@ -79,7 +79,7 @@
           <div class="salesDiv">
           <mat-form-field class="input">
             <mat-select placeholder = "Choose Cash Ledger Name" name = 'cashLedgerName' required (selectionChange)="this.addCashLedger($event.value)">
-              <mat-option *ngFor = 'let name of cashLedgers' [value] = 'name'>{{name}}</mat-option>
+              <mat-option *ngFor = 'let name of cashLedgers' [value] = 'name._NAME'>{{name._NAME}}</mat-option>
             </mat-select>
           </mat-form-field>
 
@@ -111,7 +111,7 @@
           <div class="salesDiv">
           <mat-form-field class="input">
             <mat-select placeholder = "Choose Voucher Type Name" name = 'voucherTypeName' required (selectionChange)="this.addVoucherType($event.value)">
-              <mat-option *ngFor = 'let name of voucherTypeNames' [value] = 'name'>{{name.voucherTypeName}}</mat-option>
+              <mat-option *ngFor = 'let name of voucherTypeNames' [value] = 'name._NAME'>{{name._NAME}}</mat-option>
             </mat-select>
           </mat-form-field>
 
@@ -139,7 +139,7 @@
 
           </div>
 
-<div class="voucherTypeDescription" *ngFor= "let v of user.salesVocherSettings.voucherTypeList">
+<div class="voucherTypeDescription" *ngFor= "let v of user.salesVoucherSettings.voucherTypeList">
   <mat-card>
     <mat-card-header>
         <b>{{v.voucherTypeName}}</b>

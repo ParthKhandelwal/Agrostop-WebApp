@@ -8,14 +8,7 @@ import { MAT_DIALOG_DATA} from '@angular/material';
   styleUrls: ['./customer-view.component.css']
 })
 export class CustomerViewComponent implements OnInit {
-customer: Customer = {
-  id: "",
-  name: "",
-  fatherName: "",
-  landHolding: 0,
-  addressId: "",
-  phoneNumber: ""
-}
+  customer: Customer = new Customer();
 
   constructor(@Inject(MAT_DIALOG_DATA) public customerInjected: Customer) {
 

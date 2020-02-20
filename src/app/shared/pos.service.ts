@@ -12,6 +12,8 @@ import { CookieService } from 'ngx-cookie-service';
 })
 export class PosService {
 
+  user: User;
+
   db = new NgxIndexedDB('agrostop', 1);
   posModeEnabled: boolean = false;
   products: any[];
@@ -49,7 +51,7 @@ getCustomers(): Promise<any>{
 }
 
   saveItems(){
-    this.apiService.getAllStockItemsForBilling().subscribe(
+    this.apiService.getAllStockItemsForBilling(this.cookie.get('tallyVoucher.basicVoucherDetails.godownName')).subscribe(
       res =>{
           console.log(res);
           for(var i = 0; i < res.length; i++){
@@ -102,8 +104,9 @@ countCacheVoucher(): number{
   }
 
   saveUserOffline(){
-    this.apiService.getCurrentUser().subscribe(
+    this.apiService.getPOSUser().subscribe(
       res => {
+        this.user = res;
         this.cookie.set("User", JSON.stringify(res));
       },
       err =>{

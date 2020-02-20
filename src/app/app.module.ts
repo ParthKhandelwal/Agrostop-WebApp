@@ -27,7 +27,7 @@ import { CustomerTableComponent } from './tables/customer-table/customer-table.c
 import { MatFormFieldModule, MatInputModule } from '@angular/material';
 import {MatButtonModule} from '@angular/material/button';
 import {MatIconModule} from '@angular/material/icon';
-import {MatDialogModule, MatDialogConfig,MatDialog} from '@angular/material/dialog';
+import {MatDialogModule, MatDialogConfig,MatDialog, MAT_DIALOG_DATA} from '@angular/material/dialog';
 import {MatSidenavModule} from '@angular/material/sidenav';
 import { CustomerViewComponent } from './view/customer-view/customer-view.component';
 import { ConfirmationBoxComponent } from './confirmation-box/confirmation-box.component';
@@ -65,6 +65,11 @@ import { ProductListViewComponent } from './Products/product-list-view/product-l
 import { TaxDetailsTableComponent } from './tables/tax-details-table/tax-details-table.component';
 import { CreateTaxDetailsFormComponent } from './create-form/create-tax-details-form/create-tax-details-form.component';
 import { UserTableComponent } from './tables/user-table/user-table.component';
+import { DatePipe } from '@angular/common';
+import { PaymentOptionComponent } from './VoucherPackage/payment-option/payment-option.component';
+import { CustomerSelectionComponent } from './VoucherPackage/customer-selection/customer-selection.component';
+import { InventorySelectionComponent } from './VoucherPackage/inventory-selection/inventory-selection.component';
+import { VoucherWizardComponent } from './VoucherPackage/voucher-wizard/voucher-wizard.component';
 
 
 
@@ -113,7 +118,11 @@ import { UserTableComponent } from './tables/user-table/user-table.component';
     ProductListViewComponent,
     TaxDetailsTableComponent,
     CreateTaxDetailsFormComponent,
-    UserTableComponent
+    UserTableComponent,
+    PaymentOptionComponent,
+    CustomerSelectionComponent,
+    InventorySelectionComponent,
+    VoucherWizardComponent
   ],
   imports: [
     BrowserAnimationsModule,
@@ -141,13 +150,14 @@ import { UserTableComponent } from './tables/user-table/user-table.component';
     StorageServiceModule
 
   ],
-  providers: [CookieService, ApiService,MatDialog,AgroStorageService, MatDialogConfig, {
+  providers: [CookieService, ApiService, DatePipe, MatDialog, AgroStorageService, MatDialogConfig, {
       provide: HTTP_INTERCEPTORS,
       useClass: AgroInterceptor,
-      multi: true
-    }
+    multi: true
+  } 
     ],
   bootstrap: [AppComponent],
-  entryComponents: [CreateCustomerFormComponent, CreateTaxDetailsFormComponent,InvoicePrintViewComponent, CashTenderedComponent, CreateStockItemFormComponent,CustomerTableComponent, ConfirmationBoxComponent, CreateAddressFormComponent]
+  entryComponents: [CreateCustomerFormComponent, CreateTaxDetailsFormComponent, InvoicePrintViewComponent, CashTenderedComponent, CreateStockItemFormComponent, CustomerTableComponent, ConfirmationBoxComponent, CreateAddressFormComponent,
+    PaymentOptionComponent]
 })
 export class AppModule { }

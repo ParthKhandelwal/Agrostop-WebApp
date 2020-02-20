@@ -1,4 +1,78 @@
 
-<div class="htmlPage">
-<app-voucher-table [(vouchers)] = "this.voucherService.vouchers" #table></app-voucher-table>
-</div>
+ 
+        <div class="container-fluid">
+          <div class="row">
+            <div class="col-md-12">
+              <div class="card">
+                <div class="card-header card-header-primary">
+                  <h4 class="card-title ">Day Book</h4>
+                  <p class="card-category"> Here is a subtitle for this table</p>
+                </div>
+                <div style="padding-left: 10px; padding-right:10px;">
+                  <div class="table-responsive">
+                    <table class="table">
+                      <thead class=" text-primary">
+                      <th>
+                        Date
+                      </th>
+                      <th>
+                        Voucher #
+                      </th>
+                      <th>
+                        Customer Name
+                      </th>
+                      <th>
+                        Address
+                      </th>
+                      <th>
+                        Amount
+                      </th>
+                      <th>
+
+                      </th>
+                      </thead>
+                      <tbody>
+                        
+                        <ng-container *ngFor="let voucher of voucherService.vouchers">
+                          <tr>
+                            <td>
+                              {{voucher.DATE |date: 'dd-MMM-yyyy'}}
+                            </td>
+                            <td>
+                              {{voucher.VOUCHERNUMBER}}
+                            </td>
+                            <td>
+                              {{voucher.BASICBUYERNAME}}
+                            </td>
+                            <td>
+                              {{voucher.ADDRESS_LIST.ADDRESS}}
+                            </td>
+                            <td class="text-primary">
+                              {{getTotal(voucher)}}
+                            </td>
+                            <td>
+                              <button mat-mini-fab aria-label="Example icon-button with a heart icon" (click)="edit(voucher)">
+                                <mat-icon>edit</mat-icon>
+                              </button>
+                              
+                            </td>
+                          </tr>
+
+
+                        </ng-container>
+
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+          </div>
+        </div>
+  
+        <!--   Core JS Files   -->
+  
+   
+
+

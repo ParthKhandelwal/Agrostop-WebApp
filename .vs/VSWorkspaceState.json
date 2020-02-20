@@ -3,10 +3,14 @@
     "",
     "\\src",
     "\\src\\app",
-    "\\src\\app\\create-form",
-    "\\src\\app\\create-form\\create-user-form",
-    "\\src\\app\\tables\\user-table"
+    "\\src\\app\\dashboard",
+    "\\src\\app\\Model",
+    "\\src\\app\\sales",
+    "\\src\\app\\VoucherPackage",
+    "\\src\\app\\VoucherPackage\\customer-selection",
+    "\\src\\app\\VoucherPackage\\payment-option",
+    "\\src\\app\\VoucherPackage\\voucher-wizard"
   ],
-  "SelectedNode": "\\src\\app\\create-form\\create-user-form\\create-user-form.component.ts",
+  "SelectedNode": "\\src\\app\\VoucherPackage\\customer-selection\\customer-selection.component.ts",
   "PreviewInSolutionExplorer": false
 }

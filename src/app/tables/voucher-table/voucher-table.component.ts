@@ -10,7 +10,6 @@ import {MatDialog, MatDialogConfig, MAT_DIALOG_DATA} from '@angular/material';
 import {CreateCustomerFormComponent} from '../../create-form/create-customer-form/create-customer-form.component';
 import { ConfirmationBoxComponent } from '../../confirmation-box/confirmation-box.component';
 import { Customer } from '../../Model/customer';
-import { TallyVoucher } from '../../Model/tally-voucher';
 import { CreateVoucherComponent } from '../../create-form/create-voucher/create-voucher.component';
 import { VoucherService } from '../../shared/voucher.service';
 import { Router } from '@angular/router';
@@ -21,10 +20,10 @@ import { Router } from '@angular/router';
 })
 export class VoucherTableComponent implements OnInit {
   @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator;
-  @ViewChild(MatSort, {static: false}) sort: MatSort;
-  @ViewChild(MatTable, {static: false}) table: MatTable<TallyVoucher>;
-  dataSource: MatTableDataSource<TallyVoucher>;
-  @Input('vouchers') vouchers: TallyVoucher[];
+  @ViewChild(MatSort, { static: false }) sort: MatSort;
+  @ViewChild(MatTable, { static: false }) table: MatTable<VOUCHER>;
+  dataSource: MatTableDataSource<VOUCHER>;
+  @Input('vouchers') vouchers: VOUCHER[];
 
 
   displayedColumns = [ 'date', 'voucherNumber', 'customerId','address', 'amount', 'update'];
@@ -34,7 +33,7 @@ export class VoucherTableComponent implements OnInit {
     private dialogConfig?: MatDialogConfig, private voucherService?: VoucherService, private router?: Router) { }
 
   ngOnInit(){
-  this.dataSource = new MatTableDataSource<TallyVoucher>(this.vouchers);
+  this.dataSource = new MatTableDataSource<VOUCHER>(this.vouchers);
   console.log (this.vouchers);
   console.log("customers table componenet called");
   }
@@ -46,8 +45,8 @@ export class VoucherTableComponent implements OnInit {
     this.table.dataSource = this.dataSource;
   }
 
-  renderRows(res: TallyVoucher[]){
-    this.dataSource = new MatTableDataSource<TallyVoucher>(res);
+  renderRows(res: VOUCHER[]){
+    this.dataSource = new MatTableDataSource<VOUCHER>(res);
     this.dataSource.sort = this.sort;
     this.dataSource.paginator = this.paginator;
     this.table.dataSource = this.dataSource;
@@ -55,7 +54,7 @@ export class VoucherTableComponent implements OnInit {
   }
 
 updateVoucher(data){
-  this.voucherService.tallyVoucher = data;
+  this.voucherService.voucher = data;
   this.router.navigate(['/sales/create-sales-voucher']);
 
 }

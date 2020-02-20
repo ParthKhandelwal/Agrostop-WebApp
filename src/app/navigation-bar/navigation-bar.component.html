@@ -1,58 +1,140 @@
+<mat-sidenav-container [hasBackdrop]='false' autosize role="navigation">
+  <mat-sidenav [fixedInViewport]="true" [fixedTopGap]='50' #drawer opened='true' class="sidenavBar" disableClose="true" mode="push">
 
 
-<!--Navbar-->
-<nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
-
-  <!-- Navbar brand -->
-  <a class="navibar-brand" href="#"><span>Agro</span>stop</a>
-
-  <!-- Collapsible content -->
-  <div class="collapse navbar-collapse" id="basicExampleNav">
-
-    <!-- Links -->
-    <ul class="navbar-nav mr-auto">
-      <li class="nav-item active">
-        <a class="nav-link" href="/home">Dashboard<span class="sr-only">(current)</span></a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="/customers">Customers</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="/sales">Sales</a>
-      </li>
 
 
-      <li class="nav-item">
-        <a class="nav-link" href="/products">Products</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="/users">Users</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="/complaints">Complaints</a>
-      </li>
+
+    <div class="sidebar" data-color="green" data-background-color="white" data-image="../assets/img/sidebar-1.jpg">
+      <!--
+        Tip 1: You can change the color of the sidebar using: data-color="purple | azure | green | orange | danger"
+
+        Tip 2: you can also add an image using data-image tag
+    -->
+      <div class="logo">
+
+        <a class="navibar-brand" href="#"><span>Agro</span>stop</a>
+
+      </div>
+      <div class="sidebar-wrapper">
+        <ul class="nav">
+          <li [ngClass]="url == 'home' ? 'nav-item active': 'nav-item'">
+            <a class="nav-link" href="/home">
+              <i class="material-icons">dashboard</i>
+              <p>Dashboard</p>
+            </a>
+          </li>
+          <li [ngClass]="url == 'users' ? 'nav-item active': 'nav-item'">
+            <a class="nav-link" href="/users">
+              <i class="material-icons">person</i>
+              <p>Users</p>
+            </a>
+          </li>
+          <li [ngClass]="url == 'customers' ? 'nav-item active': 'nav-item'">
+            <a class="nav-link" href="/customers">
+              <i class="material-icons">content_paste</i>
+              <p>Customer</p>
+            </a>
+          </li>
+          <li [ngClass]="url == 'sales' ? 'nav-item active': 'nav-item'">
+            <a class="nav-link" href="/sales">
+              <i class="material-icons">library_books</i>
+              <p>Accounts</p>
+            </a>
+          </li>
+          <li class="nav-item ">
+            <a class="nav-link" href="./icons.html">
+              <i class="material-icons">bubble_chart</i>
+              <p>Icons</p>
+            </a>
+          </li>
+          <li [ngClass]="url == 'products' ? 'nav-item active': 'nav-item'">
+            <a class="nav-link" href="/products">
+              <i class="material-icons">location_ons</i>
+              <p>Products</p>
+            </a>
+          </li>
+          <li class="nav-item ">
+            <a class="nav-link" href="complaints">
+              <i class="material-icons">notifications</i>
+              <p>Notifications</p>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
 
 
-      <li data-type="default" class="nav-item dropdown">
-	  <a id="navbarDropdown" dropdownToggle role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="nav-link dropdown-toggle">
-		Dropdown
-	  </a>
 
-	</li>
 
-    </ul>
-    <!-- Links -->
 
-    <button  mat-button color = "gray" (click)='logout()' name="button">
-        <mat-icon aria-hidden="false" aria-label="Example home icon">build</mat-icon>
-    </button>
-    <span class="navbar-text">
-      {{user}}
 
-    </span>
-  <a class="nav-link" (click) = "logout()" href="/">Log Out</a>
+
+
+
+
+  </mat-sidenav>
+  <mat-sidenav-content class="sidenavBarContent">
+    <ng-content></ng-content>
+  </mat-sidenav-content>
+</mat-sidenav-container>
+
+  <div class="sidebar" data-color="green" data-background-color="white" data-image="../assets/img/sidebar-1.jpg">
+    <!--
+      Tip 1: You can change the color of the sidebar using: data-color="purple | azure | green | orange | danger"
+
+      Tip 2: you can also add an image using data-image tag
+  -->
+    <div class="logo">
+
+      <a class="navibar-brand" href="#"><span>Agro</span>stop</a>
+
+    </div>
+    <div class="sidebar-wrapper">
+      <ul class="nav">
+        <li [ngClass]="url == 'home' ? 'nav-item active': 'nav-item'">
+          <a class="nav-link" href="/home">
+            <i class="material-icons">dashboard</i>
+            <p>Dashboard</p>
+          </a>
+        </li>
+        <li [ngClass]="url == 'users' ? 'nav-item active': 'nav-item'">
+          <a class="nav-link" href="/users">
+            <i class="material-icons">person</i>
+            <p>Users</p>
+          </a>
+        </li>
+        <li [ngClass]="url == 'customers' ? 'nav-item active': 'nav-item'">
+          <a class="nav-link" href="/customers">
+            <i class="material-icons">content_paste</i>
+            <p>Customer</p>
+          </a>
+        </li>
+        <li [ngClass]="url == 'sales' ? 'nav-item active': 'nav-item'">
+          <a class="nav-link" href="/sales">
+            <i class="material-icons">library_books</i>
+            <p>Accounts</p>
+          </a>
+        </li>
+        <li class="nav-item ">
+          <a class="nav-link" href="./icons.html">
+            <i class="material-icons">bubble_chart</i>
+            <p>Icons</p>
+          </a>
+        </li>
+        <li [ngClass]="url == 'products' ? 'nav-item active': 'nav-item'">
+          <a class="nav-link" href="/products">
+            <i class="material-icons">location_ons</i>
+            <p>Products</p>
+          </a>
+        </li>
+        <li class="nav-item ">
+          <a class="nav-link" href="complaints">
+            <i class="material-icons">notifications</i>
+            <p>Notifications</p>
+          </a>
+        </li>
+      </ul>
+    </div>
   </div>
-  <!-- Collapsible content -->
 
-</nav>
-<!--/.Navbar-->

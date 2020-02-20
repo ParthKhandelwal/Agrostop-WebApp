@@ -1,5 +1,5 @@
 import { Address } from './address';
-export interface Customer {
+export class Customer {
 
     id: string ;
     name: string;
@@ -7,6 +7,17 @@ export interface Customer {
     addressId: string;
     phoneNumber: string;
     landHolding: number;
-    fullAddress?: Address;
+  fullAddress?: Address;
+  gSTREGISTRATIONTYPE: string;
 
+
+  constructor() {
+    this.id = "";
+    this.name = "";
+    this.fatherName = "";
+    this.addressId = "";
+    this.phoneNumber= "";
+    this.landHolding = 0;
+    this.gSTREGISTRATIONTYPE = "";
+  }
 }

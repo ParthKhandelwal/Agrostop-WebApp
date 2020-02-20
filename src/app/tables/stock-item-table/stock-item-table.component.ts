@@ -56,6 +56,7 @@ export class StockItemTableComponent implements OnInit {
     const dialogConfig = new MatDialogConfig();
     dialogConfig.autoFocus = true;
     dialogConfig.width = "50%";
-    this.dialog.open(CreateStockItemFormComponent, {data});
+    dialogConfig.height = "70%";
+    this.dialog.open(CreateStockItemFormComponent, { data, maxHeight: '90vh'});
   }
 }

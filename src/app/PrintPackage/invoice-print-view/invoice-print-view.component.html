@@ -17,15 +17,15 @@
 
         <tr>
         <td>Invoice Number</td>
-        <td>{{tallyVoucher.customVoucherDetails.voucherNumber}}</td>
+        <td>{{voucher.VOUCHERNUMBER}}</td>
         </tr>
         <tr>
         <td>Date</td>
-        <td>{{tallyVoucher.customVoucherDetails.date | date: "dd-MMM-yyyy"}}</td>
+        <td>{{voucher.DATE | date: "dd-MMM-yyyy"}}</td>
         </tr>
         <tr>
         <td>Created By</td>
-        <td>{{tallyVoucher.customVoucherDetails.date | date: "dd-MMM-yyyy"}}</td>
+        <td>{{voucher.ENTEREDBY}}</td>
         </tr>
         </table>
       </div>
@@ -42,28 +42,28 @@
       <th class="header__item">Rate</th>
       <th class="header__item">Amount</th>
       </tr>
-    <ng-container class="table-content" *ngFor = "let item of tallyVoucher.billedStockItems">
+    <ng-container class="table-content" *ngFor = "let item of voucher.ALLINVENTORYENTRIES_LIST">
       <tr class="table-row">
       <td class="table-data" width = '30%'>
-        <b>{{item.name}}</b> <br>
-        {{item.parent}}
+        <b>{{item.STOCKITEMNAME}}</b> <br>
+        {{item.PARENT}}
       </td>
       <td class="table-data">
-        {{item.batch.name}}<br>
-        {{item.batch.expiryDate| date: "dd-MMM-yyyy"}}
+        {{item.BATCHALLOCATIONLIST.NAME}}<br>
+        {{item.BATCHALLOCATIONLIST.EXPIRYPERIOD.DATE}}
       </td>
       <td class="table-data">
-        {{item.quantity}}
+        {{item.BILLEDQTY}}
       </td>
       <td class="table-data">
-        {{item.cgst}}<br>
-        {{item.sgst}}
+        {{item.calculateCGST()}}<br>
+        {{item.calculateSGST()}}
       </td>
       <td class="table-data">
-        {{item.rate}}
+        {{item.RATE}}
       </td>
       <td class="table-data">
-        {{item.amount}}
+        {{item.AMOUNT}}
       </td>
       </tr>
     </ng-container>
@@ -73,15 +73,15 @@
     <table id='posTable'>
       <tr>
         <td width = "97%">Cash Recieved</td>
-        <td>{{tallyVoucher.customVoucherDetails.posCashRecieved}}</td>
+        <td>{{voucher.POSCASHRECIEVED}}</td>
       </tr>
       <tr>
         <td>Invoice Total</td>
-        <td>{{tallyVoucher.ledgerEntry.cash}}</td>
+        <td>{{voucher.getTotal()}}</td>
       </tr>
       <tr>
         <td>Balance</td>
-        <td>{{tallyVoucher.customVoucherDetails.posCashRecieved - tallyVoucher.ledgerEntry.cash}}</td>
+        <td>{{voucher.POSCASHRECIEVED - voucher.getTotal()}}</td>
       </tr>
     </table>
 
@@ -90,19 +90,19 @@
   <table id = 'totalTable'>
   <tr>
     <td width = '100%'>Subtotal</td>
-    <td>{{tallyVoucher.ledgerEntry.subTotal}}</td>
+    <td>{{voucher.subTotal}}</td>
   </tr>
   <tr>
     <td width = '10%'>CGST</td>
-    <td>{{tallyVoucher.ledgerEntry.cgst}}</td>
+    <td>{{voucher.calculateCGST()}}</td>
   </tr>
   <tr>
     <td width = '50%'>SGST</td>
-    <td>{{tallyVoucher.ledgerEntry.sgst}}</td>
+    <td>{{voucher.calculateSGST()}}</td>
   </tr>
   <tr>
     <td width = '50%'><b>Total</b></td>
-    <td><b>{{tallyVoucher.ledgerEntry.cash}}</b></td>
+    <td><b>{{voucher.getTotal()}}</b></td>
   </tr>
   </table>
   </div>

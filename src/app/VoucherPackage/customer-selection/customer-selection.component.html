@@ -1,0 +1,80 @@
+<div class="px-4 px-lg-0" *ngIf ="loaded">
+
+  <!--CUSTOMER Search-->
+  <div ngClass="customerSearchBar" *ngIf="!createCustomer">
+    <mat-form-field class="example-full-width">
+      <input type="text"
+             (keyup.enter)= "validateCustomer()"
+             placeholder="Pick one"
+             aria-label="Number"
+             matInput
+             [formControl]="customerControl"
+             [matAutocomplete]="auto"
+             [(ngModel)]="customer"
+             style="width:100% !important"
+             >
+      <mat-autocomplete autoActiveFirstOption [panelWidth]="500"
+                        #auto="matAutocomplete"
+                        (optionSelected)='validateCustomer($event.option.value)'
+                        [displayWith]="displayFnProduct">
+        <mat-option *ngFor="let option of filteredOptions | async" [value]="option">
+          <th scope="row">
+            <div class="p-2">
+              <div class="ml-3 d-inline-block align-middle">
+                <h6 class="mb-0 font-weight-bold">{{option.name}}</h6>
+              </div>
+            </div>
+          </th>
+          <td class="align-middle font-italics">S/O {{option.fatherName}}</td>
+          <td class="align-middle"><strong>{{option.addressName}}</strong></td>
+        </mat-option>
+      </mat-autocomplete>
+    </mat-form-field>
+    <button mat-button color="accent" (click)='createCustomerAction()' name="button" class="createButton">
+      <mat-icon aria-hidden="false" aria-label="Example home icon">add</mat-icon>
+    </button>
+  </div>
+
+  <!--CUSTOMER CREATION-->
+
+  <div *ngIf=" createCustomer"></div>
+
+
+
+  <!--CUSTOMER PROFILE-->
+  
+  <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 text-center">
+    <!--figure>
+      <img src="http://www.localcrimenews.com/wp-content/uploads/2013/07/default-user-icon-profile.png" alt="" class="img-circle" style="width:75px;" id="user-img">
+    </!--figure-->
+    <h5 style="text-align:center;"><strong id="user-name">{{customer.name}}</strong></h5>
+    <p style="text-align:center;font-size: smaller;" id="user-frid">{{customer.fatherName}} </p>
+    <p style="text-align:center;font-size: smaller;overflow-wrap: break-word;" id="user-email">{{customer.phoneNumber}} </p>
+    <p style="text-align:center;font-size: smaller;"><strong>A/C status: </strong><span class="tags" id="user-status">Active</span></p>
+    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 divider text-center"></div>
+    <p style="text-align:center;font-size: smaller;"><strong>Address</strong></p>
+    <p style="text-align:center;font-size: smaller;" id="user-role">{{customer.addressName}}, {{customer.addressTehsilName}}</p>
+    <p style="text-align:center;font-size: smaller;" id="user-role">{{customer.addressDistrictName}}, {{customer.addressStateName}}</p>
+    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 divider text-center"></div>
+    <div class="col-lg-6 left" style="text-align:center;overflow-wrap: break-word; display:inline-block;">
+      <h4><p style="text-align: center;"><strong id="user-globe-rank">{{customer.landHolding}} </strong></p></h4>
+      <p><small class="label label-success">Land Holding</small></p>
+      <button class="btn btn-info btn-block" ><span class="fa fa-user"></span> View Profile </button>
+
+    </div>
+    <div class=" col-lg-6 left" style="text-align:center;overflow-wrap: break-word;display:inline-block;">
+      <h4><p style="text-align: center;"><strong id="user-globe-rank">{{customer.landHolding}} </strong></p></h4>
+      <p><small class="label label-success">Reward Points</small></p>
+      <button class="btn btn-success btn-block"><span class="fa fa-plus-circle"></span> Follow </button>
+    </div>
+  </div>
+            
+
+
+
+
+
+</div>
+
+
+

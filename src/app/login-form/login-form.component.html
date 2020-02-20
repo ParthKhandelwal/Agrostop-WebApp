@@ -1,23 +1,86 @@
-<div data-type="default" class="card-body">
-            <form data-type="default" #f='ngForm' (submit)= "f.form.valid && validate()" accept-charset="UTF-8" role="form">
-                <fieldset data-type="default">
-                    <div data-type="default" class="form-group">
+<!--div-- data-type="default" class="card-body">
+  <form >
+    <fieldset data-type="default">
+      <div data-type="default" class="form-group">
 
-                      <input data-type="default"
-                      [(ngModel)]= "user.username"
-                      type="text" required
-                     #username= 'ngModel' [ngClass] = "{'is-invalid': f.submitted && username.invalid}" placeholder="Enter Username" name="username" class="form-control"
-                      />
-                    </div>
+        <input data-type="default"
+               [(ngModel)]="user.username"
+               type="text" required
+               #username='ngModel' [ngClass]="{'is-invalid': f.submitted && username.invalid}" placeholder="Enter Username" name="username" class="form-control" />
+      </div>
 
-                    <div data-type="default" class="form-group">
-                      <input data-type="default" [(ngModel)]= "user.password" type="password" placeholder="Password" name="password" value="" class="form-control"
-                      required
-                     #password= 'ngModel' [ngClass] = "{'is-invalid': f.submitted && password.invalid}" />
-                    </div>
-                    <div data-type="default" class="checkbox"><label><input data-type="default" name="remember" type="checkbox" value="Remember Me" /> Remember Me </label></div>
-                    <button type="submit" name="button" class="btn btn-lg btn-success btn-block">Login</button>
-                </fieldset>
-            </form>
-            <hr data-type="default" />
+      <div data-type="default" class="form-group">
+        <input data-type="default" [(ngModel)]="user.password" type="password" placeholder="Password" name="password" value="" class="form-control"
+               required
+               #password='ngModel' [ngClass]="{'is-invalid': f.submitted && password.invalid}" />
+      </div>
+      <div data-type="default" class="checkbox"><label><input data-type="default" name="remember" type="checkbox" value="Remember Me" /> Remember Me </label></div>
+      <button type="submit" name="button" class="btn btn-lg btn-success btn-block">Login</button>
+    </fieldset>
+  </form>
+  <hr data-type="default" />
+</!--div-->
+
+<div class="limiter">
+  <div class="container-login100">
+    <div class="wrap-login100 p-t-85 p-b-20">
+      <form class="login100-form validate-form"
+            data-type="default" #f='ngForm' (submit)="f.form.valid && validate()" accept-charset="UTF-8" role="form">
+        <span class="login100-form-title p-b-70">
+          Welcome
+        </span>
+        <span class="login100-form-avatar">
+          <img src="images/avatar-01.jpg" alt="AVATAR">
+        </span>
+
+        <div class="wrap-input100 validate-input m-t-85 m-b-35" data-validate="Enter username">
+          <input class="input100" type="text" name="username"
+                 data-type="default"
+               [(ngModel)]="user.username"
+                required
+               #username='ngModel' [ngClass]="{'is-invalid': f.submitted && username.invalid}">
+          <span class="focus-input100" data-placeholder="Username"></span>
+        </div>
+
+        <div class="wrap-input100 validate-input m-b-50" data-validate="Enter password">
+          <input class="input100" type="password" name="pass"
+                 data-type="default" [(ngModel)]="user.password" value=""
+               required
+               #password='ngModel' [ngClass]="{'is-invalid': f.submitted && password.invalid}">
+          <span class="focus-input100" data-placeholder="Password"></span>
+        </div>
+
+        <div class="container-login100-form-btn">
+          <button class="login100-form-btn" type="submit">
+            Login
+          </button>
+        </div>
+
+        <ul class="login-more p-t-190">
+          <li class="m-b-8">
+            <span class="txt1">
+              Forgot
+            </span>
+
+            <a href="#" class="txt2">
+              Username / Password?
+            </a>
+          </li>
+
+          <li>
+            <span class="txt1">
+              Don’t have an account?
+            </span>
+
+            <a href="#" class="txt2">
+              Sign up
+            </a>
+          </li>
+        </ul>
+      </form>
+    </div>
+  </div>
 </div>
+
+
+<div id="dropDownSelect1"></div>

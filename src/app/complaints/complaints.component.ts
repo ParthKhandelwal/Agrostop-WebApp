@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import * as Chartist from 'chartist';
 
 @Component({
   selector: 'app-complaints',
@@ -8,8 +9,6 @@ import { Component, OnInit } from '@angular/core';
 export class ComplaintsComponent implements OnInit {
 
   constructor() { }
-
   ngOnInit() {
   }
-
 }

@@ -1,0 +1,237 @@
+
+  <div style="padding-left :30px; padding-top: 10px; padding-right:30px;">
+    <div style="float: left;"><td><h6>Total : {{totalAmount}} </h6></td></div>
+    <div style="float:right;"><td><h6>Balance : {{totalAmount - paymentReserved}}</h6></td></div>
+  </div>
+
+      <div class="bg-white rounded-lg shadow-sm p-5">
+        
+        <!-- Payment form tabs -->
+        <ul role="tablist" class="nav bg-light nav-pills rounded-pill nav-fill mb-3">
+          <li class="nav-item">
+            <a data-toggle="pill" (click) ="setCashPayment()" class="nav-link active rounded-pill">
+              <i class="fa fa-money"></i>
+              Cash
+            </a>
+          </li>
+          <li class="nav-item">
+            <a data-toggle="pill" class="nav-link rounded-pill" (click)="payOnAccount()">
+              <i class="fa fa-credit-card"></i>
+              On Account
+            </a>
+          </li>
+          <li class="nav-item">
+            <a data-toggle="pill"  class="nav-link rounded-pill" (click)=" setToFalse(); onlinePayment = true">
+              <i class="fa fa-globe"></i>
+              Online
+            </a>
+          </li>
+          <li class="nav-item">
+            <a data-toggle="pill" class="nav-link rounded-pill" (click)="setToFalse(); bankTransfer = true">
+              <i class="fa fa-university"></i>
+              Bank Transfer
+            </a>
+          </li>
+        </ul>
+        <!-- End -->
+        <!-- Credit card form content -->
+        <div class="tab-content">
+          <form role="form">
+
+            <!-- cash info-->
+
+            <div id="nav-tab-cash" class="tab-pane fade show active" *ngIf ="cashPayment">
+              <p class="alert alert-success">Proceed Transaction</p>
+
+              <div class="form-group">
+                <label for="username">Amount to be paid in cash</label>
+                <input type="number" name="cashPayment"  max="totalAmount - paymentReserved" [(ngModel)]="toBePayedInCash" class="form-control">
+              </div>
+              <div class="form-group">
+                <label for="username">Cash amount recieved</label>
+                <input type="number" #cashRecievedRef
+                        (keydown.enter) =" validateCashSelection($event);false"
+                       name= "cashRecieved" [(ngModel)]="voucher.POSCASHRECEIVED
+                       " placeholder="Enter amount (in Rs.)" class="form-control">
+              </div>
+              <div class="form-group">
+                <label for="username">Cash Tendered:</label>
+                <label name="cashTendered"><h5>  {{voucher.POSCASHRECEIVED - toBePayedInCash}}</h5></label>
+              </div>
+
+
+            </div>
+
+            <!-- credit card info-->
+
+
+
+            <div id="nav-tab-card" *ngIf ="onAccount" class="tab-pane fade show active">
+              <p class="alert alert-success">Proceed Transaction</p>
+
+              <div>
+                <div class="form-group">
+                  <label for="username">Enter Amount</label>
+                  <input type="number" #onAccountAmount
+                         name="ledgerAmount"
+                         class="form-control"
+                         (key.enter)="selectLedgerOnAccount();false "
+                         [(ngModel)]="toBePayedByGift">
+                </div>
+                <div class="form-group">
+                  <mat-form-field class="example-full-width">
+                    <input type="text"
+                           
+                           (keyup.enter)="update();false"
+                           placeholder="Select an account..."
+                           aria-label="ledgerAccount"
+                           matInput
+                           [formControl]="ledgerControl"
+                           [matAutocomplete]="autoLed"
+                           [(ngModel)]="ledger"
+                           style="width:100% !important">
+                    <mat-autocomplete #ledgerSelection 
+                                      autoActiveFirstOption [panelWidth]="500"
+                                      #autoLed="matAutocomplete"
+                                      (optionSelected)='validateOnAccountSelection($event)'
+                                      [displayWith]="displayFnLedger">
+                      <mat-option *ngFor="let option of filteredOptions | async" [value]="option">
+                        <th scope="row">
+                          <div class="p-2">
+                            <div class="ml-3 d-inline-block align-middle">
+                              <h6 class="mb-0 font-weight-bold">{{option._NAME}}</h6>
+                            </div>
+                          </div>
+                        </th>
+
+                      </mat-option>
+                    </mat-autocomplete>
+                  </mat-form-field>
+                </div>
+              </div>
+            </div>
+
+
+            <!-- End -->
+            <!-- Paypal info -->
+            <div id="nav-tab-paypal" class="tab-pane fade" *ngIf =" onlinePayment">
+              <p>Paypal is easiest way to pay online</p>
+              <p>
+                <button type="button" class="btn btn-primary rounded-pill"><i class="fa fa-paypal mr-2"></i> Log into my Paypal</button>
+              </p>
+              <p class="text-muted">
+                Please proceed for payment on Paypal.
+              </p>
+            </div>
+            <!-- End -->
+            <!-- bank transfer info -->
+            <div id="nav-tab-bank" class="tab-pane fade" *ngIf ="bankTransfer">
+              <h6>Bank account details</h6>
+              <dl>
+                <dt>Bank</dt>
+                <dd> Bank of India</dd>
+              </dl>
+              <dl>
+                <dt>Account number</dt>
+                <dd>7775877975</dd>
+              </dl>
+              <dl>
+                <dt>IBAN</dt>
+                <dd>CZ7775877975656</dd>
+              </dl>
+              <div class="form-group">
+                <label for="username">Enter Amount</label>
+                <input type="number" name="ledgerAmount" class="form-control" [(ngModel)]="toBePayedByBank">
+              </div>
+              <div class="form-group" *ngIf="toBePayedByBank != 0">
+                <mat-form-field class="example-full-width">
+                  <input type="text"
+                         (keyup.enter)="update()"
+                         placeholder="Select an account..."
+                         aria-label="bankLedgerAccount"
+                         matInput
+                         [formControl]="bankLedgerControl"
+                         [matAutocomplete]="auto"
+                         [(ngModel)]="bankLedger"
+                         style="width:100% !important">
+                  <mat-autocomplete autoActiveFirstOption [panelWidth]="500"
+                                    #auto="matAutocomplete"
+                                    (optionSelected)='bankLedger = $event.option.value'
+                                    [displayWith]="displayFnLedger">
+                    <mat-option *ngFor="let option of bankFilteredOptions | async" [value]="option">
+                      <th scope="row">
+                        <div class="p-2">
+                          <div class="ml-3 d-inline-block align-middle">
+                            <h6 class="mb-0 font-weight-bold">{{option._NAME}}</h6>
+                          </div>
+                        </div>
+                      </th>
+
+                    </mat-option>
+                  </mat-autocomplete>
+                </mat-form-field>
+              </div>
+            </div>
+            <!-- End -->
+            <!-- Cash info-->
+
+
+            <button type="button" (disabled)="totalAmount != paymentReserved" (click)="validate()" class="subscribe btn btn-primary btn-block rounded-pill shadow-sm"> Confirm  </button>
+
+          </form>
+        </div>
+       </div>
+        <!-- End -->
+
+  
+  
+
+
+
+      <!--CREDIT CARD-->
+      <!--div-- id="nav-tab-card" class="tab-pane fade show active">
+        <p class="alert alert-success">Some text success or error</p>
+        <form role="form">
+          <div class="form-group">
+            <label for="username">Full name (on the card)</label>
+            <input type="text" name="username" placeholder="Jason Doe" required class="form-control">
+          </div>
+          <div class="form-group">
+            <label for="cardNumber">Card number</label>
+            <div class="input-group">
+              <input type="text" name="cardNumber" placeholder="Your card number" class="form-control" required>
+              <div class="input-group-append">
+                <span class="input-group-text text-muted">
+                  <i class="fa fa-cc-visa mx-1"></i>
+                  <i class="fa fa-cc-amex mx-1"></i>
+                  <i class="fa fa-cc-mastercard mx-1"></i>
+                </span>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-sm-8">
+              <div class="form-group">
+                <label><span class="hidden-xs">Expiration</span></label>
+                <div class="input-group">
+                  <input type="number" placeholder="MM" name="" class="form-control" required>
+                  <input type="number" placeholder="YY" name="" class="form-control" required>
+                </div>
+              </div>
+            </div>
+            <div class="col-sm-4">
+              <div class="form-group mb-4">
+                <label data-toggle="tooltip" title="Three-digits code on the back of your card">
+                  CVV
+                  <i class="fa fa-question-circle"></i>
+                </label>
+                <input type="text" required class="form-control">
+              </div>
+            </div>
+
+
+
+          </div>
+          <button type="button" class="subscribe btn btn-primary btn-block rounded-pill shadow-sm"> Confirm  </button>
+        </form>
+      </!--div-->

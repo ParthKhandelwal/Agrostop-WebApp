@@ -2,6 +2,7 @@ import { Component, OnInit, Inject, Input } from '@angular/core';
 import { TallyVoucher } from '../../Model/tally-voucher';
 import { Customer } from '../../Model/customer';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
+import { VOUCHER } from '../../Model/voucher';
 
 @Component({
   selector: 'app-invoice-print-view',
@@ -10,7 +11,7 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 })
 export class InvoicePrintViewComponent implements OnInit {
 
-  @Input('tallyVoucher') tallyVoucher: TallyVoucher;
+  @Input('tallyVoucher') voucher: VOUCHER;
   @Input('customer') customer: Customer;
   uniqueHSN: PrintTaxItem[] = [];
   printing: boolean = false;
@@ -23,8 +24,8 @@ export class InvoicePrintViewComponent implements OnInit {
   }
 
   hsnDetails(): PrintTaxItem[]{
-    let uniqueHSN:PrintTaxItem[] = [];
-    const items = this.tallyVoucher.billedStockItems.map(a => a.hsnCode);
+    let uniqueHSN: PrintTaxItem[] = [];
+    const items = this.voucher.ALLINVENTORYENTRIES_LIST.map(a => a.HSNCODE);
     const unique = Array.from(new Set(items))
 
 
@@ -32,11 +33,11 @@ export class InvoicePrintViewComponent implements OnInit {
       var totalTaxableValue: number = 0;
       var cgst;
       var sgst;
-    for (let item of this.tallyVoucher.billedStockItems){
-      if (item.hsnCode == code){
-        totalTaxableValue = totalTaxableValue + item.amount;
-        cgst = item.cgst;
-        sgst = item.sgst;
+      for (let item of this.voucher.ALLINVENTORYENTRIES_LIST) {
+        if (item.HSNCODE == code) {
+          totalTaxableValue = totalTaxableValue + item.AMOUNT;
+          cgst = item.calculateCGST;
+          sgst = item.calculateSGST;
       }
     }
     uniqueHSN.push({hsnCode: code, taxableValue: totalTaxableValue, cgst: {rate: cgst, amount: (totalTaxableValue * cgst)/100}, sgst: {rate: sgst, amount: (totalTaxableValue * sgst)/100} })

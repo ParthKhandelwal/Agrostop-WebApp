@@ -6,7 +6,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { User } from '../Model/user';
 import { CookieService } from 'ngx-cookie-service';
-import { StockItem } from '../Model/stock-item';
+import { StockItem, PriceListItem, UpdateStockItemData } from '../Model/stock-item';
 import { TallyVoucher } from '../Model/tally-voucher';
 import { UserLogin, Response } from '../login-form/login-form.component';
 import { TaxDetails } from '../Model/tax-details';
@@ -17,6 +17,9 @@ import { TaxDetails } from '../Model/tax-details';
   providedIn: 'root'
 })
 export class ApiService {
+  getLedger(ledgerEntry: string): Observable<any> {
+    return this.httpClient.get<any>(this.BASE_URL + 'ledger/?id=' + ledgerEntry);
+    }
 
   //public WEB_SOCKET_URL = "https://agrostop-web-server.herokuapp.com"
   //private BASE_URL = "https://agrostop-web-server.herokuapp.com/api/";
@@ -41,6 +44,10 @@ export class ApiService {
     return this.httpClient.get<Customer>(this.BASE_URL + 'customer/?id=' + id);
   }
 
+  getStockItem(id: string, godown: string): Observable<any> {
+    return this.httpClient.get<any>(this.BASE_URL + 'stockItem/?id=' + id + "&godownName=" + godown);
+  }
+
   addCustomer(customer: Customer): Observable<any> {
     return this.httpClient.post<any>(this.BASE_URL + 'customer/create', customer);
   }
@@ -61,22 +68,22 @@ export class ApiService {
   }
 
   getAllStockItems(): Observable<any> {
-    return this.httpClient.get<StockItem[]>(this.BASE_URL + 'stockitem/getAll');
+    return this.httpClient.get<StockItem[]>(this.BASE_URL + 'stockItem/getAll');
   }
 
-  getAllStockItemsForBilling(): Observable<any> {
-    return this.httpClient.get<StockItem[]>(this.BASE_URL + 'stockItem/getStockItemListForBilling');
+  getAllStockItemsForBilling(godownName: string): Observable<any> {
+    return this.httpClient.get<StockItem[]>(this.BASE_URL + 'stockItem/getStockItemListForBilling?godownName=' + godownName);
   }
 
   getNearExpiryBatches(daysRemaining: Number): Observable<any> {
-    return this.httpClient.get(this.BASE_URL + 'stockitem/nearExpiryBatches?daysRemaining=' + daysRemaining);
+    return this.httpClient.get(this.BASE_URL + 'stockItem/nearExpiryBatches?daysRemaining=' + daysRemaining);
   }
 
   getCustomerHistory(id: any): Observable<any> {
     return this.httpClient.post(this.BASE_URL + 'customer/getCustomerHistory', id);
   }
 
-  saveTallyVoucher(tallyVoucher: TallyVoucher): Observable<any> {
+  saveTallyVoucher(tallyVoucher: VOUCHER): Observable<any> {
     return this.httpClient.post(this.BASE_URL + 'voucher/saveVoucher', tallyVoucher)
   }
 
@@ -95,6 +102,15 @@ export class ApiService {
     return this.httpClient.get(this.BASE_URL + 'godown/getNames');
   }
 
+  getPriceList(item: string): Observable<any> {
+    return this.httpClient.get(this.BASE_URL + 'stockItem/getPriceList?itemName='+item);
+  }
+
+  savePriceList(item: string, priceList: UpdateStockItemData): Observable<any> {
+    return this.httpClient.post(this.BASE_URL + 'stockItem/savePriceList?itemName=' + item
+      , JSON.parse(JSON.stringify(priceList)));
+  }
+
   saveUser(user: User): Observable<any> {
     return this.httpClient.post(this.BASE_URL + 'user/create', JSON.parse(JSON.stringify(user)));
   }
@@ -107,6 +123,9 @@ export class ApiService {
     return this.httpClient.get(this.BASE_URL + 'user/' + userName);
   }
 
+  getPOSUser(): Observable<any> {
+    return this.httpClient.get(this.BASE_URL + 'user/POSUser');
+  }
 
   getAllAddresses(): Observable<any> {
     return this.httpClient.get(this.BASE_URL + 'address/getAddressesWithDetail')
@@ -140,6 +159,14 @@ export class ApiService {
     return this.httpClient.get(this.BASE_URL + 'taxDetails/getAll');
   }
 
+  getBatch(id: string): Observable<any> {
+    return this.httpClient.get(this.BASE_URL + 'batch/get?batchId=' + id);
+  }
+
+  getTaxDetail(id: string): Observable<any> {
+    return this.httpClient.get(this.BASE_URL + 'taxDetails?id=' + id);
+  }
+
   deleteTaxDetails(data: TaxDetails): Observable<any>{
     return this.httpClient.delete(this.BASE_URL + 'taxDetails/delete?id=' + data.hsnCode);
   }
@@ -148,11 +175,20 @@ export class ApiService {
     return this.httpClient.get(this.BASE_URL + 'user/getAll');
   }
   deleteUser(user: User): Observable<any> {
-    return this.httpClient.delete(this.BASE_URL + 'user/delete/' + user.id);
+    return this.httpClient.delete(this.BASE_URL + 'user/delete/' + user.userName);
+  }
+
+
+  getAddress(id: string): Observable<any> {
+    return this.httpClient.get(this.BASE_URL + 'address?id=' + id);
   }
 
   validUserId(id: string): Observable<any> {
     return this.httpClient.post(this.BASE_URL + 'user/validUsername', id);
+  }
+
+  getLedgerByGroup(id: string): Observable<any> {
+    return this.httpClient.get(this.BASE_URL + 'ledger/byGroup?id='+id);
   }
 
 }

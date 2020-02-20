@@ -3,14 +3,16 @@ import { TallyVoucher } from '../Model/tally-voucher';
 import * as Stomp from 'stompjs';
 import * as SockJS from 'sockjs-client';
 import { ApiService } from './api.service';
+import { VOUCHER } from '../Model/voucher';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class VoucherService {
 
-  tallyVoucher: TallyVoucher;
-  vouchers : TallyVoucher[] = [];
+  voucher: VOUCHER;
+  vouchers : VOUCHER[] = [];
 
   constructor(private apiService?:ApiService) {
     this.initializeWebSocketConnection();
@@ -18,27 +20,46 @@ export class VoucherService {
   private serverUrl = this.apiService.WEB_SOCKET_URL + '/voucherSocket';
   private title = 'WebSockets chat';
   private stompClient;
+  
 
 
 
-  initializeWebSocketConnection(){
+  initializeWebSocketConnection() {
+    this.apiService.getVouchers(new Date(), new Date()).subscribe(
+      res => {
+        this.vouchers = res;
+
+      },
+      err => {
+        console.log(err);
+      }
+    )
+
+    
+
       let ws = new SockJS(this.serverUrl);
       this.stompClient = Stomp.over(ws);
-      let that = this;
+      const that = this;
       this.stompClient.connect({}, function(frame) {
-        that.stompClient.subscribe("/voucherSocket", (message) => {
-          console.log(that.vouchers);
-          if(message.body) {
-            that.vouchers.push(JSON.parse(message.body));
-            console.log(message.body);
+        that.stompClient.subscribe("/topic/voucher", (message) => {
+          if (message.body) {
+            that.addVoucher(JSON.parse(JSON.stringify(message.body)));
           }
         });
       });
-    }
+    
+   }
+  
+
+  addVoucher(voucher: any) {
+    
+    this.vouchers.push(JSON.parse(voucher));
+   
+  }
 
     sendVoucher(voucher){
-      console.log(JSON.stringify(voucher));
-    this.stompClient.send("/app/voucher/save" , {}, JSON.stringify(voucher));
+      this.stompClient.send("/app/voucherSocket", {}, JSON.stringify(voucher));
+       
     }
 
 }

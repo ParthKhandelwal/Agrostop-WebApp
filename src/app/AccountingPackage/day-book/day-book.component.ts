@@ -1,9 +1,11 @@
-import { Component, OnInit, Inject, ViewChild } from '@angular/core';
-import { VOUCHER } from '../../Model/voucher';
+import { Component, OnInit, Inject, ViewChild, Input } from '@angular/core';
+import { VOUCHER, LEDGERENTRIESLIST, ALLINVENTORYENTRIESLIST } from '../../Model/voucher';
 import { ApiService } from '../../shared/api.service';
 import { VoucherTableComponent } from '../../tables/voucher-table/voucher-table.component';
 import { TallyVoucher } from '../../Model/tally-voucher';
 import { VoucherService } from '../../shared/voucher.service';
+import { Observable } from 'rxjs';
+import { Router } from '@angular/router';
 
 
 @Component({
@@ -12,26 +14,33 @@ import { VoucherService } from '../../shared/voucher.service';
   styleUrls: ['./day-book.component.css']
 })
 export class DayBookComponent implements OnInit {
-  vouchers: TallyVoucher[] = [];
-    @ViewChild(VoucherTableComponent, {static: false}) table: VoucherTableComponent;
-    constructor(private apiService?: ApiService, public voucherService?: VoucherService) { }
+  showDetails: boolean = false;
 
-    ngOnInit() {
-      this.getCurrentVoucher();
+  @ViewChild(VoucherTableComponent, { static: false }) table: VoucherTableComponent;
+  constructor(private apiService?: ApiService, public voucherService?: VoucherService, private router?: Router) { }
+
+  ngOnInit() {
+
+  }
+
+
+
+  getTotal(voucher: VOUCHER): number {
+    var total = 0;
+    for (let item of voucher.LEDGERENTRIES_LIST) {
+      total = total + item.AMOUNT;
     }
+    return total;
+  }
 
-    public getCurrentVoucher(): void{
-      this.apiService.getVouchers(new Date(), new Date()).subscribe(
-        res =>{
-        this.voucherService.vouchers = res;
-        this.table.renderRows(this.voucherService.vouchers);
-        console.log("got all vouchers");
-      },
-      err =>{
-        alert("An error has ocurred while sending your request");
-      }
-      );
+  edit(voucher: VOUCHER) {
+    var tempVoucher: VOUCHER = new VOUCHER();
+    tempVoucher = Object.assign(tempVoucher, voucher);
+    for (let item in voucher.ALLINVENTORYENTRIES_LIST) {
+      var inventoryEntry: ALLINVENTORYENTRIESLIST = new ALLINVENTORYENTRIESLIST()
+      tempVoucher.addInventoryEntry(Object.assign(tempVoucher, voucher))
     }
-
-
+    this.voucherService.voucher = tempVoucher;
+    this.router.navigate(["/sales/create-sales-voucher"]);
+  }
 }
