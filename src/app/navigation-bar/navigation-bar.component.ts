@@ -11,7 +11,7 @@ import { AuthenticationService } from '../shared/authentication.service';
   styleUrls: ['./navigation-bar.component.css']
 })
 export class NavigationBarComponent implements OnInit {
-  
+  url: string;
 
   currentUser: User;
 
@@ -23,6 +23,7 @@ export class NavigationBarComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.url = "";
   }
 
   get isAdmin() {
