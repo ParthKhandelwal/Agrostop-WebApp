@@ -9,9 +9,7 @@
   <div>
  
       
-    <div class="ml-3 d-inline-block align-middle" style="float:left;">
-      <h6 class="mb-0 font-weight-bold"> {{productName}}</h6>
-    </div>
+    
 
 
 
@@ -46,7 +44,7 @@
 
     <div *ngIf ="showBatchDropDown" style="display:inline-block; float: left; padding-left: 20px;">
       <div class="ml-3 d-inline-block align-middle" style="float: right;">
-        <h6 class="mb-0 font-weight-bold"> {{productName}}</h6>
+        <h6 class="mb-0 font-weight-bold"> {{item.name}}</h6>
       </div>
       <div *ngIf =" product != null">
         <mat-form-field>

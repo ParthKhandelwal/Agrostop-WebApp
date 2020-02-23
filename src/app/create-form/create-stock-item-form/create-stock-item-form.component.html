@@ -66,14 +66,14 @@
         <tr>
           <td>
             <mat-form-field class="input">
-              <mat-select name='godownName' placeholder='Select a Tax Category' [(ngModel)]="rateDetail.GSTRATEDUTYHEAD">
-                <mat-option *ngFor="let name of taxList" [value]='name.GSTRATEDUTYHEAD'>{{name.GSTRATEDUTYHEAD}}</mat-option>
+              <mat-select name='godownName' placeholder='Select a Tax Category' [(ngModel)]="rateDetail.gSTRATEDUTYHEAD">
+                <mat-option *ngFor="let name of taxList" [value]='name.gSTRATEDUTYHEAD'>{{name.gSTRATEDUTYHEAD}}</mat-option>
               </mat-select>
             </mat-form-field>
           </td>
           <td>
             <mat-form-field>
-              <input matInput type="number" name="price" [(ngModel)]='rateDetail.TAX' required placeholder="Enter Tax">
+              <input matInput type="number" name="price" [(ngModel)]='rateDetail.taxPercentage' required placeholder="Enter Tax">
             </mat-form-field>
           </td>
           <td>

@@ -34,7 +34,7 @@ export class CreateVoucherComponent implements OnInit {
   voucher: VOUCHER
   @Input("editMode") editMode: boolean = false;
 
-  constructor(private voucherService?: VoucherService) {
+  constructor(public voucherService?: VoucherService) {
 
   }
 
