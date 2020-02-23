@@ -24,7 +24,7 @@ import { RateDetail } from './stock-item';
 export class ADDRESSLIST {
         ADDRESS: string;
   _TYPE: string;
-  STATENAME: string;
+
 
   constructor(addressName: string, addressTehsilName: string, addressDistrictName: string, addressStateName: string) {
     this.ADDRESS = addressName + " ," + addressTehsilName + " ," + addressDistrictName + " ," + addressStateName;
@@ -39,73 +39,78 @@ export class OLDAUDITENTRYIDSLIST {
     }
 
 export class LEDGERENTRIESLIST {
-        OLDAUDITENTRYIDS_LIST: OLDAUDITENTRYIDSLIST;
-        ROUNDTYPE: string;
-        LEDGERNAME: string;
-        METHODTYPE: string;
-        GSTCLASS: string;
-        ISDEEMEDPOSITIVE: string;
-        LEDGERFROMITEM: string;
-        REMOVEZEROENTRIES: string;
-        ISPARTYLEDGER: string;
-        ISLASTDEEMEDPOSITIVE: string;
-        ISCAPVATTAXALTERED: string;
-        ISCAPVATNOTCLAIMED: string;
-        AMOUNT: number;
-        VATEXPAMOUNT: number;
-        SERVICETAXDETAILS_LIST: string;
-        BANKALLOCATIONS_LIST: string;
-        BILLALLOCATIONS_LIST: string;
-        INTERESTCOLLECTION_LIST: string;
-        OLDAUDITENTRIES_LIST: string;
-        ACCOUNTAUDITENTRIES_LIST: string;
-        AUDITENTRIES_LIST: string;
-        INPUTCRALLOCS_LIST: string;
-        DUTYHEADDETAILS_LIST: string;
-        EXCISEDUTYHEADDETAILS_LIST: string;
-        RATEDETAILS_LIST: string;
-        SUMMARYALLOCS_LIST: string;
-        STPYMTDETAILS_LIST: string;
-        EXCISEPAYMENTALLOCATIONS_LIST: string;
-        TAXBILLALLOCATIONS_LIST: string;
-        TAXOBJECTALLOCATIONS_LIST: string;
-        TDSEXPENSEALLOCATIONS_LIST: string;
-        VATSTATUTORYDETAILS_LIST: string;
-        COSTTRACKALLOCATIONS_LIST: string;
-        REFVOUCHERDETAILS_LIST: string;
-        INVOICEWISEDETAILS_LIST: string;
-        VATITCDETAILS_LIST: string;
-        ADVANCETAXDETAILS_LIST: string;
-        ROUNDLIMIT: number;
+  OLDAUDITENTRYIDS_LIST: OLDAUDITENTRYIDSLIST;
+  ROUNDTYPE: string;
+  LEDGERNAME: string;
+  METHODTYPE: string;
+  GSTCLASS: string;
+  ISDEEMEDPOSITIVE: string;
+  LEDGERFROMITEM: string;
+  REMOVEZEROENTRIES: string;
+  ISPARTYLEDGER: string;
+  ISLASTDEEMEDPOSITIVE: string;
+  ISCAPVATTAXALTERED: string;
+  ISCAPVATNOTCLAIMED: string;
+  AMOUNT: number;
+  VATEXPAMOUNT: number;
+  SERVICETAXDETAILS_LIST: string;
+  BANKALLOCATIONS_LIST: string;
+  BILLALLOCATIONS_LIST: string;
+  INTERESTCOLLECTION_LIST: string;
+  OLDAUDITENTRIES_LIST: string;
+  ACCOUNTAUDITENTRIES_LIST: string;
+  AUDITENTRIES_LIST: string;
+  INPUTCRALLOCS_LIST: string;
+  DUTYHEADDETAILS_LIST: string;
+  EXCISEDUTYHEADDETAILS_LIST: string;
+  RATEDETAILS_LIST: string;
+  SUMMARYALLOCS_LIST: string;
+  STPYMTDETAILS_LIST: string;
+  EXCISEPAYMENTALLOCATIONS_LIST: string;
+  TAXBILLALLOCATIONS_LIST: string;
+  TAXOBJECTALLOCATIONS_LIST: string;
+  TDSEXPENSEALLOCATIONS_LIST: string;
+  VATSTATUTORYDETAILS_LIST: string;
+  COSTTRACKALLOCATIONS_LIST: string;
+  REFVOUCHERDETAILS_LIST: string;
+  INVOICEWISEDETAILS_LIST: string;
+  VATITCDETAILS_LIST: string;
+  ADVANCETAXDETAILS_LIST: string;
+  ROUNDLIMIT: number;
   POSPAYMENTTYPE: string;
 
-  constructor(res: any, ledgerType: string, amount: number) {
-        console.log(res);
-        this.LEDGERNAME = res._NAME;
-        if (ledgerType == "GST") {
-          // GST Functionality
-          this.ISDEEMEDPOSITIVE = "No";
-          this.ISPARTYLEDGER = "No";
-          this.METHODTYPE = res.METHODTYPE;
-          this.VATEXPAMOUNT = amount;
+  constructor() {
 
-        } else if (ledgerType == "Cash-in-hand") {
-          //Cash-in-hand functionality
-          this.POSPAYMENTTYPE = "Cash";
-          this.ISDEEMEDPOSITIVE = "Yes";
-          this.ISPARTYLEDGER = "Yes";
-          this.ISLASTDEEMEDPOSITIVE = "Yes";
+  }
 
-        } else if (ledgerType == "Round Off") {
-          this.ROUNDTYPE = "Normal Rounding";
-          this.METHODTYPE = "As Total Amount Rounding";
-          this.ISDEEMEDPOSITIVE = "No";
-          this.ROUNDLIMIT = 1;
-          this.VATEXPAMOUNT = amount;
-        }
+  public set(res: any, ledgerType: string, amount: number) {
+    console.log(res);
+    this.LEDGERNAME = res._NAME;
+    if (ledgerType == "GST") {
+      // GST Functionality
+      this.ISDEEMEDPOSITIVE = "No";
+      this.ISPARTYLEDGER = "No";
+      this.METHODTYPE = res.METHODTYPE;
+      this.VATEXPAMOUNT = amount;
+
+    } else if (ledgerType == "Cash-in-hand") {
+      //Cash-in-hand functionality
+      this.POSPAYMENTTYPE = "Cash";
+      this.ISDEEMEDPOSITIVE = "Yes";
+      this.ISPARTYLEDGER = "Yes";
+      this.ISLASTDEEMEDPOSITIVE = "Yes";
+
+    } else if (ledgerType == "Round Off") {
+      this.ROUNDTYPE = "Normal Rounding";
+      this.METHODTYPE = "As Total Amount Rounding";
+      this.ISDEEMEDPOSITIVE = "No";
+      this.ROUNDLIMIT = 1;
+      this.VATEXPAMOUNT = amount;
+    }
     this.AMOUNT = amount;
   }
-    }
+
+}
 
 export class EXPIRYPERIOD {
         _JD: string;
@@ -134,15 +139,18 @@ export class EXPIRYPERIOD {
         ADDITIONALDETAILS_LIST: string;
       VOUCHERCOMPONENTLIST_LIST: string;
 
-      constructor(batchId: Batch, godown: string, private apiService?: ApiService) {
-        this.GODOWNNAME = godown;
-        this.BATCHNAME = batchId.name;
-        this.EXPIRYPERIOD = new EXPIRYPERIOD(batchId.expiryDate);
-
+      constructor() {
+      
          
       }
 
-      set expiryDate(expiryDate: Date) {
+      public set(batchId: Batch, godown: string) {
+        this.GODOWNNAME = godown;
+        this.BATCHNAME = batchId.name;
+        this.EXPIRYPERIOD = new EXPIRYPERIOD(batchId.expiryDate);
+      }
+
+      setexpiryDate(expiryDate: Date) {
         
       }
 
@@ -203,10 +211,6 @@ export class ACCOUNTINGALLOCATIONSLIST {
 
     export class ALLINVENTORYENTRIESLIST {
       STOCKITEMNAME: string;
-      STOCKITEMPARENT: string;
-      STOCKITEMCATEGORY: string;
-      TAXDETAILS: RateDetail[];
-      BASEUNITS: string;
         ISDEEMEDPOSITIVE: string;
         ISLASTDEEMEDPOSITIVE: string;
         ISAUTONEGATE: string;
@@ -227,67 +231,67 @@ export class ACCOUNTINGALLOCATIONSLIST {
         REFVOUCHERDETAILS_LIST: string;
         EXCISEALLOCATIONS_LIST: string;
       EXPENSEALLOCATIONS_LIST: string;
-      HSNCODE: string
 
-      constructor(res: any, batchId: Batch, qty: number, godown: string) {
-        this.HSNCODE = res.gSTDETAILSLIST.hSNCODE;
-        this.TAXDETAILS = res.gSTDETAILSLIST.sTATEWISEDETAILSLIST.rATEDETAILSLIST;
+
+      constructor() {
+      }
+
+      public set(res: any, batchId: Batch, qty: number, godown: string) {
         this.STOCKITEMNAME = res._id;
-            this.ISDEEMEDPOSITIVE = "No";
-            this.ISLASTDEEMEDPOSITIVE = "No";
-            this.ISAUTONEGATE = "No";
-            this.ISCUSTOMSCLEARANCE = "No";
-            this.ISSCRAP = "No";
-            this.ISTRACKCOMPONENT = "No";
-            this.ISTRACKPRODUCTION = "No"
-            this.ISPRIMARYITEM = "No"
-            this.STOCKITEMCATEGORY = res.cATEGORY;
-            this.STOCKITEMPARENT = res.pARENT;
-            this.BILLEDQTY = qty;
-            this.ACTUALQTY = qty;
+        this.ISDEEMEDPOSITIVE = "No";
+        this.ISLASTDEEMEDPOSITIVE = "No";
+        this.ISAUTONEGATE = "No";
+        this.ISCUSTOMSCLEARANCE = "No";
+        this.ISSCRAP = "No";
+        this.ISTRACKCOMPONENT = "No";
+        this.ISTRACKPRODUCTION = "No"
+        this.ISPRIMARYITEM = "No"
+        this.BILLEDQTY = qty;
+        this.ACTUALQTY = qty;
         for (let item of res.fULLPRICELISTLIST) {
           if (item.godownName == godown) {
             this.RATE = item.price;
             break;
           }
         }
-            
-            this.AMOUNT = this.RATE * qty;
-            this.BATCHALLOCATIONS_LIST = new BATCHALLOCATIONSLIST(batchId, godown);
-            this.ACCOUNTINGALLOCATIONS_LIST = new ACCOUNTINGALLOCATIONSLIST();
-            this.ACCOUNTINGALLOCATIONS_LIST.LEDGERNAME = res.sALESLISTLIST.NAME;
-            this.ACCOUNTINGALLOCATIONS_LIST.CLASSRATE = res.sALESLISTLIST.CLASSRATE;
-            this.ACCOUNTINGALLOCATIONS_LIST.LEDGERFROMITEM = res.sALESLISTLIST.LEDGERFROMITEM;
-            this.ACCOUNTINGALLOCATIONS_LIST.GSTOVRDNNATURE = res.sALESLISTLIST.STCLASSIFICATIONNATURE;
-            this.ACCOUNTINGALLOCATIONS_LIST.REMOVEZEROENTRIES = res.sALESLISTLIST.rEMOVEZEROENTRIES;
-            this.ACCOUNTINGALLOCATIONS_LIST.AMOUNT = this.AMOUNT;
-           
+
+        this.AMOUNT = this.RATE * qty;
+        var batch: BATCHALLOCATIONSLIST = new BATCHALLOCATIONSLIST()
+        batch.set(batchId, godown);
+        this.BATCHALLOCATIONS_LIST = batch;
+        this.ACCOUNTINGALLOCATIONS_LIST = new ACCOUNTINGALLOCATIONSLIST();
+        this.ACCOUNTINGALLOCATIONS_LIST.LEDGERNAME = res.sALESLISTLIST.nAME;
+        this.ACCOUNTINGALLOCATIONS_LIST.CLASSRATE = res.sALESLISTLIST.cLASSRATE;
+        this.ACCOUNTINGALLOCATIONS_LIST.LEDGERFROMITEM = res.sALESLISTLIST.lEDGERFROMITEM;
+        this.ACCOUNTINGALLOCATIONS_LIST.GSTOVRDNNATURE = res.sALESLISTLIST.sTCLASSIFICATIONNATURE;
+        this.ACCOUNTINGALLOCATIONS_LIST.REMOVEZEROENTRIES = res.sALESLISTLIST.rEMOVEZEROENTRIES;
+        this.ACCOUNTINGALLOCATIONS_LIST.AMOUNT = this.AMOUNT;
       }
 
-      getAmount(): number {
-        console.log(this.AMOUNT)
+      public getAmount(): number {
         return this.AMOUNT;
       }
 
-      calculateCGST(): number {
-        for (let item of this.TAXDETAILS) {
+      public calculateCGST(res: any): number {
+        for (let item of res.gSTDETAILSLIST.sTATEWISEDETAILSLIST.rATEDETAILSLIST) {
           if (item.gSTRATEDUTYHEAD == "Central Tax") {
             return this.AMOUNT * item.taxPercentage / 100;
           }
         }
-        return null;
+        return 0;
       }
-      calculateSGST(): number {
-        for (let item of this.TAXDETAILS) {
+
+      public calculateSGST(res:any): number {
+        for (let item of res.gSTDETAILSLIST.sTATEWISEDETAILSLIST.rATEDETAILSLIST) {
           if (item.gSTRATEDUTYHEAD == "State Tax") {
             return this.AMOUNT * item.taxPercentage / 100;
           }
         }
-        return null;
+        return 0;
       }
 
-      calculateIGST(): number {
-        for (let item of this.TAXDETAILS) {
+      public calculateIGST(res:any): number {
+        for (let item of res.gSTDETAILSLIST.sTATEWISEDETAILSLIST.rATEDETAILSLIST) {
           if (item.gSTRATEDUTYHEAD == "Integrated Tax") {
             return this.AMOUNT * item.taxPercentage / 100;
           }
@@ -295,8 +299,8 @@ export class ACCOUNTINGALLOCATIONSLIST {
         return null;
       }
 
-      calculateCess(): number {
-        for (let item of this.TAXDETAILS) {
+      public calculateCess(res:any): number {
+        for (let item of res.gSTDETAILSLIST.sTATEWISEDETAILSLIST.rATEDETAILSLIST) {
           if (item.gSTRATEDUTYHEAD == "Cess") {
             return this.AMOUNT * item.taxPercentage / 100;
           }
@@ -425,29 +429,35 @@ export class VOUCHER {
   _VCHTYPE: string;
   _ACTION: string;
   _OBJVIEW: string;
-  subInventoryTotal: number =0;
-  Total: number;
-  CUSTOMER: any;
-  USER: User;
+
+  userId: string;
+
+
 
 
 
   constructor() {
+    this.POSCASHRECEIVED = 0;
     this.ALLINVENTORYENTRIES_LIST = [];
     this.ALLLEDGERENTRIES_LIST = [];
     this.LEDGERENTRIES_LIST = [];
   }
 
-  setAction(action: string) {
+  public getCustomerId() {
+    let object: any = JSON.parse(this.NARRATION);
+    return object.agrostop.customerId
+  }
+
+  public setAction(action: string) {
     this._ACTION = action;
   }
 
-  setDate(date: Date) {
+  public setDate(date: Date) {
     this.DATE = date;
   }
 
   public setUser(user: User) {
-    this.USER = user;
+    this.userId = user.userName;
     this._VCHTYPE = user.salesVoucherSettings.defaultVoucherType;
     this.CLASSNAME = user.salesVoucherSettings.defaultClass;
     this.POSCASHLEDGER = user.salesVoucherSettings.defaultCashLedger;
@@ -457,17 +467,17 @@ export class VOUCHER {
     this.ENTEREDBY = user.tallyUserName;
   }
 
- 
 
-  setCustomer(customer: any) {
+
+  public setCustomer(customer: any) {
+    this.CUSTOMERID = customer.customerId;
     this.BASICBUYERNAME = customer.name
-    this.CUSTOMER = customer;
-    this.ADDRESS_LIST = new ADDRESSLIST(customer.addressName, customer.addressTehsilName, customer.addressDistrictName,
-    customer.addressStateName);
+      this.ADDRESS_LIST = new ADDRESSLIST(customer.addressName, customer.addressTehsilName, customer.addressDistrictName,
+        customer.addressStateName);
     this.GSTREGISTRATIONTYPE = customer.gSTREGISTRATIONTYPE;
-    this.STATENAME = this.ADDRESS_LIST.STATENAME;
+    this.STATENAME = customer.addressStateName;
   }
-  addLedgerEntry(ledgerEntry: any, ledgerType: string, amount: number) {
+  public addLedgerEntry(ledgerEntry: any, ledgerType: string, amount: number) {
     if (this.LEDGERENTRIES_LIST == null) {
       this.LEDGERENTRIES_LIST = [];
     }
@@ -475,21 +485,57 @@ export class VOUCHER {
       if (item.LEDGERNAME == ledgerEntry._NAME) {
         item.AMOUNT = amount;
         return;
-      } 
+      }
     }
-    this.LEDGERENTRIES_LIST.push(new LEDGERENTRIESLIST(ledgerEntry, ledgerType, amount));
+    var ledger: LEDGERENTRIESLIST = new LEDGERENTRIESLIST()
+    ledger.set(ledgerEntry, ledgerType, amount);
+    this.LEDGERENTRIES_LIST.push(ledger);
   }
 
-  addInventoryEntry(inventoryEntry: any, batchId: Batch, qty: number) {
+  
+
+ 
+
+  public addInventoryEntry(inventoryEntry: any, batchId: Batch, qty: number) {
    
-    var item = new ALLINVENTORYENTRIESLIST(inventoryEntry, batchId, qty, this.PLACEOFSUPPLY);
-   
-    this.subInventoryTotal = this.subInventoryTotal + item.getAmount();
+    var item = new ALLINVENTORYENTRIESLIST();
+    item.set(inventoryEntry, batchId, qty, this.PLACEOFSUPPLY);
     this.ALLINVENTORYENTRIES_LIST.push(item)
+    this.updateTax(inventoryEntry, item, true);
   }
 
+  updateTax(res, item, add: boolean) {
+    this.updateCGST(res, item, add)
+    this.updateSGST(res, item, add)
+  }
 
-  deleteInventoryEntry(inventoryEntry: any) {
+  updateCGST(res, item, add:boolean) {
+    for (let entry of this.LEDGERENTRIES_LIST) {
+      if (entry.LEDGERNAME == "CGST") {
+        if (add) {
+          entry.AMOUNT = entry.AMOUNT + item.calculateCGST(res)
+        } else {
+          entry.AMOUNT = entry.AMOUNT - item.calculateCGST(res)
+        }
+        return;
+      }
+    }
+  }
+
+  updateSGST(res, item, add: boolean) {
+    for (let entry of this.LEDGERENTRIES_LIST) {
+      if (entry.LEDGERNAME == "SGST") {
+        if (add) {
+          entry.AMOUNT = entry.AMOUNT + item.calculateSGST(res)
+        } else {
+          entry.AMOUNT = entry.AMOUNT - item.calculateSGST(res)
+        }
+        return;
+      }
+    }
+  }
+
+  public deleteInventoryEntry(inventoryEntry: any) {
     for (let i = 0; i < this.ALLINVENTORYENTRIES_LIST.length; i++) {
       if (this.ALLINVENTORYENTRIES_LIST[i].STOCKITEMNAME == inventoryEntry.STOCKITEMNAME
         && this.ALLINVENTORYENTRIES_LIST[i].BATCHALLOCATIONS_LIST.BATCHNAME == inventoryEntry.BATCHALLOCATIONS_LIST.BATCHNAME
@@ -498,7 +544,7 @@ export class VOUCHER {
         && this.ALLINVENTORYENTRIES_LIST[i].RATE == inventoryEntry.RATE) {
 
         this.ALLINVENTORYENTRIES_LIST.splice(i, 1);
-        this.subInventoryTotal = this.subInventoryTotal - inventoryEntry.AMOUNT;
+ 
 
       }
 
@@ -506,48 +552,18 @@ export class VOUCHER {
         }
   }
 
-  validatePOSVoucher(cashLedger: any, CGSTLedger: any, SGSTLedger: any) {
-    this.addLedgerEntry(cashLedger, "Cash-in-hand", this.subInventoryTotal);
-    this.addLedgerEntry(CGSTLedger, "GST", this.calculateCGST());
-    this.addLedgerEntry(SGSTLedger, "GST", this.calculateSGST());
-  }
 
-  getTotal(): number{
-    return this.subInventoryTotal + this.calculateTax();
-  }
 
-  save() {
-    
-  }
-  calculateTax(): number{
-    return this.calculateCGST() + this.calculateSGST();
-  }
 
-  calculateCGST(): number {
-    console.log(this.ALLINVENTORYENTRIES_LIST);
-    var total: number = 0;
-    for (var i = 0; i < this.ALLINVENTORYENTRIES_LIST.length; i++) {
-      total = total + this.ALLINVENTORYENTRIES_LIST[i].calculateCGST()
+  public getSubTotal(): number{
+    let total = 0;
+    for (let item of this.ALLINVENTORYENTRIES_LIST) {
+      total = total + item.AMOUNT;
     }
     return total;
   }
 
-  calculateSGST(): number {
-    var total: number = 0;
-    for (var i = 0; i < this.ALLINVENTORYENTRIES_LIST.length; i++) {
-      total = total + this.ALLINVENTORYENTRIES_LIST[i].calculateSGST()
-    }
-    return total;
-  }
-
-  public static copyFrom(voucher: VOUCHER): VOUCHER {
-    let tempVoucher: VOUCHER = new VOUCHER();
-    tempVoucher = Object.assign(tempVoucher, voucher);
-    
-
-
-    return tempVoucher
-  }
+  
 
 }
 

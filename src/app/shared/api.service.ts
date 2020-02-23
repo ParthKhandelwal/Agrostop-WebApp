@@ -32,7 +32,7 @@ export class ApiService {
   }
 
   authenticate(user: UserLogin) {
-    return this.httpClient.post<Response>(this.WEB_SOCKET_URL +'/authenticate', user);
+    return this.httpClient.post<any>(this.WEB_SOCKET_URL +'/authenticate', user);
   }
 
   getCustomers(): Observable<Customer[]> {
@@ -53,14 +53,14 @@ export class ApiService {
   }
 
   deleteCustomer(customer: Customer): Observable<any> {
-    return this.httpClient.delete(this.BASE_URL + 'customer/delete/' + customer.id);
+    return this.httpClient.delete(this.BASE_URL + 'customer/delete/' + customer.customerId);
   }
 
   getCurrentUser(): Observable<any> {
     return this.httpClient.get<User>(this.BASE_URL + 'user/currentUser');
   }
 
-  getVouchers(toDate: Date, fromDate: Date): Observable<any> {
+  getVouchers(toDate: Date, fromDate: Date): Observable<VOUCHER[]> {
     return this.httpClient.get<VOUCHER[]>(this.BASE_URL + 'vouchers?fromDate=' + fromDate + '&toDate=' + toDate);
   }
   getAllVouchers(): Observable<any> {
@@ -79,8 +79,8 @@ export class ApiService {
     return this.httpClient.get(this.BASE_URL + 'stockItem/nearExpiryBatches?daysRemaining=' + daysRemaining);
   }
 
-  getCustomerHistory(id: any): Observable<any> {
-    return this.httpClient.post(this.BASE_URL + 'customer/getCustomerHistory', id);
+  getCustomerHistory(id: string): Observable<any> {
+    return this.httpClient.get(this.BASE_URL + 'customer/getCustomerHistory?id='+ id);
   }
 
   saveTallyVoucher(tallyVoucher: VOUCHER): Observable<any> {

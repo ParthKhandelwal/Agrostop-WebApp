@@ -20,10 +20,11 @@ export class InventorySelectionComponent implements OnInit {
   batch: Batch;
   batches: Batch[] = [];
   productControl = new FormControl();
-  filteredOptions: Observable<Customer[]>;
-  products: any[];
+  filteredOptions: Observable<any[]>;
+
   @Output() valueChanged = new EventEmitter();
   @Input('voucher') voucher: VOUCHER;
+  @Input('productList') products: any[];
 
   @ViewChild('quantityField', { static: false }) quantityRef: ElementRef;
   @ViewChild('invField', { static: false }) productRef: ElementRef;
@@ -34,20 +35,10 @@ export class InventorySelectionComponent implements OnInit {
 
     //Get StockItem for Billing
 
-    this.apiService.getAllStockItemsForBilling(this.voucher.PLACEOFSUPPLY).subscribe(
-      res1 => {
-        this.products = res1;
-        this.filteredOptions = this.productControl.valueChanges.pipe(
-          startWith(''),
-          map(value => this.product_filter(value))
+    this.filteredOptions = this.productControl.valueChanges.pipe(
+      startWith(''),
+      map(value => this.product_filter(value))
 
-        );
-        
-
-      },
-      err1 => {
-        console.log(err1);
-      }
     );
   }
 
@@ -57,9 +48,9 @@ export class InventorySelectionComponent implements OnInit {
   }
 
   selectProduct(value) {
-   
+
     if (value != null) {
-      this.product = Object.assign({}, value);
+      this.product = value;
       this.batches = value.bATCHALLOCATIONS;
       this.showBatchDropDown = true;
       setTimeout(() => {
@@ -81,9 +72,12 @@ export class InventorySelectionComponent implements OnInit {
     console.log(this.batch);
   }
 
+
+
   validateProduct(value) {
     
-      if (this.qty != 0) {
+    if (this.qty != 0) {
+      console.log(this.product);
         this.voucher.addInventoryEntry(this.product, this.batch, value);
         console.log(this.voucher);
         this.batch = null;

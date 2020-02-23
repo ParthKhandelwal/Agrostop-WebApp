@@ -1,8 +1,10 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, EventEmitter, Output } from '@angular/core';
 import { VOUCHER } from '../../Model/voucher';
 import { VoucherService } from '../../shared/voucher.service';
 import { User } from '../../Model/user';
 import { Customer } from '../../Model/customer';
+import { ApiService } from '../../shared/api.service';
+
 
 @Component({
   selector: 'voucher-wizard',
@@ -13,13 +15,61 @@ export class VoucherWizardComponent implements OnInit {
   customerSelection: boolean = false;
   inventorySelection: boolean = false;
   payment: boolean = false;
+  user: User;
+  customerList: Customer[] = [];
+  productList: any[] = [];
 
+  @Output("valueChange") valueChanged = new EventEmitter
+  @Input("editMode") editMode: boolean;
   @Input('voucher') voucher: VOUCHER;
-  constructor(private voucherService?: VoucherService) { }
+  constructor(private voucherService?: VoucherService, private apiService?: ApiService) { }
 
   ngOnInit() {
+ 
     this.voucherService.initializeWebSocketConnection();
-    this.switchCustomer();
+    this.apiService.getPOSUser().subscribe(
+      res => {
+        this.user = res;
+        
+        if (this.editMode) {
+          this.voucher.setAction("Update")
+          
+        } else {
+          this.voucher = new VOUCHER();
+          this.voucher.setCustomer(new Customer());
+          this.voucher.setDate(new Date());
+          this.voucher.setAction("Create")
+        }
+        this.voucher.setUser(res);
+        this.apiService.getAllStockItemsForBilling(this.voucher.PLACEOFSUPPLY).subscribe(
+          res1 => {
+            this.productList = res1;
+
+            this.apiService.getCustomers().subscribe(
+              res2 => {
+                this.customerList = res2;
+
+                this.switchCustomer();
+              },
+              err2 => {
+                console.log(err2);
+              });
+          },
+          err1 => {
+            console.log(err1);
+          }
+        );
+
+        
+
+
+      },
+      err => { }
+    );
+
+    
+
+    
   }
 
   switchInventory() {
@@ -59,12 +109,13 @@ export class VoucherWizardComponent implements OnInit {
   }
 
   save() {
-    console.log(this.voucher);
+
+    this.voucher.NARRATION = "{\"agrostop\" : { \"customerId\":\"" + this.voucher.CUSTOMERID + "\"}}";
     this.voucherService.sendVoucher(this.voucher);
-    const user: User = this.voucher.USER;
+    this.valueChanged.emit("voucherCompleted");
     this.voucher = new VOUCHER()
     this.voucher.setCustomer(new Customer());
-    this.voucher.setUser(user);
+    this.voucher.setUser(this.user);
     this.voucher.setDate(new Date());
     this.switchCustomer();
   }

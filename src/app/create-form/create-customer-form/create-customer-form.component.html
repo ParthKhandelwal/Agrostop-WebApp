@@ -1,46 +1,86 @@
 
+   
+     
+         
+              <div class="card">
+                <div class="card-header card-header-primary">
+                  <h4 class="card-title">Create Customer</h4>
+                  <p class="card-category">Enter basic customer details</p>
+                </div>
+                <div class="card-body">
+                  <form #f='ngForm' (submit)='f.form.valid && submit()'>
 
-<div>
-  <!-- Heading -->
-  <h1 data-type="header" class="display-4 text-center mb-3">Customer Details
-  </h1>
-  <!-- Subheading -->
-  <!-- Form -->
-  <form data-type="default" #f= 'ngForm' (submit)= 'f.form.valid && submit()' name="create-farmer-form" accept-charset="UTF-8" role="form">
+                    <div class="row">
+                      <div class="col-md-6">
+                        <div class="form-group">
+                          <label class="bmd-label-floating">Name</label>
+                          <input type="text" class="form-control" required [(ngModel)]="customer.name">
+                        </div>
+                      </div>
+                      <div class="col-md-6">
+                        <div class="form-group">
+                          <label class="bmd-label-floating">Father's Name</label>
+                          <input type="text" class="form-control" [(ngModel)]="customer.fatherName">
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-5">
+                        <div class="form-group">
+                          <label class="bmd-label-floating">Company (disabled)</label>
+                          <input type="text" class="form-control" disabled [(ngModel)]="customer.gSTREGISTRATIONTYPE" value="Consumer">
+                        </div>
+                      </div>
+                      <div class="col-md-3">
+                        <div class="form-group">
+                          <label class="bmd-label-floating">Land Holding</label>
+                          <input type="text" class="form-control" required [(ngModel)]="customer.landHolding">
+                        </div>
+                      </div>
+                      <div class="col-md-4">
+                        <div class="form-group">
+                          <label class="bmd-label-floating">Email address</label>
+                          <input type="email" class="form-control" disabled>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-12">
+                        <div class="form-group">
+                          <label class="bmd-label-floating">Adress</label>
+                          <select class="form-control" name="address" required [(ngModel)]='customer.addressId'>
+                            <option *ngFor="let address of addresses" [value]="address.id">{{address.name}}, {{address.stateName}}</option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-4">
+                        <div class="form-group">
+                          <label class="bmd-label-floating">Phone Number</label>
+                          <input type="text" class="form-control" [(ngModel)]="customer.phoneNumber">
+                        </div>
+                      </div>
+                      <div class="col-md-4">
+                        <div class="form-group">
+                          <label class="bmd-label-floating">Customer Group</label>
+                          <input type="text" class="form-control" disabled>
+                        </div>
+                      </div>
+                      <div class="col-md-4">
+                        <div class="form-group">
+                          <label class="bmd-label-floating">Aadhar Id</label>
+                          <input type="text" class="form-control" disabled>
+                        </div>
+                      </div>
+                    </div>
 
-  <!-- Email address -->
-	<div data-type="default" class="form-group">
-	  <!-- Label -->
-	  <label>Name<br data-type="default"></label>
-	  <!-- Input -->
-	  <input name= "name" data-type="default" type="text" required placeholder="Enter customer name" class="form-control" required
-   #name= 'ngModel' [ngClass] = "{'is-invalid': f.submitted && name.invalid}" [(ngModel)]= 'customer.name'>
-	</div>
-	<!-- Password -->
-	<div data-type="default" class="form-group">
-		  <label>Father Name</label>
-      <input type="text" name="fatherName" value="" class="form-control" placeholder="Enter father's name" [(ngModel)]= 'customer.fatherName'>
-	</div>
-  <div data-type="default" class="form-group">
-		  <label>Phone Number</label>
-      <input type="phoneNumber" name="phoneNumber" required value="" class="form-control" placeholder="Enter phone number" required
-     #phoneNumber= 'ngModel' [ngClass] = "{'is-invalid': f.submitted && phoneNumber.invalid}" [(ngModel)]='customer.phoneNumber'>
-	</div>
-  <div data-type="default" class="form-group">
-
-		  <label>Address</label>
-      <select class="form-control" name="address" [(ngModel)] = 'customer.addressId'>
-      <option *ngFor="let address of addresses" [value]="address.id">{{address.name}}, {{address.stateName}}</option>
-      </select>
-	</div>
-  <div data-type="default" class="form-group">
-		  <label>Land Holding</label>
-      <input type="number" name="landHolding" value="" class="form-control" placeholder="Enter land amount" [(ngModel)] = 'customer.landHolding'>
-	</div>
-
-	<!-- Submit -->
-	<button class="btn btn-lg btn-block btn-primary mb-3" type="submit" name="button"> Save </button>
-
-
-  </form>
-</div>
+                    <button type="submit" class="btn btn-primary pull-right">Save Customer</button>
+                    <div class="clearfix"></div>
+                  </form>
+                </div>
+                </div>
+              
+            
+          
+   

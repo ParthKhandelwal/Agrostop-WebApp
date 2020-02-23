@@ -25,7 +25,7 @@ export class InvoicePrintViewComponent implements OnInit {
 
   hsnDetails(): PrintTaxItem[]{
     let uniqueHSN: PrintTaxItem[] = [];
-    const items = this.voucher.ALLINVENTORYENTRIES_LIST.map(a => a.HSNCODE);
+    const items = this.voucher.ALLINVENTORYENTRIES_LIST.map(a => a);
     const unique = Array.from(new Set(items))
 
 
@@ -34,13 +34,12 @@ export class InvoicePrintViewComponent implements OnInit {
       var cgst;
       var sgst;
       for (let item of this.voucher.ALLINVENTORYENTRIES_LIST) {
-        if (item.HSNCODE == code) {
+        if (item == code) {
           totalTaxableValue = totalTaxableValue + item.AMOUNT;
           cgst = item.calculateCGST;
           sgst = item.calculateSGST;
       }
     }
-    uniqueHSN.push({hsnCode: code, taxableValue: totalTaxableValue, cgst: {rate: cgst, amount: (totalTaxableValue * cgst)/100}, sgst: {rate: sgst, amount: (totalTaxableValue * sgst)/100} })
 
   }
   return uniqueHSN;

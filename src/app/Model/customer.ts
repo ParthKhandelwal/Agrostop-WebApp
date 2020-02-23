@@ -1,7 +1,7 @@
 import { Address } from './address';
 export class Customer {
-
-    id: string ;
+  id: string;
+    customerId: string ;
     name: string;
     fatherName: string ;
     addressId: string;
@@ -11,8 +11,9 @@ export class Customer {
   gSTREGISTRATIONTYPE: string;
 
 
+
   constructor() {
-    this.id = "";
+    this.customerId = "";
     this.name = "";
     this.fatherName = "";
     this.addressId = "";

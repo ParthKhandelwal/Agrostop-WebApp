@@ -1,4 +1,4 @@
-import { Component, AfterViewInit, OnInit, ViewChild, ElementRef, ViewChildren, Inject } from '@angular/core';
+import { Component, AfterViewInit, OnInit, ViewChild, ElementRef, ViewChildren, Inject, Input } from '@angular/core';
 import { Customer } from '../../Model/customer';
 import { Address } from '../../Model/address';
 import { StockItem } from '../../Model/stock-item';
@@ -32,37 +32,14 @@ import { NgxIndexedDB } from 'ngx-indexed-db';
 })
 export class CreateVoucherComponent implements OnInit {
   voucher: VOUCHER
+  @Input("editMode") editMode: boolean = false;
 
-
-  constructor(private voucherService?: VoucherService,
-    private apiService?: ApiService, private dialog?: MatDialog,
-    private dialogConfig?: MatDialogConfig,
-    private cookie?: CookieService,
-  private posService?: PosService) {
+  constructor(private voucherService?: VoucherService) {
 
   }
 
   ngOnInit() {
-    this.apiService.getPOSUser().subscribe(
-      res => {
-        if (this.voucherService.voucher != null) {
-          this.voucher = this.voucherService.voucher
-          this.voucher.setUser(res);
-          if (this.voucher.CUSTOMER == null) {
-            this.voucher.setCustomer(new Customer);
-          }
-          
-          
-        } else {
-          this.voucher = new VOUCHER()
-          this.voucher.setCustomer(new Customer());
-          this.voucher.setUser(res);
-          this.voucher.setDate(new Date());
-          this.voucher.setAction("Create")
-        }
-      },
-      err => { }
-    );
+    
   }
 
 

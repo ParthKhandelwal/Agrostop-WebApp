@@ -158,6 +158,6 @@ import { VoucherWizardComponent } from './VoucherPackage/voucher-wizard/voucher-
     ],
   bootstrap: [AppComponent],
   entryComponents: [CreateCustomerFormComponent, CreateTaxDetailsFormComponent, InvoicePrintViewComponent, CashTenderedComponent, CreateStockItemFormComponent, CustomerTableComponent, ConfirmationBoxComponent, CreateAddressFormComponent,
-    PaymentOptionComponent]
+    PaymentOptionComponent, CustomerViewComponent]
 })
 export class AppModule { }

@@ -9,11 +9,12 @@ import {
   HttpResponse,
   HttpErrorResponse
 } from "@angular/common/http";
-import { Observable } from 'rxjs';
+import { Observable, throwError } from 'rxjs';
+import { AuthenticationService } from '../shared/authentication.service';
 
 @Injectable()
 export class AgroInterceptor implements HttpInterceptor {
-  constructor(private cookie: CookieService) { }
+  constructor(private authenticationService: AuthenticationService) { }
   //function which will be called for all http calls
   intercept(
     request: HttpRequest<any>,
@@ -23,11 +24,12 @@ export class AgroInterceptor implements HttpInterceptor {
 
   //    const updatedRequest = request.clone({
   //    headers: request.headers.set("Authorization", "Bearer " + this.cookie.get('token'))
-  //  });
-  if (sessionStorage.getItem('username') && sessionStorage.getItem('token')) {
+    //  });
+    var user = JSON.parse(sessionStorage.getItem('currentUser'));
+    if (user && user.token) {
      request = request.clone({
        setHeaders: {
-         Authorization: sessionStorage.getItem('token')
+         Authorization: 'Bearer ' + user.token 
        }
      })
    }
@@ -43,7 +45,15 @@ export class AgroInterceptor implements HttpInterceptor {
         error => {
           if (event instanceof HttpResponse) {
             console.log("api call error :", event);
+            if ([401, 403].indexOf(error.status) !== -1) {
+              // auto logout if 401 Unauthorized or 403 Forbidden response returned from api
+              this.authenticationService.logOut();
+              location.reload(true);
+            }
+            
           }
+          const err = error.error.message || error.statusText;
+          return throwError(err);
         }
       )
     );

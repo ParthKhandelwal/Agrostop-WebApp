@@ -33,6 +33,7 @@ export class PaymentOptionComponent implements OnInit {
   ledgers: any[] = [];
   @Output() valueChanged = new EventEmitter();
   @Input('voucher') voucher: VOUCHER;
+  @Input('productList') productList: any[]
 
   @ViewChild('cashRecievedRef', { static: false }) cashRecievedRef: ElementRef;
   @ViewChild('onAccountAmount', { static: false }) onAccountAmountRef: ElementRef;
@@ -45,8 +46,50 @@ export class PaymentOptionComponent implements OnInit {
   constructor(private apiService?: ApiService) { };
 
   ngOnInit() {
-    this.totalAmount = this.voucher.getTotal();
     
+    this.calculateTax()
+    
+  }
+
+  calculateTax() {
+    this.apiService.getLedger("CGST").subscribe(
+      res1 => {
+        this.apiService.getLedger("SGST").subscribe(
+          res2 => {
+            this.voucher.addLedgerEntry(res2, "GST", this.calculateSGST());
+            this.voucher.addLedgerEntry(res1, "GST", this.calculateCGST());
+            this.totalAmount = this.voucher.getSubTotal() + this.calculateCGST() + this.calculateSGST();
+            this.toBePayedInCash = this.totalAmount - this.paymentReserved;
+          },
+          err2 => { console.log(err2) }
+        );
+      },
+      err1 => {
+        console.log(err1);
+      }
+    );
+  }
+
+  total(): number {
+    return this.calculateCGST() + this.calculateSGST() + this.voucher.getSubTotal();
+  }
+
+  public calculateCGST(): number {
+    var total: number = 0;
+    for (var i = 0; i < this.voucher.ALLINVENTORYENTRIES_LIST.length; i++) {
+      total = total + this.voucher.ALLINVENTORYENTRIES_LIST[i].calculateCGST(
+        this.productList.filter(x => x._id == this.voucher.ALLINVENTORYENTRIES_LIST[i].STOCKITEMNAME)[0])
+    }
+    return total;
+  }
+
+  public calculateSGST(): number {
+    var total: number = 0;
+    for (var i = 0; i < this.voucher.ALLINVENTORYENTRIES_LIST.length; i++) {
+      total = total + this.voucher.ALLINVENTORYENTRIES_LIST[i].calculateSGST(
+        this.productList.filter(x => x._id == this.voucher.ALLINVENTORYENTRIES_LIST[i].STOCKITEMNAME)[0]);
+    }
+    return total;
   }
 
   ngAfterViewInit() {
@@ -57,12 +100,13 @@ export class PaymentOptionComponent implements OnInit {
 
   payOnAccount() {
     this.setToFalse();
+    console.log("payment: " + this.toBePayedInCash);
     this.update();
-    
+    this.onAccount = true;
     this.apiService.getLedgerByGroup("Sundry Debtors").subscribe(
       res => {
         this.ledgers = res;
-        this.onAccount = true;
+       
         setTimeout(() => {
           this.onAccountAmountRef.nativeElement.focus();
         }, 1000);
@@ -97,28 +141,15 @@ export class PaymentOptionComponent implements OnInit {
   }
 
   validate() {
-    this.voucher.POSCASHRECEIVED = this.voucher.POSCASHRECEIVED;
-
-    this.apiService.getLedger(this.voucher.PARTYLEDGERNAME).subscribe(
-      res => {
-        this.apiService.getLedger("CGST").subscribe(
-          res1 => {
-            this.apiService.getLedger("SGST").subscribe(
-              res2 => {
-                this.voucher.validatePOSVoucher(res, res1, res2);
-                this.valueChanged.emit("Voucher Completed")
-              },
-              err2 => { console.log(err2) }
-            );
-          },
-          err1 => {
-            console.log(err1);
-          }
-        );
-      },
-      err => { console.log(err) }
-    );
-
+    if (this.voucher.POSCASHRECEIVED != 0) {
+      this.apiService.getLedger(this.voucher.PARTYLEDGERNAME).subscribe(
+        res => {
+          this.voucher.addLedgerEntry(res, "Cash-in-hand", -this.toBePayedInCash);
+          this.valueChanged.emit("voucher completed");
+        },
+        err => { console.log(err) }
+      );
+    }
     
   }
 
@@ -151,6 +182,7 @@ export class PaymentOptionComponent implements OnInit {
   }
 
   setCashPayment() {
+    console.log("payment: " + this.toBePayedInCash);
     this.setToFalse();
     this.cashPayment = true;
     this.toBePayedInCash = this.totalAmount - this.paymentReserved;

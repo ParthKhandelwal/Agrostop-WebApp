@@ -7,6 +7,8 @@ import { Observable } from 'rxjs';
 import { startWith, map } from 'rxjs/operators';
 import { MatDialogConfig, MatDialog } from '@angular/material';
 import { CreateCustomerFormComponent } from '../../create-form/create-customer-form/create-customer-form.component';
+import { CustomerListViewComponent } from '../../CustomerPackage/customer-list-view/customer-list-view.component';
+import { CustomerViewComponent } from '../../view/customer-view/customer-view.component';
 
 
 @Component({
@@ -17,10 +19,10 @@ import { CreateCustomerFormComponent } from '../../create-form/create-customer-f
 export class CustomerSelectionComponent implements OnInit {
   createCustomer: boolean = false;
   loaded: boolean = false;
-  customer: Customer = new Customer();
+  customer: Customer;
   customerControl = new FormControl();
   filteredOptions: Observable<Customer[]>;
-  customers: Customer[] = [];
+  @Input('customerList') customers: Customer[];
   @ViewChild('customerField', { static: false }) customerRef: ElementRef;
   @Input('voucher') voucher: VOUCHER;
   @Output() valueChange = new EventEmitter();
@@ -28,27 +30,18 @@ export class CustomerSelectionComponent implements OnInit {
     private dialogConfig?: MatDialogConfig,) { }
 
   ngOnInit() {
-    if (this.voucher != null) {
-      this.customer = this.voucher.CUSTOMER;
-    }
-    this.apiService.getCustomers().subscribe(
-      res2 => {
-        this.customers = res2;
-        if (this.voucher != null) {
-          this.customer = this.voucher.CUSTOMER;
-        }
-        this.loaded = true;
-        this.filteredOptions = this.customerControl.valueChanges.pipe(
-          startWith(''),
-          map(value => this.customer_filter(value))
-        );
 
-      },
-      err2 => {
-        console.log(err2);
-      });
+    this.filteredOptions = this.customerControl.valueChanges.pipe(
+      startWith(''),
+      map(value => this.customer_filter(value))
+    );
   }
 
+  ngAfterViewInit() {
+
+    this.customer = this.customers.filter(obj => obj.customerId == this.voucher.CUSTOMERID)[0];
+
+  }
   
   
   
@@ -71,6 +64,16 @@ export class CustomerSelectionComponent implements OnInit {
     const dialogConfig = new MatDialogConfig();
     dialogConfig.autoFocus = true;
     dialogConfig.width = "50%";
-    this.dialog.open(CreateCustomerFormComponent);
+    this.dialog.open(CreateCustomerFormComponent, { maxHeight: '90vh' });
+  }
+
+  viewCustomerProfile(id) {
+    const dialogConfig = new MatDialogConfig();
+    dialogConfig.autoFocus = true;
+    dialogConfig.width = "50%";
+    this.dialog.open(CustomerViewComponent, {
+      data: id,
+      maxHeight: '90vh'
+    });
   }
 }

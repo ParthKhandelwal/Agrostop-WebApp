@@ -21,12 +21,14 @@ import { DayBookComponent } from './AccountingPackage/day-book/day-book.componen
 import { ProductListViewComponent } from './Products/product-list-view/product-list-view.component';
 import { TaxDetailsTableComponent } from './tables/tax-details-table/tax-details-table.component';
 import { UserTableComponent } from './tables/user-table/user-table.component';
-
+import { AuthGuard } from './_guard/auth-guard.service';
 
 const routes: Routes = [
   {
     path: "home",
-    component: DashboardComponent
+    component: DashboardComponent,
+    canActivate: [AuthGuard],
+    data: { roles: ["Admin", "Company User"] } 
   },
   {
     path: "customers",
@@ -91,7 +93,7 @@ const routes: Routes = [
     component: CreateComplaintFormComponent
   },
   {
-    path: "",
+    path: "login",
     component: LoginFormComponent
   },
   {

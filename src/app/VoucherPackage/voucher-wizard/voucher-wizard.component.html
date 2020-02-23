@@ -37,17 +37,17 @@
                 </div>
                 <!--CUSTOMER SELECTION-->
                 <div *ngIf="customerSelection">
-                  <customer-selection (valueChange)="next()" [(voucher)]="voucher"></customer-selection>
+                  <customer-selection (valueChange)="next()" [(voucher)]="voucher" [(customerList)] ="customerList"></customer-selection>
                 </div>
 
                 <!--INVENTORY SELECTION-->
                 <div *ngIf="inventorySelection">
-                  <inventory-selection (valueChanged) ="next()" [(voucher)]="voucher"></inventory-selection>
+                  <inventory-selection (valueChanged) ="next()" [(voucher)]="voucher" [(productList)] ="productList"></inventory-selection>
                 </div>
 
                 <!--PAYMENT-->
                 <div *ngIf="payment">
-                  <payment-option (valueChanged) ="save()" [(voucher)] ="voucher"></payment-option>
+                  <payment-option (valueChanged) ="save()" [(voucher)] ="voucher" [(productList)] ="productList"></payment-option>
                 </div>
 
                 <div class="wizard-footer height-wizard">
