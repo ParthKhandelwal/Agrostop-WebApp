@@ -8,7 +8,7 @@ import { VoucherService } from '../../shared/voucher.service';
 })
 export class CreateOrderFormComponent implements OnInit {
 
-  constructor(private voucherService?: VoucherService) { }
+  constructor(public voucherService?: VoucherService) { }
 
   ngOnInit() {
   }
