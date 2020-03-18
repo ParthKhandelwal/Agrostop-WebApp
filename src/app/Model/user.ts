@@ -18,6 +18,7 @@ export interface SalesVoucherSettings{
   defaultVoucherType: string;
   defaultClass: string;
   cashLedgerList: string[];
+  priceLists: string[];
   defaultCashLedger: string;
   placeOfSupply: string;
 }

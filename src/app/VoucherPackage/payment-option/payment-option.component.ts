@@ -1,10 +1,11 @@
-import { Component, OnInit, Input, Output, EventEmitter, ViewChild, ElementRef } from '@angular/core';
-import { VOUCHER } from '../../Model/voucher';
+import { Component, OnInit, Input, Output, EventEmitter, ViewChild, ElementRef, ComponentFactoryResolver } from '@angular/core';
+import { VOUCHER, LEDGERENTRIESLIST } from '../../Model/voucher';
 import { ApiService } from '../../shared/api.service';
 import { FormControl } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { startWith, map } from 'rxjs/operators';
 import { MatSelect, MatAutocomplete, MatInput } from '@angular/material';
+import { getRtlScrollAxisType } from '@angular/cdk/platform';
 
 @Component({
   selector: 'payment-option',
@@ -12,32 +13,33 @@ import { MatSelect, MatAutocomplete, MatInput } from '@angular/material';
   styleUrls: ['./payment-option.component.css']
 })
 export class PaymentOptionComponent implements OnInit {
-  totalAmount: number = 0;
-  paymentReserved: number = 0;
-  toBePayedInCash: number = 0;
-  toBePayedOnline: number = 0;
-  toBePayedByGift: number = 0;
-  toBePayedByBank: number = 0
-  
-  ledger: any;
-  bankLedger: any;
+ 
+
+  cashLedgerEntry: LEDGERENTRIESLIST = new LEDGERENTRIESLIST();
+  giftLedgerEntry: LEDGERENTRIESLIST = new LEDGERENTRIESLIST();
+
+
+
+
 
   cashPayment: boolean = true;
   onAccount: boolean = false;
-  
 
-  bankLedgerControl = new FormControl();
   bankFilteredOptions: Observable<any[]>;
   ledgerControl = new FormControl();
+  cashLedgerControl = new FormControl();
   filteredOptions: Observable<any[]>;
+  cashFilteredOptions: Observable<any[]>;
   ledgers: any[] = [];
+  cashLedgers: any[] = [];
   @Output() valueChanged = new EventEmitter();
   @Input('voucher') voucher: VOUCHER;
   @Input('productList') productList: any[]
+  @Input('isOrder') isOrder: boolean;
 
   @ViewChild('cashRecievedRef', { static: false }) cashRecievedRef: ElementRef;
-  @ViewChild('onAccountAmount', { static: false }) onAccountAmountRef: ElementRef;
-  @ViewChild('ledgerSelection', { static: false }) ledgerSelectionRef: MatInput;
+  @ViewChild('ledgerSelection', { static: false }) ledgerSelectionRef: MatAutocomplete;
+  @ViewChild('cashLedgerSelection', {static: false}) cashLedgerSelection: ElementRef;
 
 
 
@@ -47,132 +49,155 @@ export class PaymentOptionComponent implements OnInit {
 
   ngOnInit() {
     
-    this.calculateTax()
     
-  }
-
-  calculateTax() {
-    this.apiService.getLedger("CGST").subscribe(
-      res1 => {
-        this.apiService.getLedger("SGST").subscribe(
-          res2 => {
-            this.voucher.addLedgerEntry(res2, "GST", this.calculateSGST());
-            this.voucher.addLedgerEntry(res1, "GST", this.calculateCGST());
-            this.totalAmount = this.voucher.getSubTotal() + this.calculateCGST() + this.calculateSGST();
-            this.toBePayedInCash = this.totalAmount - this.paymentReserved;
-          },
-          err2 => { console.log(err2) }
-        );
-      },
-      err1 => {
-        console.log(err1);
-      }
+   
+    this.calculateTAX();
+    this.cashFilteredOptions = this.cashLedgerControl.valueChanges.pipe(
+      startWith(''),
+      map(value => this.cashLedger_filter(value))
     );
-  }
+    this.filteredOptions = this.ledgerControl.valueChanges.pipe(
+      startWith(''),
+      map(value => this.ledger_filter(value))
+    );
 
-  total(): number {
-    return this.calculateCGST() + this.calculateSGST() + this.voucher.getSubTotal();
-  }
-
-  public calculateCGST(): number {
-    var total: number = 0;
-    for (var i = 0; i < this.voucher.ALLINVENTORYENTRIES_LIST.length; i++) {
-      total = total + this.voucher.ALLINVENTORYENTRIES_LIST[i].calculateCGST(
-        this.productList.filter(x => x._id == this.voucher.ALLINVENTORYENTRIES_LIST[i].STOCKITEMNAME)[0])
+    this.cashLedgerEntry = this.voucher.LEDGERENTRIES_LIST.filter((o: any) => {
+    if(o.POSPAYMENTTYPE == "Cash"){
+        o.AMOUNT = this.total();
+        if( o.LEDGERNAME != null){
+          this.cashLedgers.push({"_NAME" : o.LEDGERNAME});
+        } else {
+          this.apiService.getCashLedgers().subscribe(
+            res => {
+              this.cashLedgers = res;
+            },
+            err => {
+              console.log(err);
+            }
+          );
+        }
+        return true;
     }
-    return total;
-  }
+    })[0];
+    this.giftLedgerEntry = this.voucher.LEDGERENTRIES_LIST.filter((o: any) => {
+      if (o.POSPAYMENTTYPE == "Gift"){
+        if( this.giftLedgerEntry.LEDGERNAME != null){
+  
+          this.ledgers.push({"_NAME" : this.giftLedgerEntry.LEDGERNAME});
+         }else {
+           this.apiService.getLedgerByGroup("Sundry Creditors").subscribe(
+             res => {
+               this.ledgers = res;
+               
+             },
+             err => {
+               console.log(err);
+             }
+           );
+         }
+      }
+    })[0];
 
-  public calculateSGST(): number {
-    var total: number = 0;
-    for (var i = 0; i < this.voucher.ALLINVENTORYENTRIES_LIST.length; i++) {
-      total = total + this.voucher.ALLINVENTORYENTRIES_LIST[i].calculateSGST(
-        this.productList.filter(x => x._id == this.voucher.ALLINVENTORYENTRIES_LIST[i].STOCKITEMNAME)[0]);
-    }
-    return total;
+  
+
+      
+      
+
+
+        
+
+        
   }
+    
+    
+  
 
   ngAfterViewInit() {
-
-    this.setCashPayment();
-
+    this.getCashPayment();
   }
 
-  payOnAccount() {
-    this.setToFalse();
-    console.log("payment: " + this.toBePayedInCash);
-    this.update();
-    this.onAccount = true;
-    this.apiService.getLedgerByGroup("Sundry Debtors").subscribe(
-      res => {
-        this.ledgers = res;
-       
-        setTimeout(() => {
-          this.onAccountAmountRef.nativeElement.focus();
-        }, 1000);
-        
-        this.filteredOptions = this.ledgerControl.valueChanges.pipe(
-          startWith(''),
-          map(value => this.ledger_filter(value))
-        );
-        this.bankFilteredOptions = this.bankLedgerControl.valueChanges.pipe(
-          startWith(''),
-          map(value => this.ledger_filter(value))
-        );
-      },
-      err => {
-        console.log(err);
-      }
-    );
-  }
-
+  
   displayFnLedger(user?: any): string | undefined {
-    return user && user._NAME ? user._NAME : '';
+    return user && user ? user : '';
   }
 
-  update() {
-    
-    this.paymentReserved = this.voucher.POSCASHRECEIVED + this.toBePayedByBank + this.toBePayedByGift + this.toBePayedOnline;
+  displayFnCashLedger(user?: any): string | undefined {
+    return user && user ? user : '';
   }
+
+
 
   private ledger_filter(value: string): any[] {
     const filterValue = value.toString().toLowerCase();
     return this.ledgers.filter(option => option._NAME.toLowerCase().indexOf(filterValue) === 0);
   }
 
+  private cashLedger_filter(value: string): any[] {
+    const filterValue = value.toString().toLowerCase();
+    return this.cashLedgers.filter(option => option._NAME.toLowerCase().indexOf(filterValue) === 0);
+  }
+
   validate() {
-    if (this.voucher.POSCASHRECEIVED != 0) {
-      this.apiService.getLedger(this.voucher.PARTYLEDGERNAME).subscribe(
-        res => {
-          this.voucher.addLedgerEntry(res, "Cash-in-hand", -this.toBePayedInCash);
-          this.valueChanged.emit("voucher completed");
-        },
-        err => { console.log(err) }
-      );
+    console.log(this.remainingBalance());
+    if (this.remainingBalance() != 0){
+      alert ("Please pay for all the services");
+      return;
     }
+    if (this.voucher.POSCASHRECEIVED < this.cashLedgerEntry.AMOUNT){
+      alert ("The payment is not done in full. Please pay the full amount")
+      return
+    }
+    for (let item of this.voucher.LEDGERENTRIES_LIST){
+      if (item.POSPAYMENTTYPE != null){
+        item.AMOUNT = - item.AMOUNT;
+        if (item.POSPAYMENTTYPE == "Cash" && item.AMOUNT < 0){
+          this.voucher.POSCASHLEDGER = item.LEDGERNAME;
+        }
+      }
+    }
+    this.voucher.POSCASHRECEIVED = - this.voucher.POSCASHRECEIVED;
+    this.voucher
+    
+    this.valueChanged.emit("Voucher completed Successfully");
+  }
+
+  remainingBalance(): number{
+    var temp: number = 0;
+    for (let i of this.voucher.LEDGERENTRIES_LIST){
+      if (i.POSPAYMENTTYPE != null && i.AMOUNT != null){
+        temp = temp + i.AMOUNT;
+      }
+    }
+    return this.total() - temp;
+  }
+
+  total(): number{
+    var total: number =0 
+    for (let item of this.voucher.LEDGERENTRIES_LIST){
+      if (item.AMOUNT != null && item.POSPAYMENTTYPE == null){
+        total = total + item.AMOUNT;
+      }
+    }
+    for (let item of this.voucher.ALLINVENTORYENTRIES_LIST){
+      if (item.AMOUNT != null){
+        total = total + item.AMOUNT;
+      }
+    }
+    return total;
+  }
+
+  
+  getCashPayment() {
+    this.setToFalse();
+    this.cashPayment = true;
+    this.cashLedgerSelection.nativeElement.focus();
     
   }
 
-  validateOnAccountSelection(event) {
-    this.ledger = event.option.value;
-    if (this.toBePayedByGift != 0) {
-   
-      this.onAccount = false;
-      this.update();
-      if (this.paymentReserved != this.totalAmount) {
-        this.setCashPayment();
-      }
-    }
-
+  setLedger(){
+    this.cashRecievedRef.nativeElement.focus();
   }
-
-  validateCashSelection(event) {
-    this.update();
-    if (this.paymentReserved = this.totalAmount) {
-      this.validate();
-    }
-
-  }
+  
 
   setToFalse() {
     this.cashPayment = false;
@@ -181,14 +206,34 @@ export class PaymentOptionComponent implements OnInit {
     this.bankTransfer = false;
   }
 
-  setCashPayment() {
-    console.log("payment: " + this.toBePayedInCash);
-    this.setToFalse();
-    this.cashPayment = true;
-    this.toBePayedInCash = this.totalAmount - this.paymentReserved;
-    setTimeout(() => {
-      this.cashRecievedRef.nativeElement.focus();
-    }, 1000);
-    
+
+  calculateTAX(){
+    console.log(this.voucher);
+    for(let ledger of this.voucher.LEDGERENTRIES_LIST){
+      if(ledger.ISDEEMEDPOSITIVE != null && ledger.ISDEEMEDPOSITIVE == "No"){
+        ledger.AMOUNT = 0;
+      }
+      for (let item of this.voucher.ALLINVENTORYENTRIES_LIST){
+     
+        if(ledger.ISDEEMEDPOSITIVE != null && ledger.ISDEEMEDPOSITIVE == "No"){
+          ledger.AMOUNT = ledger.AMOUNT + Math.round((item.AMOUNT * this.getTaxRate(item.tallyObject, this.getGSTDutyHead(ledger.tallyObject)))) / 100; 
+        }
+      }
+    }
   }
+
+  getGSTDutyHead(ledger: any): string{
+    return ledger["GSTDUTYHEAD"].content;
+  }
+
+  getTaxRate(pro: any, str: string): number{
+    for (let item of pro["GSTDETAILS.LIST"]["STATEWISEDETAILS.LIST"]["RATEDETAILS.LIST"]){
+      if(str == item["GSTRATEDUTYHEAD"].content){
+        return item["GSTRATE"].content;
+      }
+    }
+    return 0;    
+  }
+
+  
 }

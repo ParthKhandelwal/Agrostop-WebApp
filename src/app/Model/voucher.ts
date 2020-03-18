@@ -78,6 +78,7 @@ export class LEDGERENTRIESLIST {
   ADVANCETAXDETAILS_LIST: string;
   ROUNDLIMIT: number;
   POSPAYMENTTYPE: string;
+  tallyObject: any;
 
   constructor() {
 
@@ -146,8 +147,18 @@ export class EXPIRYPERIOD {
 
       public set(batchId: Batch, godown: string) {
         this.GODOWNNAME = godown;
-        this.BATCHNAME = batchId.name;
-        this.EXPIRYPERIOD = new EXPIRYPERIOD(batchId.expiryDate);
+        if (batchId) {
+          this.BATCHNAME = batchId.name;
+          this.EXPIRYPERIOD = new EXPIRYPERIOD(batchId.expiryDate);
+        } else {
+          this.BATCHNAME = "";
+          this.EXPIRYPERIOD = null;
+        }
+      }
+
+      public changeBatch(batch: Batch) {
+        this.BATCHNAME = batch.name;
+        this.EXPIRYPERIOD = new EXPIRYPERIOD(batch.expiryDate);
       }
 
       setexpiryDate(expiryDate: Date) {
@@ -231,6 +242,7 @@ export class ACCOUNTINGALLOCATIONSLIST {
         REFVOUCHERDETAILS_LIST: string;
         EXCISEALLOCATIONS_LIST: string;
       EXPENSEALLOCATIONS_LIST: string;
+      tallyObject: any;
 
 
       constructor() {
@@ -310,6 +322,7 @@ export class ACCOUNTINGALLOCATIONSLIST {
     }
 
 export class VOUCHER {
+
   CUSTOMERID: string;
   ADDRESS_LIST: ADDRESSLIST;
   OLDAUDITENTRYIDS_LIST: OLDAUDITENTRYIDSLIST;
@@ -429,8 +442,9 @@ export class VOUCHER {
   _VCHTYPE: string;
   _ACTION: string;
   _OBJVIEW: string;
-
+  order: boolean;
   userId: string;
+  COUNTRYOFRESIDENCE: string;   
 
 
 
@@ -536,20 +550,12 @@ export class VOUCHER {
   }
 
   public deleteInventoryEntry(inventoryEntry: any) {
-    for (let i = 0; i < this.ALLINVENTORYENTRIES_LIST.length; i++) {
-      if (this.ALLINVENTORYENTRIES_LIST[i].STOCKITEMNAME == inventoryEntry.STOCKITEMNAME
-        && this.ALLINVENTORYENTRIES_LIST[i].BATCHALLOCATIONS_LIST.BATCHNAME == inventoryEntry.BATCHALLOCATIONS_LIST.BATCHNAME
-        && this.ALLINVENTORYENTRIES_LIST[i].BATCHALLOCATIONS_LIST.EXPIRYPERIOD.DATE == inventoryEntry.BATCHALLOCATIONS_LIST.EXPIRYPERIOD.DATE
-        && this.ALLINVENTORYENTRIES_LIST[i].BILLEDQTY == inventoryEntry.BILLEDQTY
-        && this.ALLINVENTORYENTRIES_LIST[i].RATE == inventoryEntry.RATE) {
+   
 
-        this.ALLINVENTORYENTRIES_LIST.splice(i, 1);
+        this.ALLINVENTORYENTRIES_LIST.splice(inventoryEntry, 1);
  
 
-      }
 
-
-        }
   }
 
 

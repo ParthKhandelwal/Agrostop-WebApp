@@ -7,7 +7,9 @@
         <div class="col-sm-8 col-sm-offset-2">
 
           <!--      Wizard container        -->
-          <div class="wizard-container">
+          <div class="wizard-container" >
+            
+            
 
             <div class="card wizard-card" data-color="orange" id="wizardProfile">
               <form action="" method="">
@@ -24,6 +26,10 @@
                 <div class="wizard-navigation">
                   
                   <div class="container-tab wizard-navigation" >
+                    
+                    <div>
+                      <button [ngClass]="'voucherSettings' ? 'btn btn-previous btn-fill btn-success btn-wd btn-sm' : 'btn-default btn-wd btn-sm btn btn-previous btn-fill '" name='voucherSettingsTab' (click)="switchVoucherSettings()" [disabled]= "voucherSettings">Settings</button>
+                    </div>
                     <div>
                       <button [ngClass]="'customerSelection' ? 'btn btn-previous btn-fill btn-success btn-wd btn-sm' : 'btn-default btn-wd btn-sm btn btn-previous btn-fill '" name='customerTab' (click)="switchCustomer()" [disabled]="customerSelection">Customer</button>
                     </div>
@@ -31,29 +37,87 @@
                       <button [ngClass]="'inventorySelection' ? 'btn btn-previous btn-fill btn-success btn-wd btn-sm' : 'btn-default btn-wd btn-sm btn btn-previous btn-fill '" name='productTab' (click)="switchInventory()" [disabled]="inventorySelection">Inventory</button>
                     </div>
                     <div>
-                      <button [ngClass]="'payment' ? 'btn btn-previous btn-fill btn-success btn-wd btn-sm' : 'btn-default btn-wd btn-sm btn btn-previous btn-fill '" name='paymentTab' (click)="switchPayment()" [disabled]="payment">Payment</button>
+                      <button [ngClass]="'payment' ? 'btn btn-previous btn-fill btn-success btn-wd btn-sm' : 'btn-default btn-wd btn-sm btn btn-previous btn-fill '" name='paymentTab' (click)="switchPayment()" [disabled]="payment || isOrder" *ngIf =" !isOrder">Payment</button>
+                    </div>
+                    <div>
+                      <button class='btn btn-previous btn-fill btn-success btn-wd btn-sm'  name='syncTab' (click)= "switchSyncSettings()" [disabled]="!createOnline$()  " >Sync</button>
                     </div>
                   </div>
                 </div>
+                
+
+
+                <!--SYNC SETTINGS-->
+                <div *ngIf = "syncSettings">
+                  <div class="row space-rows">
+                    <div class="col">
+                      <a (click) = "upSync()">
+                        <div class="card cards-shadown cards-hover">
+                            <div class="card-header"><span class="space"><i class="fa fa-cloud-upload" id="download-icon"></i></span>
+                                <div class="cardheader-text">
+                                    <h4 id="heading-card">Up Sync</h4>
+                                    <p id="cardheader-subtext">save data from local machine to server...</p>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <p class="card-text sub-text-color">Last Sync:</p>
+                                <p class="card-text cardbody-sub-text">2 minutes ago</p>
+                            </div>
+                        </div>
+                      </a>
+                    </div>
+                    <div class="col">
+                      <a (click) = "downSync()">
+                        <div class="card cards-shadown cards-hover">
+                            <div class="card-header"><span class="space"><i class="fa fa-cloud-download" id="download-icon"></i></span>
+                                <div class="cardheader-text" style="padding-left: 10px; !important">
+                                    <h4 id="heading-card">Down Sync</h4>
+                                    <p id="cardheader-subtext">Get Data from server to local machine...</p>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <p class="card-text sub-text-color">Cache:</p>
+                                <p class="card-text cardbody-sub-text">Vouchers</p>
+                            </div>
+                        </div>
+                      </a>
+                    </div>
+                </div>
+                </div>
+
+
+
+
+                <!--VOUCHER SETTINGS-->
+                <div *ngIf = "voucherSettings">
+                <voucher-setting (valueChanged) ="next()" [(voucher)] = "voucher" [(ledgerList)] = "ledgerList"></voucher-setting>
+                </div>
+
+                
+                
+                    
+
                 <!--CUSTOMER SELECTION-->
                 <div *ngIf="customerSelection">
-                  <customer-selection (valueChange)="next()" [(voucher)]="voucher" [(customerList)] ="customerList"></customer-selection>
+                  <customer-selection (valueChange)="next()" (isOrder) = "isOrder" [(voucher)]="voucher" [(customerList)] ="customerList"></customer-selection>
                 </div>
 
                 <!--INVENTORY SELECTION-->
                 <div *ngIf="inventorySelection">
-                  <inventory-selection (valueChanged) ="next()" [(voucher)]="voucher" [(productList)] ="productList"></inventory-selection>
+                  <inventory-selection (valueChanged) ="next()" [(isOrder)] ="isOrder" [(voucher)]="voucher" [(productList)] ="productList" [(ledgerList)] = "ledgerList"></inventory-selection>
                 </div>
 
                 <!--PAYMENT-->
-                <div *ngIf="payment">
-                  <payment-option (valueChanged) ="save()" [(voucher)] ="voucher" [(productList)] ="productList"></payment-option>
+                <div *ngIf="payment && !isOrder">
+                  <payment-option (valueChanged) ="save()" (isOrder) = "isOrder" [(voucher)] ="voucher" [(productList)] ="productList"></payment-option>
                 </div>
 
                 <div class="wizard-footer height-wizard">
-                  <div class="pull-right">
-                    <button class='btn btn-next btn-fill btn-warning btn-wd btn-sm' autofocus *ngIf="!payment" (click)="next()"> Next</button>
-                    <button class='btn btn-finish btn-fill btn-warning btn-wd btn-sm' *ngIf="payment" (click)="saveVoucher()">Finish</button>
+                  <div class="pull-right" *ngIf="!(isOrder && inventorySelection)">
+                    <button class='btn btn-next btn-fill btn-warning btn-wd btn-sm' autofocus (click)="next()"> Next</button>
+                  </div>
+                  <div class="pull-right" *ngIf="isOrder && inventorySelection">
+                    <button class='btn btn-next btn-fill btn-warning btn-wd btn-sm' autofocus (click)="save()"> Save</button>
                   </div>
 
                   <div class="pull-left">

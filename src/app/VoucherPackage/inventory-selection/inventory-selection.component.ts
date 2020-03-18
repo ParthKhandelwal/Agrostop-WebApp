@@ -1,12 +1,14 @@
 import { Component, OnInit, Input, Output, EventEmitter, ViewChild, ElementRef } from '@angular/core';
-import { VOUCHER } from '../../Model/voucher';
+import { VOUCHER, ALLINVENTORYENTRIESLIST, BATCHALLOCATIONSLIST, ACCOUNTINGALLOCATIONSLIST, EXPIRYPERIOD, LEDGERENTRIESLIST } from '../../Model/voucher';
 import { ApiService } from '../../shared/api.service';
 import { Batch } from '../../Model/batch';
 import { FormControl } from '@angular/forms';
-import { Customer } from '../../Model/customer';
-import { Observable } from 'rxjs';
-import { startWith, map } from 'rxjs/operators';
+import { Observable, from } from 'rxjs';
+import { startWith, map, filter } from 'rxjs/operators';
+import { PosService } from 'src/app/shared/pos.service';
 import { MatSelect } from '@angular/material';
+import { ExpandOperator } from 'rxjs/internal/operators/expand';
+import { StockItem } from 'src/app/Model/stock-item';
 
 @Component({
   selector: 'inventory-selection',
@@ -14,102 +16,191 @@ import { MatSelect } from '@angular/material';
   styleUrls: ['./inventory-selection.component.css']
 })
 export class InventorySelectionComponent implements OnInit {
+  endVoucher: any;
   showBatchDropDown: boolean = false;
-  product: any;
-  qty: number =0;
-  batch: Batch;
+  taxMap: Map<string, Map<number, number>>;
   batches: Batch[] = [];
+  batchCurrent: Batch[] = []
   productControl = new FormControl();
+  batchControl = new FormControl();
+  qtyControl = new FormControl();
+  rateControl = new FormControl();
   filteredOptions: Observable<any[]>;
-
+  batchFilteredOptions: Observable<any[]>;
+  productGSTDetail: any[] = [];
   @Output() valueChanged = new EventEmitter();
   @Input('voucher') voucher: VOUCHER;
   @Input('productList') products: any[];
-
+  @Input('isOrder') isOrder: boolean;
+  @Input('ledgerList') ledgerList: any[];
+ 
   @ViewChild('quantityField', { static: false }) quantityRef: ElementRef;
   @ViewChild('invField', { static: false }) productRef: ElementRef;
   @ViewChild('batchField', { static: false }) batchRef: MatSelect;
-  constructor(private apiService?: ApiService) { }
+  constructor(private apiService?: ApiService, private posService?: PosService) { }
 
   ngOnInit() {
-
-    //Get StockItem for Billing
-
+    this.endVoucher = {"NAME": "END OF LIST"}
     this.filteredOptions = this.productControl.valueChanges.pipe(
       startWith(''),
       map(value => this.product_filter(value))
 
     );
+    this.posService.getProductBatch().then(
+      res => {
+        this.batches = res;
+        
+      }
+      
+    );
+    
+  }
+
+  ngAfterViewInit(){
+    this.productRef.nativeElement.focus();
   }
 
   private product_filter(value: string): any[] {
     const filterValue = value.toString().toLowerCase();
-    return this.products.filter(option => option._id.toLowerCase().indexOf(filterValue) === 0);
+    return this.products.filter(option => option.NAME.toLowerCase().indexOf(filterValue) === 0);
+  }
+
+  private batch_filter(value: string): any[] {
+    const filterValue = value.toString().toLowerCase();
+    return this.batches.filter(option => option.productId.indexOf(filterValue) === 0);
   }
 
   selectProduct(value) {
+    if (value == "END OF LIST") {
+      this.valueChanged.emit("true");
+      return;
+    }
+    this.batchCurrent = this.batches.filter(option => option.productId === value);
+    this.quantityRef.nativeElement.focus();
+  }
 
-    if (value != null) {
-      this.product = value;
-      this.batches = value.bATCHALLOCATIONS;
-      this.showBatchDropDown = true;
-      setTimeout(() => {
-        this.batchRef.focus();
-      }, 500);
-      
+  validateQty(){
+    if (this.qtyControl.value > 0 ){
+      this.batchRef.focus();
+      //this.validateInventoryEntry();
+    } else {
+      this.quantityRef.nativeElement.focus();
     }
   }
 
   goToPayment(value) {
-    if (value == null && this.voucher.ALLINVENTORYENTRIES_LIST.length != 0) {
+    if (value == "NA" && this.voucher.ALLINVENTORYENTRIES_LIST.length != 0) {
       this.valueChanged.emit("true");
       return;
     }
   }
 
-  selectBatch(value) {
-    this.batch = Object.assign({}, value);
-    console.log(this.batch);
-  }
 
-
-
-  validateProduct(value) {
-    
-    if (this.qty != 0) {
-      console.log(this.product);
-        this.voucher.addInventoryEntry(this.product, this.batch, value);
-        console.log(this.voucher);
-        this.batch = null;
-        this.product = null;
-        this.qty = 0;
-        this.showBatchDropDown = false;
-        setTimeout(() => {
-          this.productRef.nativeElement.value = null;
-          this.productRef.nativeElement.focus();
-        }, 500);
-      } else {
-        setTimeout(() => {
-          this.quantityRef.nativeElement.focus();
-        }, 500);
-      }
-    
-
-  }
-
-
-  validateBatch(event) {
-    setTimeout(() => {
-      this.quantityRef.nativeElement.focus();
-    }, 500);
-    
-  }
 
   displayFnProduct(user?: any): string | undefined {
-    return user && user._id ? user._id : '';
+    return user && user.NAME ? user.NAME : '';
+  }
+  displayFnBatch(user?: any): string | undefined {
+    return user && user.name ? user.name : '';
   }
 
-  deleteItem(product: any) {
-    this.voucher.deleteInventoryEntry(product);
+  deleteItem(i : number) {
+    this.voucher.ALLINVENTORYENTRIES_LIST.splice(i, 1);
   }
+
+
+
+  //HANDLE VOUCHER UPDATE
+
+  validateInventoryEntry(){
+    if (this.productControl.value == null){
+      this.productRef.nativeElement.focus();
+      return;
+    }
+    if (this.batchControl.value == null){
+      this.batchRef.focus();
+      return;
+    }
+    if (this.qtyControl.value == null || this.qtyControl.value == 0){
+      this.quantityRef.nativeElement.focus();
+      return;
+    }
+    this.posService.getStockItem(this.productControl.value.NAME).then(
+      res => {
+        var inventoryEntry: ALLINVENTORYENTRIESLIST = new ALLINVENTORYENTRIESLIST();
+        
+    
+        inventoryEntry.STOCKITEMNAME = res.NAME;
+        inventoryEntry.BILLEDQTY = this.qtyControl.value;
+        inventoryEntry.ACTUALQTY = inventoryEntry.BILLEDQTY;
+        inventoryEntry.ISDEEMEDPOSITIVE = "No";
+        
+        if (res["FULLPRICELIST.LIST"] instanceof Array){
+            for (let item of res["FULLPRICELIST.LIST"]){
+              if (item.PRICELEVEL = this.voucher.PRICELEVEL){
+                if (item["PRICELEVELLIST.LIST"].RATE != null){
+                let temp:string = item["PRICELEVELLIST.LIST"].RATE.content;
+                temp = temp.replace(/\//g, "");
+                temp = temp.replace(/[^\d.-]/g, "");
+            
+                inventoryEntry.RATE = +(temp);
+                break;
+                }else {
+                  
+                  alert(res.NAME + "does not has a price defined for your current price list. " +
+                  "Try changing the pricelist or contact your administrator.");
+                  this.renew();
+                }
+              }
+            }
+        }else {
+          
+          alert(res.NAME + " does not have a price list set. Please contact your administrator.")
+          this.renew();
+          return;
+        }
+        
+        inventoryEntry.BATCHALLOCATIONS_LIST = new BATCHALLOCATIONSLIST();
+        inventoryEntry.BATCHALLOCATIONS_LIST.BATCHNAME = this.batchControl.value.name;
+        inventoryEntry.BATCHALLOCATIONS_LIST.GODOWNNAME = "A - Nalkheda";
+        inventoryEntry.BATCHALLOCATIONS_LIST.BILLEDQTY = inventoryEntry.BILLEDQTY;
+        inventoryEntry.BATCHALLOCATIONS_LIST.ACTUALQTY = inventoryEntry.ACTUALQTY;
+        inventoryEntry.BATCHALLOCATIONS_LIST.AMOUNT = inventoryEntry.RATE * inventoryEntry.BILLEDQTY;
+        inventoryEntry.BATCHALLOCATIONS_LIST.EXPIRYPERIOD = new EXPIRYPERIOD(this.batchControl.value.expiryDate)
+        
+
+        inventoryEntry.AMOUNT = inventoryEntry.RATE * inventoryEntry.BILLEDQTY;
+        inventoryEntry.ACCOUNTINGALLOCATIONS_LIST = new ACCOUNTINGALLOCATIONSLIST();
+        inventoryEntry.ACCOUNTINGALLOCATIONS_LIST.LEDGERNAME = res["SALESLIST.LIST"].NAME.content;
+        inventoryEntry.ACCOUNTINGALLOCATIONS_LIST.CLASSRATE = res["SALESLIST.LIST"].CLASSRATE.content;
+        inventoryEntry.ACCOUNTINGALLOCATIONS_LIST.LEDGERFROMITEM = res["SALESLIST.LIST"].LEDGERFROMITEM.content;
+        inventoryEntry.ACCOUNTINGALLOCATIONS_LIST.GSTOVRDNNATURE = res["SALESLIST.LIST"].GSTCLASSIFICATIONNATURE.content;
+        inventoryEntry.ACCOUNTINGALLOCATIONS_LIST.REMOVEZEROENTRIES = res["SALESLIST.LIST"].REMOVEZEROENTRIES.content;
+        inventoryEntry.ACCOUNTINGALLOCATIONS_LIST.AMOUNT = inventoryEntry.AMOUNT;
+        inventoryEntry.ACCOUNTINGALLOCATIONS_LIST.LEDGERFROMITEM = "Yes"
+        inventoryEntry.ACCOUNTINGALLOCATIONS_LIST.ISDEEMEDPOSITIVE = "No"
+        inventoryEntry.tallyObject = res;
+        this.voucher.ALLINVENTORYENTRIES_LIST.push(inventoryEntry);
+        this.renew()
+      },
+      err => {
+        console.log(err);
+      }
+    )
+   
+    
+    
+    
+   
+    
+  }
+
+  renew(){
+    this.productControl.setValue("");
+    this.batchControl.setValue("");
+    this.qtyControl.setValue(1);
+    this.showBatchDropDown = false;
+    this.productRef.nativeElement.focus(); 
+  }
+
 }

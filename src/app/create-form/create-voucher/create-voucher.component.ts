@@ -31,10 +31,10 @@ import { NgxIndexedDB } from 'ngx-indexed-db';
   styleUrls: ['./create-voucher.component.css']
 })
 export class CreateVoucherComponent implements OnInit {
-  voucher: VOUCHER
+  voucher: VOUCHER = new VOUCHER();
   @Input("editMode") editMode: boolean = false;
 
-  constructor(public voucherService?: VoucherService) {
+  constructor() {
 
   }
 
@@ -57,7 +57,7 @@ export class CreateVoucherComponent implements OnInit {
           sub.next(navigator.onLine);
           sub.complete();
         }));
-    }
+  }
 
  
 

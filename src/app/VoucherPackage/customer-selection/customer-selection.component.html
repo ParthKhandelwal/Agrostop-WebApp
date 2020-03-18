@@ -3,7 +3,7 @@
   <!--CUSTOMER Search-->
   <div ngClass="customerSearchBar" *ngIf="!createCustomer">
     <mat-form-field class="example-full-width">
-      <input type="text"
+      <input #customerField type="text"
              (keyup.enter)= "validateCustomer()"
              placeholder="Pick one"
              aria-label="Number"

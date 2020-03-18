@@ -70,6 +70,7 @@ import { PaymentOptionComponent } from './VoucherPackage/payment-option/payment-
 import { CustomerSelectionComponent } from './VoucherPackage/customer-selection/customer-selection.component';
 import { InventorySelectionComponent } from './VoucherPackage/inventory-selection/inventory-selection.component';
 import { VoucherWizardComponent } from './VoucherPackage/voucher-wizard/voucher-wizard.component';
+import { VoucherSettingComponent } from './VoucherPackage/voucher-setting/voucher-setting.component';
 
 
 
@@ -122,7 +123,8 @@ import { VoucherWizardComponent } from './VoucherPackage/voucher-wizard/voucher-
     PaymentOptionComponent,
     CustomerSelectionComponent,
     InventorySelectionComponent,
-    VoucherWizardComponent
+    VoucherWizardComponent,
+    VoucherSettingComponent
   ],
   imports: [
     BrowserAnimationsModule,

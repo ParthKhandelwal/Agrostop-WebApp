@@ -3,14 +3,14 @@
     "",
     "\\src",
     "\\src\\app",
-    "\\src\\app\\AccountingPackage",
-    "\\src\\app\\AccountingPackage\\day-book",
     "\\src\\app\\create-form",
-    "\\src\\app\\Interceptor",
-    "\\src\\app\\login-form",
-    "\\src\\app\\navigation-bar",
-    "\\src\\app\\_guard"
+    "\\src\\app\\create-form\\create-voucher",
+    "\\src\\app\\shared",
+    "\\src\\app\\VoucherPackage",
+    "\\src\\app\\VoucherPackage\\cash-tendered",
+    "\\src\\app\\VoucherPackage\\customer-selection",
+    "\\src\\app\\VoucherPackage\\inventory-selection"
   ],
-  "SelectedNode": "\\src\\app\\login-form\\login-form.component.ts",
+  "SelectedNode": "\\src\\app\\VoucherPackage\\customer-selection\\customer-selection.component.ts",
   "PreviewInSolutionExplorer": false
 }

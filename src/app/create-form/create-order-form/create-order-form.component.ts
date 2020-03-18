@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { VoucherService } from '../../shared/voucher.service';
 
 @Component({
   selector: 'app-create-order-form',
@@ -7,7 +8,7 @@ import { Component, OnInit } from '@angular/core';
 })
 export class CreateOrderFormComponent implements OnInit {
 
-  constructor() { }
+  constructor(private voucherService?: VoucherService) { }
 
   ngOnInit() {
   }

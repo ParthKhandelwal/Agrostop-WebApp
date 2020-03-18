@@ -1,6 +1,4 @@
 import { Component, OnInit, Inject, Input, ElementRef, ViewChild } from '@angular/core';
-import { HttpClient, HttpResponse, HttpHeaders } from '@angular/common/http';
-import { CookieService } from 'ngx-cookie-service';
 import { Router } from '@angular/router';
 import { ApiService } from '../../shared/api.service';
 import { MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
@@ -35,6 +33,7 @@ export class CreateUserFormComponent implements OnInit {
       cashLedgerList: [],
       defaultCashLedger: "",
       placeOfSupply: "",
+      priceLists: []
     }
   };
 
@@ -44,10 +43,11 @@ export class CreateUserFormComponent implements OnInit {
   voucherTypeDataSource: MatTableDataSource<VoucherTypeClass>;
   cashLedgerDataSource: MatTableDataSource<String>
   posClassDataSource: MatTableDataSource<String>
+  priceListDataSource: MatTableDataSource<String>
 
   @ViewChild('posClass', { static: false }) posClass:ElementRef;
 
-
+  priceList: any[] = [];
   posCashLedgers: any[] = [];
   cashLedgers: any[]= [];
   basicBasePartyNames: any[]= [];
@@ -111,9 +111,19 @@ export class CreateUserFormComponent implements OnInit {
       }
     );
 
+    this.apiService.getPriceList().subscribe(
+      res => {
+        this.priceList = res;
+      },
+      err =>{
+        console.log(err);
+      }
+    );
+    
     this.godownDataSource = new MatTableDataSource<string>(this.user.godownList);
     this.voucherTypeDataSource = new MatTableDataSource<VoucherTypeClass>(this.user.salesVoucherSettings.voucherTypeList);
     this.cashLedgerDataSource = new MatTableDataSource<string>(this.user.salesVoucherSettings.cashLedgerList);
+    this.priceListDataSource = new MatTableDataSource<String>(this.user.salesVoucherSettings.priceLists);
   }
 
   submit(){
@@ -228,4 +238,36 @@ addPOSClass(voucherTypeName: string){
     }
   }
 }
+
+
+
+
+addPriceList(price: string){
+  var priceListExists: boolean = false;
+  if (this.user.salesVoucherSettings.priceLists != null){
+  for (var i = 0; i < this.user.salesVoucherSettings.voucherTypeList.length; i++) {
+    if (this.user.salesVoucherSettings.priceLists[i] == price) {
+      priceListExists = true;
+    }
+  }
+} else {
+  this.user.salesVoucherSettings.priceLists = [];
+}
+  if(!priceListExists){
+    this.user.salesVoucherSettings.priceLists.push(price);
+  }
+
+  this.priceListDataSource._updateChangeSubscription();
+}
+
+deletePriceList(price: string){
+  for (var i = 0; i < this.user.salesVoucherSettings.priceLists.length; i++) {
+    if (this.user.salesVoucherSettings.priceLists[i] === price) {
+      this.user.salesVoucherSettings.priceLists.splice(i, 1);
+    }
+  }
+  this.priceListDataSource._updateChangeSubscription();
+}
+
+
 }

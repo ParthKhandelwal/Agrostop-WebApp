@@ -17,6 +17,9 @@ import { TaxDetails } from '../Model/tax-details';
   providedIn: 'root'
 })
 export class ApiService {
+  getProductBatch(product: string): Observable<any[]> {
+    return this.httpClient.get<any[]>(this.BASE_URL + 'batch/?id=' + product);
+  }
   getLedger(ledgerEntry: string): Observable<any> {
     return this.httpClient.get<any>(this.BASE_URL + 'ledger/?id=' + ledgerEntry);
     }
@@ -35,8 +38,8 @@ export class ApiService {
     return this.httpClient.post<any>(this.WEB_SOCKET_URL +'/authenticate', user);
   }
 
-  getCustomers(): Observable<Customer[]> {
-    return this.httpClient.get<Customer[]>(this.BASE_URL + 'customers/getAll');
+  getCustomers(): Observable<any[]> {
+    return this.httpClient.get<any[]>(this.BASE_URL + 'customers/getAll');
 
   }
 
@@ -44,8 +47,8 @@ export class ApiService {
     return this.httpClient.get<Customer>(this.BASE_URL + 'customer/?id=' + id);
   }
 
-  getStockItem(id: string, godown: string): Observable<any> {
-    return this.httpClient.get<any>(this.BASE_URL + 'stockItem/?id=' + id + "&godownName=" + godown);
+  getStockItem(id: string): Observable<any> {
+    return this.httpClient.get<any>(this.BASE_URL + 'stockItem/?id=' + id);
   }
 
   addCustomer(customer: Customer): Observable<any> {
@@ -71,8 +74,8 @@ export class ApiService {
     return this.httpClient.get<StockItem[]>(this.BASE_URL + 'stockItem/getAll');
   }
 
-  getAllStockItemsForBilling(godownName: string): Observable<any> {
-    return this.httpClient.get<StockItem[]>(this.BASE_URL + 'stockItem/getStockItemListForBilling?godownName=' + godownName);
+  getAllStockItemsForBilling(): Observable<any> {
+    return this.httpClient.get<StockItem[]>(this.BASE_URL + 'stockItem/getStockItemListForBilling?godownName=');
   }
 
   getNearExpiryBatches(daysRemaining: Number): Observable<any> {
@@ -81,6 +84,10 @@ export class ApiService {
 
   getCustomerHistory(id: string): Observable<any> {
     return this.httpClient.get(this.BASE_URL + 'customer/getCustomerHistory?id='+ id);
+  }
+
+  getCustomerOrder(id: string): Observable<VOUCHER[]> {
+    return this.httpClient.get<VOUCHER[]>(this.BASE_URL + 'customer/getCustomerOrder?id=' + id);
   }
 
   saveTallyVoucher(tallyVoucher: VOUCHER): Observable<any> {
@@ -95,6 +102,10 @@ export class ApiService {
     return this.httpClient.get(this.BASE_URL + "voucherType/getNamesByParent?voucherType=Sales");
   }
 
+  getVoucherType(id: string): Observable<any>{
+    return this.httpClient.get(this.BASE_URL + "voucherType/?id=" +id);
+  }
+
   getPlaceOfSupplies(): Observable<any> {
     return this.httpClient.get(this.BASE_URL + 'user/placeOfSupplies');
   }
@@ -102,8 +113,8 @@ export class ApiService {
     return this.httpClient.get(this.BASE_URL + 'godown/getNames');
   }
 
-  getPriceList(item: string): Observable<any> {
-    return this.httpClient.get(this.BASE_URL + 'stockItem/getPriceList?itemName='+item);
+  getPriceList(): Observable<any> {
+    return this.httpClient.get<any>(this.BASE_URL + 'user/priceLevels');
   }
 
   savePriceList(item: string, priceList: UpdateStockItemData): Observable<any> {

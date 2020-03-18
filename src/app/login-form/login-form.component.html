@@ -1,27 +1,4 @@
-<!--div-- data-type="default" class="card-body">
-  <form >
-    <fieldset data-type="default">
-      <div data-type="default" class="form-group">
-
-        <input data-type="default"
-               [(ngModel)]="user.username"
-               type="text" required
-               #username='ngModel' [ngClass]="{'is-invalid': f.submitted && username.invalid}" placeholder="Enter Username" name="username" class="form-control" />
-      </div>
-
-      <div data-type="default" class="form-group">
-        <input data-type="default" [(ngModel)]="user.password" type="password" placeholder="Password" name="password" value="" class="form-control"
-               required
-               #password='ngModel' [ngClass]="{'is-invalid': f.submitted && password.invalid}" />
-      </div>
-      <div data-type="default" class="checkbox"><label><input data-type="default" name="remember" type="checkbox" value="Remember Me" /> Remember Me </label></div>
-      <button type="submit" name="button" class="btn btn-lg btn-success btn-block">Login</button>
-    </fieldset>
-  </form>
-  <hr data-type="default" />
-</!--div-->
-
-<div class="limiter">
+<!--div-- class="limiter">
   <div class="container-login100">
     <div class="wrap-login100 p-t-85 p-b-20">
       <form class="login100-form validate-form"
@@ -80,7 +57,27 @@
       </form>
     </div>
   </div>
-</div>
+</!--div-->
 
-
-<div id="dropDownSelect1"></div>
+  <div class="d-flex login-dark" style="height: 650px;background-image: url(&quot;assets/img/login_background.jpg&quot;);">
+    <div class="col-4 align-content-start" style="width: 30%;height: 100%;padding: 0;">
+      <form class="shadow" method="post"
+            data-type="default" #f='ngForm' (submit)="f.form.valid && validate()" accept-charset="UTF-8" role="form"
+            style="height: 80%;padding: 40px;width: 100%;">
+        <h2 class="sr-only">Login Form</h2>
+        <div class="illustration"><span class="glyphicon glyphicon-envelope"></span> </div>
+        <div class="form-group"><input class="form-control"
+                                       type="text" name="username"
+                 data-type="default"
+               [(ngModel)]="user.username"
+                required
+               #username='ngModel' [ngClass]="{'is-invalid': f.submitted && username.invalid}" placeholder="Username"></div>
+        <div class="form-group"><input class="form-control"
+                                       type="password" name="pass"
+                 data-type="default" [(ngModel)]="user.password" value=""
+               required
+               #password='ngModel' [ngClass]="{'is-invalid': f.submitted && password.invalid}" placeholder="Password"></div>
+        <div class="form-group"><button class="btn btn-primary btn-block" type="submit">Log In</button></div><a class="forgot" href="#">Forgot your email or password?</a>
+      </form>
+    </div>
+  </div>

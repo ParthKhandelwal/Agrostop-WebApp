@@ -53,7 +53,7 @@ dataSource: MatTableDataSource<PriceListItem>;
       }
     );
 
-    this.apiService.getPriceList(this.item).subscribe(
+    this.apiService.getPriceList().subscribe(
       res => {
         
         for (var i = 0; i < res.FULLPRICELIST_LIST.length; i++) {

@@ -1,200 +1,94 @@
-<div class="userForm">
-  <h1 align = "center">User Details</h1>
-  <form data-type="default" #f= 'ngForm' (submit)= 'f.form.valid && submit()' name="create-user-form" accept-charset="UTF-8" role="form">
-    <div class="basicUserDetails">
-      <mat-card class="userForm">
-        <mat-card-header class="header">
-          Basic details
-        </mat-card-header>
-        <mat-card-content>
-      <mat-form-field class="input">
-        <input matInput type="text" name="userName" [(ngModel)]= 'user.userName' required [readonly] = 'updateMode' placeholder="Enter username">
-      </mat-form-field>
-      <mat-form-field class="input">
-        <input matInput name = 'password'  [(ngModel)] = 'user.password' placeholder="Enter password" [type]="hide ? 'password' : 'text'">
-        <button mat-icon-button matSuffix (click)="hide = !hide" [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hide">
-          <mat-icon>{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
-        </button>
-      </mat-form-field>
-      <mat-form-field class="input">
-        <input matInput type="text" name="name" [(ngModel)]= 'user.name' required placeholder="Enter name">
-      </mat-form-field>
-      <mat-form-field class="input">
-        <input matInput type="text" name="contactNumber" [(ngModel)]= 'user.contactNumber' required placeholder="Enter contactNumber">
-      </mat-form-field>
-      <mat-form-field class="input">
-        <mat-select placeholder="Select a user role" name = "role" [(ngModel)]='user.role'>
-          <mat-option value = "Company User">Company User</mat-option>
-          <mat-option value = "Field User">Field User</mat-option>
-          <mat-option value = "Admin User">Admin User</mat-option>
-        </mat-select>
-      </mat-form-field>
-      </mat-card-content>
-      </mat-card>
-      </div>
-
-      <ng-container *ngIf = "user.role == 'Company User'">
-      <div class="additionalUserDetails">
-      <mat-card class="userForm">
-        <mat-card-header class="header">
-          Company User Additional Details
-        </mat-card-header>
-        <mat-card-content>
-          <mat-form-field class="input">
-            <input matInput type="text" name="tallyUserName" [(ngModel)]= 'user.tallyUserName' placeholder="Enter Tally username" required>
-          </mat-form-field>
-
-          <!--GODOWN DIV-->
-          <div class="salesDiv">
-          <mat-form-field class="input">
-            <mat-select placeholder = "Choose Godown" name = 'godownName' required (selectionChange)="this.addGodown($event.value)">
-              <mat-option *ngFor = 'let name of godownNames' [value] = 'name._NAME'>{{name._NAME}}</mat-option>
-            </mat-select>
-          </mat-form-field>
-          <table mat-table class="" aria-label="Elements" [(dataSource)]='godownDataSource'>
-            <!-- Phone Number Column -->
-            <ng-container matColumnDef="name">
-              <th mat-header-cell *matHeaderCellDef>Name</th>
-              <td mat-cell *matCellDef="let row">{{row}}</td>
-            </ng-container>
-
-
-            <ng-container matColumnDef="update">
-
-              <th mat-header-cell *matHeaderCellDef>Remove</th>
-              <td mat-cell *matCellDef="let row">
-                  <button  mat-button color="warn" (click)='deleteGodown(row)' name="button">
-                      <mat-icon aria-hidden="false">delete</mat-icon>
-                  </button>
-              </td>
-            </ng-container>
-
-            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-          </table>
-
-          </div>
-
-          <!-- CASH LEDGER-->
-          <div class="salesDiv">
-          <mat-form-field class="input">
-            <mat-select placeholder = "Choose Cash Ledger Name" name = 'cashLedgerName' required (selectionChange)="this.addCashLedger($event.value)">
-              <mat-option *ngFor = 'let name of cashLedgers' [value] = 'name._NAME'>{{name._NAME}}</mat-option>
-            </mat-select>
-          </mat-form-field>
-
-          <table mat-table class="" aria-label="Elements" [(dataSource)]='cashLedgerDataSource'>
-            <!-- Phone Number Column -->
-            <ng-container matColumnDef="name">
-              <th mat-header-cell *matHeaderCellDef>Name</th>
-              <td mat-cell *matCellDef="let row">{{row}}</td>
-            </ng-container>
-
-
-            <ng-container matColumnDef="update">
-
-              <th mat-header-cell *matHeaderCellDef>Remove</th>
-              <td mat-cell *matCellDef="let row">
-                  <button  mat-button color="warn" (click)='deleteCashLedger(row)' name="button">
-                      <mat-icon aria-hidden="false">delete</mat-icon>
-                  </button>
-              </td>
-            </ng-container>
-
-            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-          </table>
-
-          </div>
-
-          <!--VOUCHERTYPE -->
-          <div class="salesDiv">
-          <mat-form-field class="input">
-            <mat-select placeholder = "Choose Voucher Type Name" name = 'voucherTypeName' required (selectionChange)="this.addVoucherType($event.value)">
-              <mat-option *ngFor = 'let name of voucherTypeNames' [value] = 'name._NAME'>{{name._NAME}}</mat-option>
-            </mat-select>
-          </mat-form-field>
-
-          <table mat-table class="" aria-label="Elements" [(dataSource)]='voucherTypeDataSource'>
-
-            <ng-container matColumnDef="name">
-              <th mat-header-cell *matHeaderCellDef>Name</th>
-              <td mat-cell *matCellDef="let row">{{row.voucherTypeName}}</td>
-            </ng-container>
-
-
-            <ng-container matColumnDef="update">
-
-              <th mat-header-cell *matHeaderCellDef>Remove</th>
-              <td mat-cell *matCellDef="let row">
-                  <button  mat-button color="warn" (click)='deleteVoucherType(row)' name="button">
-                      <mat-icon aria-hidden="false">delete</mat-icon>
-                  </button>
-              </td>
-            </ng-container>
-
-            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-          </table>
-
-          </div>
-
-<div class="voucherTypeDescription" *ngFor= "let v of user.salesVoucherSettings.voucherTypeList">
-  <mat-card>
-    <mat-card-header>
-        <b>{{v.voucherTypeName}}</b>
-    </mat-card-header>
-    <mat-card-content>
-      <div class="salesDiv">
-      <mat-form-field class="input">
-        <input #posClass matInput type="text" name="POSClassName" placeholder="Enter POS Class">
-        <button  mat-button color="warn" (click)='addPOSClass(v.voucherTypeName)' name="addPOSClass">
-            <mat-icon aria-hidden="false">add</mat-icon>
-        </button>
-      </mat-form-field>
-
-      <table mat-table class="" aria-label="Elements" [(dataSource)]='posClassDataSource'>
-
-        <ng-container matColumnDef="name">
-          <th mat-header-cell *matHeaderCellDef>Name</th>
-          <td mat-cell *matCellDef="let row">{{row.voucherTypeName}}</td>
-        </ng-container>
-
-
-        <ng-container matColumnDef="update">
-
-          <th mat-header-cell *matHeaderCellDef>Remove</th>
-          <td mat-cell *matCellDef="let row">
-              <button  mat-button color="warn" (click)='deleteVoucherType(row)' name="button">
-                  <mat-icon aria-hidden="false">delete</mat-icon>
-              </button>
-          </td>
-        </ng-container>
-
-        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-      </table>
-
-      </div>
-    </mat-card-content>
-  </mat-card>
-
-</div>
-
-
-            <input name = "fileInput"  style="display: none" type="file" (change)="onFileChanged($event)" #fileInput>
-            <button mat-raised-button (click) = "fileInput.click()" type= 'button' name="button">Select File</button>
-            <img [src]="url" height="200"> <br/>
-        </mat-card-content>
-      </mat-card>
+<br>
+<div class="col-md-12">  
+    <div class="col-md-4">      
+        <div class="portlet light profile-sidebar-portlet bordered">
+            <div class="profile-userpic">
+                <img src="https://bootdey.com/img/Content/avatar/avatar6.png" class="img-responsive" alt=""> </div>
+            <div class="profile-usertitle">
+                <div class="profile-usertitle-name"> Marcus Doe </div>
+                <div class="profile-usertitle-job"> Developer </div>
+            </div>
+            <div class="profile-userbuttons">
+                <button type="button" class="btn btn-info  btn-sm">Follow</button>
+                <button type="button" class="btn btn-info  btn-sm">Message</button>
+            </div>
+            <div class="profile-usermenu">
+                <ul class="nav">
+                    <li class="active">
+                        <a href="#">
+                            <i class="icon-home"></i> Ticket List </a>
+                    </li>
+                    <li>
+                        <a href="#">
+                            <i class="icon-settings"></i> Support Staff </a>
+                    </li>
+                    <li>
+                        <a href="#">
+                            <i class="icon-info"></i> Configurations </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
     </div>
-    </ng-container>
-    <ng-container>
-      <button class="btn btn-lg btn-block btn-primary mb-3" type="submit" name="button"> Save </button>
-    </ng-container>
-
-
-
-  </form>
-
+    <div class="col-md-8"> 
+        <div class="portlet light bordered">
+            <div class="portlet-title tabbable-line">
+                <div class="caption caption-md">
+                    <i class="icon-globe theme-font hide"></i>
+                    <span class="caption-subject font-blue-madison bold uppercase">Your info</span>
+                </div>
+            </div>
+            <div class="portlet-body">
+                <div>
+                
+                    <!-- Nav tabs -->
+                    <ul class="nav nav-tabs" role="tablist">
+                        <li role="presentation" class="active"><a href="#home" aria-controls="home" role="tab" data-toggle="tab">Update</a></li>
+                        <li role="presentation"><a href="#profile" aria-controls="profile" role="tab" data-toggle="tab">Profile</a></li>
+                        <li role="presentation"><a href="#messages" aria-controls="messages" role="tab" data-toggle="tab">Messages</a></li>
+                        <li role="presentation"><a href="#settings" aria-controls="settings" role="tab" data-toggle="tab">Settings</a></li>
+                    </ul>
+                
+                    <!-- Tab panes -->
+                    <div class="tab-content">
+                        <div role="tabpanel" class="tab-pane active" id="home">
+                            <form>
+                              <div class="form-group">
+                                <label for="inputName">Name</label>
+                                <input type="text" class="form-control" id="inputName" placeholder="Name">
+                              </div>
+                                <div class="form-group">
+                                <label for="inputLastName">Last Name</label>
+                                <input type="text" class="form-control" id="inputLastName" placeholder="Last Name">
+                              </div>
+                              <div class="form-group">
+                                <label for="exampleInputEmail1">Email address</label>
+                                <input type="email" class="form-control" id="exampleInputEmail1" placeholder="Email">
+                              </div>
+                              <div class="form-group">
+                                <label for="exampleInputPassword1">Password</label>
+                                <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Password">
+                              </div>
+                              <div class="form-group">
+                                <label for="exampleInputFile">File input</label>
+                                <input type="file" id="exampleInputFile">
+                                <p class="help-block">Example block-level help text here.</p>
+                              </div>
+                              <div class="checkbox">
+                                <label>
+                                  <input type="checkbox"> Check me out
+                                </label>
+                              </div>
+                              <button type="submit" class="btn btn-default">Submit</button>
+                            </form>
+                        </div>
+                        <div role="tabpanel" class="tab-pane" id="profile">Profile</div>
+                        <div role="tabpanel" class="tab-pane" id="messages">Messages</div>
+                        <div role="tabpanel" class="tab-pane" id="settings">Settings</div>
+                    </div>
+                
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
