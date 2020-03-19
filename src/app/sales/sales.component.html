@@ -1,2 +1,32 @@
-<app-navigation-bar> <router-outlet></router-outlet></app-navigation-bar>
+<app-navigation-bar> 
+    <div class="col htmlPage">
+        <div class="row d-flex">
+            <div class="col">
+                <div style="display: block">
+                    <canvas baseChart
+                    [datasets]="barChartData"
+                    [labels]="barChartLabels"
+                    [options]="barChartOptions"
+                    [legend]="barChartLegend"
+                    [chartType]="barChartType">
+                    </canvas>
+                </div>
+            </div>
+            <div class="col">
+                <canvas baseChart
+                    [chartType]="chartType"
+                    [datasets]="chartDatasets"
+                    [labels]="chartLabels"
+                    [colors]="chartColors"
+                    [options]="chartOptions"
+                    [legend]="true"
+      (chartHover)="chartHovered($event)"
+      (chartClick)="chartClicked($event)">
+  </canvas>
+            </div>
+        </div>
+        <div class="row"></div>
+    </div>
+    <router-outlet></router-outlet>
+</app-navigation-bar>
 

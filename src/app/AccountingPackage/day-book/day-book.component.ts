@@ -18,12 +18,13 @@ import { map, filter } from 'rxjs/operators';
   styleUrls: ['./day-book.component.css']
 })
 export class DayBookComponent implements OnInit {
+  loading: boolean = false
   editMode: boolean = false
   showDetails: boolean = false;
   voucher: VOUCHER = new VOUCHER();
   fromDate = new FormControl();
   toDate = new FormControl();
-  vouchers$: Observable<any[]>;
+  vouchers:any[] = []
   @ViewChild(VoucherTableComponent, { static: false }) table: VoucherTableComponent;
   constructor(private apiService?: ApiService, private router?: Router) { }
 
@@ -35,8 +36,18 @@ export class DayBookComponent implements OnInit {
 
 
   getVouchers(){
+    this.loading = true;
 
-    this.vouchers$ =  this.apiService.getVouchers(this.fromDate.value, this.toDate.value);
+     this.apiService.getVouchers(this.fromDate.value, this.toDate.value).subscribe(
+      res => {
+        this.vouchers = res;
+        this.loading = false;
+      },
+      err => {
+        console.log(err)
+      }
+
+    );
     
   }
 

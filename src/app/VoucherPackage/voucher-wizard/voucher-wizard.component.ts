@@ -7,6 +7,9 @@ import { ApiService } from '../../shared/api.service';
 import { PosService } from 'src/app/shared/pos.service';
 import { merge, fromEvent, Observable, Observer } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { ThemePalette } from '@angular/material';
+import {MatProgressBarModule} from '@angular/material/progress-bar';
+
 
 
 @Component({
@@ -16,8 +19,8 @@ import { map } from 'rxjs/operators';
 })
 export class VoucherWizardComponent implements OnInit {
   
-  savingVoucher: boolean = false;
-  
+  loading: boolean = false;
+  syncing:boolean = false;
   lastUpSync: Date;
   lastDownSync: Date;
   customerSelection: boolean = false;
@@ -33,6 +36,8 @@ export class VoucherWizardComponent implements OnInit {
   @Output("valueChange") valueChanged = new EventEmitter
   @Input("editMode") editMode: boolean;
   @Input('voucher') voucher: VOUCHER;
+
+  
   constructor(public posService?: PosService, private apiService?: ApiService) { }
 
   ngOnInit() {
@@ -145,7 +150,7 @@ export class VoucherWizardComponent implements OnInit {
   }
 
   save() {
-    this.savingVoucher = true;
+    this.loading = true;
     console.log("Saving Voucher...")
     this.apiService.saveTallyVoucher(this.voucher).subscribe(
       res => {
@@ -154,7 +159,7 @@ export class VoucherWizardComponent implements OnInit {
           this.posService.addCacheVoucher(this.voucher).then(
             () => {
               this.valueChanged.emit("voucherCompleted");
-              this.savingVoucher = false;
+              this.loading = false;
               
             }
           )
@@ -162,7 +167,7 @@ export class VoucherWizardComponent implements OnInit {
         } else {
           this.voucher = new VOUCHER();
           this.switchVoucherSettings();
-          this.savingVoucher = false;
+          this.loading = false;
         }
       },
       err => {
@@ -172,7 +177,7 @@ export class VoucherWizardComponent implements OnInit {
               this.valueChanged.emit("voucherCompleted");
               this.voucher = new VOUCHER();
               this.switchVoucherSettings();
-              this.savingVoucher = false;
+              this.loading = false;
             }
           )
         
@@ -182,10 +187,11 @@ export class VoucherWizardComponent implements OnInit {
     
   }
 
-  downSync(){
-
-      this.posService.enablePOSMode();
-    
+  async downSync(){
+      this.loading = true;
+      this.syncing = true;
+      console.log("Started");
+      await this.posService.enablePOSMode();
     
   }
 

@@ -11,7 +11,10 @@ import { ApiService } from './api.service';
   providedIn: 'root'
 })
 export class PosService {
-
+  public batchPercent: number = 100;
+  public itemPercent: number = 100;
+  public ledgerPercent: number = 100;
+  public customerPercent: number = 100;
   user: User;
   databaseCreated: boolean = false;
   database: Promise<any>;
@@ -45,12 +48,24 @@ export class PosService {
       //objectStore.createIndex('email', 'email', { unique: true });
     })
   }
+
+  syncingOver() : boolean{
+    return (this.itemPercent == 100) 
+            && (this.batchPercent == 100)
+            && (this.customerPercent == 100)
+            && (this.ledgerPercent == 100)
+  }
   
 
-  enablePOSMode(){
-      this.saveItems();
-      this.saveCustomers();
-      this.saveLedgers();
+  async enablePOSMode(){
+      this.customerPercent = 0;
+      this.batchPercent = 0;
+      this.ledgerPercent = 0;
+      this.itemPercent = 0;
+      
+      await this.saveItems();
+      await this.saveCustomers();
+      await this.saveLedgers();
        
   }
 
@@ -62,28 +77,42 @@ export class PosService {
   return  await this.db.getAll("customers");
   }
 
-   saveItems(){
-     this.apiService.getAllStockItemsForBilling().subscribe(
-       res =>{
-          
+  async saveItems(){
+    await this.apiService.getAllStockItemsForBilling().subscribe(
+       async (res: any[]) =>{
+          const len: number = res.length;
+          var index: number = 0
+          var batchIndex: number = 0
           for (let item of res){
             
-           this.apiService.getStockItem(item).subscribe(
-               (result) => {
+          await this.apiService.getStockItem(item).subscribe(
+              async (result) => {
                 if ((result && result.ENVELOPE && result.ENVELOPE.BODY && result.ENVELOPE.BODY.DATA
                   && result.ENVELOPE.BODY.DATA.TALLYMESSAGE && result.ENVELOPE.BODY.DATA.TALLYMESSAGE.STOCKITEM)){
-                     this.db.update("items",result.ENVELOPE.BODY.DATA.TALLYMESSAGE.STOCKITEM).then(
-                      res => console.log("Saved Item")
+                    await this.db.update("items",result.ENVELOPE.BODY.DATA.TALLYMESSAGE.STOCKITEM).then(
+                      res => {
+                        index++;
+                        this.itemPercent = Math.round((index/len) * 100);
+                      }
                     )
                 }
               }
             )
-             this.apiService.getProductBatch(item).subscribe(
-               r => {
+            this.apiService.getProductBatch(item).subscribe(
+                (r:any[]) => {
                  if (r != null && r instanceof Array){
+                   const length: number = res.length;
+                   var index: number = 0
                    for (let re of r){
                      re.productId = item;
-                     this.db.update("Batches",re);
+                      this.db.update("Batches",re).then(
+                        res => {
+                          index++
+                          batchIndex = index/len;
+                          this.batchPercent = Math.round((batchIndex/len)*100);
+                        }
+                      );
+                     
                    }
                  }
                 
@@ -170,13 +199,20 @@ export class PosService {
 
     saveLedgers(){
     this.apiService.getLedgerByGroup("Sundry Debtors").subscribe(
-      res =>{
+      (res: any[]) =>{
+        const len: number = res.length;
+        var index: number = 0;
         for (let item of res){
           this.apiService.getLedger(item).subscribe(
             r => {
               if (r.ENVELOPE != null){
               var re = r.ENVELOPE.BODY.DATA.TALLYMESSAGE.LEDGER;
-               this.db.update("Ledgers", re);
+               this.db.update("Ledgers", re).then(
+                 res => {
+                   index++;
+                   this.ledgerPercent = Math.round((index/len)*100)
+                 }
+               );
               }
             },
             e => {
@@ -224,27 +260,25 @@ export class PosService {
 
   saveCustomers(){
      this.apiService.getCustomers().subscribe(
-      res =>{
-
+      (res:any[]) =>{
+        const len : number = res.length;
+        var index: number = 0;
           for(let item of res){
-            this.db.getByKey("customers", item._id.counter).then(
-              async res => {
-                if(res){
-                  console.log(res);
-                  await this.db.update("customers", item);
-                }else{
-                  await this.db.add("customers", item);
-                }
-              },
+            
+             this.db.update("customers", item).then(
+               res => {
+                 index++;
+                this.customerPercent = Math.round((index/len)*100)
+               },
+                
               err => {
                 console.log(err);
               }
-            )
-          .then(
-            () => console.log("Customer Saved: " + item.name)
-          );
-        }
-      },
+            
+          
+        )
+      }
+    },
       err =>{
         console.log(err);
       }

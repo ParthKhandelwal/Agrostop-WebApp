@@ -71,8 +71,9 @@ import { CustomerSelectionComponent } from './VoucherPackage/customer-selection/
 import { InventorySelectionComponent } from './VoucherPackage/inventory-selection/inventory-selection.component';
 import { VoucherWizardComponent } from './VoucherPackage/voucher-wizard/voucher-wizard.component';
 import { VoucherSettingComponent } from './VoucherPackage/voucher-setting/voucher-setting.component';
+import {MatProgressBarModule} from '@angular/material/progress-bar';
 
-
+import { ChartsModule } from 'ng2-charts';
 
 
 
@@ -149,7 +150,9 @@ import { VoucherSettingComponent } from './VoucherPackage/voucher-setting/vouche
     MatCardModule,
     MatListModule,
     MatToolbarModule,
-    StorageServiceModule
+    StorageServiceModule,
+    ChartsModule,
+    MatProgressBarModule
 
   ],
   providers: [CookieService, ApiService, DatePipe, MatDialog, AgroStorageService, MatDialogConfig, {

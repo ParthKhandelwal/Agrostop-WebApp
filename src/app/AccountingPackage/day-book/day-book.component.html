@@ -1,6 +1,7 @@
 
   <div class="dayBook" *ngIf =" !editMode">
     
+    
     <div class="container-fluid">
       <div class="row">
         <div style="align-self: center;">
@@ -32,7 +33,10 @@
               <h4 class="card-title ">Day Book</h4>
               <p class="card-category"> Here is a subtitle for this table</p>
             </div>
-            <div style="padding-left: 10px; padding-right:10px;">
+            <div *ngIf = "loading" style="vertical-align: middle; align-self: center;">
+              <img src="assets/img/agrostop.gif" alt="Saving Voucher..." width="100px" height="100px">
+            </div>
+            <div style="padding-left: 10px; padding-right:10px;" *ngIf = "!loading">
               <div class="table-responsive">
                 <table class="table">
                   <thead class=" text-primary">
@@ -56,7 +60,7 @@
                   </thead>
                   <tbody>
 
-                    <ng-container *ngFor="let v of vouchers$ | async">
+                    <ng-container *ngFor="let v of vouchers">
                       <tr *ngIf = "v.VOUCHER">
                         <td>
                           {{v.VOUCHER ? v.VOUCHER.DATE  : "" | date: "dd-MMM-yyyy"}}

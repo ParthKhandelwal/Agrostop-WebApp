@@ -11,12 +11,37 @@
             
             
 
-            <div class="card wizard-card" data-color="orange" id="wizardProfile">
-              <div *ngIf = "savingVoucher" style="vertical-align: middle; align-self: center;">
+          <div class="card wizard-card" data-color="orange" id="wizardProfile" >
+              <div *ngIf = "loading || !posService.syncingOver()" style="vertical-align: middle; align-self: center;">
                 <img src="assets/img/agrostop.gif" alt="Saving Voucher..." width="100px" height="100px">
+                
               </div>
 
-              <div *ngIf = "!savingVoucher">
+              <div *ngIf = "!posService.syncingOver()"  style="vertical-align: middle; align-self: center; padding-top: 20px; width: 80%;">
+                <h6 class="example-h2">Getting Customers : {{posService.customerPercent}} %</h6>
+                <section class="example-section">
+                  <mat-progress-bar mode="determinate" [value]="posService.customerPercent"></mat-progress-bar>
+                </section>
+
+                <h6 class="example-h2">Getting Ledgers : {{posService.ledgerPercent}} %</h6>
+                <section class="example-section">
+                  <mat-progress-bar mode="determinate" [value]="posService.ledgerPercent"></mat-progress-bar>
+                </section>
+
+                <h6 class="example-h2">Getting Items : {{posService.itemPercent}} %</h6>
+                <section class="example-section">
+                  <mat-progress-bar mode="determinate" [value]="posService.itemPercent"></mat-progress-bar>
+                </section>
+
+                <h6 class="example-h2">Getting Batches : {{posService.batchPercent}} %</h6>
+                <section class="example-section">
+                  <mat-progress-bar mode="determinate" [value]="posService.batchPercent"></mat-progress-bar>
+                </section>
+                
+              </div>
+              
+
+            <div *ngIf = "!loading && posService.syncingOver()">
               <form action="" method="">
                 <!--        You can switch ' data-color="orange" '  with one of the next bright colors: "blue", "green", "orange", "red"          -->
 
@@ -82,7 +107,7 @@
                             </div>
                             <div class="card-body">
                                 <p class="card-text sub-text-color">Cache:</p>
-                                <p class="card-text cardbody-sub-text">Vouchers</p>
+                                <p class="card-text cardbody-sub-text">{{posService.itemPercent}}</p>
                             </div>
                         </div>
                       </a>
