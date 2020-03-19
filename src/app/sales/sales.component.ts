@@ -2,6 +2,7 @@ import { Component, OnInit, Inject, ViewChild } from '@angular/core';
 import { NavItem } from '../side-navigation-bar/side-navigation-bar.component';
 
 import { ApiService } from '../shared/api.service';
+import { Router } from '@angular/router';
 
 
 
@@ -11,7 +12,7 @@ import { ApiService } from '../shared/api.service';
   styleUrls: ['./sales.component.css']
 })
 export class SalesComponent implements OnInit {
-
+  view : boolean = true;
   public barChartOptions = {
     scaleShowVerticalLines: false,
     responsive: true
@@ -53,12 +54,24 @@ export class SalesComponent implements OnInit {
   public chartHovered(e: any): void { }
 
 
-  constructor(private apiService?: ApiService) { }
+  constructor(private apiService?: ApiService, private router?: Router) { }
 
   ngOnInit() {
 
   }
 
+  toggle(){
+    
+  }
 
+  dayBook(){
+    this.view = false;
+    this.router.navigateByUrl("/sales/day-book");
+  }
+
+  salesVoucher(){
+    this.view = false;
+    this.router.navigate(['/sales/day-book']);
+  }
 
 }
