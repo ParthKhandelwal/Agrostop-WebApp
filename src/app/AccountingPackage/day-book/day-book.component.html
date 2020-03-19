@@ -1,9 +1,33 @@
 
   <div class="dayBook" *ngIf =" !editMode">
+    
     <div class="container-fluid">
       <div class="row">
+        <div style="align-self: center;">
+          <td>
+            <mat-form-field>
+              <mat-label>From</mat-label>
+              <input matInput [matDatepicker]= "Frompicker" [formControl] = 'fromDate'>
+              <mat-datepicker-toggle matSuffix [for]= "Frompicker" ></mat-datepicker-toggle>
+              <mat-datepicker #Frompicker></mat-datepicker>
+            </mat-form-field>
+          </td>
+          <td>
+            <mat-form-field>
+              <mat-label>To</mat-label>
+              <input matInput [matDatepicker]= "Topicker" [formControl] = 'toDate'>
+              <mat-datepicker-toggle matSuffix [for]= "Topicker" ></mat-datepicker-toggle>
+              <mat-datepicker #Topicker></mat-datepicker>
+            </mat-form-field>
+          </td>
+          <td>
+            <button (click) = "getVouchers()">Get</button>
+          </td>
+      
+        </div>
         <div class="col-md-12">
           <div class="card">
+            
             <div class="card-header card-header-primary">
               <h4 class="card-title ">Day Book</h4>
               <p class="card-category"> Here is a subtitle for this table</p>
@@ -32,22 +56,22 @@
                   </thead>
                   <tbody>
 
-                    <ng-container *ngFor="let voucher of voucherService.vouchers">
-                      <tr>
+                    <ng-container *ngFor="let v of vouchers$ | async">
+                      <tr *ngIf = "v.VOUCHER">
                         <td>
-                          {{voucher.DATE |date: 'dd-MMM-yyyy'}}
+                          {{v.VOUCHER ? v.VOUCHER.DATE  : "" | date: "dd-MMM-yyyy"}}
                         </td>
                         <td>
-                          {{voucher.VOUCHERNUMBER}}
+                          {{v.VOUCHER ? v.VOUCHER.VOUCHERNUMBER : ""}}
                         </td>
                         <td>
-                          {{voucher.BASICBUYERNAME}}
+                          {{v.VOUCHER ? v.VOUCHER.BASICBUYERNAME : ""}}
                         </td>
                         <td>
-                          {{voucher.ADDRESS_LIST.ADDRESS}}
+                          {{v.VOUCHER ? v.VOUCHER["ADDRESS.LIST"] ? v.VOUCHER["ADDRESS.LIST"].ADDRESS : "" : ""}}
                         </td>
                         <td class="text-primary">
-                          {{getTotal(voucher)}}
+                          {{getTotal(v.VOUCHER) | number: '1.2-2'}}
                         </td>
                         <td>
                           <button mat-mini-fab aria-label="Example icon-button with a heart icon" (click)="edit(voucher)">

@@ -24,11 +24,11 @@ export class ApiService {
     return this.httpClient.get<any>(this.BASE_URL + 'ledger/?id=' + ledgerEntry);
     }
 
-  public WEB_SOCKET_URL = "https://agrostop-web-server.herokuapp.com"
-  private BASE_URL = "https://agrostop-web-server.herokuapp.com/api/";
+  //public WEB_SOCKET_URL = "https://agrostop-web-server.herokuapp.com"
+  //private BASE_URL = "https://agrostop-web-server.herokuapp.com/api/";
 
-  //private BASE_URL = "http://localhost:8081/api/";
-  //public WEB_SOCKET_URL = "http://localhost:8081";
+  private BASE_URL = "http://localhost:8081/api/";
+  public WEB_SOCKET_URL = "http://localhost:8081";
   public TALLY_HELPER_URL = "http://localhost:8082";
 
   constructor(private httpClient: HttpClient, private cookie?: CookieService) {
@@ -63,8 +63,8 @@ export class ApiService {
     return this.httpClient.get<User>(this.BASE_URL + 'user/currentUser');
   }
 
-  getVouchers(toDate: Date, fromDate: Date): Observable<VOUCHER[]> {
-    return this.httpClient.get<VOUCHER[]>(this.BASE_URL + 'vouchers?fromDate=' + fromDate + '&toDate=' + toDate);
+  getVouchers(toDate: Date, fromDate: Date): Observable<any[]> {
+    return this.httpClient.get<any[]>(this.BASE_URL + 'vouchers?fromDate=' + fromDate + '&toDate=' + toDate);
   }
   getAllVouchers(): Observable<any> {
     return this.httpClient.get<VOUCHER[]>(this.BASE_URL + 'vouchers/getAll');
