@@ -108,7 +108,7 @@ export class PosService {
                       this.db.update("Batches",re).then(
                         res => {
                           index++
-                          batchIndex = index/len;
+                          batchIndex = index/length;
                           this.batchPercent = Math.round((batchIndex/len)*100);
                         }
                       );

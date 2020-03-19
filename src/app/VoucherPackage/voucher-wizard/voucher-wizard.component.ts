@@ -187,6 +187,10 @@ export class VoucherWizardComponent implements OnInit {
     
   }
 
+  forceStop(){
+    location.reload();
+  }
+
   async downSync(){
       this.loading = true;
       this.syncing = true;
