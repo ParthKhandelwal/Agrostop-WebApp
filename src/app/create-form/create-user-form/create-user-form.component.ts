@@ -4,6 +4,7 @@ import { ApiService } from '../../shared/api.service';
 import { MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
 import { User, VoucherTypeClass } from '../../Model/user';
 import { MatTableDataSource } from '@angular/material';
+import { FormControl } from '@angular/forms';
 
 
 @Component({
@@ -14,28 +15,7 @@ import { MatTableDataSource } from '@angular/material';
 export class CreateUserFormComponent implements OnInit {
   hide = true;
   updateMode = false;
-  user: User = {
-    baseEntity:          "",
-    lastLogin:           "",
-    password:            "",
-    emailId:             "",
-    contactNumber:       "",
-    name:                "",
-    role:                "",
-    userName:            "",
-    tallyUserName:       "",
-    godownList:          [],
-    defaultGodown:       "",
-    salesVoucherSettings: {
-      voucherTypeList:  [],
-      defaultVoucherType: "",
-      defaultClass: "",
-      cashLedgerList: [],
-      defaultCashLedger: "",
-      placeOfSupply: "",
-      priceLists: []
-    }
-  };
+  user: User;
 
 
   displayedColumns: string[] = ["name", "update"];
@@ -48,19 +28,19 @@ export class CreateUserFormComponent implements OnInit {
   @ViewChild('posClass', { static: false }) posClass:ElementRef;
 
   priceList: any[] = [];
-  posCashLedgers: any[] = [];
-  cashLedgers: any[]= [];
-  basicBasePartyNames: any[]= [];
-  placeOfSupplies: any[]= [];
+  posClassList: any[] = [];
   voucherTypeNames: any[] = [];
   godownNames: any[] = [];
-  url = '';
-  selectedFile = '';
+  godownFormControl = new FormControl();
+  posFormControl = new FormControl();
+  voucherTypeFormControl = new FormControl();
+  priceLevelFormControl = new FormControl();
+  voucherType: VoucherTypeClass = new VoucherTypeClass()
+  godownName: string = "";
+  priceLevel: string = "";
+  
 
-  onFileChanged(event) {
-     this.selectedFile = event.target.files[0]
-     console.log(this.selectedFile);
-   }
+ 
 
   constructor(@Inject(MAT_DIALOG_DATA) public data?: any,
   private dialogRef?: MatDialogRef<CreateUserFormComponent>,private router? :Router,
@@ -70,28 +50,17 @@ export class CreateUserFormComponent implements OnInit {
       this.updateMode = true;
     } else{
       this.updateMode = false;
+      this.user = new User();
+      this.user.role = "Company User";
     }
   }
 
   ngOnInit() {
-    this.apiService.getCashLedgers().subscribe(
-      res =>{
-        if(res != null){
-        this.posCashLedgers = res;
-        this.cashLedgers = res;
-        this.basicBasePartyNames = res;
-      }
-      },
-      err =>{
-        console.log(err);
-      }
-    );
-
+    
+    
     this.apiService.getSalesVoucherTypeName().subscribe(
       res => {
         this.voucherTypeNames = res;
-
-      
       },
       err =>{
         console.log(err);
@@ -119,12 +88,7 @@ export class CreateUserFormComponent implements OnInit {
         console.log(err);
       }
     );
-    
-    this.godownDataSource = new MatTableDataSource<string>(this.user.godownList);
-    this.voucherTypeDataSource = new MatTableDataSource<VoucherTypeClass>(this.user.salesVoucherSettings.voucherTypeList);
-    this.cashLedgerDataSource = new MatTableDataSource<string>(this.user.salesVoucherSettings.cashLedgerList);
-    this.priceListDataSource = new MatTableDataSource<String>(this.user.salesVoucherSettings.priceLists);
-  }
+     }
 
   submit(){
     if (this.updateMode){
@@ -162,9 +126,7 @@ addGodown(godown: string){
   if(!voucherExists){
     this.user.godownList.push(godown)
   }
-
-
-  this.godownDataSource._updateChangeSubscription();
+  this.godownName = "";
 }
 
 deleteGodown(godown: string){
@@ -173,27 +135,23 @@ deleteGodown(godown: string){
       this.user.godownList.splice(i, 1);
     }
   }
-  this.godownDataSource._updateChangeSubscription();
 }
 
-addVoucherType(voucherType: string){
+addVoucherType(voucherType: VoucherTypeClass){
   var voucherExists: boolean = false;
-  var num:number = this.user.salesVoucherSettings.voucherTypeList.length;
   for (var i = 0; i < this.user.salesVoucherSettings.voucherTypeList.length; i++) {
-    if (this.user.salesVoucherSettings.voucherTypeList[i].voucherTypeName == voucherType) {
+    if (this.user.salesVoucherSettings.voucherTypeList[i].voucherTypeName == voucherType.voucherTypeName) {
       voucherExists = true;
     }
   }
   if(!voucherExists){
-    const voucherTypeObject : VoucherTypeClass = {
-     voucherTypeName: voucherType,
-    classes:[]
-    }
-    this.user.salesVoucherSettings.voucherTypeList.push(voucherTypeObject)
-  }
-  this.posClassDataSource = new MatTableDataSource(this.user.salesVoucherSettings.voucherTypeList[i].classes);
+    
+    this.user.salesVoucherSettings.voucherTypeList.push(voucherType)
 
-  this.voucherTypeDataSource._updateChangeSubscription();
+  }
+  this.voucherType = new VoucherTypeClass();
+  this.posClassList = [];
+
 }
 
 deleteVoucherType(voucherType: string){
@@ -202,7 +160,6 @@ deleteVoucherType(voucherType: string){
       this.user.salesVoucherSettings.voucherTypeList.splice(i, 1);
     }
   }
-  this.voucherTypeDataSource._updateChangeSubscription();
 }
 
 addCashLedger(cashLedger: string){
@@ -229,14 +186,23 @@ deleteCashLedger(cashLedger: string){
   this.cashLedgerDataSource._updateChangeSubscription();
 }
 
-addPOSClass(voucherTypeName: string){
-  console.log("addPOSClass called");
-  for (var i = 0; i < this.user.salesVoucherSettings.voucherTypeList.length; i++) {
-    if (this.user.salesVoucherSettings.voucherTypeList[i].voucherTypeName === voucherTypeName) {
-      this.user.salesVoucherSettings.voucherTypeList[i]
-      .classes.push(this.posClass.nativeElement.value);
+getPOSClass(voucherTypeName: string){
+  this.posClassList = [];
+  this.apiService.getVoucherType(voucherTypeName).subscribe(
+    res => {
+      const voucherType = res.ENVELOPE.BODY.DATA.TALLYMESSAGE.VOUCHERTYPE;
+      this.posClassList = [];
+    if (voucherType["VOUCHERCLASSLIST.LIST"] instanceof Array){
+      this.posClassList = voucherType["VOUCHERCLASSLIST.LIST"];
+    } else {
+      this.posClassList.push(voucherType["VOUCHERCLASSLIST.LIST"]);
     }
-  }
+
+    },
+    err => {
+      console.log(err);
+    }
+  )
 }
 
 
@@ -256,8 +222,7 @@ addPriceList(price: string){
   if(!priceListExists){
     this.user.salesVoucherSettings.priceLists.push(price);
   }
-
-  this.priceListDataSource._updateChangeSubscription();
+  this.priceLevel = "";
 }
 
 deletePriceList(price: string){
@@ -266,7 +231,7 @@ deletePriceList(price: string){
       this.user.salesVoucherSettings.priceLists.splice(i, 1);
     }
   }
-  this.priceListDataSource._updateChangeSubscription();
+
 }
 
 

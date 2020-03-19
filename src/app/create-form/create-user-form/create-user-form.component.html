@@ -1,94 +1,258 @@
-<br>
-<div class="col-md-12">  
-    <div class="col-md-4">      
-        <div class="portlet light profile-sidebar-portlet bordered">
-            <div class="profile-userpic">
-                <img src="https://bootdey.com/img/Content/avatar/avatar6.png" class="img-responsive" alt=""> </div>
-            <div class="profile-usertitle">
-                <div class="profile-usertitle-name"> Marcus Doe </div>
-                <div class="profile-usertitle-job"> Developer </div>
-            </div>
-            <div class="profile-userbuttons">
-                <button type="button" class="btn btn-info  btn-sm">Follow</button>
-                <button type="button" class="btn btn-info  btn-sm">Message</button>
-            </div>
-            <div class="profile-usermenu">
-                <ul class="nav">
-                    <li class="active">
-                        <a href="#">
-                            <i class="icon-home"></i> Ticket List </a>
-                    </li>
-                    <li>
-                        <a href="#">
-                            <i class="icon-settings"></i> Support Staff </a>
-                    </li>
-                    <li>
-                        <a href="#">
-                            <i class="icon-info"></i> Configurations </a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-8"> 
-        <div class="portlet light bordered">
-            <div class="portlet-title tabbable-line">
-                <div class="caption caption-md">
-                    <i class="icon-globe theme-font hide"></i>
-                    <span class="caption-subject font-blue-madison bold uppercase">Your info</span>
+
+   
+     
+         
+              <div class="card">
+                <div class="card-header card-header-primary">
+                  <h4 class="card-title">Create Customer</h4>
+                  <p class="card-category">Enter basic customer details</p>
                 </div>
-            </div>
-            <div class="portlet-body">
-                <div>
-                
-                    <!-- Nav tabs -->
-                    <ul class="nav nav-tabs" role="tablist">
-                        <li role="presentation" class="active"><a href="#home" aria-controls="home" role="tab" data-toggle="tab">Update</a></li>
-                        <li role="presentation"><a href="#profile" aria-controls="profile" role="tab" data-toggle="tab">Profile</a></li>
-                        <li role="presentation"><a href="#messages" aria-controls="messages" role="tab" data-toggle="tab">Messages</a></li>
-                        <li role="presentation"><a href="#settings" aria-controls="settings" role="tab" data-toggle="tab">Settings</a></li>
-                    </ul>
-                
-                    <!-- Tab panes -->
-                    <div class="tab-content">
-                        <div role="tabpanel" class="tab-pane active" id="home">
-                            <form>
-                              <div class="form-group">
-                                <label for="inputName">Name</label>
-                                <input type="text" class="form-control" id="inputName" placeholder="Name">
-                              </div>
-                                <div class="form-group">
-                                <label for="inputLastName">Last Name</label>
-                                <input type="text" class="form-control" id="inputLastName" placeholder="Last Name">
-                              </div>
-                              <div class="form-group">
-                                <label for="exampleInputEmail1">Email address</label>
-                                <input type="email" class="form-control" id="exampleInputEmail1" placeholder="Email">
-                              </div>
-                              <div class="form-group">
-                                <label for="exampleInputPassword1">Password</label>
-                                <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Password">
-                              </div>
-                              <div class="form-group">
-                                <label for="exampleInputFile">File input</label>
-                                <input type="file" id="exampleInputFile">
-                                <p class="help-block">Example block-level help text here.</p>
-                              </div>
-                              <div class="checkbox">
-                                <label>
-                                  <input type="checkbox"> Check me out
-                                </label>
-                              </div>
-                              <button type="submit" class="btn btn-default">Submit</button>
-                            </form>
+                <div class="card-body">
+                  <form #f='ngForm' (submit)='f.form.valid && submit()'>
+
+                    <div class="row">
+                      <div class="col-md-6">
+                        <div class="form-group">
+                          <label class="bmd-label-floating">Name</label>
+                          <input type="text" name = "Name" class="form-control" required [(ngModel)]="user.name">
                         </div>
-                        <div role="tabpanel" class="tab-pane" id="profile">Profile</div>
-                        <div role="tabpanel" class="tab-pane" id="messages">Messages</div>
-                        <div role="tabpanel" class="tab-pane" id="settings">Settings</div>
+                      </div>
+                      <div class="col-md-6">
+                        <div class="form-group">
+                          <label class="bmd-label-floating">Tally User Name</label>
+                          <input type="text" name = "tallyUserName" class="form-control" [(ngModel)]="user.tallyUserName">
+                        </div>
+                      </div>
                     </div>
-                
+                    <div class="row">
+                      <div class="col-md-5">
+                        <div class="form-group">
+                          <label class="bmd-label-floating">Role (disabled)</label>
+                          <input type="text" class="form-control" name = "role" disabled [(ngModel)]="user.role">
+                        </div>
+                      </div>
+                      <div class="col-md-3">
+                        <div class="form-group">
+                          <label class="bmd-label-floating">User Name</label>
+                          <input type="text" class="form-control" name = "username" required [(ngModel)]="user.userName">
+                        </div>
+                      </div>
+                      <div class="col-md-4">
+                        <div class="form-group">
+                          <label class="bmd-label-floating">Email address</label>
+                          <input type="email" name = "emailId" class="form-control" [(ngModel)] = "user.emailId">
+                        </div>
+                      </div>
+                      <div class="col-md-4">
+                        <div class="form-group">
+                          <label class="bmd-label-floating">Password</label>
+                          <input type="password" class="form-control" name = "password" [(ngModel)] = "user.password">
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div class="row">
+                      <div class="col-md-4">
+                        <div class="form-group">
+                          <label class="bmd-label-floating">Phone Number</label>
+                          <input type="text" class="form-control" name = "contactNumber" [(ngModel)]="user.contactNumber">
+                        </div>
+                      </div>
+                    </div>
+                    <!--GODOWN SELECTION-->
+                    <div>
+
+                        <div class="panel panel-default panel-table">
+                            <div class="panel-heading">
+                                <div class="row">
+                                    <div class="col col-xs-6">
+                                        <h3 class="panel-title">Godown List</h3>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="panel-body">
+                                <table class="table table-striped table-bordered table-list">
+                                    <thead>
+                                        <tr>
+                                            <th><em class="fa fa-cog"></em></th>
+                                            <th class="hidden-xs">ID</th>
+                                            <th>Godown Name</th>
+                                            <th>Role</th>
+                                            
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <ng-container *ngFor = "let godown of user.godownList; let i = index">
+                                        <tr>
+                                            <td align="center"><a class="btn btn-default" (click) = "deleteGodown(godown)"><em class="fa fa-trash"></em></a></td>
+                                            <td class="hidden-xs">{{i+1}}</td>
+                                            <td>{{godown}}</td>
+                                            <td>Not Applicable</td>
+                                           
+                                        </tr>
+                                        </ng-container>
+                                        <tr>
+                                            <td align="center">
+                                                <a class="btn btn-default" (click) = "addGodown(godownName)" >
+                                                    <em class="fa fa-plus"></em>
+                                                </a>
+                                            </td>
+                                            <td class="hidden-xs">...</td>
+                                            <td>
+                                            <select  [(ngModel)] = "godownName" class="custom-select custom-select-sm" name="godownSelect">
+                                                <option selected (value) = "null" ></option>
+                                                <ng-container *ngFor = "let godown of godownNames">
+                                                    <option (value) = "godown">{{godown}}</option>
+                                                </ng-container>
+                                            </select>
+                                            </td>
+                                            <td>
+                                                <select class="custom-select custom-select-sm">
+                                                    <option value="1">Administrator</option>
+                                                    <option value="2">User</option>
+                                                </select>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <!--VOUCHER TYPE SELECTION-->
+
+                    <div>
+
+                        <div class="panel panel-default panel-table">
+                            <div class="panel-heading">
+                                <div class="row">
+                                    <div class="col col-xs-6">
+                                        <h3 class="panel-title">Voucher Type List</h3>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="panel-body">
+                                <table class="table table-striped table-bordered table-list">
+                                    <thead>
+                                        <tr>
+                                            <th><em class="fa fa-cog"></em></th>
+                                            <th class="hidden-xs">ID</th>
+                                            <th>Voucher Type</th>
+                                            <th>POS Class</th>
+                                            
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <ng-container *ngFor = "let voucherType of user.salesVoucherSettings.voucherTypeList; let i = index">
+                                        <tr>
+                                            <td align="center"><a class="btn btn-default" (click) = "deleteVoucherType(voucherType.voucherTypeName)"><em class="fa fa-trash"></em></a></td>
+                                            <td class="hidden-xs">{{i+1}}</td>
+                                            <td>{{voucherType.voucherTypeName}}</td>
+                                            <td>{{voucherType.voucherClass}}</td>
+                                           
+                                        </tr>
+                                        </ng-container>
+                                        <tr>
+                                            <td align="center">
+                                                <a class="btn btn-default" (click) = "addVoucherType(voucherType)" >
+                                                    <em class="fa fa-plus"></em>
+                                                </a>
+                                            </td>
+                                            <td class="hidden-xs">...</td>
+                                            <td>
+                                            <select [(ngModel)] = "voucherType.voucherTypeName" class="custom-select custom-select-sm"
+                                            (ngModelChange) = "getPOSClass($event)" name="voucherTypeNameSelect">
+                                            <option selected (value) = "null" ></option>
+                                                <ng-container *ngFor = "let voucherType of voucherTypeNames">
+                                                    <option (value) = "voucherType">{{voucherType}}</option>
+                                                </ng-container>
+                                            </select>
+                                            </td>
+                                            <td>
+                                                <select  [(ngModel)] = "voucherType.voucherClass" class="custom-select custom-select-sm"
+                                                name="voucherTypeClassSelect">
+                                                <option selected (value) = "null" ></option>
+                                                    <ng-container *ngFor= "let item of posClassList">
+                                                    <option (value) = "item.CLASSNAME.content">{{item.CLASSNAME.content}}</option>
+                                                </ng-container>
+                                                </select>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+
+
+
+                    <!--PRICELIST SELECTION-->
+                    <div>
+
+                        <div class="panel panel-default panel-table">
+                            <div class="panel-heading">
+                                <div class="row">
+                                    <div class="col col-xs-6">
+                                        <h3 class="panel-title">Price Lists</h3>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="panel-body">
+                                <table class="table table-striped table-bordered table-list">
+                                    <thead>
+                                        <tr>
+                                            <th><em class="fa fa-cog"></em></th>
+                                            <th class="hidden-xs">ID</th>
+                                            <th>PriceLevel</th>
+                                            
+                                            
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <ng-container *ngFor = "let price of user.salesVoucherSettings.priceLists; let i = index">
+                                        <tr>
+                                            <td align="center"><a class="btn btn-default" (click) = "deletePriceList(price)"><em class="fa fa-trash"></em></a></td>
+                                            <td class="hidden-xs">{{i+1}}</td>
+                                            <td>{{price}}</td>
+                                           
+                                           
+                                        </tr>
+                                        </ng-container>
+                                        <tr>
+                                            <td align="center">
+                                                <a class="btn btn-default" (click) = "addPriceList(priceLevel)" >
+                                                    <em class="fa fa-plus"></em>
+                                                </a>
+                                            </td>
+                                            <td class="hidden-xs">...</td>
+                                            <td>
+                                            <select [(ngModel)] = "priceLevel" class="custom-select custom-select-sm"
+                                            name="priceSelect">
+                                            <option selected (value) = "null" ></option>
+                                                <ng-container *ngFor = "let godown of priceList">
+                                                    <option (value) = "godown">{{godown}}</option>
+                                                </ng-container>
+                                            </select>
+                                            </td>
+                                            
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+
+
+                    <button type="submit" class="btn btn-primary pull-right">Save User</button>
+                    <div class="clearfix"></div>
+                  </form>
                 </div>
-            </div>
-        </div>
-    </div>
-</div>
+                </div>
+              
+            
+          
+   
+                

@@ -12,6 +12,11 @@
             
 
             <div class="card wizard-card" data-color="orange" id="wizardProfile">
+              <div *ngIf = "savingVoucher" style="vertical-align: middle; align-self: center;">
+                <img src="assets/img/agrostop.gif" alt="Saving Voucher..." width="100px" height="100px">
+              </div>
+
+              <div *ngIf = "!savingVoucher">
               <form action="" method="">
                 <!--        You can switch ' data-color="orange" '  with one of the next bright colors: "blue", "green", "orange", "red"          -->
 
@@ -127,6 +132,7 @@
                 </div>
 
               </form>
+            </div>
             </div>
           </div> <!-- wizard container -->
         </div>

@@ -4,13 +4,13 @@
     "\\src",
     "\\src\\app",
     "\\src\\app\\create-form",
-    "\\src\\app\\create-form\\create-voucher",
-    "\\src\\app\\shared",
+    "\\src\\app\\create-form\\create-order-form",
+    "\\src\\app\\Model",
+    "\\src\\app\\view",
+    "\\src\\app\\view\\customer-view",
     "\\src\\app\\VoucherPackage",
-    "\\src\\app\\VoucherPackage\\cash-tendered",
-    "\\src\\app\\VoucherPackage\\customer-selection",
-    "\\src\\app\\VoucherPackage\\inventory-selection"
+    "\\src\\app\\VoucherPackage\\payment-option"
   ],
-  "SelectedNode": "\\src\\app\\VoucherPackage\\customer-selection\\customer-selection.component.ts",
+  "SelectedNode": "\\src\\app\\shared\\pos.service.ts",
   "PreviewInSolutionExplorer": false
 }

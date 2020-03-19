@@ -18,7 +18,7 @@ export class PaymentOptionComponent implements OnInit {
   cashLedgerEntry: LEDGERENTRIESLIST = new LEDGERENTRIESLIST();
   giftLedgerEntry: LEDGERENTRIESLIST = new LEDGERENTRIESLIST();
 
-
+  
 
 
 

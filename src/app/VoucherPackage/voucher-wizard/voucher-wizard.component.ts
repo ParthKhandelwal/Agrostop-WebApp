@@ -15,6 +15,9 @@ import { map } from 'rxjs/operators';
   styleUrls: ['./voucher-wizard.component.css']
 })
 export class VoucherWizardComponent implements OnInit {
+  
+  savingVoucher: boolean = false;
+  
   lastUpSync: Date;
   lastDownSync: Date;
   customerSelection: boolean = false;
@@ -142,6 +145,7 @@ export class VoucherWizardComponent implements OnInit {
   }
 
   save() {
+    this.savingVoucher = true;
     console.log("Saving Voucher...")
     this.apiService.saveTallyVoucher(this.voucher).subscribe(
       res => {
@@ -150,6 +154,7 @@ export class VoucherWizardComponent implements OnInit {
           this.posService.addCacheVoucher(this.voucher).then(
             () => {
               this.valueChanged.emit("voucherCompleted");
+              this.savingVoucher = false;
               
             }
           )
@@ -157,6 +162,7 @@ export class VoucherWizardComponent implements OnInit {
         } else {
           this.voucher = new VOUCHER();
           this.switchVoucherSettings();
+          this.savingVoucher = false;
         }
       },
       err => {
@@ -166,6 +172,7 @@ export class VoucherWizardComponent implements OnInit {
               this.valueChanged.emit("voucherCompleted");
               this.voucher = new VOUCHER();
               this.switchVoucherSettings();
+              this.savingVoucher = false;
             }
           )
         

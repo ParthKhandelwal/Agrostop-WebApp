@@ -1,4 +1,4 @@
-export interface User {
+export class User {
       baseEntity:          string;
       password:            string;
       lastLogin:           string;
@@ -11,9 +11,14 @@ export interface User {
       godownList:          string[];
       defaultGodown:       string;
       salesVoucherSettings: SalesVoucherSettings;
+
+  constructor(){
+    this.salesVoucherSettings = new SalesVoucherSettings();
+    this.godownList = [];
+  }
 }
 
-export interface SalesVoucherSettings{
+export class SalesVoucherSettings{
   voucherTypeList: VoucherTypeClass[];
   defaultVoucherType: string;
   defaultClass: string;
@@ -21,9 +26,19 @@ export interface SalesVoucherSettings{
   priceLists: string[];
   defaultCashLedger: string;
   placeOfSupply: string;
+
+  constructor(){
+    this.voucherTypeList = [];
+    this.cashLedgerList = [];
+    this.priceLists = [];
+  }
 }
 
-export interface VoucherTypeClass{
+export class VoucherTypeClass{
   voucherTypeName: string;
-  classes: string[];
+  voucherClass: string;
+
+  constructor(){
+    this.voucherClass = "";
+  }
 }
