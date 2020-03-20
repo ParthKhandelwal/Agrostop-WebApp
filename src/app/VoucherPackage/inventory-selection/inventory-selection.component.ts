@@ -162,7 +162,7 @@ export class InventorySelectionComponent implements OnInit {
         
         inventoryEntry.BATCHALLOCATIONS_LIST = new BATCHALLOCATIONSLIST();
         inventoryEntry.BATCHALLOCATIONS_LIST.BATCHNAME = this.batchControl.value.name;
-        inventoryEntry.BATCHALLOCATIONS_LIST.GODOWNNAME = "A - Nalkheda";
+        inventoryEntry.BATCHALLOCATIONS_LIST.GODOWNNAME = this.posService.getGodown();
         inventoryEntry.BATCHALLOCATIONS_LIST.BILLEDQTY = inventoryEntry.BILLEDQTY;
         inventoryEntry.BATCHALLOCATIONS_LIST.ACTUALQTY = inventoryEntry.ACTUALQTY;
         inventoryEntry.BATCHALLOCATIONS_LIST.AMOUNT = inventoryEntry.RATE * inventoryEntry.BILLEDQTY;

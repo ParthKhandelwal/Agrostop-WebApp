@@ -4,6 +4,7 @@ import { ApiService } from '../shared/api.service';
 import { CookieService } from 'ngx-cookie-service';
 import { Router } from '@angular/router';
 import { AuthenticationService } from '../shared/authentication.service';
+import { PosService } from '../shared/pos.service';
 
 @Component({
   selector: 'app-navigation-bar',
@@ -17,20 +18,24 @@ export class NavigationBarComponent implements OnInit {
 
   constructor(
     private router: Router,
-    private authenticationService: AuthenticationService
+    private authenticationService: AuthenticationService,
+    private posService: PosService
   ) {
-    this.authenticationService.currentUser.subscribe(x => this.currentUser = x);
+    this.authenticationService.currentUser.subscribe(x => {
+      this.currentUser = x
+      console.log(x);
+    });
   }
 
   ngOnInit() {
-    this.url = "";
+    
   }
 
-  get isAdmin() {
+   isAdmin() {
     return this.currentUser && this.currentUser.role === "Admin";
   }
 
-  get isCompanyUser() {
+   isCompanyUser() {
     return this.currentUser && this.currentUser.role === "Company User";
   }
 

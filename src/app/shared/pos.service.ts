@@ -15,6 +15,7 @@ export class PosService {
   public itemPercent: number = 100;
   public ledgerPercent: number = 100;
   public customerPercent: number = 100;
+  public upSyncPercent: number = 100;
   user: User;
   databaseCreated: boolean = false;
   database: Promise<any>;
@@ -56,6 +57,10 @@ export class PosService {
             && (this.ledgerPercent == 100)
   }
   
+  upSyncingOver() : boolean{
+    return (this.upSyncPercent == 100) 
+           
+  }
 
   async enablePOSMode(){
       this.customerPercent = 0;
@@ -118,6 +123,7 @@ export class PosService {
                 
                },
                e => {
+                
                  console.log(e);
                }
              );
@@ -304,8 +310,8 @@ countCacheVoucher(): number{
 }
 
   getUser(): User{
-    let user: User = JSON.parse(this.cookie.get("User"));
-    return user;
+    
+    return JSON.parse(sessionStorage.getItem("currentUser")).user;
   }
 
   getAllCacheVouchers(): Promise<any>{
@@ -325,13 +331,21 @@ countCacheVoucher(): number{
   }
 
   syncAllCacheVouchers(){
+    this.upSyncPercent = 0;
     this.db.getAll('cacheVoucher').then(
-      vouchers => {
+      (vouchers: any[]) => {
+        if (vouchers == null || vouchers.length == 0){
+          this.upSyncPercent = 100;
+        }
+        const length: number = vouchers.length;
+        var index: number = 0;
         for (let voucher of vouchers){
           this.apiService.saveTallyVoucher(voucher).subscribe(
             res => {
               console.log('Voucher saved Successfully');
-              this.db.delete('cacheVoucher', voucher.customVoucherDetails.voucherNumber).then(
+              index++;
+              this.upSyncPercent = Math.round((index/length)* 100);
+              this.db.delete('cacheVoucher', voucher.VOUCHERNUMBER).then(
                   () => {
                     // Do something after delete
                   },
@@ -342,6 +356,7 @@ countCacheVoucher(): number{
             },
             err => {
               console.log('Voucher could not be saved');
+              alert("Voucher could not be saved");  
             }
           );
 

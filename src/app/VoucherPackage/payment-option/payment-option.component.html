@@ -97,8 +97,8 @@
                        placeholder="Enter amount (in Rs.)" class="form-control">
               </div>
               <div class="form-group">
-                <label for="username">Cash Tendered:</label>
-                <label name="cashTendered"><h5>  {{voucher.POSCASHRECEIVED - this.cashLedgerEntry.AMOUNT}}</h5></label>
+                <label for="username">Balance Amount:</label>
+                <label name="cashTendered"><h5>  {{voucher.POSCASHRECEIVED - this.cashLedgerEntry.AMOUNT | number: '1.2-2'}}</h5></label>
               </div>
 
 

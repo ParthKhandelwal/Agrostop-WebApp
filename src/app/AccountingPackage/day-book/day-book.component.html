@@ -5,25 +5,73 @@
     <div class="container-fluid">
       <div class="row">
         <div style="align-self: center;">
-          <td>
-            <mat-form-field>
-              <mat-label>From</mat-label>
-              <input matInput [matDatepicker]= "Frompicker" [formControl] = 'fromDate'>
-              <mat-datepicker-toggle matSuffix [for]= "Frompicker" ></mat-datepicker-toggle>
-              <mat-datepicker #Frompicker></mat-datepicker>
-            </mat-form-field>
-          </td>
-          <td>
-            <mat-form-field>
-              <mat-label>To</mat-label>
-              <input matInput [matDatepicker]= "Topicker" [formControl] = 'toDate'>
-              <mat-datepicker-toggle matSuffix [for]= "Topicker" ></mat-datepicker-toggle>
-              <mat-datepicker #Topicker></mat-datepicker>
-            </mat-form-field>
-          </td>
-          <td>
-            <button (click) = "getVouchers()">Get</button>
-          </td>
+          
+
+          <!--FILTER ROW-->
+
+          <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr></tr>
+                </thead>
+                <tbody>
+                    <tr>
+                      <td></td>
+                      <td>
+                        <mat-form-field>
+                          <mat-label>From</mat-label>
+                          <input matInput [matDatepicker]= "Frompicker" [formControl] = 'fromDate'>
+                          <mat-datepicker-toggle matSuffix [for]= "Frompicker" ></mat-datepicker-toggle>
+                          <mat-datepicker #Frompicker></mat-datepicker>
+                        </mat-form-field>
+                      </td>
+                      <td>
+                        <mat-form-field>
+                          <mat-label>To</mat-label>
+                          <input matInput [matDatepicker]= "Topicker" [formControl] = 'toDate'>
+                          <mat-datepicker-toggle matSuffix [for]= "Topicker" ></mat-datepicker-toggle>
+                          <mat-datepicker #Topicker></mat-datepicker>
+                        </mat-form-field>
+                      </td>
+                      <td></td>
+                      <td></td>
+                      <td>
+                        <button type="button" class="btn btn-secondary btn-sm" (click) = "getVouchers()">Apply</button>
+                      </td>
+                    </tr>
+                    <tr>
+                        <td>Filter : </td>
+                        <td>
+                          <select (ngModelChange) = "getFilterValue($event)" class="custom-select custom-select-sm" [formControl] = "filterFieldFC">
+                            <option selected value = "">Select field</option>
+                            <ng-container *ngFor = "let item of filterField">
+                              <option (value) = "item">{{item}}</option>
+                            </ng-container>
+                          </select>
+                        </td>
+                        <td>
+                          <select class="custom-select custom-select-sm" [formControl] = "filterOperationFC">
+                            <option value = "">Select operator</option>
+                            <ng-container *ngFor = "let item of filterOperation">
+                              <option (value) = "item">{{item}}</option>
+                            </ng-container>
+                          </select>
+                        </td>     
+                        <td>
+                          <select class="custom-select custom-select-sm" [formControl] = "filterValueFC">
+                            <option value = "">Select value</option>
+                            <ng-container *ngFor = "let item of filterValue$ | async">
+                              <option (value) = "item">{{item}}</option>
+                            </ng-container>
+                          </select>
+                        </td> 
+                         <td><button type="button" class="btn btn-secondary btn-sm" (click) = "filter()">Apply</button></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+
       
         </div>
         <div class="col-md-12">
@@ -60,7 +108,7 @@
                   </thead>
                   <tbody>
 
-                    <ng-container *ngFor="let v of vouchers">
+                    <ng-container *ngFor="let v of filteredArray">
                       <tr *ngIf = "v.VOUCHER">
                         <td>
                           {{v.VOUCHER ? v.VOUCHER.DATE  : "" | date: "dd-MMM-yyyy"}}

@@ -12,7 +12,7 @@
             
 
           <div class="card wizard-card" data-color="orange" id="wizardProfile" >
-              <div *ngIf = "loading || !posService.syncingOver()" style="vertical-align: middle; align-self: center;">
+              <div *ngIf = "loading || !posService.syncingOver() || !posService.upSyncingOver()" style="vertical-align: middle; align-self: center;">
                 <img src="assets/img/agrostop.gif" alt="Saving Voucher..." width="100px" height="100px">
                 
               </div>
@@ -43,9 +43,16 @@
                 </div>
 
               </div>
+
+              <div *ngIf = "!posService.upSyncingOver()"  style="vertical-align: middle; align-self: center; padding-top: 20px; width: 80%;">
+                <h6 class="example-h2">Syncing : {{posService.upSyncPercent}} %</h6>
+                <section class="example-section">
+                  <mat-progress-bar mode="determinate" [value]="posService.upSyncPercent"></mat-progress-bar>
+                </section>
+              </div>
               
 
-            <div *ngIf = "!loading && posService.syncingOver()">
+            <div *ngIf = "!loading && posService.syncingOver() && posService.upSyncingOver()">
               <form action="" method="">
                 <!--        You can switch ' data-color="orange" '  with one of the next bright colors: "blue", "green", "orange", "red"          -->
 
@@ -62,7 +69,7 @@
                   <div class="container-tab wizard-navigation" >
                     
                     <div>
-                      <button [ngClass]="'voucherSettings' ? 'btn btn-previous btn-fill btn-success btn-wd btn-sm' : 'btn-default btn-wd btn-sm btn btn-previous btn-fill '" name='voucherSettingsTab' (click)="switchVoucherSettings()" [disabled]= "voucherSettings">Settings</button>
+                      <button [ngClass]="'voucherSettings' ? 'btn btn-previous btn-fill btn-success btn-wd btn-sm' : 'btn-default btn-wd btn-sm btn btn-previous btn-fill '" name='voucherSettingsTab' (click)="switchVoucherSettings();" [disabled]= "voucherSettings">Settings</button>
                     </div>
                     <div>
                       <button [ngClass]="'customerSelection' ? 'btn btn-previous btn-fill btn-success btn-wd btn-sm' : 'btn-default btn-wd btn-sm btn btn-previous btn-fill '" name='customerTab' (click)="switchCustomer()" [disabled]="customerSelection">Customer</button>
@@ -124,7 +131,7 @@
 
                 <!--VOUCHER SETTINGS-->
                 <div *ngIf = "voucherSettings">
-                <voucher-setting (valueChanged) ="next()" [(voucher)] = "voucher" [(ledgerList)] = "ledgerList"></voucher-setting>
+                <voucher-setting #voucherSettingsComponenet (valueChanged) ="next()"  [(voucher)] = "voucher" [(ledgerList)] = "ledgerList"></voucher-setting>
                 </div>
 
                 
@@ -148,10 +155,10 @@
 
                 <div class="wizard-footer height-wizard">
                   <div class="pull-right" *ngIf="!(isOrder && inventorySelection)">
-                    <button class='btn btn-next btn-fill btn-warning btn-wd btn-sm' autofocus (click)="next()"> Next</button>
+                    <button class='btn btn-next btn-fill btn-warning btn-wd btn-sm' (click)="next()"> Next</button>
                   </div>
                   <div class="pull-right" *ngIf="isOrder && inventorySelection">
-                    <button class='btn btn-next btn-fill btn-warning btn-wd btn-sm' autofocus (click)="save()"> Save</button>
+                    <button class='btn btn-next btn-fill btn-warning btn-wd btn-sm' (click)="save()"> Save</button>
                   </div>
 
                   <div class="pull-left">

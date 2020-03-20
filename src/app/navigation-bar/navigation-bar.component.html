@@ -22,7 +22,7 @@ The above copyright notice and this permission notice shall be included in all c
         <a class="navibar-brand" href="#"><span>Agro</span>stop</a>
 
       </div>
-      <div class="sidebar-wrapper">
+      <div *ngIf = "isAdmin()" class="sidebar-wrapper">
         <ul class="nav">
           <li [ngClass]="url == 'home' ? 'nav-item active': 'nav-item'">
             <a class="nav-link" href="/home">
@@ -68,6 +68,65 @@ The above copyright notice and this permission notice shall be included in all c
           </li>
         </ul>
       </div>
+
+
+
+
+
+      <!--USER NAVBAR-->
+
+      <div *ngIf = "isCompanyUser()" class="sidebar-wrapper">
+        <ul class="nav">
+          <li [ngClass]="url == 'home' ? 'nav-item active': 'nav-item'">
+            <a class="nav-link" href="/home">
+              <i class="material-icons">dashboard</i>
+              <p>Dashboard</p>
+            </a>
+          </li>
+          <li [ngClass]="url == 'customers' ? 'nav-item active': 'nav-item'">
+            <a class="nav-link" href="/customers">
+              <i class="material-icons">content_paste</i>
+              <p>Customer</p>
+            </a>
+          </li>
+          <li [ngClass]="url == 'sales' ? 'nav-item active': 'nav-item'">
+            <a class="nav-link" href="/sales/day-book">
+              <i class="material-icons">library_books</i>
+              <p>Day Book</p>
+            </a>
+          </li>
+          <li class="nav-item ">
+            <a class="nav-link" href="./sales/create-sales-voucher">
+              <i class="material-icons">bubble_chart</i>
+              <p>Sales Voucher</p>
+            </a>
+          </li>
+          <li [ngClass]="url == 'products' ? 'nav-item active': 'nav-item'">
+            <a class="nav-link" href="/products">
+              <i class="material-icons">location_ons</i>
+              <p>Products</p>
+            </a>
+          </li>
+          <li [ngClass]="url == 'products' ? 'nav-item active': 'nav-item'">
+            <a class="nav-link" href="/products">
+              <i class="material-icons">location_ons</i>
+              <p>Stock Check</p>
+            </a>
+          </li>
+          
+          <li class="nav-item ">
+            <a class="nav-link" href="complaints">
+              <i class="material-icons">notifications</i>
+              <p>Notifications</p>
+            </a>
+          </li>
+        </ul>
+      </div>
+
+
+
+
+
     </div>
 
 

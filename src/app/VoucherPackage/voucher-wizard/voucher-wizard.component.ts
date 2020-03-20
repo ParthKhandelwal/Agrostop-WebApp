@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, EventEmitter, Output } from '@angular/core';
+import { Component, OnInit, Input, EventEmitter, Output, ViewChild, AfterViewInit } from '@angular/core';
 import { VOUCHER } from '../../Model/voucher';
 import { VoucherService } from '../../shared/voucher.service';
 import { User } from '../../Model/user';
@@ -9,6 +9,7 @@ import { merge, fromEvent, Observable, Observer } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { ThemePalette } from '@angular/material';
 import {MatProgressBarModule} from '@angular/material/progress-bar';
+import { VoucherSettingComponent } from '../voucher-setting/voucher-setting.component';
 
 
 
@@ -17,8 +18,9 @@ import {MatProgressBarModule} from '@angular/material/progress-bar';
   templateUrl: './voucher-wizard.component.html',
   styleUrls: ['./voucher-wizard.component.css']
 })
-export class VoucherWizardComponent implements OnInit {
-  
+export class VoucherWizardComponent implements OnInit, AfterViewInit {
+
+  upSyncing: boolean = false;
   loading: boolean = false;
   syncing:boolean = false;
   lastUpSync: Date;
@@ -36,9 +38,13 @@ export class VoucherWizardComponent implements OnInit {
   @Output("valueChange") valueChanged = new EventEmitter
   @Input("editMode") editMode: boolean;
   @Input('voucher') voucher: VOUCHER;
+  @ViewChild("voucherSettingsComponenet", {static: false}) voucherSettingsComponenet : VoucherSettingComponent;
 
   
   constructor(public posService?: PosService, private apiService?: ApiService) { }
+  ngAfterViewInit(): void {
+    throw new Error("Method not implemented.");
+  }
 
   ngOnInit() {
         this.voucher = new VOUCHER();
@@ -83,6 +89,7 @@ export class VoucherWizardComponent implements OnInit {
 
 
   switchSyncSettings() {
+
     this.inventorySelection = false;
     this.customerSelection = false;
     this.payment = false;
@@ -91,6 +98,7 @@ export class VoucherWizardComponent implements OnInit {
   }
 
   switchInventory() {
+
     this.inventorySelection = true;
     this.customerSelection = false;
     this.payment = false;
@@ -99,6 +107,7 @@ export class VoucherWizardComponent implements OnInit {
   }
 
   switchVoucherSettings(){
+
     this.inventorySelection = false;
     this.customerSelection = false;
     this.payment = false;
@@ -108,6 +117,7 @@ export class VoucherWizardComponent implements OnInit {
   }
 
   switchCustomer() {
+
     this.inventorySelection = false;
     this.customerSelection = true;
     this.payment = false;
@@ -117,6 +127,7 @@ export class VoucherWizardComponent implements OnInit {
 
   switchPayment() {
     if (!this.isOrder) {
+
       this.payment = true;
       this.inventorySelection = false;
       this.customerSelection = false;
@@ -137,6 +148,7 @@ export class VoucherWizardComponent implements OnInit {
         this.switchPayment();
         console.log("switching to Payment")
     }
+
   }
 
   previous() {
@@ -147,10 +159,13 @@ export class VoucherWizardComponent implements OnInit {
     } else if (this.customerSelection){
       this.switchVoucherSettings();
     }
+
   }
 
   save() {
+
     this.loading = true;
+
     console.log("Saving Voucher...")
     this.apiService.saveTallyVoucher(this.voucher).subscribe(
       res => {
@@ -165,8 +180,11 @@ export class VoucherWizardComponent implements OnInit {
           )
   
         } else {
+          alert("Voucher Saved to Tally Successfully")
           this.voucher = new VOUCHER();
-          this.switchVoucherSettings();
+        
+            this.switchVoucherSettings();
+         
           this.loading = false;
         }
       },
@@ -189,10 +207,13 @@ export class VoucherWizardComponent implements OnInit {
 
   forceStop(){
     location.reload();
+    this.posService.ledgerPercent = 100;
+    this.posService.customerPercent = 100;
+    this.posService.batchPercent = 100;
+    this.posService.itemPercent = 100;
   }
 
   async downSync(){
-      this.loading = true;
       this.syncing = true;
       console.log("Started");
       await this.posService.enablePOSMode();
@@ -200,6 +221,8 @@ export class VoucherWizardComponent implements OnInit {
   }
 
   upSync(){
+    this.upSyncing = true;
+    console.log("Started");
     this.posService.syncAllCacheVouchers();
   }
 

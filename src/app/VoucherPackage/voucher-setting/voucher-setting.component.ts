@@ -3,6 +3,7 @@ import { VOUCHER, OLDAUDITENTRYIDSLIST, LEDGERENTRIESLIST, ALLLEDGERENTRIESLIST 
 import { ApiService } from 'src/app/shared/api.service';
 import { FormControl } from '@angular/forms';
 import { PosService } from 'src/app/shared/pos.service';
+import { User } from 'src/app/Model/user';
 
 
 @Component({
@@ -20,10 +21,13 @@ export class VoucherSettingComponent implements OnInit {
   date = new FormControl();
   voucherTypeList: any[] = [];
   voucherType: any;
+  godowns: any[] = [];
   posClassList: any[] = [];
   posClass: any;
   pricelevels: any[] = [];
   change : boolean = false;
+  godown: string;
+
   constructor(private apiService?: ApiService, private posService?: PosService) { }
 
   ngOnInit() {
@@ -44,41 +48,70 @@ export class VoucherSettingComponent implements OnInit {
     }
     this.voucher.PRICELEVEL = this.posService.getPriceList();
 
+    this.godown = this.posService.getGodown();
     
     this.date.setValue(new Date());
   }
+  ngAfterViewInit() {
+    this.saveButton.nativeElement.focus();
+  }
+
+  valid(){
+    return this.posService.getVoucherType && this.posService.getPOSClass && this.posService.getPriceList;
+  }
+
 
 
   proceedChange(){
-    this.apiService.getSalesVoucherTypeName().subscribe(
-      res => {
-        this.voucherTypeList = res;
-      },
-      err => {
-        console.log(err);
-      }
-    );
-    this.apiService.getPriceList().subscribe(
-      res => {
-        this.pricelevels = res;
-      },
-      err => {
-        console.log(err);
-      }
-    );
+    const user: User = this.posService.getUser();
+    console.log(user);
+    this.voucherTypeList = user.salesVoucherSettings.voucherTypeList
+    this.pricelevels = user.salesVoucherSettings.priceLists;
+    this.godowns = user.godownList;
+    // this.apiService.getSalesVoucherTypeName().subscribe(
+    //   res => {
+    //     this.voucherTypeList = res;
+    //   },
+    //   err => {
+    //     console.log(err);
+    //   }
+    // );
+    // this.apiService.getPriceList().subscribe(
+    //   res => {
+    //     this.pricelevels = res;
+    //   },
+    //   err => {
+    //     console.log(err);
+    //   }
+    // );
     this.change = true
   }
 
   getVoucherType(value){
-    
-    this.apiService.getVoucherType(value).subscribe(
+    console.log(value)
+    this.apiService.getVoucherType(value.voucherTypeName).subscribe(
       res => {this.voucherType = res.ENVELOPE.BODY.DATA.TALLYMESSAGE.VOUCHERTYPE;
         this.posService.saveVoucherType(this.voucherType);
         this.posClassList = [];
       if (this.voucherType["VOUCHERCLASSLIST.LIST"] instanceof Array){
-        this.posClassList = this.voucherType["VOUCHERCLASSLIST.LIST"];
+        var found : boolean = false;
+        for (let item of this.voucherType["VOUCHERCLASSLIST.LIST"]){
+          console.log(item.CLASSNAME.content);
+          console.log()
+          if (item.CLASSNAME.content == value.voucherClass){
+            this.posService.savePOSClass(item);
+            found = true;
+          }
+        }
+        if (!found){
+          alert("The POS Class does not exists. Please ask administrator to update your profile.")
+        }
       } else {
-        this.posClassList.push(this.voucherType["VOUCHERCLASSLIST.LIST"]);
+        if (this.voucherType["VOUCHERCLASSLIST.LIST"].CLASSNAME.content == value.voucherClass){
+          this.posService.savePOSClass(this.voucherType["VOUCHERCLASSLIST.LIST"]);
+        }else {
+          alert("The POS Class does not exists. Please ask administrator to update your profile.")
+        }
       }
 
       },
@@ -86,16 +119,23 @@ export class VoucherSettingComponent implements OnInit {
         console.log(err);
       }
     )
+    
   }
 
   savePOSCLass(value){
-    this.posService.savePOSClass(value);
+    
+  }
+
+  saveGodown(value){
+    this.posService.saveGodown(value);
   }
 
   savePriceList(value){
     console.log(value);
     this.posService.savePriceList(value);
   }
+
+
   
 
    setVoucher(){
