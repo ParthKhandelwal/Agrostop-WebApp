@@ -10,6 +10,7 @@ import { map } from 'rxjs/operators';
 import { ThemePalette } from '@angular/material';
 import {MatProgressBarModule} from '@angular/material/progress-bar';
 import { VoucherSettingComponent } from '../voucher-setting/voucher-setting.component';
+import { InvoicePrintViewComponent } from 'src/app/PrintPackage/invoice-print-view/invoice-print-view.component';
 
 
 
@@ -19,7 +20,7 @@ import { VoucherSettingComponent } from '../voucher-setting/voucher-setting.comp
   styleUrls: ['./voucher-wizard.component.css']
 })
 export class VoucherWizardComponent implements OnInit, AfterViewInit {
-
+  printReady: boolean = false;
   upSyncing: boolean = false;
   loading: boolean = false;
   syncing:boolean = false;
@@ -38,12 +39,11 @@ export class VoucherWizardComponent implements OnInit, AfterViewInit {
   @Output("valueChange") valueChanged = new EventEmitter
   @Input("editMode") editMode: boolean;
   @Input('voucher') voucher: VOUCHER;
-  @ViewChild("voucherSettingsComponenet", {static: false}) voucherSettingsComponenet : VoucherSettingComponent;
+  printView: boolean = false;
 
   
   constructor(public posService?: PosService, private apiService?: ApiService) { }
   ngAfterViewInit(): void {
-    throw new Error("Method not implemented.");
   }
 
   ngOnInit() {
@@ -136,6 +136,19 @@ export class VoucherWizardComponent implements OnInit, AfterViewInit {
     }
   }
 
+  switchPrintView(){
+   this.setFalse();
+   this.printView = true;
+  }
+
+  setFalse(){
+    this.printView = false;
+    this.payment = false;
+      this.inventorySelection = false;
+      this.customerSelection = false;
+      this.voucherSettings = false;
+      this.syncSettings = false;
+  }
   next() {
     if (this.voucherSettings){
       this.switchCustomer();
@@ -148,6 +161,11 @@ export class VoucherWizardComponent implements OnInit, AfterViewInit {
         this.switchPayment();
         console.log("switching to Payment")
     }
+    else if (this.inventorySelection) {
+      
+      this.switchPrintView();
+      console.log("switching to Payment")
+    }
 
   }
 
@@ -159,6 +177,7 @@ export class VoucherWizardComponent implements OnInit, AfterViewInit {
     } else if (this.customerSelection){
       this.switchVoucherSettings();
     }
+
 
   }
 
@@ -175,16 +194,16 @@ export class VoucherWizardComponent implements OnInit, AfterViewInit {
             () => {
               this.valueChanged.emit("voucherCompleted");
               this.loading = false;
+              this.switchPrintView();
               
             }
           )
   
         } else {
           alert("Voucher Saved to Tally Successfully")
-          this.voucher = new VOUCHER();
-        
-            this.switchVoucherSettings();
          
+          this.valueChanged.emit("voucherCompleted");
+          this.switchPrintView();
           this.loading = false;
         }
       },
@@ -192,10 +211,11 @@ export class VoucherWizardComponent implements OnInit, AfterViewInit {
        
           this.posService.addCacheVoucher(this.voucher).then(
             () => {
+              
               this.valueChanged.emit("voucherCompleted");
-              this.voucher = new VOUCHER();
-              this.switchVoucherSettings();
-              this.loading = false;
+              this.switchPrintView();
+              this.printReady = true;
+              
             }
           )
         
@@ -204,6 +224,7 @@ export class VoucherWizardComponent implements OnInit, AfterViewInit {
     );;
     
   }
+
 
   forceStop(){
     location.reload();
@@ -224,6 +245,11 @@ export class VoucherWizardComponent implements OnInit, AfterViewInit {
     this.upSyncing = true;
     console.log("Started");
     this.posService.syncAllCacheVouchers();
+  }
+
+  restore(){
+    this.voucher = new VOUCHER();
+    this.switchVoucherSettings();
   }
 
   createOnline$() {

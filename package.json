@@ -41,6 +41,7 @@
     "ngx-cookie": "^4.1.2",
     "ngx-cookie-service": "^2.2.0",
     "ngx-indexed-db": "^2.2.6",
+    "ngx-print": "^1.2.0-beta.3",
     "ngx-webstorage-service": "^4.1.0",
     "path": "^0.12.7",
     "perfect-scrollbar": "1.1.0",

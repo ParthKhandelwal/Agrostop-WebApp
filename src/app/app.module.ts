@@ -74,6 +74,7 @@ import { VoucherSettingComponent } from './VoucherPackage/voucher-setting/vouche
 import {MatProgressBarModule} from '@angular/material/progress-bar';
 
 import { ChartsModule } from 'ng2-charts';
+import {NgxPrintModule} from 'ngx-print';
 
 
 
@@ -152,7 +153,8 @@ import { ChartsModule } from 'ng2-charts';
     MatToolbarModule,
     StorageServiceModule,
     ChartsModule,
-    MatProgressBarModule
+    MatProgressBarModule,
+    NgxPrintModule
 
   ],
   providers: [CookieService, ApiService, DatePipe, MatDialog, AgroStorageService, MatDialogConfig, {

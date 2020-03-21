@@ -24,12 +24,16 @@ export class ApiService {
   getLedger(ledgerEntry: string): Observable<any> {
     return this.httpClient.get<any>(this.BASE_URL + 'ledger/?id=' + ledgerEntry);
     }
+  
+  getCompany(name: string): Observable<any>{
+    return this.httpClient.get<any>(this.BASE_URL + 'vouchers/getCompany?companyName=' + name);
+  }
 
-  public WEB_SOCKET_URL = "https://agrostop-web-server.herokuapp.com"
-  private BASE_URL = "https://agrostop-web-server.herokuapp.com/api/";
+  //public WEB_SOCKET_URL = "https://agrostop-web-server.herokuapp.com"
+  //private BASE_URL = "https://agrostop-web-server.herokuapp.com/api/";
 
-  //private BASE_URL = "http://localhost:8081/api/";
-  //public WEB_SOCKET_URL = "http://localhost:8081";
+  private BASE_URL = "http://localhost:8081/api/";
+  public WEB_SOCKET_URL = "http://localhost:8081";
   public TALLY_HELPER_URL = "http://localhost:8082";
 
   constructor(private httpClient: HttpClient, private cookie?: CookieService, private datePipe?: DatePipe) {

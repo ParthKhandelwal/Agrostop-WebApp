@@ -1,154 +1,136 @@
-<!--ng-container>
-<div class="invoicePrintView" id="print-section">
-  <div class="header">
-    <div class="companyImage">
-
-    </div>
-    <div class="voucherInformation">
-      <div class="customerInformation">
-        <b>Customer Information</b><br>
-        {{customer.name}}<br>
-        {{customer.fullAddress.name}}, {{customer.fullAddress.tehsilName}}<br>
-        {{customer.fullAddress.stateName}}
+<div class="container" id="print-section" ng-hide> 
+  <div *ngIf = "true"> 
+  <div class="col-md-12">
+      <div class="invoice">
+         <!-- begin invoice-company -->
+         <div class="invoice-company text-inverse f-w-600">
+            <span class="pull-right hidden-print">
+            <a href="javascript:;" class="btn btn-sm btn-white m-b-10 p-l-5"><i class="fa fa-file t-plus-1 text-danger fa-fw fa-lg"></i> Export as PDF</a>
+            <a href="javascript:;" onclick="window.print()" class="btn btn-sm btn-white m-b-10 p-l-5"><i class="fa fa-print t-plus-1 fa-fw fa-lg"></i> Print</a>
+            </span>
+            INVOICE
+         </div>
+         <!-- end invoice-company -->
+         <!-- begin invoice-header -->
+         <div class="invoice-header" >
+            <div class="invoice-from" *ngIf = "this.company">
+               <small>Company Details</small>
+               <address class="m-t-5 m-b-5">
+                  <strong class="text-inverse">{{company.REQNAME}}</strong><br>
+                  <ng-container *ngFor = "let address of company['ADDRESS.LIST'].ADDRESS">
+                    {{address}}<br>
+                  </ng-container>
+               </address>
+            </div>
+            <div class="invoice-to">
+               <small>Customer Details</small>
+               <address class="m-t-5 m-b-5">
+                  <strong class="text-inverse">{{voucher.BASICBUYERNAME}}</strong><br>
+                  <ng-container *ngFor = "let address of customerAddress">
+                  {{address.ADDRESS}}<br>
+                </ng-container>
+               </address>
+            </div>
+            <div class="invoice-date">
+               <small>Invoice </small>
+               <div class="date text-inverse m-t-5">{{date | date: 'dd-MMM-yyyy'}}</div>
+               <div class="invoice-detail">
+                  # {{voucher.VOUCHERNUMBER}}<br>
+                  {{voucher.VOUCHERTYPENAME}}
+               </div>
+            </div>
+         </div>
+         <!-- end invoice-header -->
+         <!-- begin invoice-content -->
+         <div class="invoice-content">
+            <!-- begin table-responsive -->
+            <div class="table-responsive">
+               <table class="table table-invoice">
+                  <thead>
+                     <tr>
+                        <th>Product</th>
+                        <th class="text-center" width="10%">Batch</th>
+                        <th class="text-center" width="10%">Rate</th>
+                        <th class="text-center" width="10%">QTY</th>
+                        <th class="text-right" width="20%">TOTAL</th>
+                     </tr>
+                  </thead>
+                  <tbody>
+                    <ng-container *ngFor = "let items of stockItems">
+                      <tr>
+                        <td>
+                           <span class="text-inverse">{{items.STOCKITEMNAME}}</span><br>
+                           <small>{{items.tallyObject ? items.tallyObject.CATEGORY.content : ""}}</small>
+                        </td>
+                        <td class="text-center">
+                          <span class="text-inverse">{{items.BATCHALLOCATIONS_LIST.BATCHNAME}}</span> <br>
+                          <small>{{items.BATCHALLOCATIONS_LIST.EXPIRYPERIOD.DATE}}</small>
+                        </td>
+                        <td class="text-center">₹ {{items.RATE}}</td>
+                        <td class="text-center">{{items.ACTUALQTY}}</td>
+                        <td class="text-right">₹ {{items.AMOUNT}}</td>
+                     </tr>
+                    </ng-container>
+                     
+                     
+                  </tbody>
+               </table>
+            </div>
+            <!-- end table-responsive -->
+            <!-- begin invoice-price -->
+            <div class="invoice-price">
+               <div class="invoice-price-left">
+                  <div class="invoice-price-row">
+                     <div class="sub-price">
+                        <small>SUBTOTAL</small>
+                        <span class="text-inverse">₹ {{getSubTotal()}}</span>
+                     </div>
+                     <ng-container *ngFor = "let led of voucher.LEDGERENTRIES_LIST">
+                        <div *ngIf = "led.METHODTYPE == 'GST'">
+                           <div class="sub-price">
+                              <i class="fa fa-plus text-muted"></i>
+                           </div>
+                           <div class="sub-price">
+                              <small>Central Tax</small>
+                              <span class="text-inverse">₹ {{led.AMOUNT}}</span>
+                           </div>
+                        </div>
+                     </ng-container>
+                  </div>
+               </div>
+               <div class="invoice-price-right">
+                  <small>TOTAL</small> <span class="f-w-600">₹ {{getTotal()}}</span>
+               </div>
+            </div>
+            <!-- end invoice-price -->
+         </div>
+         <!-- end invoice-content -->
+         <!-- begin invoice-note -->
+         <div class="invoice-note">
+            * Make all cheques payable to [Your Company Name]<br>
+            * Payment is due within 30 days<br>
+            * If you have any questions concerning this invoice, contact  [Name, Phone Number, Email]
+         </div>
+         <!-- end invoice-note -->
+         <!-- begin invoice-footer -->
+         <div class="invoice-footer">
+            <p class="text-center m-b-5 f-w-600">
+               THANK YOU FOR YOUR BUSINESS
+            </p>
+            <p class="text-center">
+               <span class="m-r-10"><i class="fa fa-fw fa-lg fa-globe"></i> agrostop.com</span>
+               <span class="m-r-10"><i class="fa fa-fw fa-lg fa-phone-volume"></i></span>
+               <span class="m-r-10"><i class="fa fa-fw fa-lg fa-envelope"></i> {{company ? company.EMAIL.content: ""}}</span>
+            </p>
+         </div>
+         <!-- end invoice-footer -->
       </div>
-      <div class="customVoucherInformation">
-        <table>
-
-
-        <tr>
-        <td>Invoice Number</td>
-        <td>{{voucher.VOUCHERNUMBER}}</td>
-        </tr>
-        <tr>
-        <td>Date</td>
-        <td>{{voucher.DATE | date: "dd-MMM-yyyy"}}</td>
-        </tr>
-        <tr>
-        <td>Created By</td>
-        <td>{{voucher.ENTEREDBY}}</td>
-        </tr>
-        </table>
-      </div>
-    </div>
-  </div>
-
-  <div class="body">
-    <table class="table" id = "productTable">
-      <tr class="table-header">
-      <th width = '30%' class="header__item">Product Details</th>
-      <th class="header__item">Batch Details</th>
-      <th class="header__item">Qty</th>
-      <th class="header__item">CGST<br>SGST</th>
-      <th class="header__item">Rate</th>
-      <th class="header__item">Amount</th>
-      </tr>
-    <ng-container class="table-content" *ngFor = "let item of voucher.ALLINVENTORYENTRIES_LIST">
-      <tr class="table-row">
-      <td class="table-data" width = '30%'>
-        <b>{{item.STOCKITEMNAME}}</b> <br>
-        {{item.PARENT}}
-      </td>
-      <td class="table-data">
-        {{item.BATCHALLOCATIONLIST.NAME}}<br>
-        {{item.BATCHALLOCATIONLIST.EXPIRYPERIOD.DATE}}
-      </td>
-      <td class="table-data">
-        {{item.BILLEDQTY}}
-      </td>
-      <td class="table-data">
-        {{item.calculateCGST()}}<br>
-        {{item.calculateSGST()}}
-      </td>
-      <td class="table-data">
-        {{item.RATE}}
-      </td>
-      <td class="table-data">
-        {{item.AMOUNT}}
-      </td>
-      </tr>
-    </ng-container>
-</table>
-<div class="lowerBody">
-  <div class="posDetails">
-    <table id='posTable'>
-      <tr>
-        <td width = "97%">Cash Recieved</td>
-        <td>{{voucher.POSCASHRECEIVED}}</td>
-      </tr>
-      <tr>
-        <td>Invoice Total</td>
-        <td>{{voucher.getTotal()}}</td>
-      </tr>
-      <tr>
-        <td>Balance</td>
-        <td>{{voucher.POSCASHRECEIVED - voucher.getTotal()}}</td>
-      </tr>
-    </table>
-
-  </div>
-  <div class="total">
-  <table id = 'totalTable'>
-  <tr>
-    <td width = '100%'>Subtotal</td>
-    <td>{{voucher.subTotal}}</td>
-  </tr>
-  <tr>
-    <td width = '10%'>CGST</td>
-    <td>{{voucher.calculateCGST()}}</td>
-  </tr>
-  <tr>
-    <td width = '50%'>SGST</td>
-    <td>{{voucher.calculateSGST()}}</td>
-  </tr>
-  <tr>
-    <td width = '50%'><b>Total</b></td>
-    <td><b>{{voucher.getTotal()}}</b></td>
-  </tr>
-  </table>
-  </div>
-
-
-</div>
-  </div>
-  <div class="footer">
-    <div id="hsnPart">
-      <table id = 'hsnTable' #hsnTable border="1">
-        <col>
-        <col>
-        <colgroup span="2"></colgroup>
-        <colgroup span="2"></colgroup>
-        <col>
-        <tr>
-        <th rowspan="2">HSN/SAC</th>
-        <th rowspan="2">Taxable Value</th>
-        <th colspan="2" scope="colgroup">Central Tax</th>
-        <th colspan="2" scope="colgroup">State Tax</th>
-        <th rowspan="2">Total</th>
-        </tr>
-        <tr>
-          <th scope="col">Rate</th>
-          <th scope="col">Amount</th>
-          <th scope="col">Rate</th>
-          <th scope="col">Amount</th>
-        </tr>
-
-          <ng-container *ngFor = 'let code of hsnDetails()'>
-          <tr>
-            <td>{{code.hsnCode}}</td>
-            <td>{{code.taxableValue}}</td>
-            <td>{{code.cgst.rate}}</td>
-            <td>{{code.cgst.amount}}</td>
-            <td>{{code.sgst.rate}}</td>
-            <td>{{code.sgst.amount}}</td>
-            <td>{{code.cgst.amount + code.sgst.amount}}</td>
-          </tr>
-          </ng-container>
-
-      </table>
-    </div>
-    <div class="termAndCondition">
-
-    </div>
+   </div>
   </div>
 </div>
-</!--ng-container-->
+
+<div>
+  <button [useExistingCss]="true"
+    printSectionId="print-section"
+    ngxPrint>print</button>
+</div>

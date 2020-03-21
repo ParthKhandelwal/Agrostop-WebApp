@@ -203,4 +203,12 @@ export class InventorySelectionComponent implements OnInit {
     this.productRef.nativeElement.focus(); 
   }
 
+  getNumbers(temp: string): number{
+    var returnNumber;
+    returnNumber = temp.replace(/\//g, "");
+    returnNumber = returnNumber.replace(/[^\d.-]/g, "");
+    return returnNumber;
+  }
+
+ 
 }

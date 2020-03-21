@@ -81,11 +81,19 @@
                       <button [ngClass]="'payment' ? 'btn btn-previous btn-fill btn-success btn-wd btn-sm' : 'btn-default btn-wd btn-sm btn btn-previous btn-fill '" name='paymentTab' (click)="switchPayment()" [disabled]="payment || isOrder" *ngIf =" !isOrder">Payment</button>
                     </div>
                     <div>
+                      <button class='btn btn-previous btn-fill btn-success btn-wd btn-sm'  name='syncTab' (click)= "switchPrintView()" >Print</button>
+                    </div>
+                    <div>
                       <button class='btn btn-previous btn-fill btn-success btn-wd btn-sm'  name='syncTab' (click)= "switchSyncSettings()" [disabled]="!createOnline$()  " >Sync</button>
                     </div>
                   </div>
                 </div>
                 
+
+
+                <div id="printView" class="printView" *ngIf= "printView">
+                  <invoice-print-view #printView [(tallyVoucher)] = "voucher" (valueChanged) = "restore()"></invoice-print-view>
+                </div>
 
 
                 <!--SYNC SETTINGS-->
@@ -178,6 +186,7 @@
 
   </div>
 
+ 
 
 
 <!--   Core JS Files   -->

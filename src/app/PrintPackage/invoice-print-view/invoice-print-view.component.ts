@@ -1,26 +1,64 @@
-import { Component, OnInit, Inject, Input } from '@angular/core';
+import { Component, OnInit, Inject, Input, Output, EventEmitter } from '@angular/core';
 import { TallyVoucher } from '../../Model/tally-voucher';
 import { Customer } from '../../Model/customer';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 import { VOUCHER } from '../../Model/voucher';
+import { ApiService } from 'src/app/shared/api.service';
+import { PosService } from 'src/app/shared/pos.service';
+import { EmailValidator } from '@angular/forms';
+
 
 @Component({
-  selector: 'app-invoice-print-view',
+  selector: 'invoice-print-view',
   templateUrl: './invoice-print-view.component.html',
   styleUrls: ['./invoice-print-view.component.css']
 })
 export class InvoicePrintViewComponent implements OnInit {
 
   @Input('tallyVoucher') voucher: VOUCHER;
+  @Output("valueChanged") valueChanged = new EventEmitter();
   @Input('customer') customer: Customer;
   uniqueHSN: PrintTaxItem[] = [];
-  printing: boolean = false;
 
-  constructor() {
+  stockItems: any [] =[];
+  company: any;
+  items$: Promise<any[]>;
+  customerAddress: any[] = [];
+  date: Date;
 
+
+  constructor(private apiService?: ApiService, private posService?: PosService) {
   }
 
   ngOnInit() {
+        console.log(this.voucher);
+      
+        this.stockItems = this.voucher.ALLINVENTORYENTRIES_LIST;
+        this.company = this.posService.getCompany().COMPANY;
+        this.customerAddress = this.voucher.ADDRESS_LIST.ADDRESS
+        this.date = new Date(this.voucher.DATE);   
+        
+
+        this.posService.getItems().then((re: any[]) =>{
+          for (let item of this.stockItems){
+            if (!item.tallyObject){
+              item.tallyObject = re.filter((i) => i.NAME == item.STOCKITEMNAME)[0];
+              item.RATE = this.getNumbers(item.RATE);
+              item.ACTUALQTY = this.getNumbers(item.ACTUALQTY);
+                 
+            }
+          }
+          console.log(this.stockItems);
+        })
+
+     
+         
+    
+    
+    
+
+
+    
   }
 
   hsnDetails(): PrintTaxItem[]{
@@ -45,133 +83,41 @@ export class InvoicePrintViewComponent implements OnInit {
   return uniqueHSN;
   }
 
-  print(){
-    this.printing = true;
-    //this.uniqueHSN = this.hsnDetails();
-    let printContents, popupWin;
-        printContents = document.getElementById('print-section').innerHTML;
-        popupWin = window.open('', '_blank', 'top=0,left=0,height=100%,width=auto');
-        popupWin.document.open();
-        popupWin.document.write(`
-          <html>
-            <head>
-              <title>Invoice</title>
-              <style>
-
-
-
-
-              .invoicePrintView{
-                padding: 10px;
-                font-size: 12px;
-              }
-              .header{
-
-              }
-
-              .voucherInformation{
-                display: flex;
-                width: 100%;
-                margin-bottom: 20px;
-              }
-
-              .customerInformation{
-               width: 45%;
-              }
-              .customVoucherInformation{
-                width: 45%;
-                margin-left:10%;
-              }
-
-              .body{
-              width: 100%;
-              }
-
-              .lowerBody{
-                margin-top: 20px;
-                display: flex;
-              }
-              .total{
-                margin-left: 10%;
-                width: 45%;
-
-              }
-
-              .posDetails{
-                width: 45%
-
-              }
-
-              .footer{
-
-              }
-              .hsnPart{
-                width: 100%;
-              }
-
-              #productTable {
-                font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
-                border-collapse: collapse;
-                width: 100%;
-              }
-
-              #productTable td, #productTable th {
-                border: 1px solid #ddd;
-                padding: 2px;
-              }
-
-              #productTable tr:nth-child(even){background-color: #f2f2f2;}
-
-              #productTable tr:hover {background-color: #ddd;}
-
-              #productTable th {
-                padding-top: 2px;
-                padding-bottom: 2px;
-                text-align: left;
-                background-color: #4CAF50;
-                color: white;
-              }
-
-              #totalTable td{
-                border-bottom: 1px solid #ddd;
-              }
-
-              #posTable td{
-                border-bottom: 1px solid #ddd;
-              }
-              #hsnTable{
-                font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
-                border-collapse: collapse;
-                width: 100%;
-              }
-
-              #hsnTable td, #hsnTable th {
-                border: 1px solid #ddd;
-                padding: 2px;
-              }
-
-              #hsnTable tr:nth-child(even){background-color: #f2f2f2;}
-
-              #hsnTable tr:hover {background-color: #ddd;}
-
-              #hsnTable th {
-                padding-top: 2px;
-                padding-bottom: 2px;
-                text-align: left;
-                background-color: #F1C40F;
-                color: white;
-              }
-
-
-
-              </style>
-            </head>
-        <body onload="window.print();window.close()">${printContents}</body>
-          </html>`
-        );
-        popupWin.document.close();
-        this.printing = true;
+  getNumbers(temp: string): number{
+    var returnNumber;
+    returnNumber = temp.replace(/\//g, "");
+    returnNumber = returnNumber.replace(/[^\d.-]/g, "");
+    return returnNumber;
   }
+
+  public getSubTotal(): number{
+    var total: number = 0;
+    for (let item of this.voucher.ALLINVENTORYENTRIES_LIST){
+      if (item.AMOUNT != null){
+        total = total + item.AMOUNT;
+      }
+    }
+    return total;
+  }
+
+  public getTotal(): number{
+      var total: number =0 
+      for (let item of this.voucher.LEDGERENTRIES_LIST){
+        if (item.AMOUNT != null && item.POSPAYMENTTYPE == null){
+          total = total + item.AMOUNT;
+        }
+      }
+      for (let item of this.voucher.ALLINVENTORYENTRIES_LIST){
+        if (item.AMOUNT != null){
+          total = total + item.AMOUNT;
+        }
+      }
+      return total;
+    
+  }
+
+ 
+
 
 }
 

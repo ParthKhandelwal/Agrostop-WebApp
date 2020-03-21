@@ -63,14 +63,15 @@ export class PosService {
   }
 
   async enablePOSMode(){
+  
       this.customerPercent = 0;
       this.batchPercent = 0;
       this.ledgerPercent = 0;
       this.itemPercent = 0;
-      
-      await this.saveItems();
-      await this.saveCustomers();
-      await this.saveLedgers();
+      await this.saveCompany();
+      //await this.saveItems();
+      //await this.saveCustomers();
+      //await this.saveLedgers();
        
   }
 
@@ -251,6 +252,20 @@ export class PosService {
        
   }
 
+  getCompany(): any{
+    return JSON.parse(sessionStorage.getItem("company"));
+  }
+
+  saveCompany(){
+    this.apiService.getCompany("Tirupati Traders - Nalkheda").subscribe(
+      res => {
+        sessionStorage.setItem("company", JSON.stringify(res));
+      },
+      err => {
+        console.log(err);
+      }
+    )
+  }
 
   getBatch(str: string){
 

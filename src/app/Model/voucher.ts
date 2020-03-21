@@ -22,12 +22,16 @@ import { RateDetail } from './stock-item';
     }
 
 export class ADDRESSLIST {
-        ADDRESS: string;
+        ADDRESS: string[];
   _TYPE: string;
 
 
   constructor(addressName: string, addressTehsilName: string, addressDistrictName: string, addressStateName: string) {
-    this.ADDRESS = addressName + " ," + addressTehsilName + " ," + addressDistrictName + " ," + addressStateName;
+    this.ADDRESS = [];
+    this.ADDRESS.push(addressName);
+    this.ADDRESS.push(addressTehsilName);
+    this.ADDRESS.push(addressDistrictName);
+    this.ADDRESS.push(addressStateName);
   }
     }
 
