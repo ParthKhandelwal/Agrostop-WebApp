@@ -56,6 +56,11 @@ export class ApiService {
     return this.httpClient.get<any>(this.BASE_URL + 'stockItem/?id=' + id);
   }
 
+  getStockSummary(godownName: string, fromDate: Date, toDate: Date): Observable<any[]>{
+    return this.httpClient.get<any[]>(this.BASE_URL + 'stockItem/getStockSummary?godownName=' + godownName +
+    "?fromDate" + this.datePipe.transform(fromDate, "yyyyMMdd") + '&toDate=' + this.datePipe.transform(toDate, "yyyyMMdd"));
+
+  }
   addCustomer(customer: Customer): Observable<any> {
     return this.httpClient.post<any>(this.BASE_URL + 'customer/create', customer);
   }
@@ -66,6 +71,11 @@ export class ApiService {
 
   getCurrentUser(): Observable<any> {
     return this.httpClient.get<User>(this.BASE_URL + 'user/currentUser');
+  }
+
+  getVoucher(id: string): Observable<any>{
+     return this.httpClient.get<any>(this.BASE_URL + 'voucher?id=' + id);
+
   }
 
   getVouchers(fromDate: Date, toDate: Date): Observable<any[]> {
@@ -105,6 +115,10 @@ export class ApiService {
 
   getSalesVoucherTypeName(): Observable<any> {
     return this.httpClient.get(this.BASE_URL + "voucherType/getNamesByParent?voucherType=Sales");
+  }
+
+  getVoucherTypeNames(str: string): Observable<any[]>{
+    return this.httpClient.get<any[]>(this.BASE_URL + "voucherType/getNamesByParent?voucherType=" + str);
   }
 
   getVoucherType(id: string): Observable<any>{

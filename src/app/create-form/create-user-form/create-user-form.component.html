@@ -138,37 +138,56 @@
                                         <tr>
                                             <th><em class="fa fa-cog"></em></th>
                                             <th class="hidden-xs">ID</th>
+                                            <th>Category</th>
                                             <th>Voucher Type</th>
+                                            
                                             <th>POS Class</th>
                                             
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <ng-container *ngFor = "let voucherType of user.salesVoucherSettings.voucherTypeList; let i = index">
+                                        <ng-container *ngFor = "let voucherType of user.voucherTypes; let i = index">
                                         <tr>
                                             <td align="center"><a class="btn btn-default" (click) = "deleteVoucherType(voucherType.voucherTypeName)"><em class="fa fa-trash"></em></a></td>
                                             <td class="hidden-xs">{{i+1}}</td>
+                                            <td>{{voucherType.voucherCategory}}</td>
                                             <td>{{voucherType.voucherTypeName}}</td>
+                                            
                                             <td>{{voucherType.voucherClass}}</td>
                                            
                                         </tr>
                                         </ng-container>
                                         <tr>
+
                                             <td align="center">
                                                 <a class="btn btn-default" (click) = "addVoucherType(voucherType)" >
                                                     <em class="fa fa-plus"></em>
                                                 </a>
                                             </td>
+
                                             <td class="hidden-xs">...</td>
+
+                                            <td>
+                                                <select [(ngModel)] = "voucherType.voucherCategory" class="custom-select custom-select-sm"
+                                                (ngModelChange) = "getVoucherType($event)" name="voucherTypeCategorySelect">
+                                                    <option selected (value) = "null" ></option>
+                                                    <option value = "Sales">POS Sales</option>
+                                                    <option value = "Receipt">Receipt</option>
+                                                    <option value = "Payment">Payment</option>
+                                               
+                                            </select>
+                                            </td>
+
                                             <td>
                                             <select [(ngModel)] = "voucherType.voucherTypeName" class="custom-select custom-select-sm"
                                             (ngModelChange) = "getPOSClass($event)" name="voucherTypeNameSelect">
                                             <option selected (value) = "null" ></option>
-                                                <ng-container *ngFor = "let voucherType of voucherTypeNames">
+                                                <ng-container *ngFor = "let voucherType of voucherTypes$ | async">
                                                     <option (value) = "voucherType">{{voucherType}}</option>
                                                 </ng-container>
                                             </select>
                                             </td>
+                                            
                                             <td>
                                                 <select  [(ngModel)] = "voucherType.voucherClass" class="custom-select custom-select-sm"
                                                 name="voucherTypeClassSelect">
@@ -185,6 +204,9 @@
                         </div>
                     </div>
 
+
+
+                    
 
 
 

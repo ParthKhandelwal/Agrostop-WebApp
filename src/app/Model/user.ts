@@ -11,10 +11,12 @@ export class User {
       godownList:          string[];
       defaultGodown:       string;
       salesVoucherSettings: SalesVoucherSettings;
+      voucherTypes: VoucherTypeClass[];
 
   constructor(){
     this.salesVoucherSettings = new SalesVoucherSettings();
     this.godownList = [];
+    this.voucherTypes = [];
   }
 }
 
@@ -36,6 +38,7 @@ export class SalesVoucherSettings{
 
 export class VoucherTypeClass{
   voucherTypeName: string;
+  voucherCategory: string;
   voucherClass: string;
 
   constructor(){

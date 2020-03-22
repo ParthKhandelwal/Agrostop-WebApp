@@ -34,6 +34,7 @@ export class InvoicePrintViewComponent implements OnInit {
         console.log(this.voucher);
       
         this.stockItems = this.voucher.ALLINVENTORYENTRIES_LIST;
+        
         this.company = this.posService.getCompany().COMPANY;
         this.customerAddress = this.voucher.ADDRESS_LIST.ADDRESS
         this.date = new Date(this.voucher.DATE);   

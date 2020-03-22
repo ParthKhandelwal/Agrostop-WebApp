@@ -31,6 +31,9 @@ export class VoucherSettingComponent implements OnInit {
   constructor(private apiService?: ApiService, private posService?: PosService) { }
 
   ngOnInit() {
+    if (!this.posService.getCompany){
+      alert("please UpSync once to continue billing.")
+    }
     this.voucherType = this.posService.getVoucherType();
     if (this.voucherType && this.voucherType["VOUCHERCLASSLIST.LIST"]){
       if (this.voucherType["VOUCHERCLASSLIST.LIST"] instanceof Array){
@@ -65,7 +68,7 @@ export class VoucherSettingComponent implements OnInit {
   proceedChange(){
     const user: User = this.posService.getUser();
     console.log(user);
-    this.voucherTypeList = user.salesVoucherSettings.voucherTypeList
+    this.voucherTypeList = user.voucherTypes.filter((voucher) => voucher.voucherClass == "sales")
     this.pricelevels = user.salesVoucherSettings.priceLists;
     this.godowns = user.godownList;
     // this.apiService.getSalesVoucherTypeName().subscribe(
@@ -222,7 +225,13 @@ export class VoucherSettingComponent implements OnInit {
     this.voucher.LEDGERENTRIES_LIST = [];
 
     this.ledgerList = [];
-    for (let ledger of this.posClass["LEDGERENTRIESLIST.LIST"]){
+    var tempArray: any[] = [];
+    if (this.posClass["LEDGERENTRIESLIST.LIST"] instanceof Array){
+      tempArray = this.posClass["LEDGERENTRIESLIST.LIST"]
+    } else{
+      tempArray.push(this.posClass["LEDGERENTRIESLIST.LIST"])
+    }
+    for (let ledger of tempArray){
       if (ledger.NAME){
 
       this.posService.getLedger(ledger.NAME.content).then(

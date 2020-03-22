@@ -33,7 +33,10 @@ import { NgxIndexedDB } from 'ngx-indexed-db';
 export class CreateVoucherComponent implements OnInit {
   voucher: VOUCHER = new VOUCHER();
   @Input("editMode") editMode: boolean = false;
-
+  posVoucherView: boolean;
+  paymentVoucherView: boolean;
+  receiptVoucherView: boolean;
+  orderView: boolean;
   constructor() {
 
   }
@@ -45,7 +48,6 @@ export class CreateVoucherComponent implements OnInit {
 
   ngAfterViewInit() {
 
-    //this.customerRef.nativeElement.focus();
 
   }
 
@@ -60,6 +62,10 @@ export class CreateVoucherComponent implements OnInit {
   }
 
  
+  setFalse(){
+    this.posVoucherView = false;
+    this.paymentVoucherView = false;
+  }
 
 }
 

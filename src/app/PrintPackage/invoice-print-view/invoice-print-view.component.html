@@ -131,6 +131,8 @@
 
 <div>
   <button [useExistingCss]="true"
+  (click) =  "valueChanged.emit('saved')"
     printSectionId="print-section"
     ngxPrint>print</button>
+    <button (click) =  "valueChanged.emit('saved')"></button>
 </div>

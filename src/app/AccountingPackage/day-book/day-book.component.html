@@ -60,7 +60,7 @@
                         <td>
                           <select class="custom-select custom-select-sm" [formControl] = "filterValueFC">
                             <option value = "">Select value</option>
-                            <ng-container *ngFor = "let item of filterValue$ | async">
+                            <ng-container *ngFor = "let item of filterValue$">
                               <option (value) = "item">{{item}}</option>
                             </ng-container>
                           </select>
@@ -79,6 +79,11 @@
             
             <div class="card-header card-header-primary">
               <h4 class="card-title ">Day Book</h4>
+              <div *ngIf = "voucherPercent < 100">
+                <section class="example-section" >
+                  <mat-progress-bar mode="determinate" [value]= "voucherPercent"></mat-progress-bar>
+                </section>
+              </div>
               <p class="card-category"> Here is a subtitle for this table</p>
             </div>
             <div *ngIf = "loading" style="vertical-align: middle; align-self: center;">
@@ -88,6 +93,9 @@
               <div class="table-responsive">
                 <table class="table">
                   <thead class=" text-primary">
+                    <th>
+
+                    </th>
                   <th>
                     Date
                   </th>
@@ -111,6 +119,11 @@
                     <ng-container *ngFor="let v of filteredArray">
                       <tr *ngIf = "v.VOUCHER">
                         <td>
+                          <button mat-button (click)="v.VOUCHER.toggle = !v.VOUCHER.toggle">
+                            <mat-icon>add</mat-icon>
+                          </button>
+                        </td>
+                        <td>
                           {{v.VOUCHER ? v.VOUCHER.DATE  : "" | date: "dd-MMM-yyyy"}}
                         </td>
                         <td>
@@ -120,18 +133,49 @@
                           {{v.VOUCHER ? v.VOUCHER.BASICBUYERNAME : ""}}
                         </td>
                         <td>
-                          {{v.VOUCHER ? v.VOUCHER["ADDRESS.LIST"] ? v.VOUCHER["ADDRESS.LIST"].ADDRESS : "" : ""}}
+                          {{v.VOUCHER ? v.VOUCHER.ADDRESS : ""}}
                         </td>
                         <td class="text-primary">
-                          {{getTotal(v.VOUCHER) | number: '1.2-2'}}
+                          {{v.VOUCHER ? (v.VOUCHER.VOUCHERAMOUNT)*(-1) : ""}}
                         </td>
                         <td>
                           <button mat-mini-fab aria-label="Example icon-button with a heart icon" (click)="edit(voucher)">
                             <mat-icon>edit</mat-icon>
                           </button>
-
                         </td>
                       </tr>
+                      <table *ngIf = "v.VOUCHER.toggle">
+                        <thead>
+                          <th>Product</th>
+                          <th>Qty</th>
+                          <th>Rate</th>
+                        </thead>
+                        <tbody>
+                          
+                          <div *ngIf = "array(v.VOUCHER.INVENTORYENTRIES.STOCKITEM)">
+                            <ng-container *ngFor = "let item of v.VOUCHER.INVENTORYENTRIES.STOCKITEM">
+                              <tr>
+                                <td>{{item.STOCKITEMNAME}}</td>
+                                
+                              </tr>
+
+                            </ng-container>
+                          </div>
+                          <div *ngIf = "!array(v.VOUCHER.INVENTORYENTRIES.STOCKITEM)">
+                              <tr>
+                                <td>{{v.VOUCHER.INVENTORYENTRIES.STOCKITEM.STOCKITEMNAME}}</td>
+                                
+                              </tr>
+                              <tr>
+
+                              </tr>
+                              <tr>
+
+                              </tr>
+
+                          </div>
+                        </tbody>
+                      </table>
 
 
                     </ng-container>

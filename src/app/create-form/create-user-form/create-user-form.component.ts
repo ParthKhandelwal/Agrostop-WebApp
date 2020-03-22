@@ -5,6 +5,7 @@ import { MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
 import { User, VoucherTypeClass } from '../../Model/user';
 import { MatTableDataSource } from '@angular/material';
 import { FormControl } from '@angular/forms';
+import { Observable } from 'rxjs';
 
 
 @Component({
@@ -38,6 +39,8 @@ export class CreateUserFormComponent implements OnInit {
   voucherType: VoucherTypeClass = new VoucherTypeClass()
   godownName: string = "";
   priceLevel: string = "";
+  voucherTypes$ : Observable<any[]>;
+
   
 
  
@@ -88,7 +91,13 @@ export class CreateUserFormComponent implements OnInit {
         console.log(err);
       }
     );
-     }
+    
+  }
+
+  getVoucherType(value){
+    this.voucherTypes$ = this.apiService.getVoucherTypeNames(value);
+
+  }
 
   submit(){
     if (this.updateMode){
@@ -139,14 +148,14 @@ deleteGodown(godown: string){
 
 addVoucherType(voucherType: VoucherTypeClass){
   var voucherExists: boolean = false;
-  for (var i = 0; i < this.user.salesVoucherSettings.voucherTypeList.length; i++) {
-    if (this.user.salesVoucherSettings.voucherTypeList[i].voucherTypeName == voucherType.voucherTypeName) {
+  for (var i = 0; i < this.user.voucherTypes.length; i++) {
+    if (this.user.voucherTypes[i].voucherTypeName == voucherType.voucherTypeName) {
       voucherExists = true;
     }
   }
   if(!voucherExists){
     
-    this.user.salesVoucherSettings.voucherTypeList.push(voucherType)
+    this.user.voucherTypes.push(voucherType)
 
   }
   this.voucherType = new VoucherTypeClass();

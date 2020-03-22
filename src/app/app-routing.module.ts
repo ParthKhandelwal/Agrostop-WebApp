@@ -22,6 +22,8 @@ import { ProductListViewComponent } from './Products/product-list-view/product-l
 import { TaxDetailsTableComponent } from './tables/tax-details-table/tax-details-table.component';
 import { UserTableComponent } from './tables/user-table/user-table.component';
 import { AuthGuard } from './_guard/auth-guard.service';
+import { StockCheckComponent } from './Products/stock-check/stock-check.component';
+
 
 const routes: Routes = [
   {
@@ -65,7 +67,8 @@ const routes: Routes = [
     children: [
       {path: 'product-list', component: ProductListViewComponent},
       {path: 'expired-batches', component: ExpiredProductsComponent},
-      {path: 'tax-details', component: TaxDetailsTableComponent}
+      {path: 'tax-details', component: TaxDetailsTableComponent},
+      {path: 'stock-check', component: StockCheckComponent}
     ]
   },
   {

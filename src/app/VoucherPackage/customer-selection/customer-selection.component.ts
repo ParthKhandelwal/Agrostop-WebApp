@@ -53,6 +53,7 @@ export class CustomerSelectionComponent implements OnInit {
   }
 
   validateCustomer() {
+    if(this.customer){
     this.voucher.CUSTOMERID = this.customer.customerId;
     this.voucher.BASICBUYERNAME = this.customer.name
     this.voucher.ADDRESS_LIST = new ADDRESSLIST(this.customer.addressName, this.customer.addressTehsilName, this.customer.addressDistrictName,
@@ -61,6 +62,8 @@ export class CustomerSelectionComponent implements OnInit {
     this.voucher.GSTREGISTRATIONTYPE = this.customer.gSTREGISTRATIONTYPE;
     this.voucher.STATENAME = this.customer.addressStateName;
     this.valueChange.emit("Customer Successfully Selected");
+    }
+    
   }
 
   displayFnProduct(user?: any): string | undefined {

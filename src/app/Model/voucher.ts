@@ -356,7 +356,7 @@ export class VOUCHER {
   AUDITED: string;
   FORJOBCOSTING: string;
   ISOPTIONAL: string;
-  EFFECTIVEDATE: string;
+  EFFECTIVEDATE: Date;
   USEFOREXCISE: string;
   ISFORJOBWORKIN: string;
   ALLOWCONSUMPTION: string;
@@ -455,7 +455,6 @@ export class VOUCHER {
 
 
   constructor() {
-    this.POSCASHRECEIVED = 0;
     this.ALLINVENTORYENTRIES_LIST = [];
     this.ALLLEDGERENTRIES_LIST = [];
     this.LEDGERENTRIES_LIST = [];

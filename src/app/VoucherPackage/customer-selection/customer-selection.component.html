@@ -4,7 +4,7 @@
   <div ngClass="customerSearchBar" *ngIf="!createCustomer">
     <mat-form-field class="example-full-width">
       <input #customerField type="text"
-             (keyup.enter)= "validateCustomer()"
+             (keyup.enter)= "validateCustomer(); false"
              placeholder="Pick one"
              aria-label="Number"
              matInput

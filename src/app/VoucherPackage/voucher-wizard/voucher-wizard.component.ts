@@ -249,6 +249,8 @@ export class VoucherWizardComponent implements OnInit, AfterViewInit {
 
   restore(){
     this.voucher = new VOUCHER();
+    this.printView = false;
+    this.setFalse();
     this.switchVoucherSettings();
   }
 

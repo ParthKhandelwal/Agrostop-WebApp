@@ -4,12 +4,13 @@ import { ApiService } from '../../shared/api.service';
 import { VoucherTableComponent } from '../../tables/voucher-table/voucher-table.component';
 import { TallyVoucher } from '../../Model/tally-voucher';
 import { VoucherService } from '../../shared/voucher.service';
-import { Observable } from 'rxjs';
+import { Observable, from } from 'rxjs';
 import { Router } from '@angular/router';
 import * as cloneDeep from 'lodash/cloneDeep';
 import { FormControl } from '@angular/forms';
 import { map, filter } from 'rxjs/operators';
 import { PosService } from 'src/app/shared/pos.service';
+import { VoucherTypeClass } from 'src/app/Model/user';
 
 
 
@@ -32,9 +33,11 @@ export class DayBookComponent implements OnInit {
   filterOperationFC = new FormControl();
   filterValueFC = new FormControl();
   filteredArray : any[] =[]
+  masterIds: any[] = [];
+  voucherPercent: number = 100;
 
   filterField: any[] = [
-    "Godown",
+    "Voucher Type",
     "Tally Username",
     "Customer"
   ]
@@ -42,7 +45,7 @@ export class DayBookComponent implements OnInit {
     "Equal"
   ]
 
-  filterValue$: Observable<any[]>;
+  filterValue$: any[];
 
   constructor(private apiService?: ApiService, private router?: Router, private posService?: PosService) { }
 
@@ -54,24 +57,38 @@ export class DayBookComponent implements OnInit {
 
 
   getVouchers(){
+    this.voucherPercent = 0;
     this.loading = true;
     const user = this.posService.getUser();
     if (user.role != "Admin"){
-    this.apiService.getVouchers(this.fromDate.value, this.toDate.value).pipe(
-        map((vouchers) => vouchers.filter((voucher: any) => {
-          console.log(voucher.VOUCHER);
-          if (voucher.VOUCHER){
-            return voucher.VOUCHER.BASICBUYERNAME == "Parth Khandelwal"
-          }else {
-            return false;
-          }
+    this.apiService.getVouchers(this.fromDate.value, this.toDate.value).subscribe(
+        (res: any) =>{
           
-        }))
-      ).subscribe(
-        res =>{
-          this.vouchers = res;
-          this.filteredArray = res;
-          this.loading = false;
+          this.masterIds = res.VOUCHERS.VOUCHER;
+          
+          console.log(this.masterIds);
+          if (this.masterIds == null){
+            this.loading = false;
+            this.voucherPercent = 100;
+          }else {
+          const length: number = this.masterIds.length;
+          var index: number = 0;
+          for (let item of this.masterIds){
+            this.apiService.getVoucher(item.MASTERID).subscribe(
+              res => {
+                this.loading = false;
+                this.vouchers.push(res)
+                this.filteredArray.push(res);
+                index++;
+                this.voucherPercent = Math.round((index/length)*100);
+
+              },
+              err => {
+                console.log(err);
+              }
+            )
+          }
+        }
         },
         err => {
           console.log(err);
@@ -127,13 +144,10 @@ export class DayBookComponent implements OnInit {
     this.filteredArray = this.vouchers.filter((voucher: any) => {
         
         if (voucher.VOUCHER){
-          if (this.filterFieldFC.value == "Godown"){
+          if (this.filterFieldFC.value == "Voucher Type"){
             console.log(voucher);
-            if (voucher.VOUCHER["ALLINVENTORYENTRIES.LIST"] instanceof Array){
-              return voucher.VOUCHER["ALLINVENTORYENTRIES.LIST"][0]["BATCHALLOCATIONS.LIST"].GODOWNNAME == this.filterValueFC.value;
-            }else {
-              return voucher.VOUCHER["ALLINVENTORYENTRIES.LIST"]["BATCHALLOCATIONS.LIST"].GODOWNNAME == this.filterValueFC.value;
-            }
+            return voucher.VOUCHER.VOUCHERTYPENAME == this.filterValueFC.value;
+            
           } else if (this.filterFieldFC.value == "Tally Username"){
             alert("Not Supported");
             return true;
@@ -152,11 +166,15 @@ export class DayBookComponent implements OnInit {
 
   getFilterValue(value){
     console.log(value);
-    if (value == "Godown"){
-      this.filterValue$ = this.apiService.getGodownNames();
+    if (value == "Voucher Type"){
+      this.filterValue$ = this.posService.getUser().voucherTypes.map((voucherType:VoucherTypeClass) => voucherType.voucherTypeName);
     } else if (value == "Tally Username"){
 
     }
+  }
+
+  array(object: any): boolean{
+    return object instanceof Array;
   }
   
 }
