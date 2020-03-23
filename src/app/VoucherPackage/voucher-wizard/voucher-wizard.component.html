@@ -12,47 +12,8 @@
             
 
           <div class="card wizard-card" data-color="orange" id="wizardProfile">
-              <div *ngIf = "loading || !posService.syncingOver() || !posService.upSyncingOver()" style="vertical-align: middle; align-self: center;">
-                <img src="assets/img/agrostop.gif" alt="Saving Voucher..." width="100px" height="100px">
-                
-              </div>
 
-              <div *ngIf = "!posService.syncingOver()"  style="vertical-align: middle; align-self: center; padding-top: 20px; width: 80%;">
-                <h6 class="example-h2">Getting Customers : {{posService.customerPercent}} %</h6>
-                <section class="example-section">
-                  <mat-progress-bar mode="determinate" [value]="posService.customerPercent"></mat-progress-bar>
-                </section>
-
-                <h6 class="example-h2">Getting Ledgers : {{posService.ledgerPercent}} %</h6>
-                <section class="example-section">
-                  <mat-progress-bar mode="determinate" [value]="posService.ledgerPercent"></mat-progress-bar>
-                </section>
-
-                <h6 class="example-h2">Getting Items : {{posService.itemPercent}} %</h6>
-                <section class="example-section">
-                  <mat-progress-bar mode="determinate" [value]="posService.itemPercent"></mat-progress-bar>
-                </section>
-
-                <h6 class="example-h2">Getting Batches : {{posService.batchPercent}} %</h6>
-                <section class="example-section">
-                  <mat-progress-bar mode="determinate" [value]="posService.batchPercent"></mat-progress-bar>
-                </section>
-                
-                <div>
-                  <button type="button" class="btn btn-danger" (click) = "forceStop()" style="vertical-align: middle; align-self: center;">Force Stop</button>
-                </div>
-
-              </div>
-
-              <div *ngIf = "!posService.upSyncingOver()"  style="vertical-align: middle; align-self: center; padding-top: 20px; width: 80%;">
-                <h6 class="example-h2">Syncing : {{posService.upSyncPercent}} %</h6>
-                <section class="example-section">
-                  <mat-progress-bar mode="determinate" [value]="posService.upSyncPercent"></mat-progress-bar>
-                </section>
-              </div>
-              
-
-            <div *ngIf = "!loading && posService.syncingOver() && posService.upSyncingOver()">
+            <div>
               <form action="" method="">
                 <!--        You can switch ' data-color="orange" '  with one of the next bright colors: "blue", "green", "orange", "red"          -->
 
@@ -93,45 +54,6 @@
 
                 <div id="printView" class="printView" *ngIf= "printView">
                   <invoice-print-view #printView [(tallyVoucher)] = "voucher" (valueChanged) = "restore()"></invoice-print-view>
-                </div>
-
-
-                <!--SYNC SETTINGS-->
-                <div *ngIf = "syncSettings">
-                  <div class="row space-rows">
-                    <div class="col">
-                      <a (click) = "upSync()">
-                        <div class="card cards-shadown cards-hover">
-                            <div class="card-header"><span class="space"><i class="fa fa-cloud-upload" id="download-icon"></i></span>
-                                <div class="cardheader-text">
-                                    <h4 id="heading-card">Up Sync</h4>
-                                    <p id="cardheader-subtext">save data from local machine to server...</p>
-                                </div>
-                            </div>
-                            <div class="card-body">
-                                <p class="card-text sub-text-color">Last Sync:</p>
-                                <p class="card-text cardbody-sub-text">2 minutes ago</p>
-                            </div>
-                        </div>
-                      </a>
-                    </div>
-                    <div class="col">
-                      <a (click) = "downSync()">
-                        <div class="card cards-shadown cards-hover">
-                            <div class="card-header"><span class="space"><i class="fa fa-cloud-download" id="download-icon"></i></span>
-                                <div class="cardheader-text" style="padding-left: 10px; !important">
-                                    <h4 id="heading-card">Down Sync</h4>
-                                    <p id="cardheader-subtext">Get Data from server to local machine...</p>
-                                </div>
-                            </div>
-                            <div class="card-body">
-                                <p class="card-text sub-text-color">Cache:</p>
-                                <p class="card-text cardbody-sub-text">{{posService.itemPercent}}</p>
-                            </div>
-                        </div>
-                      </a>
-                    </div>
-                </div>
                 </div>
 
 

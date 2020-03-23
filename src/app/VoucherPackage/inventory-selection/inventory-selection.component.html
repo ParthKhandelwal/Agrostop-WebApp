@@ -55,15 +55,15 @@
                   <mat-autocomplete [panelWidth]="300" #auto="matAutocomplete"
                                     (optionSelected)= 'selectProduct($event.option.value.NAME)'
                                     [displayWith]= "displayFnProduct">
-                    <mat-option [value]= "endVoucher">
-                      <th scope="row">
-                        <div class="p-2">
-                          <div class="ml-3 d-inline-block align-middle">
-                           <h6 class="mb-0 font-weight-bold">{{endVoucher.NAME}}</h6>
-                          </div>
-                        </div>
-                    </th>
-                    </mat-option>
+                                    <mat-option [value]= "endVoucher">
+                                      <th scope="row">
+                                        <div class="p-2">
+                                          <div class="ml-3 d-inline-block align-middle">
+                                           <h6 class="mb-0 font-weight-bold">{{endVoucher.NAME}}</h6>
+                                          </div>
+                                        </div>
+                                    </th>
+                                    </mat-option>
                     <mat-option *ngFor="let option of filteredOptions | async" [value]="option">
                       <th scope="row">
                         <div class="p-2">

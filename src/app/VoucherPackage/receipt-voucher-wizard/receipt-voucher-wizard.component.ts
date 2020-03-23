@@ -1,18 +1,20 @@
 import { Component, OnInit, Input, Output, EventEmitter, ViewChild, ElementRef } from '@angular/core';
-import { VOUCHER, ALLLEDGERENTRIESLIST } from 'src/app/Model/voucher';
+import { ALLLEDGERENTRIESLIST, VOUCHER } from 'src/app/Model/voucher';
+import { Observable, from } from 'rxjs';
+import { FormControl } from '@angular/forms';
 import { PaymentServiceService } from 'src/app/shared/payment-service.service';
 import { ApiService } from 'src/app/shared/api.service';
 import { AuthenticationService } from 'src/app/shared/authentication.service';
-import { FormControl } from '@angular/forms';
-import { Observable, from } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
+import { ReceiptService } from 'src/app/shared/receipt.service';
 
 @Component({
-  selector: 'app-payment-voucher-wizard',
-  templateUrl: './payment-voucher-wizard.component.html',
-  styleUrls: ['./payment-voucher-wizard.component.css']
+  selector: 'receipt-voucher-wizard',
+  templateUrl: './receipt-voucher-wizard.component.html',
+  styleUrls: ['./receipt-voucher-wizard.component.css']
 })
-export class PaymentVoucherWizardComponent implements OnInit {
+export class ReceiptVoucherWizardComponent implements OnInit {
+
   loading: boolean = false;
   @Input("voucher") voucher:VOUCHER;
   @Output("valueChanged") valueChanged = new EventEmitter();
@@ -36,19 +38,19 @@ export class PaymentVoucherWizardComponent implements OnInit {
   @ViewChild("valueRef",  {static: false}) valueRef: ElementRef;
 
 
-  constructor(private paymentService?: PaymentServiceService,
+  constructor(private receiptService?: ReceiptService,
      private apiService?: ApiService, private auth?: AuthenticationService) { }
 
   ngOnInit() {
     this.voucher.DATE = new Date();
     
-    this.voucherType = this.paymentService.getVoucherType();
-    this.posClass = this.paymentService.getPaymentClass();
+    this.voucherType = this.receiptService.getVoucherType();
+    this.posClass = this.receiptService.getPaymentClass();
     this.voucherSettings = true;
-    this.paymentService.openDatabase().then(
+    this.receiptService.openDatabase().then(
       () => {
-         from(this.paymentService.getLedgers()).pipe(
-        map((ledgers) => ledgers.filter((ledger: any) => ledger.PARENT.content === "Indirect Expenses"))
+         from(this.receiptService.getLedgers()).pipe(
+        map((ledgers) => ledgers.filter((ledger: any) => ledger.PARENT.content === "Sundry Debtors"))
       ).subscribe(
         res => {
           console.log(res);
@@ -98,7 +100,7 @@ export class PaymentVoucherWizardComponent implements OnInit {
     var entry: ALLLEDGERENTRIESLIST = new ALLLEDGERENTRIESLIST();
     entry.LEDGERNAME = this.ledgerName.value.NAME;
     entry.AMOUNT = this.value.value * (-1);
-    entry.ISDEEMEDPOSITIVE = "Yes";
+    entry.ISDEEMEDPOSITIVE = "No";
     entry.ISPARTYLEDGER = "No";
     console.log(entry);
     this.voucher.ALLLEDGERENTRIES_LIST.push(entry);
@@ -114,11 +116,11 @@ export class PaymentVoucherWizardComponent implements OnInit {
   }
 
   upSync(){
-    this.paymentService.syncAllCacheVouchers();
+    this.receiptService.syncAllCacheVouchers();
   }
 
   downSync(){
-    this.paymentService.saveLedgers();
+    this.receiptService.saveLedgers();
   }
 
 
@@ -199,7 +201,7 @@ export class PaymentVoucherWizardComponent implements OnInit {
       res => {
         if (res.RESPONSE.CREATED == 0 && res.RESPONSE.UPDATED == 0){
      
-          this.paymentService.addCacheVoucher(this.voucher).then(
+          this.receiptService.addCacheVoucher(this.voucher).then(
             () => {
               this.loading = false;
               
@@ -217,7 +219,7 @@ export class PaymentVoucherWizardComponent implements OnInit {
       },
       err => {
        
-          this.paymentService.addCacheVoucher(this.voucher).then(
+          this.receiptService.addCacheVoucher(this.voucher).then(
             () => {
               this.loading = false;
               
@@ -228,4 +230,5 @@ export class PaymentVoucherWizardComponent implements OnInit {
       }
     );
   }
+
 }

@@ -41,3 +41,29 @@ export class UpdateStockItemData {
 
   }
 }
+
+export class StockCheck{
+  id: string;
+  godown: string;
+  dateOfRequest: Date;
+  deadline: Date;
+  items: StockCheckItem[];
+  title: String;
+  completed: boolean;
+
+  constructor(){
+    this.items = [];
+  }
+}
+
+export class StockCheckItem{
+  itemName: string;
+  username: string;
+  expectedQty: number;
+  actualQty: number;
+  dateOfCheck: Date;
+
+  constructor(){
+
+  }
+}

@@ -1,46 +1,221 @@
-<div class="container d-flex">
-    <div class="col" style="width: 60%; padding-left: 20px;">
+<div class="container d-flex" *ngIf = "!detailView">
+    <div class="col" style="width: 40%; padding-left: 20px;">
         <div class="row">
-            
-          
+            <div class="card card-nav-tabs" style=" height: 90%;"> 
+                <div class="card-header card-header-primary" style="height: 50px; !important">
+                Stock Check
+                
+                </div>
+                <div class="card-body">
+                    <div *ngIf = "!createMode">
+                    
+                        <h4 class="card-title" *ngIf = "!currentCheck">Select a stock check</h4>
+                        <h4 *ngIf = "currentCheck">{{currentCheck.title}}</h4>
+                        
+                
+                        <form #selectCheckForm="ngForm" (ngSubmit) = "getItems()">
+                            <div style="padding-left: 10px; padding-right: 10px;" >
+
+                                
+                                <mat-form-field>
+                                    <mat-label>Select a stock check</mat-label>
+                                    
+                                    <mat-select [(ngModel)] = "currentCheck" required name = "voucherTypeSelect">
+                                            <mat-option value = "">Not Applicable</mat-option>
+                                            <ng-container *ngFor = 'let v of checks$ | async'>
+                                                <mat-option [value] = "v" >
+                                                    {{v.title}}
+                                                </mat-option>
+                                            </ng-container>
+                                    </mat-select>
+                                </mat-form-field>
+                        
+                            </div>
+                            <p *ngIf = "!createMode && currentCheck && currentCheck.completed" class="card-text">The following check has been completed</p>
+                            <p *ngIf = "!createMode && currentCheck && !currentCheck.completed" class="card-text">The following check is pending</p>
+                             <button style = "align-self: flex-end;" mat-button type = "submit" [disabled] = 'selectCheckForm.invalid'>
+                                Begin
+                            </button>
+                            <button *ngIf = "user.role =='Admin'" style = "align-self: flex-end;" mat-button (click) = "createMode = !createMode">
+                              
+                                <div *ngIf = "!createMode">
+                                    Request
+                                </div>
+                            </button>
+                            <button *ngIf = "currentCheck && !currentCheck.completed" type = "submit" style = "align-self: flex-end;" mat-button (click) = "completeCheck()">
+                                Complete
+                            </button>
+
+                            <div *ngIf = "this.user.role == 'Admin' && currentCheck" style="float: right; ">
+                                <button mat-button (click) = "detailView = true">Detail View</button>
+                            </div>
+                            <div *ngIf = "this.user.role == 'Admin' && currentCheck" style="float: right; ">
+                                <button mat-button (click) = "deleteStockCheck()">Delete</button>
+                            </div>
+                        
+                        </form>
+                    </div>
+
+
+
+                    <div *ngIf = "createMode && this.user.role == 'Admin'">
+                        <h4 class="card-title">Request a stock check</h4>
+                        <form #selectCreateForm="ngForm" (ngSubmit) = "initiateCreateMode()">
+                            <div style="padding-left: 10px; padding-right: 10px;" >
+
+                                
+                                <mat-form-field>
+                                    <mat-label>Select godown</mat-label>
+                                    <mat-select required [(ngModel)] = "check.godown" required name = "voucherTypeSelect">
+                                            <mat-option value = "">Not Applicable</mat-option>
+                                            <ng-container *ngFor = 'let v of user.godownList'>
+                                                <mat-option [value] = "v" >
+                                                    {{v}}
+                                                </mat-option>
+                                            </ng-container>
+                                    </mat-select>
+                                </mat-form-field>
+                                <mat-form-field>
+                                    <input matInput required placeholder="Enter Title" name = "title" [(ngModel)] = "check.title">
+                                </mat-form-field>
+
+                                <mat-form-field>
+                                    <mat-label>Choose a deadline</mat-label>
+                                    <input matInput required [matDatepicker]= "picker" [(ngModel)] = 'check.deadline' name = "date">
+                                    <mat-datepicker-toggle matSuffix [for]= "picker" ></mat-datepicker-toggle>
+                                    <mat-datepicker #picker></mat-datepicker>
+                                </mat-form-field>
+                        
+                            </div>
+                           <button *ngIf = "user.role =='Admin'"  style = "align-self: flex-end;" mat-button (click) = "createMode = !createMode">
+                                Back
+                        </button>
+                            <button *ngIf = "user.role =='Admin'" type = "submit" [disabled] = "selectCreateForm.invalid" style = "align-self: flex-end;" mat-button>
+                                   Request
+                            </button>
+                            
+
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+          </div>
         </div>
-        <div class = "row">
-           
-        </div>
-    </div>
-    <div class="col" style="width: 40%;">
+       
+    
+    <div class="col" style="width: 80%; padding-left: 20px;">
         <div class="panel-body">
-            <table class="table table-striped table-bordered table-list">
+            <table class="table table-striped table-bordered table-list" *ngIf = "currentCheck">
                 <thead>
                     <tr>
-                        <th><em class="fa fa-cog"></em></th>
+                       
                         <th class="hidden-xs">S.No.</th>
-                        <th>StockItem Name</th>
+                        <th style="width: 2000px; !important">StockItem Name</th>
                         <th>Actual Count</th>
                         <th>Expected Count</th>
                     </tr>
                 </thead>
                 <tbody>
+                    <ng-container *ngFor = "let item of currentCheck.items; let i = index">
+                        <tr>
+                            <td class="hidden-xs">{{i+1}}</td>
+                            <td>{{item.itemName}}</td>
+                            <td>{{item.actualQty}}</td>
+                            <td>
+                                {{item.expectedQty}}
+                            </td>
+                        </tr>
+                    </ng-container>
+                    
                     <tr>
-                        <td align="center"><a class="btn btn-default"><em class="fa fa-trash"></em></a></td>
-                        <td class="hidden-xs">1</td>
-                        <td>Pursuit 1 Ltr.</td>
-                        <td>40</td>
-                        <td>
-                            50
-                        </td>
-                    </tr>
-                    <tr>
-                        <td align="center"><a class="btn btn-default"><em class="fa fa-plus"></em></a></td>
                         <td class="hidden-xs">...</td>
-                        <td><select class="custom-select custom-select-sm"><option selected>Choose Godown</option><option value="1">A-Nalkheda</option><option value="2">B-Agar</option><option value="3">C-Soyat</option></select></td>
-                        <td><select class="custom-select custom-select-sm"><option selected>Choose Role</option><option value="1">Administrator</option><option value="2">User</option></select></td>
                         <td>
-                            ...
+                            <mat-form-field class="example-full-width" style="width: 150px;">
+                                <input #invField type="text"
+                                       placeholder="Pick one"
+                                       aria-label="Number"
+                                       matInput
+                                       [(ngModel)] = "temp"
+                                       [matAutocomplete]="auto"
+                                        [formControl] = "productControl"
+                                       style="width:100% !important" >
+                                <mat-autocomplete [panelWidth]="300" #auto="matAutocomplete"
+                                                  (optionSelected)= 'selectProduct()'
+                                                  [displayWith]= "displayFnProduct">
+                                  
+                                  <mat-option *ngFor="let option of filteredOptions | async" [value]="option">
+                                    <th scope="row">
+                                      <div class="p-2">
+                                        <div class="ml-3 d-inline-block align-middle">
+                                          <h6 class="mb-0 font-weight-bold">{{option.name}}</h6>
+                                        </div>
+                                      </div>
+                                    </th>
+                                  </mat-option>
+                                </mat-autocomplete>
+                              </mat-form-field>
+                        </td>
+                        <td><input #qtyRef matInput [(ngModel)] = "stockCheckItem.actualQty" (keydown.enter) = "addItem()" placeholder="qty" type="number" style="width: 50px;"></td>
+                        <td>
+                            {{this.stockCheckItem.expectedQty}}
                         </td>
                     </tr>
                 </tbody>
             </table>
         </div>
+    </div>
+</div>
+
+
+<div *ngIf = "detailView">
+    <div style="float: left;">
+        <button  style = "align-self: flex-end;" mat-button (click) = "detailView = false">
+            Back
+        </button>
+       
+    </div>
+
+    <div style="float: right;">
+       
+        <button ngxPrint [useExistingCss]="true" 
+        printSectionId="detailViewTable"   style = "align-self: flex-end;" mat-button>
+            Print
+        </button>
+    </div>
+
+
+
+    <div class="panel-body" id = "detailViewTable" >
+        <table class="table table-striped table-bordered table-list" *ngIf = "currentCheck">
+            <thead>
+                <tr>
+                   
+                    <th class="hidden-xs">S.No.</th>
+                    <th style="width: 200px; !important">StockItem Name</th>
+                    <th>Actual Count</th>
+                    <th>Expected Count</th>
+                    <th>Balance</th>
+                    <th>User Name</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                <ng-container *ngFor = "let item of currentCheck.items; let i = index">
+                    <tr>
+                        <td class="hidden-xs">{{i+1}}</td>
+                        <td>{{item.itemName}}</td>
+                        <td>{{item.actualQty}}</td>
+                        <td>
+                            {{item.expectedQty}}
+                        </td>
+                        <td>{{item.actualQty - item.expectedQty}}</td>
+                        <td>{{item.username}}</td>
+                        <td>{{item.dateOfCheck | date: "dd-MMM-yyyy"}}</td>
+                    </tr>
+                </ng-container>
+                
+            </tbody>
+        </table>
     </div>
 </div>

@@ -1,32 +1,150 @@
+    <div *ngIf = "!posService.syncingOver() || !posService.upSyncingOver()" style="vertical-align: middle; align-self: center;">
+        <img src="assets/img/agrostop.gif" alt="Saving Voucher..." width="100px" height="100px">
+    </div>
 
-<div *ngIf = "!(posVoucherView || paymentVoucherView)" style="padding-top: 100px;">
+  <div *ngIf = "!posService.syncingOver()"  style="vertical-align: middle; align-self: center; padding-top: 20px; width: 80%;">
+    <h6 class="example-h2">Getting Customers : {{posService.customerPercent}} %</h6>
+    <section class="example-section">
+      <mat-progress-bar mode="determinate" [value]="posService.customerPercent"></mat-progress-bar>
+    </section>
+
+    <h6 class="example-h2">Getting Ledgers : {{posService.ledgerPercent}} %</h6>
+    <section class="example-section">
+      <mat-progress-bar mode="determinate" [value]="posService.ledgerPercent"></mat-progress-bar>
+    </section>
+
+    <h6 class="example-h2">Getting Items : {{posService.itemPercent}} %</h6>
+    <section class="example-section">
+      <mat-progress-bar mode="determinate" [value]="posService.itemPercent"></mat-progress-bar>
+    </section>
+
+    <h6 class="example-h2">Getting Batches : {{posService.batchPercent}} %</h6>
+    <section class="example-section">
+      <mat-progress-bar mode="determinate" [value]="posService.batchPercent"></mat-progress-bar>
+    </section>
+    
+    <div>
+      <button type="button" class="btn btn-danger" (click) = "reload()" style="vertical-align: middle; align-self: center;">Force Stop</button>
+    </div>
+
+  </div>
+
+  <div *ngIf = "!posService.upSyncingOver()"  style="vertical-align: middle; align-self: center; padding-top: 20px; width: 80%;">
+    <h6 class="example-h2">Syncing : {{posService.upSyncPercent}} %</h6>
+    <section class="example-section">
+      <mat-progress-bar mode="determinate" [value]="posService.upSyncPercent"></mat-progress-bar>
+    </section>
+  </div>
+ 
+
+
+
+
+
+
+
+<div *ngIf = "!(posVoucherView || paymentVoucherView || receiptVoucherView)" style="padding-top: 100px;">
 
     <div class="container d-flex">
-        <div class="col" style="width: 60%; padding-left: 20px;">
+        <div class="col" style="width: 100%; padding-left: 20px;">
             <div class="row">
                 <div class="column" style="width: 45%;">
-                    <div class="card card-nav-tabs"> 
+                    <div class="card card-nav-tabs" style=" height: 90%;"> 
                         <div class="card-header card-header-primary">
                         POS Vouchers
                         </div>
                         <div class="card-body">
-                        <h4 class="card-title">Sales Accounting Voucher</h4>
-                        <p class="card-text">At this point only POS Vouchers with a defined POS Class are supported.</p>
-                        <a (click) = "setFalse(); posVoucherView = true;" class="btn btn-primary">Create Voucher</a>
+                        <h4 class="card-title">Sales Voucher</h4>
+                        <form #posSettingForm="ngForm" (ngSubmit) = "switchPOSVoucher()">
+                        <div style="padding-left: 10px; padding-right: 10px;" >
+    
+                            
+                            <mat-form-field>
+                                <mat-label>Select a Voucher Type</mat-label>
+                                <mat-select ngModel required (selectionChange) = "getVoucherType($event.value)" name = "voucherTypeSelect">
+                                        <mat-option value = "">Not Applicable</mat-option>
+                                        <ng-container *ngFor = 'let v of user.voucherTypes'>
+                                            <mat-option *ngIf = "v.voucherCategory == 'Sales'" [value] = "v" >
+                                                {{v.voucherTypeName}}
+                                            </mat-option>
+                                        </ng-container>
+                                </mat-select>
+                            </mat-form-field>
+                      
+                            <mat-form-field>
+                                <mat-label>Select a Price Level</mat-label>
+                                <mat-select required ngModel (selectionChange) = "this.posService.savePriceList($event.value)" name = "priceSelect">
+                                        <mat-option value = "">Not Applicable</mat-option>
+                                        <mat-option *ngFor = 'let v of user.salesVoucherSettings.priceLists' [value] = "v">
+                                            {{v}}
+                                        </mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                        
+                            <mat-form-field>
+                                <mat-label>Select a Godown</mat-label>
+                                <mat-select ngModel required name= 'godownSelect' (selectionChange) = "this.posService.saveGodown($event.value)">
+                                        <mat-option value = "">Not Applicable</mat-option>
+                                        <mat-option *ngFor = 'let v of user.godownList' [value] = "v">
+                                            {{v}}
+                                        </mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                        
                         </div>
+                        <p class="card-text">At this point only POS Vouchers with a defined POS Class are supported.</p>
+                        <button style = "align-self: flex-end;" mat-button type = "submit" [disabled] = 'posSettingForm.invalid'>
+                            <mat-icon>navigate_next</mat-icon>
+                        </button>
+                        <button mat-button  (click) = "upSyncPOSVouchers()">
+                            <mat-icon>cloud_upload</mat-icon>
+                        </button>
+                        <button mat-button (click) = "downSyncPOSVouchers()">
+                            <mat-icon>cloud_download</mat-icon>
+                        </button>
+                    </form>
+                    </div>
                     </div>
                   
                 </div>
                 <div class = "column" style="width: 45%; padding-left: 20px;">
-                    <div class="card card-nav-tabs" >
+                    <div class="card card-nav-tabs" style="height: 90%;">
                         <div class="card-header card-header-warning">
                         Payment Vouchers
                         </div>
                         <div class="card-body">
-                        <h4 class="card-title">Payment Accounting Voucher</h4>
-                        <p class="card-text">At this point only Payment Vouchers with a defined Class are supported.</p>
-                        <a (click) = "setFalse(); paymentVoucherView = true;" class="btn btn-warning">Create Voucher</a>
+                        <h4 class="card-title">Payment Voucher</h4>
+                        <form #paymentSettingsForm = "ngForm" (ngSubmit) = "switchPaymentVoucher()">
+                        <div style="padding-left: 10px; padding-right: 10px;">
+                           
+                            <mat-form-field>
+                                <mat-label>Select a Voucher Type</mat-label>
+                                <mat-select ngModel required (selectionChange) = "getVoucherType($event.value)" name = "voucherTypeSelect">
+                                        <mat-option value="">Not Applicable</mat-option>
+                                        <ng-container *ngFor = 'let v of user.voucherTypes'>
+                                            <mat-option *ngIf = "v.voucherCategory == 'Payment'" [value] = "v" >
+                                                {{v.voucherTypeName}}
+                                            </mat-option>
+                                        </ng-container>
+                                        
+                                </mat-select>
+                            </mat-form-field>
+                       
+    
+                        
                         </div>
+                        <p class="card-text">At this point only Payment Vouchers with a defined Class are supported.</p>
+                        <button mat-button [disabled] = "paymentSettingsForm.invalid" type="submit">
+                            <mat-icon>add</mat-icon>
+                        </button>
+                        <button mat-button  (click) = "upSyncPaymentVouchers()">
+                            <mat-icon>cloud_download</mat-icon>
+                        </button>
+                        <button mat-button (click) = "downSyncPaymentVouchers()">
+                            <mat-icon>cloud_upload</mat-icon>
+                        </button>
+                    </form>
+                    </div>
                     </div>
                 </div>
             </div>
@@ -38,14 +156,43 @@
                         Receipt Vouchers
                         </div>
                         <div class="card-body">
-                        <h4 class="card-title">Receipt Accounting Voucher</h4>
-                        <p class="card-text">At this point only Receipt Vouchers with a defined Class are supported.</p>
-                        <a (click) = "setFalse(); receiptVoucherView = true;" class="btn btn-success">Create Voucher</a>
+                            <h4 class="card-title">Receipt Accounting Voucher</h4>
+                            <form #receiptSettingsForm = "ngForm" (ngSubmit) = "switchPaymentVoucher()">
+                                <div style="padding-left: 10px; padding-right: 10px;">
+                                
+                                    <mat-form-field>
+                                        <mat-label>Select a Voucher Type</mat-label>
+                                        <mat-select ngModel required (selectionChange) = "getVoucherType($event.value)" name = "receiptTypeSelect">
+                                                <mat-option value="">Not Applicable</mat-option>
+                                                <ng-container *ngFor = 'let v of user.voucherTypes'>
+                                                    <mat-option *ngIf = "v.voucherCategory == 'Receipt'" [value] = "v" >
+                                                        {{v.voucherTypeName}}
+                                                    </mat-option>
+                                                </ng-container>
+                                                
+                                        </mat-select>
+                                    </mat-form-field>
+                            
+                            
+                                    <p class="card-text">At this point only Receipt Vouchers with a defined Class are supported.</p>
+                                    <button mat-button [disabled] = "receiptSettingsForm.invalid" (click) = "switchReceiptVoucher()">
+                                        <mat-icon>add</mat-icon>
+                                    </button>
+                                    <button mat-button  (click) = "upSyncReceiptVouchers()">
+                                        <mat-icon>cloud_download</mat-icon>
+                                    </button>
+                                    <button mat-button (click) = "downSyncReceiptVouchers()">
+                                        <mat-icon>cloud_upload</mat-icon>
+                                    </button>
+                                </div>
+                            </form>
                         </div>
-                    </div>
                   
+                    </div>
                 </div>
-                <div class = "column" style="width: 45%; padding-left: 20px;">
+
+
+                <div class = "column" style="padding-left: 20px; width: 45%;">
                     <div class="card card-nav-tabs" >
                         <div class="card-header card-header-info">
                         Order Vouchers
@@ -55,7 +202,15 @@
                         <p class="card-text">
                             Create a order for a customer, without payment information.<br>
                         </p>
-                        <a (click) = "setFalse(); orderView = true;" class="btn btn-info">Create Order</a>
+                        <button mat-button (click) = "setFalse(); orderView = true;">
+                            <mat-icon>add</mat-icon>
+                        </button>
+                        <button mat-button  (click) = "upSyncOrderVouchers()">
+                            <mat-icon>cloud_download</mat-icon>
+                        </button>
+                        <button mat-button (click) = "downSyncOrderVouchers()">
+                            <mat-icon>cloud_upload</mat-icon>
+                        </button>
                         </div>
                     </div>
                 </div>
@@ -67,7 +222,9 @@
 
 
 
-
+<div *ngIf = "receiptVoucherView">
+    <receipt-voucher-wizard [(voucher)] = "voucher"></receipt-voucher-wizard>
+</div>
 
 
 <div *ngIf = "posVoucherView">
@@ -77,5 +234,6 @@
 <div *ngIf = "paymentVoucherView">
     <app-payment-voucher-wizard [(voucher)] = "voucher"></app-payment-voucher-wizard>
 </div>
+
 
 

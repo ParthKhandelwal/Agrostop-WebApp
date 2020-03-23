@@ -6,11 +6,12 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { User } from '../Model/user';
 import { CookieService } from 'ngx-cookie-service';
-import { StockItem, PriceListItem, UpdateStockItemData } from '../Model/stock-item';
+import { StockItem, PriceListItem, UpdateStockItemData, StockCheck, StockCheckItem } from '../Model/stock-item';
 import { TallyVoucher } from '../Model/tally-voucher';
 import { UserLogin, Response } from '../login-form/login-form.component';
 import { TaxDetails } from '../Model/tax-details';
 import { DatePipe } from '@angular/common';
+import { AuthenticationService } from './authentication.service';
 
 
 
@@ -29,13 +30,14 @@ export class ApiService {
     return this.httpClient.get<any>(this.BASE_URL + 'vouchers/getCompany?companyName=' + name);
   }
 
-  public WEB_SOCKET_URL = "https://agrostop-web-server.herokuapp.com"
-  private BASE_URL = "https://agrostop-web-server.herokuapp.com/api/";
+  //public WEB_SOCKET_URL = "https://agrostop-web-server.herokuapp.com"
+  //private BASE_URL = "https://agrostop-web-server.herokuapp.com/api/";
 
-  //private BASE_URL = "http://localhost:8081/api/";
-  //public WEB_SOCKET_URL = "http://localhost:8081";
+  private BASE_URL = "http://localhost:8081/api/";
+  public WEB_SOCKET_URL = "http://localhost:8081";
   public TALLY_HELPER_URL = "http://localhost:8082";
 
+  user: User;
   constructor(private httpClient: HttpClient, private cookie?: CookieService, private datePipe?: DatePipe) {
   }
 
@@ -56,9 +58,31 @@ export class ApiService {
     return this.httpClient.get<any>(this.BASE_URL + 'stockItem/?id=' + id);
   }
 
+  saveStockCheck(check: StockCheck): Observable<any>{
+    return this.httpClient.post<any>(this.BASE_URL + 'stockItem/stock-check/save', check);
+
+  }
+
+  saveStockCheckItem(id: string,item : StockCheckItem) : Observable<any>{
+    return this.httpClient.post<any>(this.BASE_URL + 'stockItem/stock-check/saveItem?id=' + id, item);
+
+  }
+
+  deleteStockCheck(id: string): Observable<any>{
+    return this.httpClient.delete<any>(this.BASE_URL + 'stockItem/stock-check/delete?id=' + id);
+  }
+
+ getStockCheck(userName: string): Observable<any[]>{
+  return this.httpClient.get<any[]>(this.BASE_URL + 'stockItem/stock-check/get?userName=' + userName);
+  }
+
+  getStockCheckById(id: string): Observable<any>{
+    return this.httpClient.get<any>(this.BASE_URL + 'stockItem/stock-check/getById?id=' + id);
+    }
+
   getStockSummary(godownName: string, fromDate: Date, toDate: Date): Observable<any[]>{
     return this.httpClient.get<any[]>(this.BASE_URL + 'stockItem/getStockSummary?godownName=' + godownName +
-    "?fromDate" + this.datePipe.transform(fromDate, "yyyyMMdd") + '&toDate=' + this.datePipe.transform(toDate, "yyyyMMdd"));
+    "&fromDate=" + this.datePipe.transform(fromDate, "yyyyMMdd") + '&toDate=' + this.datePipe.transform(toDate, "yyyyMMdd"));
 
   }
   addCustomer(customer: Customer): Observable<any> {

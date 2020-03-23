@@ -204,7 +204,7 @@
                         </div>
                     </div>
 
-
+                    
 
                     
 
@@ -265,6 +265,93 @@
                             </div>
                         </div>
                     </div>
+
+
+
+
+                    <!--CASH BANK LEDGERS-->
+
+                    
+                    <div>
+
+                        <div class="panel panel-default panel-table">
+                            <div class="panel-heading">
+                                <div class="row">
+                                    <div class="col col-xs-6">
+                                        <h3 class="panel-title">Cash Bank Ledgers</h3>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="panel-body">
+                                <table class="table table-striped table-bordered table-list">
+                                    <thead>
+                                        <tr>
+                                            <th><em class="fa fa-cog"></em></th>
+                                            <th class="hidden-xs">ID</th>
+                                            <th>Ledger Type</th>
+                                            <th>Ledger</th>
+                                            
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <ng-container *ngFor = "let voucherType of user.voucherTypes; let i = index">
+                                        <tr>
+                                            <td align="center"><a class="btn btn-default" (click) = "deleteVoucherType(voucherType.voucherTypeName)"><em class="fa fa-trash"></em></a></td>
+                                            <td class="hidden-xs">{{i+1}}</td>
+                                            <td>{{voucherType.voucherCategory}}</td>
+                                            <td>{{voucherType.voucherTypeName}}</td>
+                                            
+                                            <td>{{voucherType.voucherClass}}</td>
+                                           
+                                        </tr>
+                                        </ng-container>
+                                        <tr>
+
+                                            <td align="center">
+                                                <a class="btn btn-default" (click) = "addVoucherType(voucherType)" >
+                                                    <em class="fa fa-plus"></em>
+                                                </a>
+                                            </td>
+
+                                            <td class="hidden-xs">...</td>
+
+                                            <td>
+                                                <select [(ngModel)] = "voucherType.voucherCategory" class="custom-select custom-select-sm"
+                                                (ngModelChange) = "getVoucherType($event)" name="voucherTypeCategorySelect">
+                                                    <option selected (value) = "null" ></option>
+                                                    <option value = "Sales">POS Sales</option>
+                                                    <option value = "Receipt">Receipt</option>
+                                                    <option value = "Payment">Payment</option>
+                                               
+                                            </select>
+                                            </td>
+
+                                            <td>
+                                            <select [(ngModel)] = "voucherType.voucherTypeName" class="custom-select custom-select-sm"
+                                            (ngModelChange) = "getPOSClass($event)" name="voucherTypeNameSelect">
+                                            <option selected (value) = "null" ></option>
+                                                <ng-container *ngFor = "let voucherType of voucherTypes$ | async">
+                                                    <option (value) = "voucherType">{{voucherType}}</option>
+                                                </ng-container>
+                                            </select>
+                                            </td>
+                                            
+                                            <td>
+                                                <select  [(ngModel)] = "voucherType.voucherClass" class="custom-select custom-select-sm"
+                                                name="voucherTypeClassSelect">
+                                                <option selected (value) = "null" ></option>
+                                                    <ng-container *ngFor= "let item of posClassList">
+                                                    <option (value) = "item.CLASSNAME.content">{{item.CLASSNAME.content}}</option>
+                                                </ng-container>
+                                                </select>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
 
 
 

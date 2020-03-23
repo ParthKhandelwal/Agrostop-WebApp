@@ -14,7 +14,7 @@
                         <td>
                             <mat-form-field>
                                 <mat-label>Choose a date</mat-label>
-                                <input matInput [matDatepicker]= "picker" [formControl] = 'date'>
+                                <input matInput [matDatepicker]= "picker" [(ngModel)] = 'this.voucher.DATE'>
                                 <mat-datepicker-toggle matSuffix [for]= "picker" ></mat-datepicker-toggle>
                                 <mat-datepicker #picker></mat-datepicker>
                             </mat-form-field>
@@ -36,55 +36,7 @@
 </div>
 
 
-<div style="padding-left: 10px; padding-right: 10px;" *ngIf= "change">
+
     
 
-    <mat-form-field>
-        <mat-label>Select a Voucher Type</mat-label>
-        <mat-select (selectionChange) = "getVoucherType($event.value)" name = "voucherTypeSelect">
-                <mat-option *ngFor = 'let v of voucherTypeList' [value] = "v" >
-                    {{v.voucherTypeName}}
-                </mat-option>
-        </mat-select>
-    </mat-form-field>
-<!--
-    <mat-form-field>
-        <mat-label>Select a Class</mat-label>
-        <mat-select name = "posClassSelect" (selectionChange) = "savePOSCLass($event.value)">
-            <mat-option [value] = 'class' *ngFor = 'let class of voucherTypeList'>
-                {{class.voucherClass}}
-            </mat-option>
-        </mat-select>
-    </mat-form-field>
--->
-    <mat-form-field>
-        <mat-label>Select a Price Level</mat-label>
-        <mat-select [(ngModel)] = "this.voucher.PRICELEVEL" (selectionChange) = "savePriceList($event.value)">
-                <mat-option *ngFor = 'let v of pricelevels' [value] = "v">
-                    {{v}}
-                </mat-option>
-        </mat-select>
-    </mat-form-field>
-
-    <mat-form-field>
-        <mat-label>Select a Godown</mat-label>
-        <mat-select (selectionChange) = "saveGodown($event.value)">
-                <mat-option *ngFor = 'let v of godowns' [value] = "v">
-                    {{v}}
-                </mat-option>
-        </mat-select>
-    </mat-form-field>
-
-</div>
-<div style="padding-left: 10px; padding-right: 10px;">
-    <div class="wizard-footer height-wizard">
-        <div class="pull-right" >
-            <input class='btn btn-next btn-fill btn-warning btn-wd btn-sm' type="button" (keydown.enter) = "setVoucher(); false" #saveButton value="Proceed">
-        </div>
-
-        <div class="pull-left" *ngIf="!change">
-          <button class='btn btn-previous btn-fill btn-default btn-wd btn-sm' name='previous' (click)="proceedChange()">Change</button>
-        </div>
-        <div class="clearfix"></div>
-      </div>
-</div>
+   

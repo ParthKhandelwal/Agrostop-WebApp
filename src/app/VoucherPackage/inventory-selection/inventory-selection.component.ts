@@ -41,11 +41,8 @@ export class InventorySelectionComponent implements OnInit {
 
   ngOnInit() {
     this.endVoucher = {"NAME": "END OF LIST"}
-    this.filteredOptions = this.productControl.valueChanges.pipe(
-      startWith(''),
-      map(value => this.product_filter(value))
-
-    );
+    
+    
     this.posService.getProductBatch().then(
       res => {
         this.batches = res;

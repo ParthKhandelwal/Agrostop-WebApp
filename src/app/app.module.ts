@@ -77,6 +77,7 @@ import { ChartsModule } from 'ng2-charts';
 import {NgxPrintModule} from 'ngx-print';
 import { StockCheckComponent } from './Products/stock-check/stock-check.component';
 import { PaymentVoucherWizardComponent } from './VoucherPackage/payment-voucher-wizard/payment-voucher-wizard.component';
+import { ReceiptVoucherWizardComponent } from './VoucherPackage/receipt-voucher-wizard/receipt-voucher-wizard.component';
 
 
 
@@ -130,7 +131,8 @@ import { PaymentVoucherWizardComponent } from './VoucherPackage/payment-voucher-
     VoucherWizardComponent,
     VoucherSettingComponent,
     StockCheckComponent,
-    PaymentVoucherWizardComponent
+    PaymentVoucherWizardComponent,
+    ReceiptVoucherWizardComponent
   ],
   imports: [
     BrowserAnimationsModule,

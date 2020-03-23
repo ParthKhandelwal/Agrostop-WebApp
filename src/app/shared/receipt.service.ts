@@ -1,13 +1,13 @@
 import { Injectable } from '@angular/core';
 import { NgxIndexedDB } from 'ngx-indexed-db';
 import { ApiService } from './api.service';
-import { Observable } from 'rxjs';
 import { VOUCHER } from '../Model/voucher';
 
 @Injectable({
   providedIn: 'root'
 })
-export class PaymentServiceService {
+export class ReceiptService {
+
   db = new NgxIndexedDB('agrostop', 1);
   public ledgerPercent: number = 100;
   public upSyncPercent: number = 100;
@@ -62,20 +62,20 @@ export class PaymentServiceService {
   }
 
   saveClass(voucherType: any){
-     sessionStorage.setItem("paymentClass", JSON.stringify(voucherType));
+     sessionStorage.setItem("receiptClass", JSON.stringify(voucherType));
   }
 
   
   getPaymentClass(): any {
-    return JSON.parse(sessionStorage.getItem("paymentClass"));
+    return JSON.parse(sessionStorage.getItem("receiptClass"));
   }
 
-  saveVoucherType(voucherType: any){
-    sessionStorage.setItem("paymentVoucherType", JSON.stringify(voucherType));
+  public saveVoucherType(voucherType: any){
+    sessionStorage.setItem("receiptVoucherType", JSON.stringify(voucherType));
   }
 
   getVoucherType(): any {
-    return JSON.parse(sessionStorage.getItem("paymentVoucherType"));
+    return JSON.parse(sessionStorage.getItem("receiptVoucherType"));
   }
 
   async addCacheVoucher(voucher: VOUCHER): Promise<any>{
@@ -121,6 +121,5 @@ export class PaymentServiceService {
       }
     );
   }
-
 
 }

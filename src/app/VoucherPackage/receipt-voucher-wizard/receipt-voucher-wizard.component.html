@@ -22,7 +22,7 @@
 
                 <div class="wizard-header" *ngIf ="this.voucher != null">
                   <h3>
-                    <b>PAYMENT</b> VOUCHER <br>
+                    <b>RECEIPT</b> VOUCHER <br>
                     <small>{{voucher.VOUCHERTYPENAME}}</small>
                   </h3>
                 </div>
@@ -42,9 +42,6 @@
                 </div>
                 
 
-
-                <!--SYNC SETTINGS-->
-                
 
 
 
@@ -78,7 +75,7 @@
                                             <td><strong>Voucher Type:</strong> <input matInput name = "voucherType" readonly [(ngModel)] = "this.voucherType.NAME" placeholder="Voucher Type"> </td>
                                         </tr>
                                         <tr>
-                                            <td><strong>Payment Class: </strong><input matInput readonly name= "paymentClass" [(ngModel)] = "this.posClass.CLASSNAME.content" placeholder="POS Class"></td>
+                                            <td><strong>Receipt Class: </strong><input matInput readonly name= "paymentClass" [(ngModel)] = "this.posClass.CLASSNAME.content" placeholder="POS Class"></td>
                                         </tr>
                                     </tbody>
                                 </table>

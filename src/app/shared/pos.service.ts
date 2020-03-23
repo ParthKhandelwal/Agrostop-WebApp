@@ -172,7 +172,7 @@ export class PosService {
     return sessionStorage.getItem("godown");
   }
 
-  savePOSClass(str: any){
+  saveClass(str: any){
     sessionStorage.setItem("posClass", JSON.stringify(str));
     const v  = this.getPOSClass();
     if (v != null && v["LEDGERENTRIESLIST.LIST"] instanceof Array){

@@ -5,7 +5,7 @@ import { StockItem } from '../../Model/stock-item';
 import { Batch } from '../../Model/batch';
 import { TallyVoucher } from '../../Model/tally-voucher';
 import { ApiService } from '../../shared/api.service';
-import { FormControl } from '@angular/forms';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDatepickerModule } from '@angular/material';
 import { Observable, Observer, fromEvent, merge  } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
@@ -24,6 +24,10 @@ import { PosService } from '../../shared/pos.service';
 import { AccountingVoucher, ALLINVENTORYENTRIESLIST } from '../../Model/voucher';
 import { VOUCHER } from '../../Model/voucher';
 import { NgxIndexedDB } from 'ngx-indexed-db';
+import { PaymentServiceService } from 'src/app/shared/payment-service.service';
+import { User } from 'src/app/Model/user';
+import { analyzeAndValidateNgModules } from '@angular/compiler';
+import { ReceiptService } from 'src/app/shared/receipt.service';
 
 @Component({
   selector: 'app-create-voucher',
@@ -33,12 +37,18 @@ import { NgxIndexedDB } from 'ngx-indexed-db';
 export class CreateVoucherComponent implements OnInit {
   voucher: VOUCHER = new VOUCHER();
   @Input("editMode") editMode: boolean = false;
-  posVoucherView: boolean;
-  paymentVoucherView: boolean;
-  receiptVoucherView: boolean;
+  godownSelectFC = new FormControl("", [Validators.required])
+  posVoucherView: boolean = false;
+  paymentVoucherView: boolean = false;
+  receiptVoucherView: boolean = false;
   orderView: boolean;
-  constructor() {
-
+  user: User;
+  upSyncing: boolean;
+  downSyncing: boolean;
+  constructor(private apiService: ApiService, private posService?: PosService, 
+    private paymentService?: PaymentServiceService, private receiptService?: ReceiptService) {
+    this.posService.openDatabase();
+    this.user = this.posService.getUser();
   }
 
   ngOnInit() {
@@ -50,6 +60,77 @@ export class CreateVoucherComponent implements OnInit {
 
 
   }
+
+  createSalesVoucher(){
+    //Check whether all the required data is available
+      this.posService;
+  }
+
+
+  getVoucherType(value){
+    console.log(value)
+    let service;
+    if (value.voucherCategory == "Sales"){
+       service = this.posService;
+    }else if (value.voucherCategory == "Payment") {
+      service = this.paymentService;
+    }else if (value.voucherCategory == "Receipt") {
+      console.log(value.voucherCategory);
+      service = this.receiptService;
+    }else{
+      service = this.posService;
+    }
+
+    let voucherType: any;
+    let posClass: any;
+    this.apiService.getVoucherType(value.voucherTypeName).subscribe(
+      res => {voucherType = res.ENVELOPE.BODY.DATA.TALLYMESSAGE.VOUCHERTYPE;
+        console.log(service);
+        service.saveVoucherType(voucherType);
+      if (voucherType["VOUCHERCLASSLIST.LIST"] instanceof Array){
+        var found : boolean = false;
+        for (let item of voucherType["VOUCHERCLASSLIST.LIST"]){
+          console.log(item.CLASSNAME.content);
+          console.log()
+          if (item.CLASSNAME.content == value.voucherClass){
+            service.saveClass(item);
+            found = true;
+          }
+        }
+        if (!found){
+          alert("The POS Class does not exists. Please ask administrator to update your profile.")
+        }
+      } else {
+        if (voucherType["VOUCHERCLASSLIST.LIST"].CLASSNAME.content == value.voucherClass){
+          service.saveClass(voucherType["VOUCHERCLASSLIST.LIST"]);
+        }else {
+          alert("The POS Class does not exists. Please ask administrator to update your profile.")
+        }
+      }
+
+      },
+      err => {
+        console.log(err);
+      }
+    )
+    
+  }
+
+  switchPOSVoucher(){
+    this.setFalse(); 
+    this.posVoucherView = true;
+  }
+
+  switchPaymentVoucher(){
+    this.setFalse(); 
+    this.paymentVoucherView = true;
+  }
+
+  switchReceiptVoucher(){
+    
+    this.receiptVoucherView = true;
+  }
+
 
   createOnline$() {
       return merge<boolean>(
@@ -67,6 +148,44 @@ export class CreateVoucherComponent implements OnInit {
     this.paymentVoucherView = false;
   }
 
+  upSyncPOSVouchers(){
+    this.upSyncing = true;
+    this.posService.syncAllCacheVouchers();
+  }
+
+  async downSyncPOSVouchers(){
+    this.downSyncing = true;
+    await this.posService.enablePOSMode();
+  }
+
+  upSyncPaymentVouchers(){
+    this.paymentService.syncAllCacheVouchers();
+  }
+
+  downSyncPaymentVouchers(){
+    this.paymentService.saveLedgers();
+  }
+
+  upSyncReceiptVouchers(){
+    this.receiptService.syncAllCacheVouchers();
+  }
+
+  downSyncReceiptVouchers(){
+    this.receiptService.saveLedgers();
+  }
+
+
+  upSyncOrderVouchers(){
+    this.receiptService.syncAllCacheVouchers();
+  }
+
+  downSyncOrderVouchers(){
+    this.receiptService.saveLedgers();
+  }
+
+  reload(){
+    location.reload();
+  }
 }
 
 

@@ -31,112 +31,24 @@ export class VoucherSettingComponent implements OnInit {
   constructor(private apiService?: ApiService, private posService?: PosService) { }
 
   ngOnInit() {
-    if (!this.posService.getCompany){
-      alert("please UpSync once to continue billing.")
-    }
     this.voucherType = this.posService.getVoucherType();
-    if (this.voucherType && this.voucherType["VOUCHERCLASSLIST.LIST"]){
-      if (this.voucherType["VOUCHERCLASSLIST.LIST"] instanceof Array){
-      for (let item of this.voucherType["VOUCHERCLASSLIST.LIST"]){
-        if (this.posService.getPOSClass() != null 
-            && item.CLASSNAME.content == this.posService.getPOSClass().CLASSNAME.content){
-          this.posClass = item;
-        }
-      }
-    } else {
-      if (this.voucherType["VOUCHERCLASSLIST.LIST"].CLASSNAME.content = this.posService.getPOSClass()){
-        this.posClass = this.voucherType["VOUCHERCLASSLIST.LIST"].CLASSNAME.content
-      }
-    }
-    }
+    this.posClass = this.posService.getPOSClass();
     this.voucher.PRICELEVEL = this.posService.getPriceList();
 
     this.godown = this.posService.getGodown();
     
     this.date.setValue(new Date());
+    this.setVoucher();
   }
   ngAfterViewInit() {
-    this.saveButton.nativeElement.focus();
+ 
   }
 
-  valid(){
-    return this.posService.getVoucherType && this.posService.getPOSClass && this.posService.getPriceList;
-  }
+  
 
 
 
-  proceedChange(){
-    const user: User = this.posService.getUser();
-    console.log(user);
-    this.voucherTypeList = user.voucherTypes.filter((voucher) => voucher.voucherClass == "sales")
-    this.pricelevels = user.salesVoucherSettings.priceLists;
-    this.godowns = user.godownList;
-    // this.apiService.getSalesVoucherTypeName().subscribe(
-    //   res => {
-    //     this.voucherTypeList = res;
-    //   },
-    //   err => {
-    //     console.log(err);
-    //   }
-    // );
-    // this.apiService.getPriceList().subscribe(
-    //   res => {
-    //     this.pricelevels = res;
-    //   },
-    //   err => {
-    //     console.log(err);
-    //   }
-    // );
-    this.change = true
-  }
 
-  getVoucherType(value){
-    console.log(value)
-    this.apiService.getVoucherType(value.voucherTypeName).subscribe(
-      res => {this.voucherType = res.ENVELOPE.BODY.DATA.TALLYMESSAGE.VOUCHERTYPE;
-        this.posService.saveVoucherType(this.voucherType);
-        this.posClassList = [];
-      if (this.voucherType["VOUCHERCLASSLIST.LIST"] instanceof Array){
-        var found : boolean = false;
-        for (let item of this.voucherType["VOUCHERCLASSLIST.LIST"]){
-          console.log(item.CLASSNAME.content);
-          console.log()
-          if (item.CLASSNAME.content == value.voucherClass){
-            this.posService.savePOSClass(item);
-            found = true;
-          }
-        }
-        if (!found){
-          alert("The POS Class does not exists. Please ask administrator to update your profile.")
-        }
-      } else {
-        if (this.voucherType["VOUCHERCLASSLIST.LIST"].CLASSNAME.content == value.voucherClass){
-          this.posService.savePOSClass(this.voucherType["VOUCHERCLASSLIST.LIST"]);
-        }else {
-          alert("The POS Class does not exists. Please ask administrator to update your profile.")
-        }
-      }
-
-      },
-      err => {
-        console.log(err);
-      }
-    )
-    
-  }
-
-  savePOSCLass(value){
-    
-  }
-
-  saveGodown(value){
-    this.posService.saveGodown(value);
-  }
-
-  savePriceList(value){
-    console.log(value);
-    this.posService.savePriceList(value);
-  }
 
 
   
