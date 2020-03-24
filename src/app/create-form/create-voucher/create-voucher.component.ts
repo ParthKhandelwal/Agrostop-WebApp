@@ -45,7 +45,7 @@ export class CreateVoucherComponent implements OnInit {
   user: User;
   upSyncing: boolean;
   downSyncing: boolean;
-  constructor(private apiService: ApiService, private posService?: PosService, 
+  constructor(private apiService: ApiService, public posService?: PosService, 
     private paymentService?: PaymentServiceService, private receiptService?: ReceiptService) {
     this.posService.openDatabase();
     this.user = this.posService.getUser();
