@@ -4,7 +4,7 @@
             <div class="col">
                 <div style="display: block">
                     <canvas baseChart
-                    [datasets]="barChartData"
+                    [datasets]="salesSummary$.THISYEAR | async"
                     [labels]="barChartLabels"
                     [options]="barChartOptions"
                     [legend]="barChartLegend"
