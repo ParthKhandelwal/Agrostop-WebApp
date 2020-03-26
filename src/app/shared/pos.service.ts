@@ -69,9 +69,9 @@ export class PosService {
       this.ledgerPercent = 0;
       this.itemPercent = 0;
       await this.saveCompany();
-      //await this.saveItems();
-      //await this.saveCustomers();
-      //await this.saveLedgers();
+      await this.saveItems();
+      await this.saveCustomers();
+      await this.saveLedgers();
        
   }
 

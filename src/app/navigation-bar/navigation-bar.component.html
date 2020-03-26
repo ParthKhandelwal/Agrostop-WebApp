@@ -95,6 +95,12 @@ The above copyright notice and this permission notice shall be included in all c
               <p>Day Book</p>
             </a>
           </li>
+          <li [ngClass]="url == 'sales' ? 'nav-item active': 'nav-item'">
+            <a class="nav-link" href="/sales/cash-book">
+              <i class="material-icons">library_books</i>
+              <p>Cash Book</p>
+            </a>
+          </li>
           <li class="nav-item ">
             <a class="nav-link" href="./sales/create-sales-voucher">
               <i class="material-icons">bubble_chart</i>

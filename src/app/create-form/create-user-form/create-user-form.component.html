@@ -294,21 +294,19 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <ng-container *ngFor = "let voucherType of user.voucherTypes; let i = index">
+                                        <ng-container *ngFor = "let profile of user.cashBankProfile; let i = index">
                                         <tr>
-                                            <td align="center"><a class="btn btn-default" (click) = "deleteVoucherType(voucherType.voucherTypeName)"><em class="fa fa-trash"></em></a></td>
+                                            <td align="center"><a class="btn btn-default" (click) = "deleteLedger(profile)"><em class="fa fa-trash"></em></a></td>
                                             <td class="hidden-xs">{{i+1}}</td>
-                                            <td>{{voucherType.voucherCategory}}</td>
-                                            <td>{{voucherType.voucherTypeName}}</td>
+                                            <td>{{profile.type}}</td>
+                                            <td>{{profile.ledger}}</td>
                                             
-                                            <td>{{voucherType.voucherClass}}</td>
-                                           
                                         </tr>
                                         </ng-container>
                                         <tr>
 
                                             <td align="center">
-                                                <a class="btn btn-default" (click) = "addVoucherType(voucherType)" >
+                                                <a class="btn btn-default" (click) = "addLedger(voucherType)" >
                                                     <em class="fa fa-plus"></em>
                                                 </a>
                                             </td>
@@ -316,35 +314,26 @@
                                             <td class="hidden-xs">...</td>
 
                                             <td>
-                                                <select [(ngModel)] = "voucherType.voucherCategory" class="custom-select custom-select-sm"
-                                                (ngModelChange) = "getVoucherType($event)" name="voucherTypeCategorySelect">
+                                                <select [(ngModel)] = "cashBankProfile.type" class="custom-select custom-select-sm"
+                                                (ngModelChange) = "getLedger($event)" name="ledgerCategorySelect">
                                                     <option selected (value) = "null" ></option>
-                                                    <option value = "Sales">POS Sales</option>
-                                                    <option value = "Receipt">Receipt</option>
-                                                    <option value = "Payment">Payment</option>
+                                                    <option value = "Cash-in-hand">Cash-in-hand</option>
+                                                    <option value = "Bank Accounts">Bank Accounts</option>
+                                                    <option value = "Bank OD A/c">Bank OD A/c</option>
                                                
                                             </select>
                                             </td>
 
                                             <td>
-                                            <select [(ngModel)] = "voucherType.voucherTypeName" class="custom-select custom-select-sm"
-                                            (ngModelChange) = "getPOSClass($event)" name="voucherTypeNameSelect">
+                                            <select [(ngModel)] = "cashBankProfile.ledger" class="custom-select custom-select-sm"
+                                             name="ledgerNameSelect">
                                             <option selected (value) = "null" ></option>
-                                                <ng-container *ngFor = "let voucherType of voucherTypes$ | async">
-                                                    <option (value) = "voucherType">{{voucherType}}</option>
+                                                <ng-container *ngFor = "let ledger of ledger$ | async">
+                                                    <option (value) = "ledger">{{ledger}}</option>
                                                 </ng-container>
                                             </select>
                                             </td>
-                                            
-                                            <td>
-                                                <select  [(ngModel)] = "voucherType.voucherClass" class="custom-select custom-select-sm"
-                                                name="voucherTypeClassSelect">
-                                                <option selected (value) = "null" ></option>
-                                                    <ng-container *ngFor= "let item of posClassList">
-                                                    <option (value) = "item.CLASSNAME.content">{{item.CLASSNAME.content}}</option>
-                                                </ng-container>
-                                                </select>
-                                            </td>
+                
                                         </tr>
                                     </tbody>
                                 </table>

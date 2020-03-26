@@ -2,7 +2,7 @@ import { Component, OnInit, Inject, Input, ElementRef, ViewChild } from '@angula
 import { Router } from '@angular/router';
 import { ApiService } from '../../shared/api.service';
 import { MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
-import { User, VoucherTypeClass } from '../../Model/user';
+import { User, VoucherTypeClass, CashBankProfile } from '../../Model/user';
 import { MatTableDataSource } from '@angular/material';
 import { FormControl } from '@angular/forms';
 import { Observable } from 'rxjs';
@@ -18,7 +18,7 @@ export class CreateUserFormComponent implements OnInit {
   updateMode = false;
   user: User;
 
-
+  
   displayedColumns: string[] = ["name", "update"];
   godownDataSource: MatTableDataSource<String>;
   voucherTypeDataSource: MatTableDataSource<VoucherTypeClass>;
@@ -27,7 +27,7 @@ export class CreateUserFormComponent implements OnInit {
   priceListDataSource: MatTableDataSource<String>
 
   @ViewChild('posClass', { static: false }) posClass:ElementRef;
-
+  ledger$: Observable<any[]>;
   priceList: any[] = [];
   posClassList: any[] = [];
   voucherTypeNames: any[] = [];
@@ -40,6 +40,7 @@ export class CreateUserFormComponent implements OnInit {
   godownName: string = "";
   priceLevel: string = "";
   voucherTypes$ : Observable<any[]>;
+  cashBankProfile: CashBankProfile;
 
   
 
@@ -59,7 +60,7 @@ export class CreateUserFormComponent implements OnInit {
   }
 
   ngOnInit() {
-    
+    this.cashBankProfile = new CashBankProfile();
     
     this.apiService.getSalesVoucherTypeName().subscribe(
       res => {
@@ -241,6 +242,36 @@ deletePriceList(price: string){
     }
   }
 
+}
+
+deleteLedger(profile: CashBankProfile){
+  for (var i = 0; i < this.user.cashBankProfile.length; i++) {
+    if (this.user.cashBankProfile[i].ledger === profile.ledger) {
+      this.user.salesVoucherSettings.voucherTypeList.splice(i, 1);
+    }
+  }
+}
+
+getLedger(value){
+  this.ledger$ = this.apiService.getLedgerByGroup(value);
+
+}
+
+addLedger(profile: CashBankProfile){
+  var priceListExists: boolean = false;
+  if (this.user.cashBankProfile != null){
+  for (var i = 0; i < this.user.cashBankProfile.length; i++) {
+    if (this.user.cashBankProfile[i].ledger == this.cashBankProfile.ledger) {
+      priceListExists = true;
+    }
+  }
+  } else {
+  this.user.cashBankProfile = [];
+}
+  if(!priceListExists){
+    this.user.cashBankProfile.push(this.cashBankProfile);
+  }
+  this.cashBankProfile = new CashBankProfile();
 }
 
 

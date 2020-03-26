@@ -54,6 +54,7 @@ export class VoucherWizardComponent implements OnInit, AfterViewInit {
               () => {
                 this.posService.getAllStockItemsForBilling().then(
                   res1 => {
+                    
                     this.productList = res1;
                     
                   },

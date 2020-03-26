@@ -78,6 +78,7 @@ import {NgxPrintModule} from 'ngx-print';
 import { StockCheckComponent } from './Products/stock-check/stock-check.component';
 import { PaymentVoucherWizardComponent } from './VoucherPackage/payment-voucher-wizard/payment-voucher-wizard.component';
 import { ReceiptVoucherWizardComponent } from './VoucherPackage/receipt-voucher-wizard/receipt-voucher-wizard.component';
+import { CashBookComponent } from './AccountingPackage/cash-book/cash-book.component';
 
 
 
@@ -132,7 +133,8 @@ import { ReceiptVoucherWizardComponent } from './VoucherPackage/receipt-voucher-
     VoucherSettingComponent,
     StockCheckComponent,
     PaymentVoucherWizardComponent,
-    ReceiptVoucherWizardComponent
+    ReceiptVoucherWizardComponent,
+    CashBookComponent
   ],
   imports: [
     BrowserAnimationsModule,

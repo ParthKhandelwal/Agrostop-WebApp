@@ -1,3 +1,5 @@
+import { LedgerEntry } from './tally-voucher';
+
 export class User {
       baseEntity:          string;
       password:            string;
@@ -12,6 +14,7 @@ export class User {
       defaultGodown:       string;
       salesVoucherSettings: SalesVoucherSettings;
       voucherTypes: VoucherTypeClass[];
+      cashBankProfile: CashBankProfile[];
 
   constructor(){
     this.salesVoucherSettings = new SalesVoucherSettings();
@@ -44,4 +47,9 @@ export class VoucherTypeClass{
   constructor(){
     this.voucherClass = "";
   }
+}
+
+export class CashBankProfile{
+  type: string;
+  ledger: string;
 }

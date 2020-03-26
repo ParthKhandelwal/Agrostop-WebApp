@@ -23,6 +23,7 @@ import { TaxDetailsTableComponent } from './tables/tax-details-table/tax-details
 import { UserTableComponent } from './tables/user-table/user-table.component';
 import { AuthGuard } from './_guard/auth-guard.service';
 import { StockCheckComponent } from './Products/stock-check/stock-check.component';
+import { CashBookComponent } from './AccountingPackage/cash-book/cash-book.component';
 
 
 const routes: Routes = [
@@ -76,7 +77,9 @@ const routes: Routes = [
     component: SalesComponent,
     children: [
       {path: 'create-sales-voucher', component: CreateVoucherComponent},
-      {path: 'day-book', component: DayBookComponent}
+      {path: 'day-book', component: DayBookComponent},
+      {path: 'cash-book', component: CashBookComponent},
+      
     ]
   },
   {
