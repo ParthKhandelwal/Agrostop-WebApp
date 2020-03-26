@@ -23,7 +23,6 @@ export class NavigationBarComponent implements OnInit {
   ) {
     this.authenticationService.currentUser.subscribe(x => {
       this.currentUser = x
-      console.log(x);
     });
   }
 
