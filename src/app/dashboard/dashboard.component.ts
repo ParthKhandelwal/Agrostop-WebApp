@@ -3,6 +3,7 @@ import { VOUCHER } from '../Model/voucher';
 import { ApiService } from '../shared/api.service';
 import { Customer } from '../Model/customer';
 import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 @Component({
   selector: 'app-dashboard',
@@ -11,58 +12,56 @@ import { Observable } from 'rxjs';
 })
 export class DashboardComponent implements OnInit {
   voucher: VOUCHER
+  increasePercent: number;
+  updateTime: Date;
 
   public barChartOptions = {
     scaleShowVerticalLines: false,
     responsive: true
   };
-  public barChartLabels = ['2006', '2007', '2008', '2009', '2010', '2011', '2012'];
-  public barChartType = 'bar';
+ 
   public barChartLegend = true;
-  public barChartData = [
-    {data: [65, 59, 80, 81, 56, 55, 40], label: 'Series A'},
-    {data: [28, 48, 40, 19, 86, 27, 90], label: 'Series B'}
-  ];
+ 
 
   public salesSummary$: Observable<any>;
   
   public chartType: string = 'line';
 
   public chartDatasets: Array<any> = [
-    { data: [65, 59, 80, 81, 56, 55, 40], label: 'Yesterday' },
-    { data: [28, 48, 40, 19, 86, 27, 90], label: 'Today' }
+    { data: [], label: 'This Year' },
+    { data: [], label: 'Previous Year' }
   ];
 
-  public chartLabels: Array<any> = ['January', 'February', 'March', 'April', 'May', 'June', 'July'];
+  public chartLabels: Array<any> = [];
 
-  public chartColors: Array<any> = [
-    {
-      backgroundColor: 'rgba(105, 0, 132, .2)',
-      borderColor: 'rgba(200, 99, 132, .7)',
-      borderWidth: 2,
-    },
-    {
-      backgroundColor: 'rgba(0, 137, 132, .2)',
-      borderColor: 'rgba(0, 10, 130, .7)',
-      borderWidth: 2,
-    }
-  ];
 
-  public chartOptions: any = {
-    responsive: true
-  };
-  public chartClicked(e: any): void { }
-  public chartHovered(e: any): void { }
+
 
 
   constructor(private apiService?: ApiService) { }
 
   ngOnInit() {
     
-    
     this.salesSummary$ = this.apiService.getSevenDaySummary();
-    //this.chartDatasets = this.salesSummary$;
-    this.chartDatasets
+    this.salesSummary$.subscribe(
+      res => {
+        console.log(res);
+        this.chartDatasets[0].data = res.THISYEAR.map((d) => d.CREDITAMOUNT * (1))
+        this.chartDatasets[0].label = "This Year"
+        this.chartDatasets[1].data = res.PREVYEAR.map((d) => d.CREDITAMOUNT * (1))
+        this.chartDatasets[1].label = "Previous Year"
+        this.chartLabels = res.THISYEAR.map((d) => d.REFDAY)
+        if (this.chartDatasets[0].data[6] == 0){
+          this.increasePercent = 0;
+          
+        }else {
+          this.increasePercent = Math.round((this.chartDatasets[0].data[7] - this.chartDatasets[0].data[6])*100 / this.chartDatasets[0].data[6])
+        }
+        this.updateTime = new Date()
+        console.log(this.chartDatasets)
+      }
+    );
+    
     
     
   }

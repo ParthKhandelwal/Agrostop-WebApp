@@ -60,13 +60,12 @@ export class DayBookComponent implements OnInit {
     this.voucherPercent = 0;
     this.loading = true;
     const user = this.posService.getUser();
-    if (user.role != "Admin"){
+
     this.apiService.getVouchers(this.fromDate.value, this.toDate.value).subscribe(
         (res: any) =>{
           
           this.masterIds = res.VOUCHERS.VOUCHER;
-          
-          console.log(this.masterIds);
+          console.log(res);
           if (this.masterIds == null){
             this.loading = false;
             this.voucherPercent = 100;
@@ -94,7 +93,7 @@ export class DayBookComponent implements OnInit {
           console.log(err);
         }
       )
-    }
+    
      
     
   }
