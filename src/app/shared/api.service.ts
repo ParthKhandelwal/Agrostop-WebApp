@@ -33,7 +33,7 @@ export class ApiService {
   public WEB_SOCKET_URL = "https://agrostop-web-server.herokuapp.com"
   private BASE_URL = "https://agrostop-web-server.herokuapp.com/api/";
 
-  private BASE_URL = "http://localhost:8081/api/";
+  //private BASE_URL = "http://localhost:8081/api/";
   //public WEB_SOCKET_URL = "http://localhost:8081";
   //public TALLY_HELPER_URL = "http://localhost:8082";
 
