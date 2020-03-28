@@ -7,7 +7,7 @@ import { ApiService } from '../../shared/api.service';
 import { PosService } from 'src/app/shared/pos.service';
 import { merge, fromEvent, Observable, Observer } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { ThemePalette } from '@angular/material';
+import { ThemePalette, MatDialog, MatDialogConfig } from '@angular/material';
 import {MatProgressBarModule} from '@angular/material/progress-bar';
 import { VoucherSettingComponent } from '../voucher-setting/voucher-setting.component';
 import { InvoicePrintViewComponent } from 'src/app/PrintPackage/invoice-print-view/invoice-print-view.component';
@@ -42,7 +42,7 @@ export class VoucherWizardComponent implements OnInit, AfterViewInit {
   printView: boolean = false;
 
   
-  constructor(public posService?: PosService, private apiService?: ApiService) { }
+  constructor(public posService?: PosService, private apiService?: ApiService, private dialog?: MatDialog,) { }
   ngAfterViewInit(): void {
   }
 
@@ -194,9 +194,8 @@ export class VoucherWizardComponent implements OnInit, AfterViewInit {
           this.posService.addCacheVoucher(this.voucher).then(
             () => {
               this.valueChanged.emit("voucherCompleted");
-              this.loading = false;
-              this.switchPrintView();
-              
+              this.printVoucher();
+              this.restore();
             }
           )
   
@@ -204,8 +203,8 @@ export class VoucherWizardComponent implements OnInit, AfterViewInit {
           alert("Voucher Saved to Tally Successfully")
          
           this.valueChanged.emit("voucherCompleted");
-          this.switchPrintView();
-          this.loading = false;
+          this.printVoucher();
+          this.restore();
         }
       },
       err => {
@@ -214,8 +213,8 @@ export class VoucherWizardComponent implements OnInit, AfterViewInit {
             () => {
               
               this.valueChanged.emit("voucherCompleted");
-              this.switchPrintView();
-              this.printReady = true;
+              this.printVoucher();
+              this.restore();
               
             }
           )
@@ -248,9 +247,15 @@ export class VoucherWizardComponent implements OnInit, AfterViewInit {
     this.posService.syncAllCacheVouchers();
   }
 
+  printVoucher(){
+  const dialogConfig = new MatDialogConfig();
+   dialogConfig.autoFocus = true;
+   dialogConfig.width = "50%";
+   this.dialog.open(InvoicePrintViewComponent, {data: this.voucher, maxHeight: '90vh'});
+  }
+
   restore(){
     this.voucher = new VOUCHER();
-    this.printView = false;
     this.setFalse();
     this.switchVoucherSettings();
   }

@@ -52,6 +52,7 @@ export class CreateVoucherComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.posService.saveCompany();
     
   }
 

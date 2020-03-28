@@ -175,5 +175,7 @@ export class DayBookComponent implements OnInit {
   array(object: any): boolean{
     return object instanceof Array;
   }
+
+
   
 }

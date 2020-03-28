@@ -131,6 +131,6 @@
   <button [useExistingCss]="true"
   (click) =  "valueChanged.emit('saved')"
     printSectionId="print-section"
-    ngxPrint>print</button>
-    <button (click) =  "valueChanged.emit('saved')"></button>
+    ngxPrint mat-button style="float: right;">print</button>
+    <button (click) =  "valueChanged.emit('saved')" mat-button style="float: left;"> cancel</button>
 </div>

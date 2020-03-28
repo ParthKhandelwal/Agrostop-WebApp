@@ -15,7 +15,7 @@ import { EmailValidator } from '@angular/forms';
 })
 export class InvoicePrintViewComponent implements OnInit {
 
-  @Input('tallyVoucher') voucher: VOUCHER;
+  public voucher: VOUCHER;
   @Output("valueChanged") valueChanged = new EventEmitter();
   @Input('customer') customer: Customer;
   uniqueHSN: PrintTaxItem[] = [];
@@ -27,7 +27,10 @@ export class InvoicePrintViewComponent implements OnInit {
   date: Date;
 
 
-  constructor(private apiService?: ApiService, private posService?: PosService) {
+  constructor(@Inject(MAT_DIALOG_DATA) public data?: any,private apiService?: ApiService, private posService?: PosService) {
+    if (data != null) {
+      this.voucher = data;
+    }
   }
 
   ngOnInit() {
