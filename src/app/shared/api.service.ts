@@ -7,11 +7,10 @@ import { Observable } from 'rxjs';
 import { User } from '../Model/user';
 import { CookieService } from 'ngx-cookie-service';
 import { StockItem, PriceListItem, UpdateStockItemData, StockCheck, StockCheckItem } from '../Model/stock-item';
-import { TallyVoucher } from '../Model/tally-voucher';
 import { UserLogin, Response } from '../login-form/login-form.component';
 import { TaxDetails } from '../Model/tax-details';
 import { DatePipe } from '@angular/common';
-import { AuthenticationService } from './authentication.service';
+
 import { Order } from '../Model/order';
 
 
@@ -31,11 +30,11 @@ export class ApiService {
     return this.httpClient.get<any>(this.BASE_URL + 'vouchers/getCompany?companyName=' + name);
   }
 
-  //public WEB_SOCKET_URL = "https://agrostop-web-server.herokuapp.com"
-  //private BASE_URL = "https://agrostop-web-server.herokuapp.com/api/";
+  public WEB_SOCKET_URL = "https://agrostop-web-server.herokuapp.com"
+  private BASE_URL = "https://agrostop-web-server.herokuapp.com/api/";
 
-  private BASE_URL = "http://localhost:8081/api/";
-  public WEB_SOCKET_URL = "http://localhost:8081";
+  //private BASE_URL = "http://localhost:8081/api/";
+  //public WEB_SOCKET_URL = "http://localhost:8081";
   //public TALLY_HELPER_URL = "http://localhost:8082";
 
   user: User;
