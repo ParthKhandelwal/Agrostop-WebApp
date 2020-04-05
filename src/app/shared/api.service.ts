@@ -6,8 +6,8 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { User } from '../Model/user';
 import { CookieService } from 'ngx-cookie-service';
-import { StockItem, PriceListItem, UpdateStockItemData, StockCheck, StockCheckItem } from '../Model/stock-item';
-import { UserLogin, Response } from '../login-form/login-form.component';
+import { StockItem, UpdateStockItemData, StockCheck, StockCheckItem } from '../Model/stock-item';
+import { UserLogin } from '../login-form/login-form.component';
 import { TaxDetails } from '../Model/tax-details';
 import { DatePipe } from '@angular/common';
 

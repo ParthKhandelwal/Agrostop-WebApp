@@ -79,7 +79,6 @@ import { StockCheckComponent } from './Products/stock-check/stock-check.componen
 import { PaymentVoucherWizardComponent } from './VoucherPackage/payment-voucher-wizard/payment-voucher-wizard.component';
 import { ReceiptVoucherWizardComponent } from './VoucherPackage/receipt-voucher-wizard/receipt-voucher-wizard.component';
 import { CashBookComponent } from './AccountingPackage/cash-book/cash-book.component';
-import { QRCodeModule } from 'angularx-qrcode';
 import { NgxBarcodeModule } from 'ngx-barcode';
 
 
@@ -164,7 +163,6 @@ import { NgxBarcodeModule } from 'ngx-barcode';
     ChartsModule,
     MatProgressBarModule,
     NgxPrintModule,
-    QRCodeModule,
     NgxBarcodeModule
 
   ],
