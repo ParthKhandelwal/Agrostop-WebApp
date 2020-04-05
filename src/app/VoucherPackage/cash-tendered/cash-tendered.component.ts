@@ -14,11 +14,12 @@ export class CashTenderedComponent implements OnInit {
   isValid:boolean = false;
   amountRecieved: number;
 
-  constructor(@Inject(MAT_DIALOG_DATA) public messageInjected: number,
+  constructor(@Inject(MAT_DIALOG_DATA) public messageInjected: any,
   public dialogRef?: MatDialogRef<CashTenderedComponent>
   ) {
     console.log("message: " + messageInjected);
-        this.data = messageInjected;
+        this.data = messageInjected.CASHAMOUNT * (-1);
+        this.amountRecieved = messageInjected.POSCASHRECIEVED
     }
 
   ngOnInit() {
@@ -32,7 +33,7 @@ export class CashTenderedComponent implements OnInit {
 validate(){
   if (this.amountRecieved >= this.data){
     this.isValid = true;
-    this.dialogRef.close(this.amountRecieved);
+    this.dialogRef.close({success: true, amountRecieved : this.amountRecieved});
   }
 }
 

@@ -14,13 +14,13 @@
                       <div class="col-md-6">
                         <div class="form-group">
                           <label class="bmd-label-floating">Name</label>
-                          <input type="text" class="form-control" required [(ngModel)]="customer.name">
+                          <input type="text" class="form-control" name = "name" required [(ngModel)]="customer.name">
                         </div>
                       </div>
                       <div class="col-md-6">
                         <div class="form-group">
                           <label class="bmd-label-floating">Father's Name</label>
-                          <input type="text" class="form-control" [(ngModel)]="customer.fatherName">
+                          <input type="text" class="form-control" name = "fatherName" [(ngModel)]="customer.fatherName">
                         </div>
                       </div>
                     </div>
@@ -28,13 +28,13 @@
                       <div class="col-md-5">
                         <div class="form-group">
                           <label class="bmd-label-floating">Company (disabled)</label>
-                          <input type="text" class="form-control" disabled [(ngModel)]="customer.gSTREGISTRATIONTYPE" value="Consumer">
+                          <input type="text" class="form-control" disabled name = "customerType" [(ngModel)]="customer.gSTREGISTRATIONTYPE" value="Consumer">
                         </div>
                       </div>
                       <div class="col-md-3">
                         <div class="form-group">
                           <label class="bmd-label-floating">Land Holding</label>
-                          <input type="text" class="form-control" required [(ngModel)]="customer.landHolding">
+                          <input type="text" class="form-control" required name = "landHolding" [(ngModel)]="customer.landHolding">
                         </div>
                       </div>
                       <div class="col-md-4">
@@ -48,7 +48,7 @@
                       <div class="col-md-12">
                         <div class="form-group">
                           <label class="bmd-label-floating">Adress</label>
-                          <select class="form-control" name="address" required [(ngModel)]='customer.addressId'>
+                          <select class="form-control" name="address" name = "address" required [(ngModel)]='customer.addressId'>
                             <option *ngFor="let address of addresses" [value]="address.id">{{address.name}}, {{address.stateName}}</option>
                           </select>
                         </div>
@@ -58,7 +58,7 @@
                       <div class="col-md-4">
                         <div class="form-group">
                           <label class="bmd-label-floating">Phone Number</label>
-                          <input type="text" class="form-control" [(ngModel)]="customer.phoneNumber">
+                          <input type="text" class="form-control" name = "phoneNumber" [(ngModel)]="customer.phoneNumber">
                         </div>
                       </div>
                       <div class="col-md-4">

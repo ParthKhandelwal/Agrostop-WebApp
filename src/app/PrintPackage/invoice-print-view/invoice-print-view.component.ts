@@ -1,11 +1,10 @@
 import { Component, OnInit, Inject, Input, Output, EventEmitter } from '@angular/core';
-import { TallyVoucher } from '../../Model/tally-voucher';
 import { Customer } from '../../Model/customer';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 import { VOUCHER } from '../../Model/voucher';
 import { ApiService } from 'src/app/shared/api.service';
 import { PosService } from 'src/app/shared/pos.service';
-import { EmailValidator } from '@angular/forms';
+
 
 
 @Component({
@@ -105,18 +104,22 @@ export class InvoicePrintViewComponent implements OnInit {
   }
 
   public getTotal(): number{
+
       var total: number =0 
       for (let item of this.voucher.LEDGERENTRIES_LIST){
-        if (item.AMOUNT != null && item.POSPAYMENTTYPE == null){
+        if (item.AMOUNT != null && (item.POSPAYMENTTYPE == null || item.POSPAYMENTTYPE == "")){
           total = total + item.AMOUNT;
         }
       }
+  
       for (let item of this.voucher.ALLINVENTORYENTRIES_LIST){
         if (item.AMOUNT != null){
           total = total + item.AMOUNT;
         }
       }
+  
       return total;
+    
     
   }
 

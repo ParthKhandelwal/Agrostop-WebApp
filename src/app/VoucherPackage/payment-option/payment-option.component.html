@@ -8,212 +8,116 @@
     <div style="float:right;"><td><h6>Balance : {{remainingBalance()}} </h6></td></div>
   </div>
 
-      <div class="bg-white rounded-lg shadow-sm p-5">
+
+
+
+<div>
+
+  <table class="table">
+    <thead>
+        <tr>
+            
+            <th>Type</th>
+            <th>Ledger</th>
+            <th>Amount</th>
         
-        <!-- Payment form tabs -->
-        <ul role="tablist" class="nav bg-light nav-pills rounded-pill nav-fill mb-3">
-          <li class="nav-item">
-            <a data-toggle="pill" (click) ="getCashPayment()" class="nav-link active rounded-pill">
-              <i class="fa fa-money"></i>
-              Cash
-            </a>
-          </li>
-          <li class="nav-item">
-            <a data-toggle="pill" class="nav-link rounded-pill" (click)="setToFalse(); onAccount = true">
-              <i class="fa fa-credit-card"></i>
-              On Account
-            </a>
-          </li>
-          <li class="nav-item">
-            <a data-toggle="pill"  class="nav-link rounded-pill" (click)=" setToFalse(); onlinePayment = true">
-              <i class="fa fa-globe"></i>
-              Online
-            </a>
-          </li>
-          <li class="nav-item">
-            <a data-toggle="pill" class="nav-link rounded-pill" (click)="setToFalse(); bankTransfer = true">
-              <i class="fa fa-university"></i>
-              Bank Transfer
-            </a>
-          </li>
-        </ul>
-        <!-- End -->
-        <!-- Credit card form content -->
-        <div class="tab-content">
-          <form role="form">
-
-            <!-- cash info-->
-
-            <div id="nav-tab-cash" class="tab-pane fade show active" *ngIf ="cashPayment">
-              <p class="alert alert-success">Proceed Transaction</p>
-
-              <div class="form-group" >
-                <mat-form-field class="example-full-width">
-                  <input #cashLedgerSelection type="text"
-                          name = "CashLedgerSelect"
-                         placeholder= "Select an account..."
-                         aria-label = "ledgerAccount"
-                         matInput
-                         (keydown.enter) = "setLedger();false"
-                         [formControl] = "cashLedgerControl"
-                         [matAutocomplete] = "autoCash"
-                         
-                          [(ngModel)] = "this.cashLedgerEntry.LEDGERNAME"
-                         style = "width:100% !important">
-                  <mat-autocomplete #ledgerSelection 
-                                    autoActiveFirstOption [panelWidth]="500"
-                                    #autoCash="matAutocomplete"
-                                    (optionSelected)= 'setLedger()'
-                                    [displayWith]="displayFnCashLedger"
-                  >
-                    <mat-option *ngFor="let option of cashFilteredOptions | async" [value]="option._NAME"
-                      aria-selected="">
-                      <th scope="row">
-                        <div class="p-2">
-                          <div class="ml-3 d-inline-block align-middle">
-                            <h6 class="mb-0 font-weight-bold">{{option._NAME}}</h6>
-                          </div>
+        </tr>
+    </thead>
+    <tbody>
+          <tr *ngIf = "giftLedgerEntry">
+            
+            <td>On Account</td>
+            <td>
+              <mat-form-field class="example-full-width">
+                <input #giftLedger type="text"
+                        name = "GiftLedgerSelect"
+                       placeholder= "Select an account..."
+                       aria-label = "ledgerAccount"
+                       matInput
+                       [formControl] = "ledgerControl"
+                       [(ngModel)] = "giftLedgerEntry.LEDGERNAME"
+                       [matAutocomplete] = "autoLed"
+                       (keydown.enter) = "this.giftAmountRef.nativeElement.focus()"
+                       style = "width:100% !important">
+                <mat-autocomplete #giftLedgerSelection 
+                                  autoActiveFirstOption [panelWidth]="500"
+                                  #autoLed="matAutocomplete"
+                                  [displayWith]="displayFnLedger">
+                  <mat-option *ngFor="let option of filteredOptions | async" [value]="option.NAME"
+                    aria-selected="">
+                    <th scope="row">
+                      <div class="p-2">
+                        <div class="ml-3 d-inline-block align-middle">
+                          <h6 class="mb-0 font-weight-bold">{{option.NAME}}</h6>
                         </div>
-                      </th>
+                      </div>
+                    </th>
 
-                    </mat-option>
-                  </mat-autocomplete>
-                </mat-form-field>
-                <mat-form-field>
-                  <input matInput type ="Number" placeholder="Amount" 
-                            name= "cashPayment" max="totalAmount - paymentReserved" 
-                            [(ngModel)] = "this.cashLedgerEntry.AMOUNT"
-                            readonly>
-                </mat-form-field>
-              </div>
+                  </mat-option>
+                </mat-autocomplete>
+              </mat-form-field>
+              
+              
+            </td>
+            <td *ngIf = "this.giftLedgerEntry.LEDGERNAME">
+              
+                <input #giftAmountRef
+                 matInput name ="giftAmount" 
+                 [(ngModel)] = "giftLedgerEntry.AMOUNT"  
+                 type = "number" 
+                 placeholder="Enter Amount"
+                 (keydown.enter) = "this.cashLedgerEntry.AMOUNT = this.total() - giftLedgerEntry.AMOUNT;this.cashLedgerSelection.nativeElement.focus();false">
+              
+            </td>
+        </tr>
+        
+        <tr *ngIf = "cashLedgerEntry">
+            
+          <td>Cash</td>
+          <td>
+            <mat-form-field class="example-full-width">
+              <input #cashLedgerSelection type="text"
+                      name = "CashLedgerSelect"
+                     placeholder= "Select an account..."
+                     aria-label = "ledgerAccount"
+                     matInput
+                     (keydown.enter) = "setLedger();false"
+                     [matAutocomplete] = "autoCash"
+                     [(ngModel)] = "this.cashLedgerEntry.LEDGERNAME"
+                     style = "width:100% !important">
+              <mat-autocomplete #ledgerSelection 
+                                autoActiveFirstOption [panelWidth]="500"
+                                #autoCash="matAutocomplete"
+                                [displayWith]="displayFnCashLedger"
+              >
+                <mat-option *ngFor="let option of cashFilteredOptions | async" [value]="option.NAME"
+                  aria-selected="">
+                  <th scope="row">
+                    <div class="p-2">
+                      <div class="ml-3 d-inline-block align-middle">
+                        <h6 class="mb-0 font-weight-bold">{{option.NAME}}</h6>
+                      </div>
+                    </div>
+                  </th>
 
-              <div class="form-group">
-                <label for="username">Amount to be paid in cash : {{this.cashLedgerEntry.AMOUNT}}</label>
-              </div>
-              <div class="form-group">
-                <label for="username">Cash amount recieved</label>
-                <input type="number" #cashRecievedRef
-                       name= "cashRecieved" [(ngModel)]= "voucher.POSCASHRECEIVED" 
-                       placeholder="Enter amount (in Rs.)" class="form-control">
-              </div>
-              <div class="form-group">
-                <label for="username">Balance Amount:</label>
-                <label name="cashTendered"><h5>  {{voucher.POSCASHRECEIVED - this.cashLedgerEntry.AMOUNT | number: '1.2-2'}}</h5></label>
-              </div>
+                </mat-option>
+              </mat-autocomplete>
+            </mat-form-field>
+            
+            
+            
+          </td>
+          <td>
+            <input #cashRecievedRef
+             matInput name ="cashAmount" 
+             [(ngModel)] = "cashLedgerEntry.AMOUNT"  
+             (value)="this.remainingBalance()"
+             type = "number" 
+             placeholder="Enter Amount"
+             (keydown.enter) = "validate();false">
+          </td>
+          </tr>
+    </tbody>
+</table>
 
-
-            </div>
-
-
-
-
-            <!--GIFT PAYMENT OPTION-->
-
-
-
-
-
-            <div id="nav-tab-cash" class="tab-pane fade show active" *ngIf ="onAccount">
-              <p class="alert alert-success">Proceed Transaction</p>
-
-              <div class="form-group">
-                <mat-form-field class="example-full-width">
-                  <input #giftLedger type="text"
-                          name = "GiftLedgerSelect"
-                         placeholder= "Select an account..."
-                         aria-label = "ledgerAccount"
-                         matInput
-                         [formControl] = "ledgerControl"
-                         [matAutocomplete] = "autoLed"
-                         style = "width:100% !important">
-                  <mat-autocomplete #giftLedgerSelection 
-                                    autoActiveFirstOption [panelWidth]="500"
-                                    #autoLed="matAutocomplete"
-                                    [displayWith]="displayFnLedger"
-                  >
-                    <mat-option *ngFor="let option of filteredOptions | async" [value]="option._NAME"
-                      aria-selected="">
-                      <th scope="row">
-                        <div class="p-2">
-                          <div class="ml-3 d-inline-block align-middle">
-                            <h6 class="mb-0 font-weight-bold">{{option._NAME}}</h6>
-                          </div>
-                        </div>
-                      </th>
-
-                    </mat-option>
-                  </mat-autocomplete>
-                </mat-form-field>
-                <mat-form-field>
-                  <input matInput type ="Number" placeholder="Amount" 
-                            name= "cashPayment" max="totalAmount - paymentReserved" 
-                            [(ngModel)] = "this.giftLedgerEntry.AMOUNT"
-                            readonly
-                            (keydown.enter) = "getCashPayment() ;false">
-                </mat-form-field>
-              </div>
-
-
-            </div>
-
-
-
-            <button type="button" (click)="validate()" class="subscribe btn btn-primary btn-block rounded-pill shadow-sm"> Confirm  </button>
-
-          </form>
-        </div>
-       </div>
-        <!-- End -->
-
-  
-  
-
-
-
-      <!--CREDIT CARD-->
-      <!--div-- id="nav-tab-card" class="tab-pane fade show active">
-        <p class="alert alert-success">Some text success or error</p>
-        <form role="form">
-          <div class="form-group">
-            <label for="username">Full name (on the card)</label>
-            <input type="text" name="username" placeholder="Jason Doe" required class="form-control">
-          </div>
-          <div class="form-group">
-            <label for="cardNumber">Card number</label>
-            <div class="input-group">
-              <input type="text" name="cardNumber" placeholder="Your card number" class="form-control" required>
-              <div class="input-group-append">
-                <span class="input-group-text text-muted">
-                  <i class="fa fa-cc-visa mx-1"></i>
-                  <i class="fa fa-cc-amex mx-1"></i>
-                  <i class="fa fa-cc-mastercard mx-1"></i>
-                </span>
-              </div>
-            </div>
-          </div>
-          <div class="row">
-            <div class="col-sm-8">
-              <div class="form-group">
-                <label><span class="hidden-xs">Expiration</span></label>
-                <div class="input-group">
-                  <input type="number" placeholder="MM" name="" class="form-control" required>
-                  <input type="number" placeholder="YY" name="" class="form-control" required>
-                </div>
-              </div>
-            </div>
-            <div class="col-sm-4">
-              <div class="form-group mb-4">
-                <label data-toggle="tooltip" title="Three-digits code on the back of your card">
-                  CVV
-                  <i class="fa fa-question-circle"></i>
-                </label>
-                <input type="text" required class="form-control">
-              </div>
-            </div>
-
-
-
-          </div>
-          <button type="button" class="subscribe btn btn-primary btn-block rounded-pill shadow-sm"> Confirm  </button>
-        </form>
-      </!--div-->
+</div>

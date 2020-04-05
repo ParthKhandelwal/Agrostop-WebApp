@@ -41,20 +41,17 @@ export class CreateCustomerFormComponent implements OnInit {
   }
 
   submit(): void{
-
     this.apiService.addCustomer(this.customer).subscribe(
       res =>{
-        alert(res);
-        this.dialogRef.close();
+    
+        this.dialogRef.close(res);
       },
       err =>{
-        if(err.status == 200){
-          this.dialogRef.close();
-        }else{
-          this.dialogRef.close();
-
-        console.log(this.customer);
         console.log(err);
+        if(err.status == 200){
+          this.dialogRef.close(err);
+        }else{
+          this.dialogRef.close(err);
       }
       }
     );

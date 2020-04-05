@@ -129,9 +129,20 @@ export class DayBookComponent implements OnInit {
     return total;
   }
 
-  edit(voucher: VOUCHER) {
-    this.voucher = voucher;
-    this.editMode = true;
+  edit(m:any) {
+    this.loading = true;
+    this.apiService.getTallyFullVoucher(m.MASTERID).subscribe(
+      res => {
+        this.voucher = res.VOUCHER;
+        this.voucher._REMOTEID = m.REMOTEID;
+        this.voucher._ACTION = "Update"
+        console.log(this.voucher);
+        this.loading = false;
+        this.editMode = true;
+      },
+      err => console.log(err)
+    )
+    
   }
 
   updateEditMode() {

@@ -7,8 +7,7 @@ import { Observable, from } from 'rxjs';
 import { startWith, map, filter } from 'rxjs/operators';
 import { PosService } from 'src/app/shared/pos.service';
 import { MatSelect } from '@angular/material';
-import { ExpandOperator } from 'rxjs/internal/operators/expand';
-import { StockItem } from 'src/app/Model/stock-item';
+
 
 @Component({
   selector: 'inventory-selection',
@@ -42,19 +41,24 @@ export class InventorySelectionComponent implements OnInit {
   ngOnInit() {
     this.endVoucher = {"NAME": "END OF LIST"}
     
-    console.log(this.products)
+    this.posService.getItems().then(
+      res => {this.products = res
+        console.log(res)
+        this.filteredOptions = this.productControl.valueChanges.pipe(
+          startWith(''),
+          map(value => this.product_filter(value))
+        );
+      }
+    )
+
     this.posService.getProductBatch().then(
       res => {
-        this.batches = res;
         
+        this.batches = res;
       }
-      
     );
-    this.filteredOptions = this.productControl.valueChanges.pipe(
-      startWith(''),
-      map(value => this.product_filter(value))
-
-    );
+  
+    
     
   }
 
@@ -74,6 +78,7 @@ export class InventorySelectionComponent implements OnInit {
 
   selectProduct(value) {
     if (value == "END OF LIST") {
+      console.log(this.voucher);
       this.valueChanged.emit("true");
       return;
     }
@@ -115,36 +120,43 @@ export class InventorySelectionComponent implements OnInit {
   //HANDLE VOUCHER UPDATE
 
   validateInventoryEntry(){
-    if (this.productControl.value == null){
-      this.productRef.nativeElement.focus();
-      return;
-    }
-    if (this.batchControl.value == null){
-      this.batchRef.focus();
-      return;
-    }
-    if (this.qtyControl.value == null || this.qtyControl.value == 0){
-      this.quantityRef.nativeElement.focus();
-      return;
-    }
-    this.posService.getStockItem(this.productControl.value.NAME).then(
-      res => {
+        if (this.productControl.value == null){
+          this.productRef.nativeElement.focus();
+          return;
+        }
+        if (this.productControl.value == this.endVoucher){
+          console.log(this.voucher);
+          this.valueChanged.emit("products added");
+          return;
+        }
+        if (this.batchControl.value == null){
+          this.batchRef.focus();
+          return;
+        }
+        if (this.qtyControl.value == null || this.qtyControl.value == 0){
+          this.quantityRef.nativeElement.focus();
+          return;
+        }
+        const res = this.productControl.value;
+        console.log(res);
         var inventoryEntry: ALLINVENTORYENTRIESLIST = new ALLINVENTORYENTRIESLIST();
-        
-    
         inventoryEntry.STOCKITEMNAME = res.NAME;
         inventoryEntry.BILLEDQTY = this.qtyControl.value;
         inventoryEntry.ACTUALQTY = inventoryEntry.BILLEDQTY;
         inventoryEntry.ISDEEMEDPOSITIVE = "No";
         
         if (res["FULLPRICELIST.LIST"] instanceof Array){
+            var found: boolean = false;
             for (let item of res["FULLPRICELIST.LIST"]){
-              if (item.PRICELEVEL = this.voucher.PRICELEVEL){
+              console.log(this.voucher.PRICELEVEL);
+              if (item.PRICELEVEL.content == this.voucher.PRICELEVEL){
+                found = true;
+                console.log("price list found")
                 if (item["PRICELEVELLIST.LIST"].RATE != null){
                 let temp:string = item["PRICELEVELLIST.LIST"].RATE.content;
                 temp = temp.replace(/\//g, "");
                 temp = temp.replace(/[^\d.-]/g, "");
-            
+                console.log(temp);
                 inventoryEntry.RATE = +(temp);
                 break;
                 }else {
@@ -155,11 +167,7 @@ export class InventorySelectionComponent implements OnInit {
                 }
               }
             }
-        }else {
-          
-          alert(res.NAME + " does not have a price list set. Please contact your administrator.")
-          this.renew();
-          return;
+            
         }
         
         inventoryEntry.BATCHALLOCATIONS_LIST = new BATCHALLOCATIONSLIST();
@@ -181,14 +189,10 @@ export class InventorySelectionComponent implements OnInit {
         inventoryEntry.ACCOUNTINGALLOCATIONS_LIST.AMOUNT = inventoryEntry.AMOUNT;
         inventoryEntry.ACCOUNTINGALLOCATIONS_LIST.LEDGERFROMITEM = "Yes"
         inventoryEntry.ACCOUNTINGALLOCATIONS_LIST.ISDEEMEDPOSITIVE = "No"
-        inventoryEntry.tallyObject = res;
+      
         this.voucher.ALLINVENTORYENTRIES_LIST.push(inventoryEntry);
         this.renew()
-      },
-      err => {
-        console.log(err);
-      }
-    )
+     
    
     
     
@@ -201,7 +205,8 @@ export class InventorySelectionComponent implements OnInit {
     this.productControl.setValue("");
     this.batchControl.setValue("");
     this.qtyControl.setValue(1);
-    this.showBatchDropDown = false;
+  
+    this.batchCurrent = [];
     this.productRef.nativeElement.focus(); 
   }
 

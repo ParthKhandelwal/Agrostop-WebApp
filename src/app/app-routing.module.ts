@@ -36,30 +36,53 @@ const routes: Routes = [
   {
     path: "customers",
     component: CustomersComponent,
+    canActivate: [AuthGuard],
+    data: { roles: ["Admin", "Company User"] },
     children: [
-      {path: 'customerListView', component: CustomerListViewComponent},
-      {path: 'addressListView', component: AddressTableComponent}
+      {path: 'customerListView', 
+      component: CustomerListViewComponent,
+      canActivate: [AuthGuard],
+      data: { roles: ["Admin", "Company User"] } 
+    },
+      {path: 'addressListView', 
+      component: AddressTableComponent,
+      canActivate: [AuthGuard],
+      data: { roles: ["Admin", "Company User"] } }
     ]
 
   },
   {
     path: "orders",
-    component: OrdersComponent
+    component: OrdersComponent,
+    canActivate: [AuthGuard],
+    data: { roles: ["Admin", "Company User"] } 
   },
   {
     path: "complaints",
-    component: ComplaintsComponent
+    component: ComplaintsComponent,
+    canActivate: [AuthGuard],
+    data: { roles: ["Admin", "Company User"] } 
   },
   {
     path: "expired-products",
-    component: ExpiredProductsComponent
+    component: ExpiredProductsComponent,
+    canActivate: [AuthGuard],
+    data: { roles: ["Admin", "Company User"] } 
   },
   {
     path: "users",
     component: UsersComponent,
+    canActivate: [AuthGuard],
+    data: { roles: ["Admin"] },
     children: [
-      {path: 'userListView', component: UserTableComponent},
-      {path: 'create-user', component: CreateUserFormComponent}
+      {path: 'userListView', 
+      component: UserTableComponent,
+      canActivate: [AuthGuard],
+      data: { roles: ["Admin"] } },
+      {path: 'create-user', 
+      component: CreateUserFormComponent,
+      canActivate: [AuthGuard],
+      data: { roles: ["Admin"] } }
     ]
   },
   {

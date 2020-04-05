@@ -4,8 +4,10 @@ import { ApiService } from '../../shared/api.service';
 import { FormControl } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { startWith, map } from 'rxjs/operators';
-import { MatSelect, MatAutocomplete, MatInput } from '@angular/material';
+import { MatSelect, MatAutocomplete, MatInput, MatDialogConfig, MatDialog } from '@angular/material';
 import { getRtlScrollAxisType } from '@angular/cdk/platform';
+import { PosService } from 'src/app/shared/pos.service';
+import { CashTenderedComponent } from '../cash-tendered/cash-tendered.component';
 
 @Component({
   selector: 'payment-option',
@@ -38,6 +40,7 @@ export class PaymentOptionComponent implements OnInit {
   @Input('isOrder') isOrder: boolean;
 
   @ViewChild('cashRecievedRef', { static: false }) cashRecievedRef: ElementRef;
+  @ViewChild('giftAmountRef', { static: false }) giftAmountRef: ElementRef;
   @ViewChild('ledgerSelection', { static: false }) ledgerSelectionRef: MatAutocomplete;
   @ViewChild('cashLedgerSelection', {static: false}) cashLedgerSelection: ElementRef;
 
@@ -45,31 +48,26 @@ export class PaymentOptionComponent implements OnInit {
 
     onlinePayment: boolean = false;
     bankTransfer: boolean = false;
-  constructor(private apiService?: ApiService) { };
+  constructor(private apiService?: ApiService, private posService?: PosService,private dialog?: MatDialog) { };
 
-  ngOnInit() {
+  async ngOnInit() {
     
-    
-   
-    this.calculateTAX();
-    this.cashFilteredOptions = this.cashLedgerControl.valueChanges.pipe(
-      startWith(''),
-      map(value => this.cashLedger_filter(value))
-    );
-    this.filteredOptions = this.ledgerControl.valueChanges.pipe(
-      startWith(''),
-      map(value => this.ledger_filter(value))
-    );
-
+    await this.calculateTAX();
+    console.log(this.voucher);
     this.cashLedgerEntry = this.voucher.LEDGERENTRIES_LIST.filter((o: any) => {
     if(o.POSPAYMENTTYPE == "Cash"){
         o.AMOUNT = this.total();
         if( o.LEDGERNAME != null){
           this.cashLedgers.push({"_NAME" : o.LEDGERNAME});
         } else {
-          this.apiService.getCashLedgers().subscribe(
+          this.posService.getLedgers().then(
             res => {
               this.cashLedgers = res;
+              console.log(res);
+              this.cashFilteredOptions = this.cashLedgerControl.valueChanges.pipe(
+                startWith(''),
+                map(value => this.cashLedger_filter(value))
+              );
             },
             err => {
               console.log(err);
@@ -82,31 +80,25 @@ export class PaymentOptionComponent implements OnInit {
     this.giftLedgerEntry = this.voucher.LEDGERENTRIES_LIST.filter((o: any) => {
       if (o.POSPAYMENTTYPE == "Gift"){
         if( this.giftLedgerEntry.LEDGERNAME != null){
-  
           this.ledgers.push({"_NAME" : this.giftLedgerEntry.LEDGERNAME});
          }else {
-           this.apiService.getLedgerByGroup("Sundry Creditors").subscribe(
-             res => {
-               this.ledgers = res;
-               
-             },
-             err => {
-               console.log(err);
-             }
-           );
+          this.posService.openDatabase().then(
+            res =>{
+              this.posService.getLedgers().then(
+                res => {this.ledgers = res
+                  console.log(this.ledgers);
+                  this.filteredOptions = this.ledgerControl.valueChanges.pipe(
+                    startWith(''),
+                    map(value => this.ledger_filter(value))
+                  );
+                }
+              );
+            }
+          )
          }
+         return true;
       }
-    })[0];
-
-  
-
-      
-      
-
-
-        
-
-        
+    })[0];       
   }
     
     
@@ -129,12 +121,12 @@ export class PaymentOptionComponent implements OnInit {
 
   private ledger_filter(value: string): any[] {
     const filterValue = value.toString().toLowerCase();
-    return this.ledgers.filter(option => option._NAME.toLowerCase().indexOf(filterValue) === 0);
+    return this.ledgers.filter(option => option.NAME.toLowerCase().indexOf(filterValue) === 0);
   }
 
   private cashLedger_filter(value: string): any[] {
     const filterValue = value.toString().toLowerCase();
-    return this.cashLedgers.filter(option => option._NAME.toLowerCase().indexOf(filterValue) === 0);
+    return this.cashLedgers.filter(option => option.NAME.toLowerCase().indexOf(filterValue) === 0);
   }
 
   validate() {
@@ -143,46 +135,60 @@ export class PaymentOptionComponent implements OnInit {
       alert ("Please pay for all the services");
       return;
     }
-    if (this.voucher.POSCASHRECEIVED < this.cashLedgerEntry.AMOUNT){
-      alert ("The payment is not done in full. Please pay the full amount")
-      return
-    }
+    
     for (let item of this.voucher.LEDGERENTRIES_LIST){
-      if (item.POSPAYMENTTYPE != null){
-        item.AMOUNT = - item.AMOUNT;
+      if (item.POSPAYMENTTYPE != null && item.POSPAYMENTTYPE != ""){
+        item.AMOUNT = - Math.abs(item.AMOUNT);
         if (item.POSPAYMENTTYPE == "Cash" && item.AMOUNT < 0){
           this.voucher.POSCASHLEDGER = item.LEDGERNAME;
         }
       }
     }
-    this.voucher.POSCASHRECEIVED = - this.voucher.POSCASHRECEIVED;
-    this.voucher
+
+  const dialogConfig = new MatDialogConfig();
+   dialogConfig.autoFocus = true;
+   dialogConfig.width = "50%";
+  const dialogRef =   this.dialog.open(CashTenderedComponent, {
+    data: {CASHAMOUNT: this.cashLedgerEntry.AMOUNT, POSCASHRECIEVED: this.voucher.POSCASHRECEIVED}, 
+    maxHeight: '90vh'
+  });
+
+  dialogRef.afterClosed().subscribe(
+    res => {
+      if (res.success){
+        this.voucher.POSCASHRECEIVED =  (-1) * res.amountRecieved;
+        this.valueChanged.emit("Voucher completed Successfully");
+      }
+    }
+  )
     
-    this.valueChanged.emit("Voucher completed Successfully");
+    
   }
 
   remainingBalance(): number{
     var temp: number = 0;
     for (let i of this.voucher.LEDGERENTRIES_LIST){
-      if (i.POSPAYMENTTYPE != null && i.AMOUNT != null){
+      if ((i.POSPAYMENTTYPE != null && i.POSPAYMENTTYPE != "") && i.AMOUNT != null){
         temp = temp + i.AMOUNT;
       }
     }
-    return this.total() - temp;
+    return (Math.round((this.total() - temp)*100))/100;
   }
 
   total(): number{
     var total: number =0 
     for (let item of this.voucher.LEDGERENTRIES_LIST){
-      if (item.AMOUNT != null && item.POSPAYMENTTYPE == null){
+      if (item.AMOUNT != null && (item.POSPAYMENTTYPE == null || item.POSPAYMENTTYPE == "")){
         total = total + item.AMOUNT;
       }
     }
+
     for (let item of this.voucher.ALLINVENTORYENTRIES_LIST){
       if (item.AMOUNT != null){
         total = total + item.AMOUNT;
       }
     }
+
     return total;
   }
 
@@ -207,8 +213,8 @@ export class PaymentOptionComponent implements OnInit {
   }
 
 
-  calculateTAX(){
-    console.log(this.voucher);
+  async calculateTAX(){
+   
     for(let ledger of this.voucher.LEDGERENTRIES_LIST){
       if(ledger.ISDEEMEDPOSITIVE != null && ledger.ISDEEMEDPOSITIVE == "No"){
         ledger.AMOUNT = 0;
@@ -216,7 +222,24 @@ export class PaymentOptionComponent implements OnInit {
       for (let item of this.voucher.ALLINVENTORYENTRIES_LIST){
      
         if(ledger.ISDEEMEDPOSITIVE != null && ledger.ISDEEMEDPOSITIVE == "No"){
-          ledger.AMOUNT = ledger.AMOUNT + Math.round((item.AMOUNT * this.getTaxRate(item.tallyObject, this.getGSTDutyHead(ledger.tallyObject)))) / 100; 
+          await this.posService.getStockItem(item.STOCKITEMNAME).then(
+            async res => {
+              await this.posService.getLedger(ledger.LEDGERNAME).then(
+                led => {
+                  ledger.AMOUNT = ledger.AMOUNT + Math.round((item.AMOUNT * this.getTaxRate(res, this.getGSTDutyHead(led)))) / 100; 
+                  ledger.AMOUNT = Math.round(ledger.AMOUNT*100) / 100;
+                },
+                err2 => {
+                  alert("Cannot find ledger " + ledger.LEDGERNAME + "in local database. Please sync!!!")
+                  console.log(err2);
+                }
+              );
+            },
+            err => {
+              alert("Cannot find product " + item.STOCKITEMNAME + "in local database. Please sync!!!")
+              console.log(err);
+            }
+          );
         }
       }
     }

@@ -66,39 +66,39 @@
 
 
               <ng-container *ngFor =" let order of customerOrder">
-                <div role="tablist" id="accordion-1">
-                  <div class="card">
-                    <div role="tab" class="card-header">
-                      <h5 class="mb-0">
-                        <a data-toggle="collapse" aria-expanded="true" aria-controls="accordion-1 .item-1" href="#accordion-1 .item-1">Order Number : {{order._REMOTEID}}</a>
-
-                      </h5>
-                      <h6 class="mb-0">{{order.DATE | date: 'dd-MMM-yyyy'}}</h6>
-                      <div style="padding-left: 20px !important;">
-                        <button (click)=" createVoucher(order)"
-                                class="btn btn-primary shadow float-right" type="button">Create Voucher</button>
-                      </div>
+      
+                <div  role="tablist">
+                  <div class="card card-collapse">
+                    <div class="card-header" role="tab" id="headingOne">
+                      <h6 class="mb-0" style="float: left;">
+                        <a (click) = "order.open = !order.open" >
+                          {{order.id}}
+                        </a><br>
+                        <span *ngIf = "order.completed" class="text-success">Completed</span>
+                        <span *ngIf = "!order.completed" class="text-danger"><button mat-button (click) = "createVoucher(order)">Complete Order</button></span>
+                      </h6>
+                      <h6 style="float: right;">{{order.dateOfCreation | date: "dd-MMM-yyyy"}}</h6>
                     </div>
-                    <div role="tabpanel" data-parent="#accordion-1" class="collapse show item-1">
+                
+                    <div *ngIf = "order.open" >
                       <div class="card-body">
-                        <div class="table-responsive">
-                          <table class="table">
-                            <thead>
-                              <tr>
-                                <th>Item Name</th>
-                                <th>Quantity</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              <ng-container *ngFor=" let item of order.ALLINVENTORYENTRIES_LIST">
-                                <tr>
-                                  <td>{{item.STOCKITEMNAME}}</td>
-                                  <td>{{item.BILLEDQTY}}</td>
-                                </tr>
-                              </ng-container>
-                            </tbody>
-                          </table>
-                        </div>
+                        
+                        <table class="table">
+                          <thead>
+                            <th>Name</th>
+                            <th>Qty</th>
+                            <th>Rate</th>
+                          </thead>
+                        <tbody>
+                        <ng-container *ngFor = "let item of order.itemList">
+                          <tr>
+                            <td>{{item.itemName}}</td>
+                            <td>{{item.qty}}</td>
+                            <td>{{item.rate | currency: "INR"}}</td>
+                          </tr>
+                        </ng-container>
+                      </tbody>
+                      </table>
                       </div>
                     </div>
                   </div>

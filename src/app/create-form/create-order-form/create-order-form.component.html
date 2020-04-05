@@ -1,3 +1,126 @@
-<app-navigation-bar>
-  <voucher-wizard [(voucher)]="voucherService.voucher" isOrder =true></voucher-wizard>
-</app-navigation-bar>
+<div class="column">
+  <form #orderForm="ngForm" (ngSubmit) = "saveOrder()">
+
+    <div class="row">
+      <mat-form-field>
+        <mat-label>Select place of supply</mat-label>
+        <mat-select required [(ngModel)] = "order.placeOfSupply" name = "placeOfSupply">
+          <mat-option *ngFor = "let godown of godowns$ | async" [value] = "godown">{{godown}}</mat-option>
+        </mat-select>
+      </mat-form-field>
+  
+      <mat-form-field class="example-full-width" style="padding-left: 50px;">
+          <input #customerField type="text"
+                 placeholder="Pick one"
+                 aria-label="Number"
+                 matInput
+                 [formControl]="customerControl"
+                 [matAutocomplete]="auto"
+                 [(ngModel)]="this.order.customerId"
+                 style="width:100% !important"
+                 required
+                 >
+          <mat-autocomplete autoActiveFirstOption [panelWidth]="500"
+                            #auto="matAutocomplete"
+                            [displayWith]="displayFnCustomer()">
+            
+            <mat-option *ngFor="let option of customerFilteredOptions | async" [value]="option.id">
+              <th scope="row">
+                <div class="p-2">
+                  <div class="ml-3 d-inline-block align-middle">
+                    <h6 class="mb-0 font-weight-bold">{{option.name}}</h6>
+                  </div>
+                </div>
+              </th>
+              <td class="align-middle font-italics">S/O {{option.fatherName}}</td>
+              <td class="align-middle"><strong>{{option.addressId}}</strong></td>
+            </mat-option>
+          </mat-autocomplete>
+        </mat-form-field>
+
+    </div>
+  
+    <div class="row">
+  
+      <table class="table">
+        <thead>
+            <tr>
+                <th class="text-center">#</th>
+                <th>Name</th>
+                <th>Rate</th>
+                <th>Quantity</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="text-center">1</td>
+                <td>
+                  <mat-form-field class="example-full-width" style="width: 150px;">
+                    <input #invField type="text"
+                           placeholder="Pick one"
+                           aria-label="Number"
+                           matInput
+                           [formControl]="productControl"
+                           [matAutocomplete]="autoProduct"
+                           name = "name"
+                           [(ngModel)] = "item.itemName"
+                        
+                           style="width:100% !important" >
+                    <mat-autocomplete [panelWidth]="300" #autoProduct="matAutocomplete"
+                                      [displayWith]= "displayFnProduct">
+                                      
+                      <mat-option *ngFor="let option of filteredOptions | async" [value]="option">
+                        <th scope="row">
+                          <div class="p-2">
+                            <div class="ml-3 d-inline-block align-middle">
+                              <h6 class="mb-0 font-weight-bold">{{option}}</h6>
+                            </div>
+                          </div>
+                        </th>
+                      </mat-option>
+                    </mat-autocomplete>
+                  </mat-form-field>
+                </td>
+                <td>
+                  <mat-form-field>
+                    <input matInput type = "number" [(ngModel)] = "item.rate" name = "rate">
+                  </mat-form-field>
+                </td>
+                <td>
+                  <mat-form-field>
+                    <input matInput type = "number" [(ngModel)] = "item.qty" name = "qty">
+                  </mat-form-field>
+                </td>
+                <td class="td-actions text-right">
+                    <button type="button" rel="tooltip" class="btn btn-danger" (click) = "addProduct()">
+                        <i class="material-icons">add</i>
+                    </button>
+                </td>
+            </tr>
+            <tr *ngFor = "let item of order.itemList; let i = index">
+                <td class="text-center">{{i+1}}</td>
+                <td>{{item.itemName}}</td>
+                <td>{{item.rate}}</td>
+                <td>{{item.qty}}</td>
+                <td class="td-actions text-right">
+                  
+                    <button type="button" rel="tooltip" class="btn btn-danger btn-round" (click) = "deleteItem(i+1)">
+                        <i class="material-icons">close</i>
+                    </button>
+                </td>
+            </tr>
+            
+        </tbody>
+    </table>
+
+
+    </div>
+    <div class="row">
+      <button mat-button type="submit" [disabled] = "orderForm.invalid">Save</button>
+    </div>
+
+  </form>
+
+  
+
+</div>

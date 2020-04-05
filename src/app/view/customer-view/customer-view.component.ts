@@ -3,6 +3,7 @@ import { Customer } from '../../Model/customer';
 import { MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
 import { ApiService } from '../../shared/api.service';
 import { VOUCHER } from '../../Model/voucher';
+import { map } from 'rxjs/operators';
 
 @Component({
   selector: 'app-customer-view',
@@ -22,7 +23,9 @@ export class CustomerViewComponent implements OnInit {
    }
 
   ngOnInit() {
-    this.apiService.getCustomerHistory(this.customer.customerId).subscribe(
+    this.apiService.getCustomerHistory(this.customer.id).pipe(
+      map((history => history.sort((a,b) => new Date(b.date).getTime() - new Date(a.date).getTime())))
+    ).subscribe(
       res => {
         this.previousHistory = res;
       },
@@ -32,10 +35,13 @@ export class CustomerViewComponent implements OnInit {
     )
 
 
+
   }
 
   showOrders() {
-    this.apiService.getCustomerOrder(this.customer.customerId).subscribe(
+    this.apiService.getCustomerOrders(this.customer.id).pipe(
+      map((data) => data.sort((b,a) => new Date(a.dateOfCreation).getTime() - new Date(b.dateOfCreation).getTime()))
+    ).subscribe(
       res => {
         this.customerOrder = res;
         this.showOrderView = true;

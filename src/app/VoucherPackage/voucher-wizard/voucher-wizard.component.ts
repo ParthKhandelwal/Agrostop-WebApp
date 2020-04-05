@@ -1,5 +1,5 @@
 import { Component, OnInit, Input, EventEmitter, Output, ViewChild, AfterViewInit } from '@angular/core';
-import { VOUCHER } from '../../Model/voucher';
+import { VOUCHER, LEDGERENTRIESLIST, OLDAUDITENTRYIDSLIST } from '../../Model/voucher';
 import { VoucherService } from '../../shared/voucher.service';
 import { User } from '../../Model/user';
 import { Customer } from '../../Model/customer';
@@ -8,9 +8,9 @@ import { PosService } from 'src/app/shared/pos.service';
 import { merge, fromEvent, Observable, Observer } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { ThemePalette, MatDialog, MatDialogConfig } from '@angular/material';
-import {MatProgressBarModule} from '@angular/material/progress-bar';
-import { VoucherSettingComponent } from '../voucher-setting/voucher-setting.component';
+import uniqid from 'uniqid'
 import { InvoicePrintViewComponent } from 'src/app/PrintPackage/invoice-print-view/invoice-print-view.component';
+import { UniqueSelectionDispatcher } from '@angular/cdk/collections';
 
 
 
@@ -39,64 +39,119 @@ export class VoucherWizardComponent implements OnInit, AfterViewInit {
   @Output("valueChange") valueChanged = new EventEmitter
   @Input("editMode") editMode: boolean;
   @Input('voucher') voucher: VOUCHER;
+  @Input('date') date: Date;
   printView: boolean = false;
 
   
   constructor(public posService?: PosService, private apiService?: ApiService, private dialog?: MatDialog,) { }
   ngAfterViewInit(): void {
+
+    if (this.editMode){
+      this.switchInventory();
+      
+    } else if (this.voucher.ORDERNUMBER){
+      this.switchInventory();
+    } else{
+     
+      this.setNewVoucher()
+      this.switchCustomer();
+    }
   }
 
   ngOnInit() {
-        this.voucher = new VOUCHER();
+       
         
-      
-            this.posService.openDatabase().then(
-              () => {
-                this.posService.getAllStockItemsForBilling().then(
-                  res1 => {
-                    
-                    this.productList = res1;
-                    
-                  },
-                  err1 => {
-                    throw err1;
-                  }
-                );
-              
-                this.posService.getCustomers().then(
-                  res2 => {
-                    this.customerList = res2;
-    
-                    this.switchVoucherSettings();
-                  },
-                  err2 => {
-                    console.log(err2);
-                  });
+        
+  }
 
-              },
-              (err) => {
-                console.log(err);
-              }
-            );
+  setNewVoucher(){
+    
+    this.voucher = new VOUCHER();
+    this.voucher.DATE = new Date();
+    this.voucher._REMOTEID = uniqid();
+    const voucherType = this.posService.getVoucherType();
+    const posClass = this.posService.getPOSClass();
+    this.voucher.VOUCHERTYPENAME = voucherType.NAME;
+    this.voucher._VCHTYPE = voucherType.NAME;
+    this.voucher._OBJVIEW = "Invoice Voucher View";
+    this.voucher._ACTION = "Create";
+    this.voucher.CLASSNAME = posClass.CLASSNAME.content;
+    this.voucher.PERSISTEDVIEW = "Invoice Voucher View";
+    this.voucher.VOUCHERNUMBER = "TT-" + this.voucher._REMOTEID;
+    this.voucher.LEDGERENTRIES_LIST = [];
+    this.voucher.PRICELEVEL = this.posService.getPriceList();
+
+    this.ledgerList = [];
+    var tempArray: any[] = [];
+    if (posClass["LEDGERENTRIESLIST.LIST"] instanceof Array){
+      tempArray = posClass["LEDGERENTRIESLIST.LIST"]
+    } else{
+      tempArray.push(posClass["LEDGERENTRIESLIST.LIST"])
+    }
+    for (let ledger of tempArray){
+      if (ledger.NAME){
+
+      this.posService.getLedger(ledger.NAME.content).then(
+        res1 =>{
+          var res: any;
+          if (res1 == null){
+             res = this.posService.saveLedger(ledger.NAME);
+          } else {
+           res = res1
+          }
           
-        
+          var ledgerEntry: LEDGERENTRIESLIST = new LEDGERENTRIESLIST();
+          var oldaudit: OLDAUDITENTRYIDSLIST = new OLDAUDITENTRYIDSLIST();
+          oldaudit.OLDAUDITENTRYIDS = "-1";
+          ledgerEntry.OLDAUDITENTRYIDS_LIST = oldaudit;
+          ledgerEntry.LEDGERNAME = res.NAME;
+          ledgerEntry.METHODTYPE = ledger.METHODTYPE.content
+          ledgerEntry.ISDEEMEDPOSITIVE = res.ISDEEMEDPOSITIVE.content;
+          ledgerEntry.LEDGERFROMITEM = ledger.LEDGERFROMITEM.content;
+          ledgerEntry.ROUNDLIMIT = ledger.ROUNDLIMIT.content;
+          ledgerEntry.ROUNDTYPE = ledger.ROUNDTYPE.content;
+          ledgerEntry.REMOVEZEROENTRIES = ledger.REMOVEZEROENTRIES.content;
+          ledgerEntry.ISPARTYLEDGER = "No";
+          ledgerEntry.tallyObject = res;
+          this.voucher.LEDGERENTRIES_LIST.push(ledgerEntry);
+        },
+        err=>{
+          console.log(err);
+        }
+      );
+      }
+    }
 
-     
-    
-    
+    if (posClass.POSENABLECARDLEDGER){
+      var ledgerEntry: LEDGERENTRIESLIST = new LEDGERENTRIESLIST();
+      ledgerEntry.LEDGERNAME = posClass.POSCARDLEDGER.content
+      ledgerEntry.POSPAYMENTTYPE = "Card";
+      this.voucher.LEDGERENTRIES_LIST.push(ledgerEntry)
+    }
+
+    if (posClass.POSENABLECASHLEDGER){
+      var ledgerEntry: LEDGERENTRIESLIST = new LEDGERENTRIESLIST();
+      ledgerEntry.LEDGERNAME = posClass.POSCASHLEDGER.content
+      ledgerEntry.POSPAYMENTTYPE = "Cash";
+      this.voucher.LEDGERENTRIES_LIST.push(ledgerEntry);
+    }
+
+    if (posClass.POSENABLECHEQUELEDGER){
+      var ledgerEntry: LEDGERENTRIESLIST = new LEDGERENTRIESLIST();
+      ledgerEntry.LEDGERNAME = posClass.POSCHEQUELEDGER.content
+      ledgerEntry.POSPAYMENTTYPE = "Cheque";
+      this.voucher.LEDGERENTRIES_LIST.push(ledgerEntry)
+    }
+
+    if (posClass.POSENABLEGIFTLEDGER){
+      var ledgerEntry: LEDGERENTRIESLIST = new LEDGERENTRIESLIST();
+      ledgerEntry.LEDGERNAME = posClass.POSGIFTLEDGER.content
+      ledgerEntry.POSPAYMENTTYPE = "Gift";
+      this.voucher.LEDGERENTRIES_LIST.push(ledgerEntry);
+    }
 
   }
 
-
-
-  switchSyncSettings() {
-
-    this.inventorySelection = false;
-    this.customerSelection = false;
-    this.payment = false;
-    this.voucherSettings = false;
-    this.syncSettings = true;
-  }
 
   switchInventory() {
 
@@ -107,15 +162,7 @@ export class VoucherWizardComponent implements OnInit, AfterViewInit {
     this.syncSettings = false;
   }
 
-  switchVoucherSettings(){
 
-    this.inventorySelection = false;
-    this.customerSelection = false;
-    this.payment = false;
-    this.voucherSettings = true;
-    this.syncSettings = false;
-
-  }
 
   switchCustomer() {
 
@@ -175,9 +222,7 @@ export class VoucherWizardComponent implements OnInit, AfterViewInit {
       this.switchInventory();
     } else if (this.inventorySelection) {
       this.switchCustomer();
-    } else if (this.customerSelection){
-      this.switchVoucherSettings();
-    }
+    } 
 
 
   }
@@ -194,6 +239,7 @@ export class VoucherWizardComponent implements OnInit, AfterViewInit {
           this.posService.addCacheVoucher(this.voucher).then(
             () => {
               this.valueChanged.emit("voucherCompleted");
+              this.loading = false;
               this.printVoucher();
               this.restore();
             }
@@ -201,8 +247,8 @@ export class VoucherWizardComponent implements OnInit, AfterViewInit {
   
         } else {
           alert("Voucher Saved to Tally Successfully")
-         
           this.valueChanged.emit("voucherCompleted");
+          this.loading = false;
           this.printVoucher();
           this.restore();
         }
@@ -213,6 +259,7 @@ export class VoucherWizardComponent implements OnInit, AfterViewInit {
             () => {
               
               this.valueChanged.emit("voucherCompleted");
+              this.loading = false;
               this.printVoucher();
               this.restore();
               
@@ -251,14 +298,22 @@ export class VoucherWizardComponent implements OnInit, AfterViewInit {
   const dialogConfig = new MatDialogConfig();
    dialogConfig.autoFocus = true;
    dialogConfig.width = "50%";
-   this.dialog.open(InvoicePrintViewComponent, {data: this.voucher, maxHeight: '90vh'});
+   const dialogRef = this.dialog.open(InvoicePrintViewComponent, {data: this.voucher, maxHeight: '90vh'});
+    dialogRef.afterClosed().subscribe(
+      res => {
+        this.setNewVoucher();
+        this.switchCustomer();
+      }
+    )
   }
 
   restore(){
     this.voucher = new VOUCHER();
     this.setFalse();
-    this.switchVoucherSettings();
+    
   }
+
+  
 
   createOnline$() {
     return merge<boolean>(

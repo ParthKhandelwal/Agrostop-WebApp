@@ -5,7 +5,7 @@
     <div class="container">
       <div class="row">
       <div class="col-sm-8 col-sm-offset-2">
-
+        
           <!--      Wizard container        -->
         <div class="wizard-container" >
             
@@ -13,14 +13,24 @@
 
           <div class="card wizard-card" data-color="orange" id="wizardProfile">
 
-            <div>
+            <div *ngIf = "loading" style="vertical-align: middle; align-self: center;">
+              <img src="assets/img/agrostop.gif" alt="Saving Voucher..." width="100px" height="100px">
+            </div>
+
+            <div *ngIf = "!loading">
               <form action="" method="">
                 <!--        You can switch ' data-color="orange" '  with one of the next bright colors: "blue", "green", "orange", "red"          -->
 
                 <div class="wizard-header" *ngIf ="this.voucher != null">
                   <h3>
                     <b>SALES</b> INVOICE <br>
-                    <small>{{voucher.VOUCHERTYPENAME}}</small>
+                    <small>
+                      
+                        {{voucher.VOUCHERTYPENAME}}
+                      
+                    </small><br>
+                    
+                    
                   </h3>
                 </div>
                 
@@ -30,21 +40,20 @@
                   <div class="container-tab wizard-navigation" >
                     
                     
-                    <div>
-                      <button [ngClass]="'customerSelection' ? 'btn btn-previous btn-fill btn-success btn-wd btn-sm' : 'btn-default btn-wd btn-sm btn btn-previous btn-fill '" name='customerTab' (click)="switchCustomer()" [disabled]="customerSelection">Customer</button>
-                    </div>
-                    <div>
-                      <button [ngClass]="'inventorySelection' ? 'btn btn-previous btn-fill btn-success btn-wd btn-sm' : 'btn-default btn-wd btn-sm btn btn-previous btn-fill '" name='productTab' (click)="switchInventory()" [disabled]="inventorySelection">Inventory</button>
-                    </div>
-                    <div>
-                      <button [ngClass]="'payment' ? 'btn btn-previous btn-fill btn-success btn-wd btn-sm' : 'btn-default btn-wd btn-sm btn btn-previous btn-fill '" name='paymentTab' (click)="switchPayment()" [disabled]="payment || isOrder" *ngIf =" !isOrder">Payment</button>
-                    </div>
+                    
                     
                   </div>
                 </div>
                 
 
-
+                <div style="padding-left: 20px;">
+                  <mat-form-field>
+                    <mat-label>Choose a date</mat-label>
+                    <input matInput [matDatepicker]= "picker" name = "date" [(ngModel)] = 'this.voucher.DATE'>
+                    <mat-datepicker-toggle matSuffix [for]= "picker" ></mat-datepicker-toggle>
+                    <mat-datepicker #picker></mat-datepicker>
+                  </mat-form-field>
+                </div>
 
 
 
@@ -59,7 +68,7 @@
 
                 <!--CUSTOMER SELECTION-->
                 <div *ngIf="customerSelection">
-                  <customer-selection (valueChange)="next()" (isOrder) = "isOrder" [(voucher)]="voucher" [(customerList)] ="customerList"></customer-selection>
+                  <customer-selection (valueChange)="next()" [(isOrder)] = "isOrder" [(voucher)]="voucher" ></customer-selection>
                 </div>
 
                 <!--INVENTORY SELECTION-->
@@ -69,7 +78,7 @@
 
                 <!--PAYMENT-->
                 <div *ngIf="payment && !isOrder">
-                  <payment-option (valueChanged) ="save()" (isOrder) = "isOrder" [(voucher)] ="voucher" [(productList)] ="productList"></payment-option>
+                  <payment-option (valueChanged) ="save()" [(isOrder)] = "isOrder" [(voucher)] ="voucher" [(productList)] ="productList"></payment-option>
                 </div>
 
                 <div class="wizard-footer height-wizard">

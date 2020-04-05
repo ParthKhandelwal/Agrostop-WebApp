@@ -28,6 +28,7 @@ import { PaymentServiceService } from 'src/app/shared/payment-service.service';
 import { User } from 'src/app/Model/user';
 import { analyzeAndValidateNgModules } from '@angular/compiler';
 import { ReceiptService } from 'src/app/shared/receipt.service';
+import { CreateOrderFormComponent } from '../create-order-form/create-order-form.component';
 
 @Component({
   selector: 'app-create-voucher',
@@ -45,7 +46,7 @@ export class CreateVoucherComponent implements OnInit {
   user: User;
   upSyncing: boolean;
   downSyncing: boolean;
-  constructor(private apiService: ApiService, public posService?: PosService, 
+  constructor(private apiService: ApiService,private dialog?: MatDialog, public posService?: PosService, 
     private paymentService?: PaymentServiceService, private receiptService?: ReceiptService) {
     this.posService.openDatabase();
     this.user = this.posService.getUser();
@@ -132,6 +133,17 @@ export class CreateVoucherComponent implements OnInit {
     this.receiptVoucherView = true;
   }
 
+  switchOrderVoucher(){
+    const dialogConfig = new MatDialogConfig();
+    dialogConfig.autoFocus = true;
+    dialogConfig.width = "50%";
+
+    const dialogRef = this.dialog.open(CreateOrderFormComponent, {
+     
+      maxHeight: '90vh'
+    });
+
+  }
 
   createOnline$() {
       return merge<boolean>(

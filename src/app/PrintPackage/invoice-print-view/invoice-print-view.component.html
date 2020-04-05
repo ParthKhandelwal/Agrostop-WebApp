@@ -34,7 +34,8 @@
                <div class="date text-inverse m-t-5">{{date | date: 'dd-MMM-yyyy'}}</div>
                <div class="invoice-detail">
                   # {{voucher.VOUCHERNUMBER}}<br>
-                  {{voucher.VOUCHERTYPENAME}}
+                  {{voucher.VOUCHERTYPENAME}}<br>
+                  <ngx-barcode (bc-value)="voucher._REMOTEID" [bc-display-value]="true" bc-height ="30px"></ngx-barcode>
                </div>
             </div>
          </div>
@@ -58,7 +59,7 @@
                       <tr>
                         <td>
                            <span class="text-inverse">{{items.STOCKITEMNAME}}</span><br>
-                           <small>{{items.tallyObject ? items.tallyObject.CATEGORY.content : ""}}</small>
+                           <small>{{items.tallyObject && items.tallyObject.CATEGORY ? items.tallyObject.CATEGORY.content : ""}}</small>
                         </td>
                         <td class="text-center">
                           <span class="text-inverse">{{items.BATCHALLOCATIONS_LIST.BATCHNAME}}</span> <br>

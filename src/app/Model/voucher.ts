@@ -449,6 +449,7 @@ export class VOUCHER {
   order: boolean;
   userId: string;
   COUNTRYOFRESIDENCE: string;   
+  ORDERNUMBER: string;
 
 
 

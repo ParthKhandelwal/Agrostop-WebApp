@@ -28,7 +28,7 @@ export class PosService {
     this.database = this.db.openDatabase(1, evt => {
       let objectStore = evt.currentTarget.result.createObjectStore('cacheVoucher', { keyPath: "VOUCHERNUMBER",autoIncrement: false, unique:true });
       let objectStore2 = evt.currentTarget.result.createObjectStore('items', { keyPath: "NAME",autoIncrement: false, unique: true });
-      let objectStore3 = evt.currentTarget.result.createObjectStore('customers', {keyPath: "_id.counter", autoIncrement: false, unique: true });
+      let objectStore3 = evt.currentTarget.result.createObjectStore('customers', {keyPath: "id", autoIncrement: false, unique: true });
       let objectStore4 = evt.currentTarget.result.createObjectStore('Ledgers', {keyPath: "NAME",autoIncrement: false, unique: true });
       let objectStore5 = evt.currentTarget.result.createObjectStore('Batches', {keyPath: "id",autoIncrement: false, unique: true });
      
@@ -41,7 +41,7 @@ export class PosService {
     return this.database = this.db.openDatabase(1, evt => {
       let objectStore = evt.currentTarget.result.createObjectStore('cacheVoucher', { keyPath: "VOUCHERNUMBER",autoIncrement: false, unique:true });
       let objectStore2 = evt.currentTarget.result.createObjectStore('items', { keyPath: "NAME",autoIncrement: false, unique: true });
-      let objectStore3 = evt.currentTarget.result.createObjectStore('customers', {keyPath: "_id.counter", autoIncrement: false, unique: true });
+      let objectStore3 = evt.currentTarget.result.createObjectStore('customers', {keyPath: "id", autoIncrement: false, unique: true });
       let objectStore4 = evt.currentTarget.result.createObjectStore('Ledgers', {keyPath: "NAME",autoIncrement: false, unique: true });
       let objectStore5 = evt.currentTarget.result.createObjectStore('Batches', {keyPath: "id",autoIncrement: false, unique: true });
      
@@ -68,9 +68,13 @@ export class PosService {
       this.batchPercent = 0;
       this.ledgerPercent = 0;
       this.itemPercent = 0;
+      this.db.clear("items");
+      this.db.clear("Batches")
       await this.saveCompany();
       await this.saveItems();
+      this.db.clear("customers")
       await this.saveCustomers();
+      this.db.clear("Ledgers")
       await this.saveLedgers();
        
   }
@@ -277,6 +281,15 @@ export class PosService {
 
   getLedger(name : string): Promise<any>{
     return this.db.getByKey("Ledgers", name);
+  }
+
+
+  getLedgers(): Promise<any[]>{
+    return this.db.getAll("Ledgers");
+  }
+
+  addCustomer(cus: any){
+    this.db.update("customers", cus);
   }
 
   saveCustomers(){

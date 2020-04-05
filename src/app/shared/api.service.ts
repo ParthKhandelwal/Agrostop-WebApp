@@ -12,6 +12,7 @@ import { UserLogin, Response } from '../login-form/login-form.component';
 import { TaxDetails } from '../Model/tax-details';
 import { DatePipe } from '@angular/common';
 import { AuthenticationService } from './authentication.service';
+import { Order } from '../Model/order';
 
 
 
@@ -30,11 +31,11 @@ export class ApiService {
     return this.httpClient.get<any>(this.BASE_URL + 'vouchers/getCompany?companyName=' + name);
   }
 
-  public WEB_SOCKET_URL = "https://agrostop-web-server.herokuapp.com"
-  private BASE_URL = "https://agrostop-web-server.herokuapp.com/api/";
+  //public WEB_SOCKET_URL = "https://agrostop-web-server.herokuapp.com"
+  //private BASE_URL = "https://agrostop-web-server.herokuapp.com/api/";
 
-  //private BASE_URL = "http://localhost:8081/api/";
-  //public WEB_SOCKET_URL = "http://localhost:8081";
+  private BASE_URL = "http://localhost:8081/api/";
+  public WEB_SOCKET_URL = "http://localhost:8081";
   //public TALLY_HELPER_URL = "http://localhost:8082";
 
   user: User;
@@ -102,12 +103,41 @@ export class ApiService {
     return this.httpClient.delete(this.BASE_URL + 'customer/delete/' + customer.customerId);
   }
 
+
+
+  saveOrder(order: Order): Observable<any>{
+    return this.httpClient.post<any>(this.BASE_URL + 'order/save', order);
+  }
+
+  getAllOrders(): Observable<Order[]>{
+    return this.httpClient.get<Order[]>(this.BASE_URL + 'order/getAll');
+  }
+
+
+  
+  getCustomerOrders(customerId: string): Observable<Order[]>{
+    return this.httpClient.get<Order[]>(this.BASE_URL + 'order/getCustomerOrders?customerId=' + customerId);
+  }
+
+  completeOrder(orderId: string, voucher:VOUCHER): Observable<any>{
+    return this.httpClient.post<any>(this.BASE_URL + 'order/completeOrder?orderId='+ orderId, voucher);
+  }
+
+  deleteOrder(id: string): Observable<any>{
+    return this.httpClient.delete<any>(this.BASE_URL + 'order/delete?orderId='+ id);
+  }
+
   getCurrentUser(): Observable<any> {
     return this.httpClient.get<User>(this.BASE_URL + 'user/currentUser');
   }
 
   getVoucher(id: string): Observable<any>{
      return this.httpClient.get<any>(this.BASE_URL + 'voucher?id=' + id);
+
+  }
+
+  getTallyFullVoucher(masterId: string): Observable<any>{
+    return this.httpClient.get<any>(this.BASE_URL + 'voucher/getVoucher?masterId=' + masterId);
 
   }
 
