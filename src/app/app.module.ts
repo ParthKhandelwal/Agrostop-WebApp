@@ -80,7 +80,10 @@ import { PaymentVoucherWizardComponent } from './VoucherPackage/payment-voucher-
 import { ReceiptVoucherWizardComponent } from './VoucherPackage/receipt-voucher-wizard/receipt-voucher-wizard.component';
 import { CashBookComponent } from './AccountingPackage/cash-book/cash-book.component';
 import { NgxBarcodeModule } from 'ngx-barcode';
-
+import { UploadAddressesComponent } from './CustomerPackage/upload-addresses/upload-addresses.component';
+import {MatTabsModule} from '@angular/material/tabs';
+import { PapaParseModule } from 'ngx-papaparse';
+import {NgxImageCompressService} from 'ngx-image-compress';
 
 @NgModule({
   declarations: [
@@ -134,7 +137,8 @@ import { NgxBarcodeModule } from 'ngx-barcode';
     StockCheckComponent,
     PaymentVoucherWizardComponent,
     ReceiptVoucherWizardComponent,
-    CashBookComponent
+    CashBookComponent,
+    UploadAddressesComponent
   ],
   imports: [
     BrowserAnimationsModule,
@@ -163,10 +167,12 @@ import { NgxBarcodeModule } from 'ngx-barcode';
     ChartsModule,
     MatProgressBarModule,
     NgxPrintModule,
-    NgxBarcodeModule
+    NgxBarcodeModule,
+    PapaParseModule,
+    MatTabsModule
 
   ],
-  providers: [CookieService, ApiService, DatePipe, MatDialog, AgroStorageService, MatDialogConfig, {
+  providers: [CookieService, ApiService, DatePipe, MatDialog, NgxImageCompressService,AgroStorageService, MatDialogConfig, {
       provide: HTTP_INTERCEPTORS,
       useClass: AgroInterceptor,
     multi: true

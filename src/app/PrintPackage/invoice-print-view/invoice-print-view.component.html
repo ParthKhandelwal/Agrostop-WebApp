@@ -23,10 +23,20 @@
             <div class="invoice-to">
                <small>Customer Details</small>
                <address class="m-t-5 m-b-5">
-                  <strong class="text-inverse">{{voucher.BASICBUYERNAME}}</strong><br>
-                  <ng-container *ngFor = "let address of customerAddress">
-                  {{address.ADDRESS}}<br>
-                </ng-container>
+                  <strong class="text-inverse">{{customer ? customer.name : voucher.BASICBUYERNAME}}</strong><br>
+                  <strong class="text-inverse">{{customer ? "S/O " + customer.fatherName : ""}}</strong><br>
+                  <div *ngIf ="!address && voucher.ADDRESS_LIST">
+                     <ng-container  *ngFor = "let add of voucher.ADDRESS_LIST">
+                        {{add.ADDRESS}}<br>
+                     </ng-container>
+                  </div >
+                  <div *ngIf ="address">
+                     <ng-container>
+                        {{address.name}}, {{address.districtName}}<br>
+                     </ng-container>
+                  </div >
+                  
+                  
                </address>
             </div>
             <div class="invoice-date">

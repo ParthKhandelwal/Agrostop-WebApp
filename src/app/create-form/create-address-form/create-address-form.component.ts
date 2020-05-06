@@ -12,18 +12,7 @@ import { Address } from '../../Model/address';
 export class CreateAddressFormComponent implements OnInit {
 
 placeOfSupplies: string[]= [];
-address: Address = {
-  _id: "",
-  name : "",
-  districtName : "",
-  tehsilName : "",
-  stateName : "",
-  countryName : "",
-  noOfGovernmentLandRecords: 0,
-noOfPrivateLandRecords: 0,
-areaOfGovenmentLand : 0,
-  areaOfPrivateLand: 0
-};
+address: Address = new Address();
 
   constructor( @Inject(MAT_DIALOG_DATA) public data?: Address, private router? :Router, @Inject(ApiService) private apiService? : ApiService) {
     if(data != null){

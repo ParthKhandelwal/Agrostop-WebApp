@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ElementRef, ViewChild } from '@angular/core';
 import { VoucherService } from '../../shared/voucher.service';
 import { ApiService } from 'src/app/shared/api.service';
 import { Observable } from 'rxjs';
@@ -23,6 +23,9 @@ export class CreateOrderFormComponent implements OnInit {
   order:Order;
   godowns$: Observable<any>;
   item: OrderItem = new OrderItem();
+  @ViewChild('quantityField', { static: false }) quantityRef: ElementRef;
+  @ViewChild('invField', { static: false }) productRef: ElementRef;
+  @ViewChild('rateField', { static: false }) rateRef: ElementRef;
 
   constructor(public apiService?: ApiService) { }
 
@@ -91,7 +94,6 @@ export class CreateOrderFormComponent implements OnInit {
     this.order.itemList.push(this.item);
     this.item = new OrderItem();
     this.item.itemName = ""
-
   }
 
   deleteItem(i : number) {

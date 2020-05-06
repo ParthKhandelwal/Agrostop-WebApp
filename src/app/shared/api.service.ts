@@ -6,7 +6,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { User } from '../Model/user';
 import { CookieService } from 'ngx-cookie-service';
-import { StockItem, UpdateStockItemData, StockCheck, StockCheckItem } from '../Model/stock-item';
+import { StockItem, UpdateStockItemData, StockCheck, StockCheckItem, PackageRateItem } from '../Model/stock-item';
 import { UserLogin } from '../login-form/login-form.component';
 import { TaxDetails } from '../Model/tax-details';
 import { DatePipe } from '@angular/common';
@@ -30,11 +30,11 @@ export class ApiService {
     return this.httpClient.get<any>(this.BASE_URL + 'vouchers/getCompany?companyName=' + name);
   }
 
-  public WEB_SOCKET_URL = "https://agrostop-web-server.herokuapp.com"
-  private BASE_URL = "https://agrostop-web-server.herokuapp.com/api/";
+  //public WEB_SOCKET_URL = "https://agrostop-web-server.herokuapp.com"
+  //private BASE_URL = "https://agrostop-web-server.herokuapp.com/api/";
 
-  //private BASE_URL = "http://localhost:8081/api/";
-  //public WEB_SOCKET_URL = "http://localhost:8081";
+  private BASE_URL = "http://localhost:8081/api/";
+  public WEB_SOCKET_URL = "http://localhost:8081";
   //public TALLY_HELPER_URL = "http://localhost:8082";
 
   user: User;
@@ -230,6 +230,43 @@ export class ApiService {
 
   addAddress(address: Address): Observable<any> {
     return this.httpClient.post(this.BASE_URL + 'address/create', address);
+  }
+
+  saveChemicalGroup(item: any): Observable<any>{
+    return this.httpClient.post(this.BASE_URL + 'chemicalGroup/save', item);
+  }
+
+  getAllChemicalGroup(): Observable<any>{
+    return this.httpClient.get(this.BASE_URL + 'chemicalGroup/getAll');
+  }
+
+  deleteChemcialGroup(name: String): Observable<any>{
+    return this.httpClient.delete(this.BASE_URL + 'chemicalGroup/delete?id'+ name);
+  }
+
+  saveProductGroup(item: any): Observable<any>{
+    return this.httpClient.post(this.BASE_URL + 'productGroup/save', item);
+  }
+
+  getAllProductGroupId(): Observable<any>{
+    return this.httpClient.get(this.BASE_URL + 'productGroup/getAllId');
+  }
+
+  getAllProductGroup(): Observable<any>{
+    return this.httpClient.get(this.BASE_URL + 'productGroup/getAll');
+  }
+
+  getProductGroup(id: string): Observable<any>{
+    return this.httpClient.get(this.BASE_URL + 'productGroup/get?id='+id);
+  }
+
+  deleteProductGroup(name: String): Observable<any>{
+    return this.httpClient.delete(this.BASE_URL + 'productGroup/delete?id'+ name);
+  }
+
+
+  updatePriceForProductGroup(productId: string, list: PackageRateItem[]): Observable<any>{
+    return this.httpClient.post(this.BASE_URL+'productGroup/updatePrice?productId='+productId, list);
   }
 
   saveStockItem(item : any): Observable<any>{

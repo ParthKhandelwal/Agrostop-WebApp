@@ -91,6 +91,7 @@ export class StockCheckComponent implements OnInit {
 
 
   getItems(){
+    this.products = [];
     this.apiService.getStockSummary(this.currentCheck.godown, new Date(), new Date()).pipe(
       map((items) => items.map(
           (item) =>  new si(item.BATCHES.filter((i) => i.GODOWN === this.currentCheck.godown), item.ITEMNAME, item.GODOWN))

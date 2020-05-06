@@ -4,6 +4,8 @@ import { NgxIndexedDB } from 'ngx-indexed-db';
 import { User } from '../Model/user';
 import { VOUCHER } from '../Model/voucher';
 import { ApiService } from './api.service';
+import { Customer } from '../Model/customer';
+import { Address } from '../Model/address';
 
 
 
@@ -15,6 +17,7 @@ export class PosService {
   public itemPercent: number = 100;
   public ledgerPercent: number = 100;
   public customerPercent: number = 100;
+  public addressPercent: number = 100;
   public upSyncPercent: number = 100;
   user: User;
   databaseCreated: boolean = false;
@@ -31,7 +34,8 @@ export class PosService {
       let objectStore3 = evt.currentTarget.result.createObjectStore('customers', {keyPath: "id", autoIncrement: false, unique: true });
       let objectStore4 = evt.currentTarget.result.createObjectStore('Ledgers', {keyPath: "NAME",autoIncrement: false, unique: true });
       let objectStore5 = evt.currentTarget.result.createObjectStore('Batches', {keyPath: "id",autoIncrement: false, unique: true });
-     
+      let objectStore6 = evt.currentTarget.result.createObjectStore('Addresses', {keyPath: "id",autoIncrement: false, unique: true });
+
       //objectStore.createIndex('name', 'name', { unique: false });
       //objectStore.createIndex('email', 'email', { unique: true });
     })
@@ -44,7 +48,8 @@ export class PosService {
       let objectStore3 = evt.currentTarget.result.createObjectStore('customers', {keyPath: "id", autoIncrement: false, unique: true });
       let objectStore4 = evt.currentTarget.result.createObjectStore('Ledgers', {keyPath: "NAME",autoIncrement: false, unique: true });
       let objectStore5 = evt.currentTarget.result.createObjectStore('Batches', {keyPath: "id",autoIncrement: false, unique: true });
-     
+      let objectStore6 = evt.currentTarget.result.createObjectStore('Addresses', {keyPath: "id",autoIncrement: false, unique: true });
+
       //objectStore.createIndex('name', 'name', { unique: false });
       //objectStore.createIndex('email', 'email', { unique: true });
     })
@@ -55,6 +60,7 @@ export class PosService {
             && (this.batchPercent == 100)
             && (this.customerPercent == 100)
             && (this.ledgerPercent == 100)
+            && (this.addressPercent == 100)
   }
   
   upSyncingOver() : boolean{
@@ -76,6 +82,7 @@ export class PosService {
       await this.saveCustomers();
       this.db.clear("Ledgers")
       await this.saveLedgers();
+      await this.saveAddresses();
        
   }
 
@@ -85,6 +92,37 @@ export class PosService {
 
   async getCustomers():Promise<any[]>{
   return  await this.db.getAll("customers");
+  }
+
+  async getCustomer(id: string):Promise<Customer>{
+    return  await this.db.getByKey("customers", id);
+  }
+
+  async getAddress(id: string):Promise<Address>{
+    return  await this.db.getByKey("Addresses", id);
+  }
+
+
+  async saveAddresses(){
+    await this.apiService.getAddresses().subscribe(
+      async res => {
+        const length: number = res.length;
+        var index: number = 0;
+        for (let address of res){
+          console.log(address)
+           await this.db.update("Addresses", address).then(
+             res2 => {
+              index++;
+              this.addressPercent = Math.round((index/length) * 100);
+             }
+           );
+        }
+        
+      },
+      err => {
+        console.log(err);
+      }
+    )
   }
 
   async saveItems(){

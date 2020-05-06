@@ -98,6 +98,20 @@ export class DayBookComponent implements OnInit {
     
   }
 
+  getVoucherTotal(list){
+    console.log(list);
+    if (list instanceof Array){
+      var total: number = 0;
+      for (let item of list){
+        total = total + (item.AMOUNT < 0 ? item.AMOUNT : 0);
+      }
+      return total*(-1);
+    } else {
+      return list.AMOUNT < 0 ? list.AMOUNT : 0;
+    }
+    
+  }
+
 
   getTotal(voucher: VOUCHER): number {
     var total = this.getSubTotal(voucher);

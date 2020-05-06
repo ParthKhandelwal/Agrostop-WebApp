@@ -20,7 +20,7 @@
                                 <mat-form-field>
                                     <mat-label>Select a stock check</mat-label>
                                     
-                                    <mat-select [(ngModel)] = "currentCheck" required name = "voucherTypeSelect">
+                                    <mat-select [(ngModel)] = "currentCheck" required name = "voucherTypeSelect" (selectionChange)= "getItems();">
                                             <mat-option value = "">Not Applicable</mat-option>
                                             <ng-container *ngFor = 'let v of checks$ | async'>
                                                 <mat-option [value] = "v" >
@@ -106,7 +106,12 @@
     
     <div class="col" style="width: 80%; padding-left: 20px;">
         <div class="panel-body">
-            <table class="table table-striped table-bordered table-list" *ngIf = "currentCheck">
+            <div *ngIf = "currentCheck && !(this.products.length)">
+                <div style="vertical-align: middle; align-self: center;">
+                    <img src="assets/img/agrostop.gif" alt="Loading data..." width="100px" height="100px">
+                  </div>
+            </div>
+            <table class="table table-striped table-bordered table-list" *ngIf = "currentCheck && this.products.length">
                 <thead>
                     <tr>
                        

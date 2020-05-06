@@ -4,6 +4,7 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 import { VOUCHER } from '../../Model/voucher';
 import { ApiService } from 'src/app/shared/api.service';
 import { PosService } from 'src/app/shared/pos.service';
+import { Address } from 'src/app/Model/address';
 
 
 
@@ -16,7 +17,7 @@ export class InvoicePrintViewComponent implements OnInit {
 
   public voucher: VOUCHER;
   @Output("valueChanged") valueChanged = new EventEmitter();
-  @Input('customer') customer: Customer;
+  customer: Customer;
   uniqueHSN: PrintTaxItem[] = [];
 
   stockItems: any [] =[];
@@ -24,6 +25,8 @@ export class InvoicePrintViewComponent implements OnInit {
   items$: Promise<any[]>;
   customerAddress: any[] = [];
   date: Date;
+  address: Address;
+  
 
 
   constructor(@Inject(MAT_DIALOG_DATA) public data?: any,private apiService?: ApiService, private posService?: PosService) {
@@ -40,7 +43,15 @@ export class InvoicePrintViewComponent implements OnInit {
         this.company = this.posService.getCompany().COMPANY;
         this.customerAddress = this.voucher.ADDRESS_LIST.ADDRESS
         this.date = new Date(this.voucher.DATE);   
-        
+        this.posService.getCustomer(this.voucher.BASICBUYERNAME).then(
+          (res: Customer) => {this.customer = res
+          this.posService.getAddress(res.addressId).then(
+            add => {
+              this.address = add;
+            }
+          );
+          }
+        );
 
         this.posService.getItems().then((re: any[]) =>{
           for (let item of this.stockItems){

@@ -5,6 +5,7 @@ export class Address {
    tehsilName : string;
    stateName : string;
    countryName : string;
+   nearBranch: string;
    noOfGovernmentLandRecords: number;
  noOfPrivateLandRecords: number;
 areaOfGovenmentLand : number;

@@ -67,3 +67,41 @@ export class StockCheckItem{
 
   }
 }
+
+export class ProductGroup{
+  name: string;
+  description: string;
+  packaging: Package[];
+  image: string | ArrayBuffer;
+  companyName: string;
+  technicalSet: string[];
+  priorityLevel: number;
+
+
+  constructor(){
+    this.technicalSet = [];
+    this.packaging = [];
+  }
+}
+
+export class Package{
+  key: string;
+  item: string;
+  rateList: PackageRateItem[];
+  constructor(key: string, item: string){
+    this.key = key;
+    this.item = item;
+  }
+}
+
+export class PackageRateItem{
+  godownName: string;
+  rate: number;
+  amount: number;
+
+  constructor(godownName: string, rate: number, amount: number){
+    this.godownName = godownName;
+    this.rate = rate;
+    this.amount = amount;
+  }
+}
