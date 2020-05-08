@@ -34,7 +34,7 @@ export class PosService {
       let objectStore3 = evt.currentTarget.result.createObjectStore('customers', {keyPath: "id", autoIncrement: false, unique: true });
       let objectStore4 = evt.currentTarget.result.createObjectStore('Ledgers', {keyPath: "NAME",autoIncrement: false, unique: true });
       let objectStore5 = evt.currentTarget.result.createObjectStore('Batches', {keyPath: "id",autoIncrement: false, unique: true });
-      let objectStore6 = evt.currentTarget.result.createObjectStore('Addresses', {keyPath: "id",autoIncrement: false, unique: true });
+      let objectStore6 = evt.currentTarget.result.createObjectStore('Addresses', {    keyPath: "id",autoIncrement: false, unique: true });
 
       //objectStore.createIndex('name', 'name', { unique: false });
       //objectStore.createIndex('email', 'email', { unique: true });
@@ -48,7 +48,7 @@ export class PosService {
       let objectStore3 = evt.currentTarget.result.createObjectStore('customers', {keyPath: "id", autoIncrement: false, unique: true });
       let objectStore4 = evt.currentTarget.result.createObjectStore('Ledgers', {keyPath: "NAME",autoIncrement: false, unique: true });
       let objectStore5 = evt.currentTarget.result.createObjectStore('Batches', {keyPath: "id",autoIncrement: false, unique: true });
-      let objectStore6 = evt.currentTarget.result.createObjectStore('Addresses', {keyPath: "id",autoIncrement: false, unique: true });
+      let objectStore6 = evt.currentTarget.result.createObjectStore('Addresses', {    keyPath: "id",autoIncrement: false, unique: true });
 
       //objectStore.createIndex('name', 'name', { unique: false });
       //objectStore.createIndex('email', 'email', { unique: true });
@@ -61,30 +61,30 @@ export class PosService {
             && (this.customerPercent == 100)
             && (this.ledgerPercent == 100)
             && (this.addressPercent == 100)
-  }
+  }   
   
   upSyncingOver() : boolean{
     return (this.upSyncPercent == 100) 
            
   }
 
-  async enablePOSMode(){
+  enablePOSMode(){
   
       this.customerPercent = 0;
       this.batchPercent = 0;
       this.ledgerPercent = 0;
       this.itemPercent = 0;
-      this.db.clear("items");
+      this.db.clear("ite    ms");
       this.db.clear("Batches")
-      await this.saveCompany();
-      await this.saveItems();
+      this.saveCompany();
+      this.saveItems();
       this.db.clear("customers")
-      await this.saveCustomers();
+      this.saveCustomers();
       this.db.clear("Ledgers")
-      await this.saveLedgers();
-      await this.saveAddresses();
-       
-  }
+      this.saveLedgers();
+      this.saveAddresses();
+
+      }
 
   getItems(): Promise<any>{
   return  this.db.getAll("items");
@@ -126,58 +126,78 @@ export class PosService {
   }
 
   async saveItems(){
-    await this.apiService.getAllStockItemsForBilling().subscribe(
-       async (res: any[]) =>{
-          const len: number = res.length;
+    this.apiService.getStockItemFullObject().subscribe(
+      (res) => {
+        const len: number = res.length;
           var index: number = 0
           var batchIndex: number = 0
           for (let item of res){
-            
-          await this.apiService.getStockItem(item).subscribe(
-              async (result) => {
-                if ((result && result.ENVELOPE && result.ENVELOPE.BODY && result.ENVELOPE.BODY.DATA
-                  && result.ENVELOPE.BODY.DATA.TALLYMESSAGE && result.ENVELOPE.BODY.DATA.TALLYMESSAGE.STOCKITEM)){
-                    await this.db.update("items",result.ENVELOPE.BODY.DATA.TALLYMESSAGE.STOCKITEM).then(
-                      res => {
-                        index++;
-                        this.itemPercent = Math.round((index/len) * 100);
-                      }
-                    )
-                }
+            this.db.update("items",item.ENVELOPE.BODY.DATA.TALLYMESSAGE.STOCKITEM).then(
+              res => {
+                index++;
+                this.itemPercent = Math.round((index/len) * 100);
               }
             )
-            this.apiService.getProductBatch(item).subscribe(
-                (r:any[]) => {
-                 if (r != null && r instanceof Array){
-                   const length: number = res.length;
-                   var index: number = 0
-                   for (let re of r){
-                     re.productId = item;
-                      this.db.update("Batches",re).then(
-                        res => {
-                          index++
-                          batchIndex = index/length;
-                          this.batchPercent = Math.round((batchIndex/len)*100);
-                        }
-                      );
-                     
-                   }
-                 }
-                
-               },
-               e => {
-                
-                 console.log(e);
-               }
-             );
-            
           }
-          
+        
       },
       err =>{
         console.log(err);
       }
     )
+
+    // await this.apiService.getAllStockItemsForBilling().subscribe(
+    //    async (res: any[]) =>{
+    //       const len: number = res.length;
+    //       var index: number = 0
+    //       var batchIndex: number = 0
+    //       for (let item of res){
+            
+    //       await this.apiService.getStockItem(item).subscribe(
+    //           async (result) => {
+    //             if ((result && result.ENVELOPE && result.ENVELOPE.BODY && result.ENVELOPE.BODY.DATA
+    //               && result.ENVELOPE.BODY.DATA.TALLYMESSAGE && result.ENVELOPE.BODY.DATA.TALLYMESSAGE.STOCKITEM)){
+    //                 await this.db.update("items",result.ENVELOPE.BODY.DATA.TALLYMESSAGE.STOCKITEM).then(
+    //                   res => {
+    //                     index++;
+    //                     this.itemPercent = Math.round((index/len) * 100);
+    //                   }
+    //                 )
+    //             }
+    //           }
+    //         )
+    //         this.apiService.getProductBatch(item).subscribe(
+    //             (r:any[]) => {
+    //              if (r != null && r instanceof Array){
+    //                const length: number = res.length;
+    //                var index: number = 0
+    //                for (let re of r){
+    //                  re.productId = item;
+    //                   this.db.update("Batches",re).then(
+    //                     res => {
+    //                       index++
+    //                       batchIndex = index/length;
+    //                       this.batchPercent = Math.round((batchIndex/len)*100);
+    //                     }
+    //                   );
+                     
+    //                }
+    //              }
+                
+    //            },
+    //            e => {
+                
+    //              console.log(e);
+    //            }
+    //          );
+            
+    //       }
+          
+    //   },
+    //   err =>{
+    //     console.log(err);
+    //   }
+    // )
   }
 
  async getAllStockItemsForBilling(): Promise<any[]>{
@@ -219,15 +239,15 @@ export class PosService {
     const v  = this.getPOSClass();
     if (v != null && v["LEDGERENTRIESLIST.LIST"] instanceof Array){
       for (let ledger of v["LEDGERENTRIESLIST.LIST"]){
-        if (ledger.NAME){
-          console.log(ledger.NAME.content);
+        if (ledger.NAME){   
+          console.log(ledger    .NAME.content);
         this.apiService.getLedger(ledger.NAME.content).subscribe(
-          res1 =>{
+          res1 =>{    
 
             this.db.update("Ledgers", res1.ENVELOPE.BODY.DATA.TALLYMESSAGE.LEDGER);
           },
-          err => {
-            console.log(err);
+          err => {    
+                console.log(err);
           });
   
         }
@@ -247,35 +267,58 @@ export class PosService {
   }
 
     saveLedgers(){
-    this.apiService.getLedgerByGroup("Sundry Debtors").subscribe(
-      (res: any[]) =>{
-        const len: number = res.length;
-        var index: number = 0;
-        for (let item of res){
-          this.apiService.getLedger(item).subscribe(
-            r => {
-              if (r.ENVELOPE != null){
+      this.apiService.getLedgerFullObject("Sundry Debtors").subscribe(
+        (res) => {
+          const len: number = res.length;
+          var index: number = 0;
+          for (let r of res){
+            if (r.ENVELOPE != null){    
               var re = r.ENVELOPE.BODY.DATA.TALLYMESSAGE.LEDGER;
                this.db.update("Ledgers", re).then(
                  res => {
-                   index++;
+                      index++;  
                    this.ledgerPercent = Math.round((index/len)*100)
                  }
-               );
+               );   
               }
-            },
-            e => {
-              console.log(e);
-            }
-          );
+          }
+        },
+        (err) => {
+          console.log(err)
         }
+      );
+
+
+
+    // this.apiService.getLedgerByGroup("Sundry Debtors").subscribe(
+    //   (res: any[]) =>{
+    //     const len: number = res.length;
+    //     var index: number = 0;
+    //     for (let item of res){
+    //       this.apiService.getLedger(item).subscribe(
+    //         r => {
+    //           if (r.ENVELOPE != null){    
+    //           var re = r.ENVELOPE.BODY.DATA.TALLYMESSAGE.LEDGER;
+    //            this.db.update("Ledgers", re).then(
+    //              res => {
+    //                   index++;  
+    //                this.ledgerPercent = Math.round((index/len)*100)
+    //              }
+    //            );   
+    //           }
+    //         },
+    //         e => {
+    //           console.log(e);
+    //         }
+    //       );
+    //     }
         
           
-      },
-      err =>{
-        console.log(err);
-      }
-    )
+    //   },
+    //   err =>{
+    //     console.log(err);
+    //   }
+    // )
   }
 
    async saveLedger(str: string): Promise<any>{
@@ -285,7 +328,7 @@ export class PosService {
               var re = r.ENVELOPE.BODY.DATA.TALLYMESSAGE.LEDGER;
               this.db.update("Ledgers", re);
               return re;
-            },
+               },   
             e => {
               console.log(e);
             }
@@ -319,14 +362,14 @@ export class PosService {
 
   getLedger(name : string): Promise<any>{
     return this.db.getByKey("Ledgers", name);
-  }
+  }   
 
 
   getLedgers(): Promise<any[]>{
     return this.db.getAll("Ledgers");
-  }
+  }   
 
-  addCustomer(cus: any){
+      addCustomer(cus: any){
     this.db.update("customers", cus);
   }
 

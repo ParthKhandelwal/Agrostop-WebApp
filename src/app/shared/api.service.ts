@@ -30,11 +30,11 @@ export class ApiService {
     return this.httpClient.get<any>(this.BASE_URL + 'vouchers/getCompany?companyName=' + name);
   }
 
-  public WEB_SOCKET_URL = "https://agrostop-web-server.herokuapp.com"
-  private BASE_URL = "https://agrostop-web-server.herokuapp.com/api/";
+  //public WEB_SOCKET_URL = "https://agrostop-web-server.herokuapp.com"
+  //private BASE_URL = "https://agrostop-web-server.herokuapp.com/api/";
 
-  //private BASE_URL = "http://localhost:8081/api/";
-  //public WEB_SOCKET_URL = "http://localhost:8081";
+  private BASE_URL = "http://localhost:8081/api/";
+  public WEB_SOCKET_URL = "http://localhost:8081";
   //public TALLY_HELPER_URL = "http://localhost:8082";
 
   user: User;
@@ -71,6 +71,10 @@ export class ApiService {
     return this.httpClient.post<any>(this.BASE_URL + 'stockItem/stock-check/save', check);
 
   }
+
+getStockItemFullObject():Observable<any>{
+  return this.httpClient.get<any>(this.BASE_URL + 'stockItem/getAllStockItems');
+}
 
   saveStockCheckItem(id: string,item : StockCheckItem) : Observable<any>{
     return this.httpClient.post<any>(this.BASE_URL + 'stockItem/stock-check/saveItem?id=' + id, item);
@@ -173,6 +177,10 @@ export class ApiService {
 
   getCashLedgers(): Observable<any> {
     return this.httpClient.get(this.BASE_URL + 'ledger/getCashLedgerNames');
+  }
+
+  getLedgerFullObject(id: String): Observable<any>{
+    return this.httpClient.get(this.BASE_URL + 'ledger/getLedgerFullObject?parent='+ id);
   }
 
   getSalesVoucherTypeName(): Observable<any> {
