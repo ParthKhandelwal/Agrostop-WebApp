@@ -63,31 +63,36 @@ export class DayBookComponent implements OnInit {
 
     this.apiService.getVouchers(this.fromDate.value, this.toDate.value).subscribe(
         (res: any) =>{
-          
-          this.masterIds = res.VOUCHERS.VOUCHER;
-          console.log(res);
-          if (this.masterIds == null){
+          if (res != null){
+            this.masterIds = res.VOUCHERS.VOUCHER;
+            console.log(res);
+            if (this.masterIds == null){
+              this.loading = false;
+              this.voucherPercent = 100;
+            }else {
+            const length: number = this.masterIds.length;
+            var index: number = 0;
+            for (let item of this.masterIds){
+              this.apiService.getVoucher(item.MASTERID).subscribe(
+                res => {
+                  this.loading = false;
+                  this.vouchers.push(res)
+                  this.filteredArray.push(res);
+                  index++;
+                  this.voucherPercent = Math.round((index/length)*100);
+  
+                },
+                err => {
+                  console.log(err);
+                }
+              )
+            }
+          }
+          } else {
             this.loading = false;
             this.voucherPercent = 100;
-          }else {
-          const length: number = this.masterIds.length;
-          var index: number = 0;
-          for (let item of this.masterIds){
-            this.apiService.getVoucher(item.MASTERID).subscribe(
-              res => {
-                this.loading = false;
-                this.vouchers.push(res)
-                this.filteredArray.push(res);
-                index++;
-                this.voucherPercent = Math.round((index/length)*100);
-
-              },
-              err => {
-                console.log(err);
-              }
-            )
           }
-        }
+          
         },
         err => {
           console.log(err);

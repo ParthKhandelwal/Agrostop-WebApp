@@ -22,6 +22,10 @@ export class ApiService {
   getProductBatch(product: string): Observable<any[]> {
     return this.httpClient.get<any[]>(this.BASE_URL + 'batch/?id=' + product);
   }
+
+  getAllBatches():Observable<any[]>{
+    return this.httpClient.get<any[]>(this.BASE_URL + 'batch/getAllBatches');
+  }
   getLedger(ledgerEntry: string): Observable<any> {
     return this.httpClient.get<any>(this.BASE_URL + 'ledger/?id=' + ledgerEntry);
     }

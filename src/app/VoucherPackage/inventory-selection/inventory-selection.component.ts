@@ -53,7 +53,7 @@ export class InventorySelectionComponent implements OnInit {
 
     this.posService.getProductBatch().then(
       res => {
-        
+        console.log(res);
         this.batches = res;
       }
     );
@@ -82,7 +82,9 @@ export class InventorySelectionComponent implements OnInit {
       this.valueChanged.emit("true");
       return;
     }
-    this.batchCurrent = this.batches.filter(option => option.productId === value);
+    console.log(value);
+    this.batchCurrent = this.batches.filter(option => option.productId == value);
+    console.log(this.batchCurrent);
     this.quantityRef.nativeElement.focus();
   }
 
@@ -120,6 +122,7 @@ export class InventorySelectionComponent implements OnInit {
   //HANDLE VOUCHER UPDATE
 
   validateInventoryEntry(){
+        console.log(this.batchCurrent);
         if (this.productControl.value == null){
           this.productRef.nativeElement.focus();
           return;

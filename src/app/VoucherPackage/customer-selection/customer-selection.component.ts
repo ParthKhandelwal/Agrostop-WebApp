@@ -74,7 +74,8 @@ export class CustomerSelectionComponent implements OnInit {
 
   private customer_filter(value: string): Customer[] {
     const filterValue = value.toString().toLowerCase();
-    return this.customers.filter(option => option.phoneNumber.toLowerCase().indexOf(filterValue) === 0);
+    return this.customers.filter(option => 
+      option.phoneNumber.toLowerCase().indexOf(filterValue) === 0);
   }
 
   validateCustomer() {

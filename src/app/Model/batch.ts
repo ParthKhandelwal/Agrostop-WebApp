@@ -1,13 +1,13 @@
 export class Batch {
-  name: string;
-  _id: string;
+  NAME: string;
+  BATHCID: string;
   productId: string;
-  closingBalance: number;
-  expiryDate: Date;
+  CLOSINGBALANCE: number;
+  EXPIRYDATE: Date;
 
   constructor(name: string, expiryDate: Date){
-  this.name = name;
-  this.expiryDate = expiryDate;
+  this.NAME = name;
+  this.EXPIRYDATE = expiryDate;
   }
   
 }

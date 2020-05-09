@@ -152,8 +152,8 @@ export class EXPIRYPERIOD {
       public set(batchId: Batch, godown: string) {
         this.GODOWNNAME = godown;
         if (batchId) {
-          this.BATCHNAME = batchId.name;
-          this.EXPIRYPERIOD = new EXPIRYPERIOD(batchId.expiryDate);
+          this.BATCHNAME = batchId.NAME;
+          this.EXPIRYPERIOD = new EXPIRYPERIOD(batchId.EXPIRYDATE);
         } else {
           this.BATCHNAME = "";
           this.EXPIRYPERIOD = null;
@@ -161,8 +161,8 @@ export class EXPIRYPERIOD {
       }
 
       public changeBatch(batch: Batch) {
-        this.BATCHNAME = batch.name;
-        this.EXPIRYPERIOD = new EXPIRYPERIOD(batch.expiryDate);
+        this.BATCHNAME = batch.NAME;
+        this.EXPIRYPERIOD = new EXPIRYPERIOD(batch.EXPIRYDATE);
       }
 
       setexpiryDate(expiryDate: Date) {
