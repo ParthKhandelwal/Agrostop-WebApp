@@ -37,11 +37,11 @@ export class ApiService {
   //public WEB_SOCKET_URL = "https://agrostop-web-server.herokuapp.com"
   //private BASE_URL = "https://agrostop-web-server.herokuapp.com/api/";
 
-  //private BASE_URL = "http://13.235.37.79/api/";
-  //public WEB_SOCKET_URL = "http://13.235.37.79";
+  private BASE_URL = "http://13.235.37.79/api/";
+  public WEB_SOCKET_URL = "http://13.235.37.79";
 
-  private BASE_URL = "http://localhost:5000/api/";
-  public WEB_SOCKET_URL = "http://localhost:5000";
+  //private BASE_URL = "http://localhost:5000/api/";
+  //public WEB_SOCKET_URL = "http://localhost:5000";
   //public TALLY_HELPER_URL = "http://localhost:8082";
 
   user: User;
