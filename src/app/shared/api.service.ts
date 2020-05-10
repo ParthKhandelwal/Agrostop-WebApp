@@ -37,11 +37,11 @@ export class ApiService {
   //public WEB_SOCKET_URL = "https://agrostop-web-server.herokuapp.com"
   //private BASE_URL = "https://agrostop-web-server.herokuapp.com/api/";
 
-  private BASE_URL = "http://13.235.37.79/api/";
-  public WEB_SOCKET_URL = "http://13.235.37.79";
+  //private BASE_URL = "http://13.235.37.79/api/";
+  //public WEB_SOCKET_URL = "http://13.235.37.79";
 
-  //private BASE_URL = "http://localhost:8081/api/";
-  //public WEB_SOCKET_URL = "http://localhost:8081";
+  private BASE_URL = "http://localhost:5000/api/";
+  public WEB_SOCKET_URL = "http://localhost:5000";
   //public TALLY_HELPER_URL = "http://localhost:8082";
 
   user: User;
@@ -79,8 +79,19 @@ export class ApiService {
 
   }
 
-getStockItemFullObject():Observable<any>{
-  return this.httpClient.get<any>(this.BASE_URL + 'stockItem/getAllStockItems');
+
+  createRequestForStockItems():Observable<any>{
+return   this.httpClient.get<any>(this.BASE_URL + 'stockItem/createRequest');
+  }
+  
+
+getStockItemFullObject(res: string):Observable<any>{
+   
+  return this.httpClient.get<any>(this.BASE_URL + 'stockItem/getAllStockItems?requestId='+res);
+}
+
+getStockItemGroupsByName(): Observable<any[]>{
+  return this.httpClient.get<any>(this.BASE_URL + "stockGroup/getNames");
 }
 
   saveStockCheckItem(id: string,item : StockCheckItem) : Observable<any>{

@@ -126,25 +126,38 @@ export class PosService {
   }
 
   async saveItems(){
-    this.apiService.getStockItemFullObject().subscribe(
-      (res) => {
-        const len: number = res.length;
-          var index: number = 0
-          var batchIndex: number = 0
-          for (let item of res){
-            this.db.update("items",item.ENVELOPE.BODY.DATA.TALLYMESSAGE.STOCKITEM).then(
-              res => {
-                index++;
-                this.itemPercent = Math.round((index/len) * 100);
-              }
-            )
-          }
+    var len: number = 0
+    var index: number = 0
+    this.apiService.createRequestForStockItems().subscribe(
+      response => {
+        console.log(response);
+        setTimeout(() => 
+        {
+          this.apiService.getStockItemFullObject(response.guid).subscribe(
+            (res) => {
+                len = len+res.length;
+                for (let item of res){
+                  this.db.update("items",item.ENVELOPE.BODY.DATA.TALLYMESSAGE.STOCKITEM).then(
+                    res => {
+                      index++;
+                      this.itemPercent = Math.round((index/len) * 100);
+                    }
+                  )
+                }
+              
+            },
+            err =>{
+              console.log(err);
+            }
+          )
+        },
+        10000);
+          
         
       },
-      err =>{
-        console.log(err);
-      }
+      err => console.log(err)
     )
+    
 
     this.apiService.getAllBatches().subscribe(
       res => {
