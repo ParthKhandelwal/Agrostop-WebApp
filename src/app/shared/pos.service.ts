@@ -151,7 +151,7 @@ export class PosService {
             }
           )
         },
-        10000);
+        30000);
           
         
       },
