@@ -122,8 +122,7 @@ export class InventorySelectionComponent implements OnInit {
   //HANDLE VOUCHER UPDATE
 
   validateInventoryEntry(){
-        console.log(this.batchCurrent);
-        if (this.productControl.value == null){
+        if (this.productControl.value == null || this.productControl.value ==""){
           this.productRef.nativeElement.focus();
           return;
         }
@@ -133,7 +132,7 @@ export class InventorySelectionComponent implements OnInit {
           return;
         }
         if (this.batchControl.value == null){
-          this.batchRef.focus();
+          alert("Please select a batch");
           return;
         }
         if (this.qtyControl.value == null || this.qtyControl.value == 0){
@@ -147,39 +146,23 @@ export class InventorySelectionComponent implements OnInit {
         inventoryEntry.BILLEDQTY = this.qtyControl.value;
         inventoryEntry.ACTUALQTY = inventoryEntry.BILLEDQTY;
         inventoryEntry.ISDEEMEDPOSITIVE = "No";
-        
-        if (res["FULLPRICELIST.LIST"] instanceof Array){
-            var found: boolean = false;
-            for (let item of res["FULLPRICELIST.LIST"]){
-              console.log(this.voucher.PRICELEVEL);
-              if (item.PRICELEVEL.content == this.voucher.PRICELEVEL){
-                found = true;
-                console.log("price list found")
-                if (item["PRICELEVELLIST.LIST"].RATE != null){
-                let temp:string = item["PRICELEVELLIST.LIST"].RATE.content;
-                temp = temp.replace(/\//g, "");
-                temp = temp.replace(/[^\d.-]/g, "");
-                console.log(temp);
-                inventoryEntry.RATE = +(temp);
-                break;
-                }else {
-                  
-                  alert(res.NAME + "does not has a price defined for your current price list. " +
-                  "Try changing the pricelist or contact your administrator.");
-                  this.renew();
-                }
-              }
-            }
-            
+        var rateObject = this.getRate(res);
+        if (rateObject.exists){
+          inventoryEntry.RATE = rateObject.rate;
+        }else {
+          alert("There is no price set for this item. Try changing price list or contact administrator.")
+          this.renew();
+          return;
         }
         
+        console.log(this.batchControl.value);
         inventoryEntry.BATCHALLOCATIONS_LIST = new BATCHALLOCATIONSLIST();
-        inventoryEntry.BATCHALLOCATIONS_LIST.BATCHNAME = this.batchControl.value.name;
+        inventoryEntry.BATCHALLOCATIONS_LIST.BATCHNAME = this.batchControl.value.NAME;
         inventoryEntry.BATCHALLOCATIONS_LIST.GODOWNNAME = this.posService.getGodown();
         inventoryEntry.BATCHALLOCATIONS_LIST.BILLEDQTY = inventoryEntry.BILLEDQTY;
         inventoryEntry.BATCHALLOCATIONS_LIST.ACTUALQTY = inventoryEntry.ACTUALQTY;
         inventoryEntry.BATCHALLOCATIONS_LIST.AMOUNT = inventoryEntry.RATE * inventoryEntry.BILLEDQTY;
-        inventoryEntry.BATCHALLOCATIONS_LIST.EXPIRYPERIOD = new EXPIRYPERIOD(this.batchControl.value.expiryDate)
+        inventoryEntry.BATCHALLOCATIONS_LIST.EXPIRYPERIOD = new EXPIRYPERIOD(this.batchControl.value.EXPIRYPERIOD)
         
 
         inventoryEntry.AMOUNT = inventoryEntry.RATE * inventoryEntry.BILLEDQTY;
@@ -205,18 +188,52 @@ export class InventorySelectionComponent implements OnInit {
   }
 
   renew(){
+    this.productRef.nativeElement.focus();
     this.productControl.setValue("");
-    this.batchControl.setValue("");
     this.qtyControl.setValue(1);
-  
     this.batchCurrent = [];
-    this.productRef.nativeElement.focus(); 
+  }
+
+  getRate(res: any){
+    var returnObject = {rate : 0, exists: false}
+    var tempDate: Date = null;
+    if (res["FULLPRICELIST.LIST"] instanceof Array){
+      for (let item of res["FULLPRICELIST.LIST"]){
+        console.log(this.voucher.PRICELEVEL);
+        if (item.PRICELEVEL.content == this.voucher.PRICELEVEL && item["PRICELEVELLIST.LIST"].RATE != null){
+     
+          if(!tempDate || tempDate< new Date(item["PRICELEVELLIST.LIST"].DATE.content)){
+            
+              returnObject.exists = true;
+              tempDate = new Date(item["PRICELEVELLIST.LIST"].DATE.content);
+              let temp:string = item["PRICELEVELLIST.LIST"].RATE.content;
+              returnObject.rate = +this.getNumbers(temp);
+            
+          }
+        }
+      }
+      
+  } else {
+    if (res && res["FULLPRICELIST.LIST"] && res["FULLPRICELIST.LIST"].PRICELEVEL
+    && res["FULLPRICELIST.LIST"].PRICELEVEL.content == this.voucher.PRICELEVEL){
+
+      console.log("price list found")
+      if (res["FULLPRICELIST.LIST"]["PRICELEVELLIST.LIST"].RATE != null){
+      let temp:string = res["FULLPRICELIST.LIST"]["PRICELEVELLIST.LIST"].RATE.content;
+        returnObject.exists = true;
+      returnObject.rate =  +this.getNumbers(temp);
+      }
+  }
+}
+ return returnObject;
   }
 
   getNumbers(temp: string): number{
+    
     var returnNumber;
     returnNumber = temp.replace(/\//g, "");
     returnNumber = returnNumber.replace(/[^\d.-]/g, "");
+    console.log(returnNumber);
     return returnNumber;
   }
 

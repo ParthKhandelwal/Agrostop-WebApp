@@ -89,12 +89,7 @@ The above copyright notice and this permission notice shall be included in all c
               <p>Dashboard</p>
             </a>
           </li>
-          <li [ngClass]="url == 'customers' ? 'nav-item active': 'nav-item'">
-            <a class="nav-link" href="/customers">
-              <i class="material-icons">content_paste</i>
-              <p>Customer</p>
-            </a>
-          </li>
+          
           <li [ngClass]="url == 'sales' ? 'nav-item active': 'nav-item'">
             <a class="nav-link" href="/sales/day-book">
               <i class="material-icons">library_books</i>
@@ -113,14 +108,9 @@ The above copyright notice and this permission notice shall be included in all c
               <p>Voucher</p>
             </a>
           </li>
+          
           <li [ngClass]="url == 'products' ? 'nav-item active': 'nav-item'">
-            <a class="nav-link" href="/products">
-              <i class="material-icons">location_ons</i>
-              <p>Products</p>
-            </a>
-          </li>
-          <li [ngClass]="url == 'products' ? 'nav-item active': 'nav-item'">
-            <a class="nav-link" href="/products/stock-check">
+            <a class="nav-link" href="/stock-check">
               <i class="material-icons">location_ons</i>
               <p>Stock Check</p>
             </a>
@@ -132,12 +122,7 @@ The above copyright notice and this permission notice shall be included in all c
             </a>
           </li>
           
-          <li class="nav-item ">
-            <a class="nav-link" href="complaints">
-              <i class="material-icons">notifications</i>
-              <p>Notifications</p>
-            </a>
-          </li>
+          
         </ul>
       </div>
 

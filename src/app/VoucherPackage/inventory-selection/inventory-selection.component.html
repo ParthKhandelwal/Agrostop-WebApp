@@ -79,15 +79,17 @@
 
               <td>
                 <mat-form-field style="width: 50px;">
-                  <input #quantityField (keydown.enter)= "validateQty(); false" type="number" placeholder="Enter qty" aria-label="Quantity" matInput 
+                  <input #quantityField (keydown.enter)= "validateQty(); false" type="number" 
+                  [placeholder]="productControl.value && productControl.value.BASEUNITS ? productControl.value.BASEUNITS.content : 'Quantity'" aria-label="Quantity" matInput 
                   [formControl] = "qtyControl">
                 </mat-form-field>
+              
               </td>
 
               <td>
 
                 <mat-form-field class="example-full-width" style="width: 100px;">
-                  <mat-select [formControl] = "batchControl" #batchField (selectionChange) = "validateInventoryEntry()" aria-placeholder="batch">
+                  <mat-select [formControl] = "batchControl" #batchField (selectionChange) = "validateInventoryEntry();false" aria-placeholder="batch">
                     
                     <mat-option *ngFor="let option of batchCurrent" [value]="option">
                       <tr>

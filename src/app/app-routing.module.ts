@@ -92,9 +92,16 @@ const routes: Routes = [
       {path: 'product-list', component: ProductListViewComponent},
       {path: 'expired-batches', component: ExpiredProductsComponent},
       {path: 'tax-details', component: TaxDetailsTableComponent},
-      {path: 'stock-check', component: StockCheckComponent}
+  
     ]
   },
+  {
+  path: "stock-check",
+    component: StockCheckComponent,
+    canActivate: [AuthGuard],
+    data: { roles: ["Admin", "Company User"] } 
+  },
+
   {
     path: "sales",
     component: SalesComponent,

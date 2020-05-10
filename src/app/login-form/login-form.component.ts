@@ -16,11 +16,12 @@ export class LoginFormComponent implements OnInit {
     username: '',
     password: ''
   };
+  invalidPassword: boolean =false;
 
   loading = false;
   submitted = false;
   returnUrl: string;
-  error = '';
+
   constructor(private apiService?: ApiService, private router?:Router, private cookie?: CookieService,
     private authenticationService?: AuthenticationService, private route?: ActivatedRoute,) {
     if (this.authenticationService.currentUser) {
@@ -42,12 +43,16 @@ export class LoginFormComponent implements OnInit {
       .subscribe(
         data => {
           console.log(data);
+          this.invalidPassword = false;
           this.router.navigateByUrl("/home");
         },
         error => {
-          this.error = error;
+          if (error.status == 401){
+            this.invalidPassword = true;
+         
+          }
+          console.log(error); 
           this.loading = false;
-          this.router.navigateByUrl("/login");
         });
   }
   

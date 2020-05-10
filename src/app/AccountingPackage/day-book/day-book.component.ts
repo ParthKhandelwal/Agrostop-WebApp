@@ -35,6 +35,7 @@ export class DayBookComponent implements OnInit {
   filteredArray : any[] =[]
   masterIds: any[] = [];
   voucherPercent: number = 100;
+  cacheVouchers: any[] = [];
 
   filterField: any[] = [
     "Voucher Type",
@@ -63,31 +64,15 @@ export class DayBookComponent implements OnInit {
 
     this.apiService.getVouchers(this.fromDate.value, this.toDate.value).subscribe(
         (res: any) =>{
+          
           if (res != null){
-            this.masterIds = res.VOUCHERS.VOUCHER;
-            console.log(res);
-            if (this.masterIds == null){
-              this.loading = false;
-              this.voucherPercent = 100;
-            }else {
-            const length: number = this.masterIds.length;
-            var index: number = 0;
-            for (let item of this.masterIds){
-              this.apiService.getVoucher(item.MASTERID).subscribe(
-                res => {
-                  this.loading = false;
-                  this.vouchers.push(res)
-                  this.filteredArray.push(res);
-                  index++;
-                  this.voucherPercent = Math.round((index/length)*100);
-  
-                },
-                err => {
-                  console.log(err);
-                }
-              )
-            }
-          }
+            this.vouchers = res.VOUCHER;
+            
+           
+            this.filter();
+            console.log(this.filteredArray);
+            this.loading = false;
+            this.voucherPercent = 100;
           } else {
             this.loading = false;
             this.voucherPercent = 100;
@@ -99,20 +84,31 @@ export class DayBookComponent implements OnInit {
         }
       )
     
+      this.posService.openDatabase().then(
+        res =>{
+          this.posService.getAllCacheVouchers().then(
+            (res) => {
+              this.cacheVouchers = res;
+              console.log(res);
+            }
+          );
+         
+        }
+      );
      
     
   }
 
   getVoucherTotal(list){
-    console.log(list);
+  
     if (list instanceof Array){
       var total: number = 0;
       for (let item of list){
-        total = total + (item.AMOUNT < 0 ? item.AMOUNT : 0);
+        total = total + (item.ISDEEMEDPOSITIVE == "Yes" ? (item.AMOUNT) : 0);
       }
       return total*(-1);
     } else {
-      return list.AMOUNT < 0 ? list.AMOUNT : 0;
+      return list.ISDEEMEDPOSITIVE == "Yes" ? (list.AMOUNT) : 0;
     }
     
   }
@@ -121,10 +117,10 @@ export class DayBookComponent implements OnInit {
   getTotal(voucher: VOUCHER): number {
     var total = this.getSubTotal(voucher);
     var array:LEDGERENTRIESLIST[] = [];
-    if (voucher["LEDGERENTRIES.LIST"] instanceof Array){
-      array = voucher["LEDGERENTRIES.LIST"];
+    if (voucher["LEDGERENTRIES_LIST"] instanceof Array){
+      array = voucher["LEDGERENTRIES_LIST"];
     } else {
-      array.push(voucher["LEDGERENTRIES.LIST"]);
+      array.push(voucher["LEDGERENTRIES_LIST"]);
     }
     for (let item of array) {
       if (item.AMOUNT > 0) {
@@ -137,10 +133,10 @@ export class DayBookComponent implements OnInit {
   getSubTotal(voucher:VOUCHER){
     var total = 0;
     var array:ALLINVENTORYENTRIESLIST[] = [];
-    if (voucher["ALLINVENTORYENTRIES.LIST"] instanceof Array){
-      array = voucher["ALLINVENTORYENTRIES.LIST"];
+    if (voucher["ALLINVENTORYENTRIES_LIST"] instanceof Array){
+      array = voucher["ALLINVENTORYENTRIES_LIST"];
     } else {
-      array.push(voucher["ALLINVENTORYENTRIES.LIST"]);
+      array.push(voucher["ALLINVENTORYENTRIES_LIST"]);
     }
     for (let item of array) {
       total = total + item.AMOUNT;
@@ -186,7 +182,7 @@ export class DayBookComponent implements OnInit {
           }
           
         }else {
-          return false;
+          return true;
         }
         
       }

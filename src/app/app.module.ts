@@ -84,6 +84,7 @@ import { UploadAddressesComponent } from './CustomerPackage/upload-addresses/upl
 import {MatTabsModule} from '@angular/material/tabs';
 import { PapaParseModule } from 'ngx-papaparse';
 import {NgxImageCompressService} from 'ngx-image-compress';
+import { ProcessOrderFormComponent } from './create-form/process-order-form/process-order-form.component';
 
 @NgModule({
   declarations: [
@@ -138,7 +139,8 @@ import {NgxImageCompressService} from 'ngx-image-compress';
     PaymentVoucherWizardComponent,
     ReceiptVoucherWizardComponent,
     CashBookComponent,
-    UploadAddressesComponent
+    UploadAddressesComponent,
+    ProcessOrderFormComponent
   ],
   imports: [
     BrowserAnimationsModule,

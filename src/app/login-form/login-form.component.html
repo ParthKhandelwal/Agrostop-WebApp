@@ -1,65 +1,9 @@
-<!--div-- class="limiter">
-  <div class="container-login100">
-    <div class="wrap-login100 p-t-85 p-b-20">
-      <form class="login100-form validate-form"
-            data-type="default" #f='ngForm' (submit)="f.form.valid && validate()" accept-charset="UTF-8" role="form">
-        <span class="login100-form-title p-b-70">
-          Welcome
-        </span>
-        <span class="login100-form-avatar">
-          <img src="images/avatar-01.jpg" alt="AVATAR">
-        </span>
 
-        <div class="wrap-input100 validate-input m-t-85 m-b-35" data-validate="Enter username">
-          <input class="input100" type="text" name="username"
-                 data-type="default"
-               [(ngModel)]="user.username"
-                required
-               #username='ngModel' [ngClass]="{'is-invalid': f.submitted && username.invalid}">
-          <span class="focus-input100" data-placeholder="Username"></span>
-        </div>
-
-        <div class="wrap-input100 validate-input m-b-50" data-validate="Enter password">
-          <input class="input100" type="password" name="pass"
-                 data-type="default" [(ngModel)]="user.password" value=""
-               required
-               #password='ngModel' [ngClass]="{'is-invalid': f.submitted && password.invalid}">
-          <span class="focus-input100" data-placeholder="Password"></span>
-        </div>
-
-        <div class="container-login100-form-btn">
-          <button class="login100-form-btn" type="submit">
-            Login
-          </button>
-        </div>
-
-        <ul class="login-more p-t-190">
-          <li class="m-b-8">
-            <span class="txt1">
-              Forgot
-            </span>
-
-            <a href="#" class="txt2">
-              Username / Password?
-            </a>
-          </li>
-
-          <li>
-            <span class="txt1">
-              Don’t have an account?
-            </span>
-
-            <a href="#" class="txt2">
-              Sign up
-            </a>
-          </li>
-        </ul>
-      </form>
-    </div>
+  
+  <div *ngIf= 'loading'>
+    loading...
   </div>
-</!--div-->
-
-  <div class="d-flex login-dark" style="height: 650px;background-image: url(&quot;assets/img/login_background.jpg&quot;);">
+  <div *ngIf = '!loading' class="d-flex login-dark" style="height: 650px;background-image: url(&quot;assets/img/login_background.jpg&quot;);">
     <div class="col-4 align-content-start" style="width: 30%;height: 100%;padding: 0;">
       <form class="shadow" method="post"
             data-type="default" #f='ngForm' (submit)="f.form.valid && validate()" accept-charset="UTF-8" role="form"
@@ -72,12 +16,15 @@
                [(ngModel)]="user.username"
                 required
                #username='ngModel' [ngClass]="{'is-invalid': f.submitted && username.invalid}" placeholder="Username"></div>
-        <div class="form-group"><input class="form-control"
-                                       type="password" name="pass"
+        <div class="form-group">
+          <input class="form-control"
+                         required type="password" name="pass"
                  data-type="default" [(ngModel)]="user.password" value=""
                required
                #password='ngModel' [ngClass]="{'is-invalid': f.submitted && password.invalid}" placeholder="Password"></div>
-        <div class="form-group"><button class="btn btn-primary btn-block" type="submit">Log In</button></div><a class="forgot" href="#">Forgot your email or password?</a>
+        <label *ngIf = 'f.invalid'>Either username or password is empty</label>
+        <label *ngIf = 'invalidPassword'>Incorrect Credentials</label>
+               <div class="form-group"><button class="btn btn-primary btn-block" type="submit">Log In</button></div><a class="forgot" href="#">Forgot your email or password?</a>
       </form>
     </div>
   </div>

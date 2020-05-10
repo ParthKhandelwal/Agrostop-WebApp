@@ -24,8 +24,41 @@
         </tr>
     </thead>
     <tbody>
-          <tr *ngIf = "giftLedgerEntry">
-            
+      <ng-container *ngFor = 'let ledger of voucher.LEDGERENTRIES_LIST'>
+      <tr >
+        <td>{{ledger.METHODTYPE ? ledger.METHODTYPE: ledger.POSPAYMENTTYPE}}</td>
+        <td *ngIf = 'ledger.LEDGERNAME'>
+          <a (click) = 'ledger.LEDGERNAME = ""'>{{ledger.LEDGERNAME}}</a>
+        </td>
+        <td *ngIf = '!ledger.LEDGERNAME'>
+          <mat-form-field class="example-full-width">
+         
+            <mat-select [(ngModel)] = 'ledger.LEDGERNAME'>
+              <mat-option *ngFor="let option of ledgers" [value]="option.NAME"
+                aria-selected="">
+                <th scope="row">
+                  <div class="p-2">
+                    <div class="ml-3 d-inline-block align-middle">
+                      <h6 class="mb-0 font-weight-bold">{{option.NAME}}</h6>
+                    </div>
+                  </div>
+                </th>
+
+              </mat-option>
+            </mat-select>
+          </mat-form-field>   
+        </td>
+        <td>
+          <input #giftAmountRef [readonly] = '!ledger.LEDGERNAME'
+                 matInput name ="giftAmount" 
+                 [(ngModel)] = "ledger.AMOUNT"  
+                 type = "number" 
+                 placeholder="Enter Amount">
+        </td>
+
+      </tr>
+    </ng-container>
+          <!-- <tr *ngIf = "giftLedgerEntry">
             <td>On Account</td>
             <td>
               <mat-form-field class="example-full-width">
@@ -55,9 +88,7 @@
 
                   </mat-option>
                 </mat-autocomplete>
-              </mat-form-field>
-              
-              
+              </mat-form-field>   
             </td>
             <td *ngIf = "this.giftLedgerEntry.LEDGERNAME">
               
@@ -116,8 +147,11 @@
              placeholder="Enter Amount"
              (keydown.enter) = "validate();false">
           </td>
-          </tr>
+          </tr> -->
     </tbody>
 </table>
+<div>
+  <button class='btn btn-previous btn-fill btn-success btn-wd btn-sm' autofocus name='previous' (click)="validate()">Validate</button>
+</div>
 
 </div>

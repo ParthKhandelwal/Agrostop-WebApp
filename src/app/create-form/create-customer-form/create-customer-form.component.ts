@@ -27,7 +27,7 @@ export class CreateCustomerFormComponent implements OnInit {
       this.customer.addressId = data.addressId;
       this.customer.landHolding = data.landHolding;
     }
-   }
+  }
 
   ngOnInit() {
     this.apiService.getAddresses().subscribe(

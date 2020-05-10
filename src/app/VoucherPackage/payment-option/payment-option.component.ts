@@ -196,7 +196,7 @@ export class PaymentOptionComponent implements OnInit {
   getCashPayment() {
     this.setToFalse();
     this.cashPayment = true;
-    this.cashLedgerSelection.nativeElement.focus();
+    //this.cashLedgerSelection.nativeElement.focus();
     
   }
 
@@ -250,6 +250,9 @@ export class PaymentOptionComponent implements OnInit {
   }
 
   getTaxRate(pro: any, str: string): number{
+    if (pro && pro["GSTDETAILS.LIST"]
+       && pro["GSTDETAILS.LIST"]["STATEWISEDETAILS.LIST"] 
+      && pro["GSTDETAILS.LIST"]["STATEWISEDETAILS.LIST"]["RATEDETAILS.LIST"])
     for (let item of pro["GSTDETAILS.LIST"]["STATEWISEDETAILS.LIST"]["RATEDETAILS.LIST"]){
       if(str == item["GSTRATEDUTYHEAD"].content){
         return item["GSTRATE"].content;

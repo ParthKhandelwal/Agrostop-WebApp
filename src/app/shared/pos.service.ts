@@ -33,7 +33,7 @@ export class PosService {
       let objectStore2 = evt.currentTarget.result.createObjectStore('items', { keyPath: "NAME",autoIncrement: false, unique: true });
       let objectStore3 = evt.currentTarget.result.createObjectStore('customers', {keyPath: "id", autoIncrement: false, unique: true });
       let objectStore4 = evt.currentTarget.result.createObjectStore('Ledgers', {keyPath: "NAME",autoIncrement: false, unique: true });
-      let objectStore5 = evt.currentTarget.result.createObjectStore('Batches', {keyPath: "BATCHID",autoIncrement: false, unique: true });
+      let objectStore5 = evt.currentTarget.result.createObjectStore('Batches', {autoIncrement: true, unique: true });
       let objectStore6 = evt.currentTarget.result.createObjectStore('Addresses', {    keyPath: "id",autoIncrement: false, unique: true });
 
       //objectStore.createIndex('name', 'name', { unique: false });
@@ -47,7 +47,7 @@ export class PosService {
       let objectStore2 = evt.currentTarget.result.createObjectStore('items', { keyPath: "NAME",autoIncrement: false, unique: true });
       let objectStore3 = evt.currentTarget.result.createObjectStore('customers', {keyPath: "id", autoIncrement: false, unique: true });
       let objectStore4 = evt.currentTarget.result.createObjectStore('Ledgers', {keyPath: "NAME",autoIncrement: false, unique: true });
-      let objectStore5 = evt.currentTarget.result.createObjectStore('Batches', {keyPath: "BATCHID",autoIncrement: false, unique: true });
+      let objectStore5 = evt.currentTarget.result.createObjectStore('Batches', {autoIncrement: true, unique: true });
       let objectStore6 = evt.currentTarget.result.createObjectStore('Addresses', {    keyPath: "id",autoIncrement: false, unique: true });
 
       //objectStore.createIndex('name', 'name', { unique: false });
@@ -152,21 +152,41 @@ export class PosService {
         var index: number = 0
         if (res && res instanceof Array){
           for (let group of res){
-            console.log(group.productId)
-            length = length + group.BATCHLIST.length
+            
+            
             if (group.BATCHLIST && group.BATCHLIST.BATCH && (group.BATCHLIST.BATCH instanceof Array)){
+              length = length + group.BATCHLIST.BATCH.length
+              console.log(group.BATCHLIST.BATCH);
               for (let re of group.BATCHLIST.BATCH){
-                console.log(re);
+            
                 re.productId = group.productId;
                 this.db.update("Batches",re).then(
                   res => {
-                    index++
-                    index = index/length;
-                    this.batchPercent = Math.round((index/length)*100);
+               
+                      index++
+                
+                      this.batchPercent = Math.round((index/length)*100);
+                    
+                    
                   }
                 );
                
              }
+            }else if (group.BATCHLIST && group.BATCHLIST.BATCH) {
+              length = length + 1;
+              console.log(group.BATCHLIST.BATCH);
+              var re = group.BATCHLIST.BATCH;
+              re.productId = group.productId;
+                this.db.update("Batches",re).then(
+                  res => {
+                  
+                      index++
+                
+                      this.batchPercent = Math.round((index/length)*100);
+                    
+                    
+                  }
+                );
             }
            
             }

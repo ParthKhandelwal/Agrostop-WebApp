@@ -117,34 +117,38 @@
                   <tbody>
 
                     <ng-container *ngFor="let v of filteredArray">
-                      <tr *ngIf = "v.VOUCHER">
+                      <tr *ngIf = "v">
                         <td>
-                          <button mat-button (click)="v.VOUCHER.toggle = !v.VOUCHER.toggle">
+                          <button mat-button (click)="v.toggle = !v.toggle">
                             <mat-icon>add</mat-icon>
                           </button>
                         </td>
                         <td>
-                          {{v.VOUCHER ? v.VOUCHER.DATE  : "" | date: "dd-MMM-yyyy"}}
+                          {{ v.DATE | date: "dd-MMM-yyyy"}}<br>
+                          <span  class="badge badge-success">Online</span>
                         </td>
                         <td>
-                          {{v.VOUCHER ? v.VOUCHER.VOUCHERNUMBER : ""}}
+                          {{ v.VOUCHERNUMBER}}<br>
+                          <span *ngIf = "v.INVENTORYENTRIES.STOCKITEM" class="badge badge-warning">{{v.VOUCHERTYPENAME}}</span>
+                          <span *ngIf = "!v.INVENTORYENTRIES.STOCKITEM" class="badge badge-danger">{{v.VOUCHERTYPENAME}}</span>
+                          
                         </td>
                         <td>
-                          {{v.VOUCHER ? v.VOUCHER.BASICBUYERNAME : ""}}
+                          {{ v.BASICBUYERNAME}}
                         </td>
                         <td>
-                          {{v.VOUCHER ? v.VOUCHER.ADDRESS : ""}}
+                          {{ v.ADDRESS}}
                         </td>
                         <td class="text-primary">
-                          {{v.VOUCHER ? getVoucherTotal(v.VOUCHER.LEDGERENTRIES.LEDGER) : 0 | currency : 'INR'}}
+                          {{ getVoucherTotal(v.LEDGERENTRIES.LEDGER) | currency : 'INR'}}
                         </td>
                         <td>
-                          <button mat-mini-fab aria-label="Example icon-button with a heart icon" (click)="edit(v.VOUCHER)">
+                          <button mat-mini-fab aria-label="Example icon-button with a heart icon" (click)="edit(v)">
                             <mat-icon>edit</mat-icon>
                           </button>
                         </td>
                       </tr>
-                      <table *ngIf = "v.VOUCHER.toggle">
+                     <table *ngIf = "v.toggle && v.INVENTORYENTRIES.STOCKITEM">
                         <thead>
                           <th>Product</th>
                           <th>Qty</th>
@@ -152,25 +156,27 @@
                         </thead>
                         <tbody>
                           
-                          <div *ngIf = "array(v.VOUCHER.INVENTORYENTRIES.STOCKITEM)">
-                            <ng-container *ngFor = "let item of v.VOUCHER.INVENTORYENTRIES.STOCKITEM">
+                          <div *ngIf = "array(v.INVENTORYENTRIES.STOCKITEM)">
+                            <ng-container *ngFor = "let item of v.INVENTORYENTRIES.STOCKITEM">
                               <tr>
                                 <td>{{item.STOCKITEMNAME}}</td>
+                                <td>{{item.QUANTITY}}</td>
+                                <td>{{item.RATE}}</td>
                                 
                               </tr>
 
                             </ng-container>
                           </div>
-                          <div *ngIf = "!array(v.VOUCHER.INVENTORYENTRIES.STOCKITEM)">
+                          <div *ngIf = "v.INVENTORYENTRIES.STOCKITEM && !array(v.INVENTORYENTRIES.STOCKITEM) ">
                               <tr>
-                                <td>{{v.VOUCHER.INVENTORYENTRIES.STOCKITEM.STOCKITEMNAME}}</td>
+                                <td>{{v.INVENTORYENTRIES.STOCKITEM.STOCKITEMNAME}}</td>
                                 
                               </tr>
                               <tr>
-
+                                {{v.INVENTORYENTRIES.STOCKITEM.QUANTITY}}
                               </tr>
                               <tr>
-
+                                {{v.INVENTORYENTRIES.STOCKITEM.RATE}}
                               </tr>
 
                           </div>
@@ -179,7 +185,76 @@
 
 
                     </ng-container>
+                    <ng-container *ngFor="let v of cacheVouchers">
+                      <tr *ngIf = "v">
+                        <td>
+                          <button mat-button (click)="v.toggle = !v.toggle">
+                            <mat-icon>add</mat-icon>
+                          </button>
+                        </td>
+                        <td>
+                          {{ v.DATE | date: "dd-MMM-yyyy"}}<br>
+                          <span  class="badge badge-danger">Offline</span>
 
+                        </td>
+                        <td>
+                          {{ v.VOUCHERNUMBER}}<br>
+                          <span *ngIf = "v.ALLINVENTORYENTRIES_LIST" class="badge badge-warning">{{v.VOUCHERTYPENAME}}</span>
+                          <span *ngIf = "!v.ALLINVENTORYENTRIES_LIST" class="badge badge-danger">{{v.VOUCHERTYPENAME}}</span>
+                          
+                        </td>
+                        <td>
+                          {{ v.BASICBUYERNAME}}
+                        </td>
+                        <td>
+                          {{ v.ADDRESS_LIST.ADDRESS[0]}}
+                        </td>
+                        <td class="text-primary">
+                          {{ getTotal(v) | currency : 'INR'}}
+                        </td>
+                        <td>
+                          <button mat-mini-fab aria-label="Example icon-button with a heart icon" (click)="edit(v)">
+                            <mat-icon>edit</mat-icon>
+                          </button>
+                        </td>
+                      </tr>
+                     <table *ngIf = "v.toggle && v.INVENTORYENTRIES.STOCKITEM">
+                        <thead>
+                          <th>Product</th>
+                          <th>Qty</th>
+                          <th>Rate</th>
+                        </thead>
+                        <tbody>
+                          
+                          <div *ngIf = "array(v.INVENTORYENTRIES.STOCKITEM)">
+                            <ng-container *ngFor = "let item of v.INVENTORYENTRIES.STOCKITEM">
+                              <tr>
+                                <td>{{item.STOCKITEMNAME}}</td>
+                                <td>{{item.QUANTITY}}</td>
+                                <td>{{item.RATE}}</td>
+                                
+                              </tr>
+
+                            </ng-container>
+                          </div>
+                          <div *ngIf = "v.INVENTORYENTRIES.STOCKITEM && !array(v.INVENTORYENTRIES.STOCKITEM) ">
+                              <tr>
+                                <td>{{v.INVENTORYENTRIES.STOCKITEM.STOCKITEMNAME}}</td>
+                                
+                              </tr>
+                              <tr>
+                                {{v.INVENTORYENTRIES.STOCKITEM.QUANTITY}}
+                              </tr>
+                              <tr>
+                                {{v.INVENTORYENTRIES.STOCKITEM.RATE}}
+                              </tr>
+
+                          </div>
+                        </tbody>
+                      </table>
+
+
+                    </ng-container>
                   </tbody>
                 </table>
               </div>
