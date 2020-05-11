@@ -34,11 +34,11 @@ export class ApiService {
     return this.httpClient.get<any>(this.BASE_URL + 'vouchers/getCompany?companyName=' + name);
   }
 
-  //public WEB_SOCKET_URL = "https://agrostop-web-server.herokuapp.com"
-  //private BASE_URL = "https://agrostop-web-server.herokuapp.com/api/";
+  public WEB_SOCKET_URL = "https://agrostop-web-server.herokuapp.com"
+  private BASE_URL = "https://agrostop-web-server.herokuapp.com/api/";
 
-  private BASE_URL = "http://13.235.37.79/api/";
-  public WEB_SOCKET_URL = "http://13.235.37.79";
+  //private BASE_URL = "http://13.235.37.79/api/";
+  //public WEB_SOCKET_URL = "http://13.235.37.79";
 
   //private BASE_URL = "http://localhost:5000/api/";
   //public WEB_SOCKET_URL = "http://localhost:5000";
