@@ -92,10 +92,10 @@ export class PosService {
   // this.saveCompany();
   // await this.saveItems();
    this.db.clear("customers")
-   //this.saveCustomers();
+   this.saveCustomers();
    this.db.clear("Ledgers")
   // this.saveLedgers();
-   //this.saveAddresses();
+   this.saveAddresses();
       this.sendRequestForItems();
       this.sendRequestForLedgers();
       this.sendRequestForBatches();
