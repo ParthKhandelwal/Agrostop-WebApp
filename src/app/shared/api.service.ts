@@ -37,16 +37,19 @@ export class ApiService {
   //public WEB_SOCKET_URL = "https://agrostop-web-server.herokuapp.com"
   //private BASE_URL = "https://agrostop-web-server.herokuapp.com/api/";
 
-  private BASE_URL = "http://13.235.37.79/api/";
-  public WEB_SOCKET_URL = "http://13.235.37.79";
+  //private BASE_URL = "http://13.235.37.79/api/";
+  //public WEB_SOCKET_URL = "http://13.235.37.79";
 
-  //private BASE_URL = "http://localhost:5000/api/";
-  //public WEB_SOCKET_URL = "http://localhost:5000";
+  private BASE_URL = "http://localhost:5000/api/";
+  public WEB_SOCKET_URL = "http://localhost:5000";
   //public TALLY_HELPER_URL = "http://localhost:8082";
 
   user: User;
   constructor(private httpClient: HttpClient, private cookie?: CookieService, private datePipe?: DatePipe) {
   }
+
+
+
 
   authenticate(user: UserLogin) {
     return this.httpClient.post<any>(this.WEB_SOCKET_URL +'/authenticate', user);
@@ -79,9 +82,12 @@ export class ApiService {
 
   }
 
+  getTallyData(guid: string): Observable<any>{
+    return   this.httpClient.get<any>(this.BASE_URL + 'tallyBuffer/getRequest?guid='+guid);
+  }
 
   createRequestForStockItems():Observable<any>{
-return   this.httpClient.get<any>(this.BASE_URL + 'stockItem/createRequest');
+    return   this.httpClient.get<any>(this.BASE_URL + 'stockItem/createRequest');
   }
   
 

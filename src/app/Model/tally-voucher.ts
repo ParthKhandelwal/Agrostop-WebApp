@@ -38,3 +38,25 @@ export class BasicVoucherDetails{
   placeOfSupply: string;
   voucherTypeName: string;
 }
+
+
+export class Request{
+   guid: string ;
+   tallyType: string;
+   name: string;
+   filter: string;
+   fetchList: string[];
+   response: string;
+   toDate: string;
+   fromDate: string;
+   parent: string;
+   parentList: string[];
+   request: any;
+
+   constructor(type: string){
+     this.guid = "";
+      this.tallyType = type;
+   }
+
+}
+
