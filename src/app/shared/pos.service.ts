@@ -10,6 +10,7 @@ import * as Stomp from 'stompjs';
 import * as SockJS from 'sockjs-client';
 import { Request } from '../Model/tally-voucher';
 import uniqid from 'uniqid';
+import { map } from 'rxjs/operators';
 
 
 
@@ -32,6 +33,7 @@ export class PosService {
   cacheVouchers: VOUCHER[];
   stompClient: any;
   connected: boolean;
+  map: Map<string, string> = new Map();
 
   constructor(private apiService?: ApiService, private cookie?: CookieService) {
     this.sync();
@@ -132,7 +134,7 @@ export class PosService {
           that.stompClient.subscribe("/topic/sync", (message) => {
             if (message.body) {
               console.log(message.body);
-              var type: string = (message.body).split("-")[0];
+              var type: string = that.map.get(message.body);
               if (type == "STOCKITEM"){
                 that.saveAllItems(message.body);
               } else if (type == "LEDGER"){
@@ -268,6 +270,7 @@ export class PosService {
     request.guid = uniqid("BATCH-");
     request.name = "";
     request.fetchList = [];
+    this.map.set(request.guid, "BATCH");
     this.sendRequest(request);
   }
 
@@ -281,6 +284,7 @@ export class PosService {
     request.name = "";
     request.guid = uniqid("LEDGER-")
     request.filter = "$Parent =" + "\"Sundry Debtors\""
+    this.map.set(request.guid, "LEDGER");
     this.sendRequest(request);
   }
 
@@ -310,7 +314,7 @@ export class PosService {
         request.guid = uniqid("STOCKITEM-")
         request.name = "";
         request.fetchList = list;
-
+        this.map.set(request.guid, "STOCKITEM");
         this.sendRequest(request);
 
     // await this.apiService.getAllStockItemsForBilling().subscribe(

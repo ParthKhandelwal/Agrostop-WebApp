@@ -115,9 +115,9 @@ export class OrderService {
     item.RATE = orderItem.rate;
     item.AMOUNT = item.BILLEDQTY * item.RATE;
     item.ISDEEMEDPOSITIVE = "No";
-    return await this.apiService.getStockItem(item.STOCKITEMNAME).subscribe(
+    return await this.posService.getStockItem(item.STOCKITEMNAME).then(
       async res1 => {
-        const res = res1.ENVELOPE.BODY.DATA.TALLYMESSAGE.STOCKITEM;
+        const res = res1;
         console.log(res)
         item.BATCHALLOCATIONS_LIST = new BATCHALLOCATIONSLIST();
         

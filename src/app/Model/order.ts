@@ -5,13 +5,10 @@ id: string;
 customerId: string;
 dateOfCreation: Date;
 itemList: OrderItem[];
-isCompleted: boolean;
-dateOfCompletion: Date;
-dateOfDelivery: Date;
+orderCharges: OrderCharge[];
 voucherId: string;
-employeeId: string;
-isReady: boolean;
-placeOfSupply: string
+deliveryDetails: DeliveryDetails;
+paymentDetails: PaymentDetails;
 
 constructor(){
     this.itemList = [];
@@ -23,4 +20,37 @@ export class OrderItem{
     qty: number;
     rate: number;
     constructor(){}
+}
+
+export class OrderCharge{
+    type: string;
+    amount: number;
+}
+
+export class PaymentDetails{
+    paymentType: PaymentType;
+    paymentVerified: boolean;
+    paymentVerifiedBy: string;
+    verificationDate: Date;
+    comments: string;
+}
+
+export class DeliveryDetails{
+    deliveryType: DeliveryType;
+    address: string;
+    expectedBy: Date;
+    delivered: boolean;
+    deliveryBy: string;
+    comments: string;
+}
+
+enum DeliveryType{
+    HOMEDELIVERY,
+    STOREPICKUP
+}
+
+enum PaymentType{
+    ONLINEPAYMENT,
+    PAYATSTORE,
+    CASHONDELIVERY
 }

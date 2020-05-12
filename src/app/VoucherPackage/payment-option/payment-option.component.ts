@@ -8,6 +8,7 @@ import { MatSelect, MatAutocomplete, MatInput, MatDialogConfig, MatDialog } from
 import { getRtlScrollAxisType } from '@angular/cdk/platform';
 import { PosService } from 'src/app/shared/pos.service';
 import { CashTenderedComponent } from '../cash-tendered/cash-tendered.component';
+import { User } from 'src/app/Model/user';
 
 @Component({
   selector: 'payment-option',
@@ -26,7 +27,7 @@ export class PaymentOptionComponent implements OnInit {
 
   cashPayment: boolean = true;
   onAccount: boolean = false;
-
+  user: User;
   bankFilteredOptions: Observable<any[]>;
   ledgerControl = new FormControl();
   cashLedgerControl = new FormControl();
@@ -51,6 +52,8 @@ export class PaymentOptionComponent implements OnInit {
   constructor(private apiService?: ApiService, private posService?: PosService,private dialog?: MatDialog) { };
 
   async ngOnInit() {
+
+    this.user = this.posService.getUser();
     
     await this.calculateTAX();
     console.log(this.voucher);

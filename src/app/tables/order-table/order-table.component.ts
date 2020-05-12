@@ -23,7 +23,7 @@ export class OrderTableComponent implements OnInit {
   @ViewChild(MatSort, {static: false}) sort: MatSort;
   @ViewChild(MatTable, {static: false}) table: MatTable<Order>;
   dataSource: MatTableDataSource<Order>;
-  @Input('orders') orders: Order[];
+  @Input('orders') orders: any[];
   completeOrder: boolean = false;
   voucher: VOUCHER;
 

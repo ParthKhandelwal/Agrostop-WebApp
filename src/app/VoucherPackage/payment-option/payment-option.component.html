@@ -25,15 +25,30 @@
     </thead>
     <tbody>
       <ng-container *ngFor = 'let ledger of voucher.LEDGERENTRIES_LIST'>
-      <tr >
+      <tr>
         <td>{{ledger.METHODTYPE ? ledger.METHODTYPE: ledger.POSPAYMENTTYPE}}</td>
         <td *ngIf = 'ledger.LEDGERNAME'>
           <a (click) = 'ledger.LEDGERNAME = ""'>{{ledger.LEDGERNAME}}</a>
         </td>
         <td *ngIf = '!ledger.LEDGERNAME'>
           <mat-form-field class="example-full-width">
-         
-            <mat-select [(ngModel)] = 'ledger.LEDGERNAME'>
+            <mat-select *ngIf = 'ledger.POSPAYMENTTYPE == "Cash"' [(ngModel)] = 'ledger.LEDGERNAME'>
+              <ng-container *ngFor="let option of user.cashBankProfile" >
+              <mat-option *ngIf = "option.type == 'Cash-in-hand'" [value]="option.ledger"
+                aria-selected="">
+                <th scope="row">
+                  <div class="p-2">
+                    <div class="ml-3 d-inline-block align-middle">
+                      <h6 class="mb-0 font-weight-bold">{{option.ledger}}</h6>
+                    </div>
+                  </div>
+                </th>
+
+              </mat-option>
+            </ng-container>
+            </mat-select>
+
+            <mat-select *ngIf = "ledger.POSPAYMENTTYPE != 'Cash'" [(ngModel)] = 'ledger.LEDGERNAME'>
               <mat-option *ngFor="let option of ledgers" [value]="option.NAME"
                 aria-selected="">
                 <th scope="row">
