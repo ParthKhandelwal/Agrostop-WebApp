@@ -19,7 +19,7 @@ constructor(){
 }
 
 export class OrderItem{
-    itemName: string;
+    item: string;
     qty: number;
     rate: number;
     constructor(){}

@@ -49,7 +49,7 @@
                         <div class="form-group">
                           <label class="bmd-label-floating">Adress</label>
                           <select class="form-control" name="address" name = "address" required [(ngModel)]='customer.addressId'>
-                            <option *ngFor="let address of addresses" [value]="address.id">{{address.name}}, {{address.stateName}}</option>
+                            <option *ngFor="let address of addresses" [value]="address._id">{{address.name}}, {{address.stateName}}</option>
                           </select>
                         </div>
                       </div>

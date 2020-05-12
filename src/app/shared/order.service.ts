@@ -109,7 +109,7 @@ export class OrderService {
 
    async addInventoryToVoucher(orderItem:OrderItem, godownName: string, voucher:VOUCHER){
     var item: ALLINVENTORYENTRIESLIST = new ALLINVENTORYENTRIESLIST();
-    item.STOCKITEMNAME = orderItem.itemName;
+    item.STOCKITEMNAME = orderItem.item;
     item.ACTUALQTY = orderItem.qty;
     item.BILLEDQTY = orderItem.qty;
     item.RATE = orderItem.rate;
@@ -122,10 +122,10 @@ export class OrderService {
         item.BATCHALLOCATIONS_LIST = new BATCHALLOCATIONSLIST();
         
         var batch = (await this.posService.getProductBatch())
-                        .filter(res => res.productId == orderItem.itemName)
+                        .filter(res => res.productId == orderItem.item)
                         .sort((a,b) => {
-                          if (a.expiryDate && b.expiryDate){
-                            return new Date(a.expiryDate).getTime() - new Date(b.expiryDate).getTime()
+                          if (a.EXPIRYDATE && b.EXPIRYDATE){
+                            return new Date(a.EXPIRYDATE).getTime() - new Date(b.EXPIRYDATE).getTime()
                           }
                           })[0];
         console.log(batch);
@@ -133,8 +133,8 @@ export class OrderService {
         item.BATCHALLOCATIONS_LIST.BILLEDQTY = orderItem.qty;
         item.BATCHALLOCATIONS_LIST.ACTUALQTY = orderItem.qty;
         item.BATCHALLOCATIONS_LIST.AMOUNT = item.RATE * item.BILLEDQTY;
-        item.BATCHALLOCATIONS_LIST.EXPIRYPERIOD = new EXPIRYPERIOD(batch.expiryDate)
-        item.BATCHALLOCATIONS_LIST.BATCHNAME = batch.name;
+        item.BATCHALLOCATIONS_LIST.EXPIRYPERIOD = new EXPIRYPERIOD(batch.EXPIRYDATE)
+        item.BATCHALLOCATIONS_LIST.BATCHNAME = batch.NAME;
 
 
 

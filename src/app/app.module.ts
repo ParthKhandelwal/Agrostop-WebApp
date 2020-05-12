@@ -182,6 +182,6 @@ import { ProcessOrderFormComponent } from './create-form/process-order-form/proc
     ],
   bootstrap: [AppComponent],
   entryComponents: [CreateCustomerFormComponent, CreateTaxDetailsFormComponent, InvoicePrintViewComponent, CashTenderedComponent, CreateStockItemFormComponent, CustomerTableComponent, ConfirmationBoxComponent, CreateAddressFormComponent,
-    PaymentOptionComponent, CustomerViewComponent]
+    PaymentOptionComponent, CustomerViewComponent, ProcessOrderFormComponent]
 })
 export class AppModule { }

@@ -34,15 +34,7 @@
     <ng-container matColumnDef="update">
       <th mat-header-cell *matHeaderCellDef mat-sort-header></th>
       <td mat-cell *matCellDef="let row">
-        <button type="button" rel="tooltip" class="btn btn-info btn-round">
-          <i class="material-icons">edit</i>
-        </button>
-        <button type="button" rel="tooltip" class="btn btn-success btn-round" [disabled] = "row.completed" (click) = "completeVoucher(row)">
-            <i class="material-icons">check</i>
-        </button>
-        <button type="button" rel="tooltip" class="btn btn-danger btn-round" [disabled] = "row.completed" (click) = "delete(row.id)">
-            <i class="material-icons">close</i>
-        </button>
+        <button mat-button (click) = "process(row)">Process</button>
           
       </td>
     </ng-container>

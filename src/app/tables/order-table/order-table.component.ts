@@ -11,6 +11,7 @@ import { ConfirmationBoxComponent } from '../../confirmation-box/confirmation-bo
 import { CreateOrderFormComponent } from 'src/app/create-form/create-order-form/create-order-form.component';
 import { OrderService } from 'src/app/shared/order.service';
 import { VOUCHER } from 'src/app/Model/voucher';
+import { ProcessOrderFormComponent } from 'src/app/create-form/process-order-form/process-order-form.component';
 
 @Component({
   selector: 'app-order-table',
@@ -75,6 +76,25 @@ export class OrderTableComponent implements OnInit {
       this.voucher = res;
       this.completeOrder = true;
     });
+  }
+
+  process(order){
+    const dialogConfig = new MatDialogConfig();
+    dialogConfig.autoFocus = true;
+    dialogConfig.width = "50%";
+    const dialogRef = this.dialog.open(ProcessOrderFormComponent, {
+      data: order,
+      maxHeight: '90vh'
+    });
+
+    dialogRef.afterClosed().subscribe(
+      res => {
+        console.log(res);
+        this.voucher = res;
+        this.completeOrder = true;
+      }
+    )
+    
   }
 
 

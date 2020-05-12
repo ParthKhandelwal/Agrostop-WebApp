@@ -34,14 +34,14 @@ export class ApiService {
     return this.httpClient.get<any>(this.BASE_URL + 'vouchers/getCompany?companyName=' + name);
   }
 
-  public WEB_SOCKET_URL = "https://agrostop-web-server.herokuapp.com"
-  private BASE_URL = "https://agrostop-web-server.herokuapp.com/api/";
+  //public WEB_SOCKET_URL = "https://agrostop-web-server.herokuapp.com"
+  //private BASE_URL = "https://agrostop-web-server.herokuapp.com/api/";
 
   //private BASE_URL = "http://13.235.37.79/api/";
   //public WEB_SOCKET_URL = "http://13.235.37.79";
 
-  //private BASE_URL = "http://localhost:5000/api/";
-  //public WEB_SOCKET_URL = "http://localhost:5000";
+  private BASE_URL = "http://localhost:5000/api/";
+  public WEB_SOCKET_URL = "http://localhost:5000";
   //public TALLY_HELPER_URL = "http://localhost:8082";
 
   user: User;
@@ -131,6 +131,9 @@ getStockItemGroupsByName(): Observable<any[]>{
   }
 
 
+  getOrderDetails(id: string): Observable<any>{
+    return this.httpClient.get<any>(this.BASE_URL+ "order/getOrderDetails?orderId="+id);
+  }
 
   saveOrder(order: Order): Observable<any>{
     return this.httpClient.post<any>(this.BASE_URL + 'order/save', order);

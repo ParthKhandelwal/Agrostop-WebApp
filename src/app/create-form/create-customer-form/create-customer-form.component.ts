@@ -20,7 +20,7 @@ export class CreateCustomerFormComponent implements OnInit {
   constructor( @Inject(MAT_DIALOG_DATA) public data?: any, private dialogRef?: MatDialogRef<CreateCustomerFormComponent>,
   private router? :Router, @Inject(ApiService) private apiService? : ApiService) {
     if (data != null){
-      this.customer.customerId = data._id;
+      this.customer.id = data.id;
       this.customer.name= data.name;
       this.customer.fatherName= data.fatherName;
       this.customer.phoneNumber= data.phoneNumber;

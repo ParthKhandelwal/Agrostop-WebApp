@@ -93,7 +93,7 @@ export class CreateOrderFormComponent implements OnInit {
     console.log(this.item);
     this.order.itemList.push(this.item);
     this.item = new OrderItem();
-    this.item.itemName = ""
+    this.item.item = ""
   }
 
   deleteItem(i : number) {
