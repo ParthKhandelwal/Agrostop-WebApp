@@ -38,7 +38,7 @@ export class ProcessOrderFormComponent implements OnInit {
     this.voucher = new VOUCHER();
   }
 
-  createVoucher(order: Order){
+  createVoucher(){
     this.orderService.convertOrder(this.dataOrder, new VOUCHER()).then(res => {
       this.dialogRef.close(res);
     });
