@@ -28,8 +28,8 @@ export class ProcessOrderFormComponent implements OnInit {
     if (data != null){
       this.dataOrder = data;
       this.order =  this.apiService.getOrderDetails(data.id).subscribe(
-        res => this.order = res,
-        err => console.log(err)
+        res => {this.order = res},
+        err => {console.log(err)}
       );
     }
   }
