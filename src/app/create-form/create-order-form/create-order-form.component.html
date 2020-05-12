@@ -4,7 +4,7 @@
     <div class="row">
       <mat-form-field>
         <mat-label>Select place of supply</mat-label>
-        <mat-select required [(ngModel)] = "order.placeOfSupply" name = "placeOfSupply">
+        <mat-select required [(ngModel)] = "order.customerId" name = "placeOfSupply">
           <mat-option *ngFor = "let godown of godowns$ | async" [value] = "godown">{{godown}}</mat-option>
         </mat-select>
       </mat-form-field>
@@ -105,7 +105,7 @@
             </tr>
             <tr *ngFor = "let item of order.itemList; let i = index">
                 <td class="text-center">{{i+1}}</td>
-                <td>{{item.itemName}}</td>
+                <td>{{item.item}}</td>
                 <td>{{item.rate}}</td>
                 <td>{{item.qty}}</td>
                 <td class="td-actions text-right">
