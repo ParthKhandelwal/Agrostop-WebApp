@@ -6,6 +6,11 @@ import { StockCheck, StockCheckItem } from 'src/app/Model/stock-item';
 import { ApiService } from 'src/app/shared/api.service';
 import { map, startWith } from 'rxjs/operators';
 import { FormControl } from '@angular/forms';
+import uniqid from 'uniqid';
+import * as SockJS from 'sockjs-client';
+import * as Stomp from 'stompjs';
+import { Request } from 'src/app/Model/tally-voucher';
+import { DatePipe } from '@angular/common';
 
 @Component({
   selector: 'stock-check',
@@ -26,8 +31,13 @@ export class StockCheckComponent implements OnInit {
   temp: any;
   products : any[] = [];
   detailView: boolean;
+
+  stompClient: any;
+  connected: boolean;
+  map: Map<string, string> = new Map();
+
   @ViewChild("qtyRef", {static: false}) qtyRef: ElementRef;
-  constructor(private auth?: AuthenticationService, private apiService?: ApiService) {
+  constructor(private auth?: AuthenticationService, private apiService?: ApiService, private datePipe?: DatePipe) {
     auth.currentUser.subscribe(
       res => {
         this.user = res;
@@ -43,13 +53,56 @@ export class StockCheckComponent implements OnInit {
 
 
   ngOnInit() {
-
+    this.sync();
     this.filteredOptions = this.productControl.valueChanges.pipe(
       startWith(''),
       map(value => this.product_filter(value))
 
     );
 
+  }
+
+  sync(){
+
+    if (!this.stompClient || !this.stompClient.connected){
+      let ws = new SockJS(this.apiService.WEB_SOCKET_URL + "/tallySocket");
+
+      this.stompClient = Stomp.over(ws);
+
+      const that = this;
+      this.stompClient.connect({}, function (frame) {
+        that.stompClient.subscribe("/topic/sync", (message) => {
+          if (message.body) {
+            console.log(message.body);
+            var type: string = that.map.get(message.body);
+            if (type == "REPORT"){
+              that.getItems(message.body)
+            }
+           
+          }
+        });
+      })
+      
+      this.connected = this.stompClient.connected;
+      
+      
+    }
+    
+  
+  
+}
+
+
+  createStockSummaryRequest(){
+    var request: Request = new Request("REPORT");
+    request.name = "Stock Summary"
+    request.guid = uniqid("REPORT")
+    request.filter = this.currentCheck.godown;
+    request.fromDate = this.datePipe.transform(new Date(), "yyyyMMdd");
+    request.toDate = this.datePipe.transform(new Date(), "yyyyMMdd");
+    this.map.set(request.guid, "REPORT");
+    this.stompClient.send("/app/tallySync", {}, JSON.stringify(request));   
+ 
   }
 
 
@@ -90,9 +143,10 @@ export class StockCheckComponent implements OnInit {
   }
 
 
-  getItems(){
+  getItems(guid: string){
     this.products = [];
-    this.apiService.getStockSummary(this.currentCheck.godown, new Date(), new Date()).pipe(
+    
+    this.apiService.getTallyData(guid).pipe(
       map((items) => items.map(
           (item) =>  new si(item.BATCHES.filter((i) => i.GODOWN === this.currentCheck.godown), item.ITEMNAME, item.GODOWN))
           

@@ -141,6 +141,8 @@ export class PosService {
                 that.saveAllLedgers(message.body);
               }else if (type == "BATCH"){
                 that.saveAllBatches(message.body);
+              }else if (type == "VOUCHER"){
+                that.getAllCacheVouchers()
               }
              
             }
@@ -155,6 +157,7 @@ export class PosService {
     
     
   }
+
 
 
   saveAllBatches(guid: string){
@@ -580,6 +583,17 @@ countCacheVoucher(): number{
       },
       err =>{
         alert("POS Service cannot start. Please contact Admin.")
+      }
+    );
+  }
+
+  deleteVoucher(voucherNumber){
+    this.db.delete('cacheVoucher', voucherNumber).then(
+      () => {
+        // Do something after delete
+      },
+      error => {
+        console.log(error);
       }
     );
   }

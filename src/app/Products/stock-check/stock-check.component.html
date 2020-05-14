@@ -15,14 +15,14 @@
                         <h4 *ngIf = "currentCheck">{{currentCheck.title}}</h4>
                         
                 
-                        <form #selectCheckForm="ngForm" (ngSubmit) = "getItems()">
+                        <form #selectCheckForm="ngForm" (ngSubmit) = "createStockSummaryRequest()">
                             <div style="padding-left: 10px; padding-right: 10px;" >
 
                                 
                                 <mat-form-field>
                                     <mat-label>Select a stock check</mat-label>
                                     
-                                    <mat-select [(ngModel)] = "currentCheck" required name = "voucherTypeSelect" (selectionChange)= "getItems();">
+                                    <mat-select [(ngModel)] = "currentCheck" required name = "voucherTypeSelect" (selectionChange)= "createStockSummaryRequest()">
                                             <mat-option value = "">Not Applicable</mat-option>
                                             <ng-container *ngFor = 'let v of checks$ | async'>
                                                 <mat-option [value] = "v" >

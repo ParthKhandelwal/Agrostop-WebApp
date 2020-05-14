@@ -48,9 +48,31 @@
                       <div class="col-md-12">
                         <div class="form-group">
                           <label class="bmd-label-floating">Adress</label>
-                          <select class="form-control" name="address" name = "address" required [(ngModel)]='customer.addressId'>
-                            <option *ngFor="let address of addresses" [value]="address._id">{{address.name}}, {{address.stateName}}</option>
-                          </select>
+                          <mat-form-field class="example-full-width" style="width: 150px;">
+                            <input #invField type="text"
+                                   placeholder="Pick one"
+                                   name = "address"
+                                   aria-label="Number"
+                                   matInput
+                                   [formControl]="addressControl"
+                                   [(ngModel)] = "customer.addressId"
+                                   [matAutocomplete]="auto"
+                                
+                                   style="width:100% !important" >
+                            <mat-autocomplete [panelWidth]="600" #auto="matAutocomplete"
+                                              [displayWith]= "displayFnProduct">
+                                            
+                              <mat-option *ngFor="let option of filteredOptions | async" [value]="option.id">
+                                <th scope="row">
+                                  <div class="p-2">
+                                    <div class="ml-3 d-inline-block align-middle">
+                                      <h6 class="mb-0 font-weight-bold">{{option.name}}, {{option.tehsilName}}, {{option.districtName}}, {{option.stateName}}</h6>
+                                    </div>
+                                  </div>
+                                </th>
+                              </mat-option>
+                            </mat-autocomplete>
+                          </mat-form-field>
                         </div>
                       </div>
                     </div>

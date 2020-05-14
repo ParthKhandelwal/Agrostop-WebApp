@@ -2,7 +2,7 @@ import { Component, OnInit, Inject, ViewChild, Input } from '@angular/core';
 import { VOUCHER, LEDGERENTRIESLIST, ALLINVENTORYENTRIESLIST, ALLLEDGERENTRIESLIST } from '../../Model/voucher';
 import { ApiService } from '../../shared/api.service';
 import { VoucherTableComponent } from '../../tables/voucher-table/voucher-table.component';
-import { TallyVoucher } from '../../Model/tally-voucher';
+import { TallyVoucher, Request } from '../../Model/tally-voucher';
 import { VoucherService } from '../../shared/voucher.service';
 import { Observable, from } from 'rxjs';
 import { Router } from '@angular/router';
@@ -11,6 +11,11 @@ import { FormControl } from '@angular/forms';
 import { map, filter } from 'rxjs/operators';
 import { PosService } from 'src/app/shared/pos.service';
 import { VoucherTypeClass } from 'src/app/Model/user';
+import * as Stomp from 'stompjs';
+import * as SockJS from 'sockjs-client';
+import uniqid from 'uniqid';
+import { DatePipe } from '@angular/common';
+
 
 
 
@@ -36,6 +41,9 @@ export class DayBookComponent implements OnInit {
   masterIds: any[] = [];
   voucherPercent: number = 100;
   cacheVouchers: any[] = [];
+  stompClient: any;
+  connected: boolean;
+  map: Map<string, string> = new Map();
 
   filterField: any[] = [
     "Voucher Type",
@@ -48,26 +56,103 @@ export class DayBookComponent implements OnInit {
 
   filterValue$: any[];
 
-  constructor(private apiService?: ApiService, private router?: Router, private posService?: PosService) { }
+  constructor(private apiService?: ApiService,private datePipe?: DatePipe, private router?: Router, private posService?: PosService) { }
 
   ngOnInit() {
     this.toDate.setValue(new Date());
     this.fromDate.setValue(new Date());
-    this.getVouchers();
+    this.sync();
+    
+  }
+
+  sync(){
+    
+    if (!this.stompClient || !this.stompClient.connected){
+      let ws = new SockJS(this.apiService.WEB_SOCKET_URL + "/tallySocket");
+
+      this.stompClient = Stomp.over(ws);
+
+      const that = this;
+      this.stompClient.connect({}, function (frame) {
+        that.stompClient.subscribe("/topic/sync", (message) => {
+          if (message.body) {
+            console.log(message.body);
+            var type: string = that.map.get(message.body);
+            if (type == "VOUCHER"){
+              that.getVouchers(message.body);
+            } 
+           
+          }
+        });
+        that.createVoucherRequest();
+      })
+          
+       
+      
+      this.connected = this.stompClient.connected;
+      
+      
+    }
+    
+  
+  
+
+  }
+
+  createVoucherRequest(){
+    const user = this.posService.getUser();
+    var request : Request = new Request("VOUCHER");
+    request.guid = uniqid();
+    request.fromDate = this.datePipe.transform(this.fromDate.value, "yyyyMMdd");
+    request.toDate = this.datePipe.transform(this.toDate.value, "yyyyMMdd");
+    request.request = "";
+    request.name = "";
+    request.parentList = user.voucherTypes.map(res => res.voucherTypeName);
+    this.map.set(request.guid, "VOUCHER");
+    this.sendRequest(request);
   }
 
 
-  getVouchers(){
+  public sendRequest(request: Request){
+    this.stompClient.send("/app/tallySync", {}, JSON.stringify(request));   
+  }
+
+
+
+
+
+  getVouchers(guid: string){
     this.voucherPercent = 0;
     this.loading = true;
-    const user = this.posService.getUser();
+    
 
-    this.apiService.getVouchers(this.fromDate.value, this.toDate.value).subscribe(
+    this.apiService.getTallyData(guid).subscribe(
         (res: any) =>{
           
           if (res != null){
-            this.vouchers = res.VOUCHER;
+            if(!(res.VOUCHER instanceof Array)){
+              this.vouchers = [];
+              this.vouchers.push(res.VOUCHER);
+            }else {
+              this.vouchers = res.VOUCHER;
+            }
             
+            
+            this.vouchers.sort((a,b) => new Date(a.DATE).getTime() - new Date(b.DATE).getTime())
+            this.vouchers.map(res => {
+              this.posService.getCustomer(res.BASICBUYERNAME).then(
+                customer=> {
+                  res.BASICBUYERNAME = customer ? customer.name : res.BASICBUYERNAME;
+                }
+              )
+              this.posService.getAddress(res.ADDRESS+"").then(
+                address=> {
+                  res.ADDRESS = address ? address.name : res.ADDRESS;
+                }
+              )
+              
+              return res;
+            })
            
             this.filter();
             console.log(this.filteredArray);
@@ -108,11 +193,19 @@ export class DayBookComponent implements OnInit {
       }
       return total*(-1);
     } else {
-      return list.ISDEEMEDPOSITIVE == "Yes" ? (list.AMOUNT) : 0;
+      return list.ISDEEMEDPOSITIVE == "Yes" ? (list.AMOUNT)*(-1) : 0;
     }
     
   }
 
+
+  dayBookTotal(): number{
+    var total : number = 0;
+    for(let v of this.vouchers ){
+      total = total + this.getVoucherTotal(v.LEDGERENTRIES.LEDGER)
+    }
+    return total;
+  }
 
   getTotal(voucher: VOUCHER): number {
     var total = this.getSubTotal(voucher);
@@ -144,19 +237,43 @@ export class DayBookComponent implements OnInit {
     return total;
   }
 
-  edit(m:any) {
+  edit(m:any, online: boolean) {
     this.loading = true;
-    this.apiService.getTallyFullVoucher(m.MASTERID).subscribe(
-      res => {
-        this.voucher = res.VOUCHER;
-        this.voucher._REMOTEID = m.REMOTEID;
-        this.voucher._ACTION = "Update"
-        console.log(this.voucher);
-        this.loading = false;
-        this.editMode = true;
-      },
-      err => console.log(err)
-    )
+    if (online){
+      this.apiService.getTallyFullVoucher(m.MASTERID).subscribe(
+        res => {
+          this.voucher = res;
+          console.log(this.voucher);
+          this.voucher._REMOTEID = m.REMOTEID;
+          this.voucher._ACTION = "Update"
+          this.voucher.DATE = new Date(this.voucher.DATE);
+          this.apiService.getVoucherType(this.voucher.VOUCHERTYPENAME).subscribe(
+            res => {
+              this.posService.saveVoucherType(res);
+              this.posService.savePriceList(this.voucher.PRICELEVEL);
+              if (!(this.voucher.ALLINVENTORYENTRIES_LIST instanceof Array)){
+                const item: ALLINVENTORYENTRIESLIST = this.voucher.ALLINVENTORYENTRIES_LIST;
+                this.voucher.ALLINVENTORYENTRIES_LIST = [];
+                this.voucher.ALLINVENTORYENTRIES_LIST.push(item);
+              }
+              
+              this.posService.saveGodown(this.voucher.ALLINVENTORYENTRIES_LIST[0].BATCHALLOCATIONS_LIST.GODOWNNAME);
+              this.loading = false;
+              this.editMode = true;
+            }
+          )
+          
+        },
+        err => console.log(err)
+      )
+      
+    } else {
+      this.voucher = m;
+      this.loading = false;
+      this.editMode = true;
+      this.posService.deleteVoucher(this.voucher.VOUCHERNUMBER);
+    }
+    
     
   }
 

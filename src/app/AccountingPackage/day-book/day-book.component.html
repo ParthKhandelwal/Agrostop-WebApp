@@ -36,7 +36,7 @@
                       <td></td>
                       <td></td>
                       <td>
-                        <button type="button" class="btn btn-secondary btn-sm" (click) = "getVouchers()">Apply</button>
+                        <button type="button" class="btn btn-secondary btn-sm" (click) = "createVoucherRequest()">Apply</button>
                       </td>
                     </tr>
                     <tr>
@@ -79,6 +79,9 @@
             
             <div class="card-header card-header-primary">
               <h4 class="card-title ">Day Book</h4>
+              <h4 class = "card-title" style="float: right;">{{dayBookTotal() | currency: 'INR'}}</h4>
+              
+              
               <div *ngIf = "voucherPercent < 100">
                 <section class="example-section" >
                   <mat-progress-bar mode="determinate" [value]= "voucherPercent"></mat-progress-bar>
@@ -143,7 +146,7 @@
                           {{ getVoucherTotal(v.LEDGERENTRIES.LEDGER) | currency : 'INR'}}
                         </td>
                         <td>
-                          <button mat-mini-fab aria-label="Example icon-button with a heart icon" (click)="edit(v)">
+                          <button mat-mini-fab aria-label="Example icon-button with a heart icon" (click)="edit(v, true)">
                             <mat-icon>edit</mat-icon>
                           </button>
                         </td>
@@ -213,7 +216,7 @@
                           {{ getTotal(v) | currency : 'INR'}}
                         </td>
                         <td>
-                          <button mat-mini-fab aria-label="Example icon-button with a heart icon" (click)="edit(v)">
+                          <button mat-mini-fab aria-label="Example icon-button with a heart icon" (click)="edit(v, false)">
                             <mat-icon>edit</mat-icon>
                           </button>
                         </td>

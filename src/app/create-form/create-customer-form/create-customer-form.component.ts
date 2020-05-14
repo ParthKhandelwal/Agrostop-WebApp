@@ -6,6 +6,9 @@ import { Customer } from '../../Model/customer';
 import { Address } from '../../Model/address';
 import { ApiService } from '../../shared/api.service';
 import { MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
+import { Observable } from 'rxjs';
+import { startWith, map } from 'rxjs/operators';
+import { FormControl } from '@angular/forms';
 
 
 @Component({
@@ -17,6 +20,11 @@ export class CreateCustomerFormComponent implements OnInit {
 
   addresses: Address[] = [];
   customer: Customer = new Customer();
+  filteredOptions: Observable<any[]>;
+  addressControl = new FormControl();
+
+
+
   constructor( @Inject(MAT_DIALOG_DATA) public data?: any, private dialogRef?: MatDialogRef<CreateCustomerFormComponent>,
   private router? :Router, @Inject(ApiService) private apiService? : ApiService) {
     if (data != null){
@@ -33,11 +41,24 @@ export class CreateCustomerFormComponent implements OnInit {
     this.apiService.getAddresses().subscribe(
       res => {
         this.addresses = res;
+        this.filteredOptions = this.addressControl.valueChanges.pipe(
+          startWith(''),
+          map(value => this.address_filter(value))
+        );
       },
       err=>{
         console.log("Cannot fetch customer at this moment");
       }
     )
+  }
+
+
+  displayFnProduct(user?: any): string | undefined {
+    return user && user.NAME ? user.NAME : '';
+  }
+  private address_filter(value: string): any[] {
+    const filterValue = value.toString().toLowerCase();
+    return this.addresses.filter(option => option.name.toLowerCase().indexOf(filterValue) === 0);
   }
 
   submit(): void{
