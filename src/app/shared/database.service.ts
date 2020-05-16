@@ -209,12 +209,12 @@ export class DatabaseService {
           for (let item of res){
             if (item && item.ENVELOPE && item.ENVELOPE.BODY && item.ENVELOPE.BODY.DATA
               && item.ENVELOPE.BODY.DATA.TALLYMESSAGE && item.ENVELOPE.BODY.DATA.TALLYMESSAGE.STOCKITEM ){
-                this.db.update("items", item.ENVELOPE.BODY.DATA.TALLYMESSAGE.STOCKITEM).then(
-                  res2 => {
+                this.db.update("items", item.ENVELOPE.BODY.DATA.TALLYMESSAGE.STOCKITEM)
+                  
                    index++;
                    this.itemPercent = Math.round((index/length) * 100);
-                  }
-                );
+                  
+              
               }
           }
         },
@@ -239,12 +239,11 @@ export class DatabaseService {
           for (let item of res){
             if (item && item.ENVELOPE && item.ENVELOPE.BODY && item.ENVELOPE.BODY.DATA
               && item.ENVELOPE.BODY.DATA.TALLYMESSAGE && item.ENVELOPE.BODY.DATA.TALLYMESSAGE.LEDGER ){
-                this.db.update("Ledgers", item.ENVELOPE.BODY.DATA.TALLYMESSAGE.LEDGER).then(
-                  res2 => {
+                this.db.update("Ledgers", item.ENVELOPE.BODY.DATA.TALLYMESSAGE.LEDGER)
+             
                    index++;
                    this.ledgerPercent = Math.round((index/length) * 100);
-                  }
-                );
+                
               }
           }
         },
