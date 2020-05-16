@@ -12,6 +12,8 @@ import {_} from 'lodash';
 import { PosService } from 'src/app/shared/pos.service';
 import { Order } from 'src/app/Model/order';
 import { OrderService } from 'src/app/shared/order.service';
+import { DatabaseService } from 'src/app/shared/database.service';
+import { AppComponent } from 'src/app/app.component';
 
 @Component({
   selector: 'customer-selection',
@@ -33,14 +35,16 @@ export class CustomerSelectionComponent implements OnInit {
   @ViewChild('customerField', { static: false }) customerRef: ElementRef;
   @Input('voucher') voucher: VOUCHER;
   @Output() valueChange = new EventEmitter();
+  databaseService: DatabaseService
   constructor(private apiService?: ApiService, private dialog?: MatDialog,
-    private dialogConfig?: MatDialogConfig,private posService?: PosService, private orderService?: OrderService) { }
+    private dialogConfig?: MatDialogConfig, private orderService?: OrderService) {
+      this.databaseService = AppComponent.databaseService
+     }
 
   ngOnInit() {
     console.log(this.voucher);
-    this.posService.openDatabase().then(
-      res => {
-        this.posService.getCustomers().then(
+
+        this.databaseService.getCustomers().then(
           res => {
             this.customers = res
             this.NACustomer.id = "NA";
@@ -58,8 +62,7 @@ export class CustomerSelectionComponent implements OnInit {
             );
           }
         );
-      }
-    ) 
+      
     
     
   }
@@ -107,9 +110,9 @@ export class CustomerSelectionComponent implements OnInit {
     dialogRef.afterClosed().subscribe((result: any) => {
       //@TODO: Save the recently added customer to local storage andto the customer List
       if (result && result.id){
-        this.posService.openDatabase().then( res =>{
-          this.posService.addCustomer(result)
-          this.posService.getCustomers().then(
+  
+          this.databaseService.addCustomer(result)
+          this.databaseService.getCustomers().then(
             res => {
               this.customers = res
               this.filteredOptions = this.customerControl.valueChanges.pipe(
@@ -119,11 +122,7 @@ export class CustomerSelectionComponent implements OnInit {
               this.customerRef.nativeElement.focus();
             }
         )
-      }
-      
      
-        
-      )
       
     }
   },

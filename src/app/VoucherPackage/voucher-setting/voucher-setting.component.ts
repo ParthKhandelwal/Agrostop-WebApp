@@ -4,6 +4,8 @@ import { ApiService } from 'src/app/shared/api.service';
 import { FormControl } from '@angular/forms';
 import { PosService } from 'src/app/shared/pos.service';
 import { User } from 'src/app/Model/user';
+import { DatabaseService } from 'src/app/shared/database.service';
+import { AppComponent } from 'src/app/app.component';
 
 
 @Component({
@@ -27,15 +29,18 @@ export class VoucherSettingComponent implements OnInit {
   pricelevels: any[] = [];
   change : boolean = false;
   godown: string;
+  databaseService: DatabaseService;
 
-  constructor(private apiService?: ApiService, private posService?: PosService) { }
+  constructor(private apiService?: ApiService) {
+    this.databaseService = AppComponent.databaseService;
+   }
 
   ngOnInit() {
-    this.voucherType = this.posService.getVoucherType();
-    this.posClass = this.posService.getPOSClass();
-    this.voucher.PRICELEVEL = this.posService.getPriceList();
+    this.voucherType = this.databaseService.getVoucherType();
+    this.posClass = this.databaseService.getPOSClass();
+    this.voucher.PRICELEVEL = this.databaseService.getPriceList();
 
-    this.godown = this.posService.getGodown();
+    this.godown = this.databaseService.getGodown();
     
     this.date.setValue(new Date());
     this.setVoucher();
@@ -74,11 +79,11 @@ export class VoucherSettingComponent implements OnInit {
     for (let ledger of tempArray){
       if (ledger.NAME){
 
-      this.posService.getLedger(ledger.NAME.content).then(
+      this.databaseService.getLedger(ledger.NAME.content).then(
         res1 =>{
           var res: any;
           if (res1 == null){
-             res = this.posService.saveLedger(ledger.NAME);
+             res = this.databaseService.saveLedger(ledger.NAME);
           } else {
            res = res1
           }

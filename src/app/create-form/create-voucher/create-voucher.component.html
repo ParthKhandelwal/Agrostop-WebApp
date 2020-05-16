@@ -1,8 +1,6 @@
-    <div *ngIf = "!posService.syncingOver() || !posService.upSyncingOver()" style="vertical-align: middle; align-self: center;">
-        <img src="assets/img/agrostop.gif" alt="Saving Voucher..." width="100px" height="100px">
-    </div>
 
-  <div *ngIf = "!posService.syncingOver()"  style="vertical-align: middle; align-self: center; padding-top: 20px; width: 80%;">
+
+  <!-- <div *ngIf = "!posService.syncingOver()"  style="vertical-align: middle; align-self: center; padding-top: 20px; width: 80%;">
     <h6 class="example-h2">Getting Customers : {{posService.customerPercent}} %</h6>
     <section class="example-section">
       <mat-progress-bar mode="determinate" [value]="posService.customerPercent"></mat-progress-bar>
@@ -27,14 +25,14 @@
       <button type="button" class="btn btn-danger" (click) = "reload()" style="vertical-align: middle; align-self: center;">Force Stop</button>
     </div>
 
-  </div>
-
+  </div> -->
+<!-- 
   <div *ngIf = "!posService.upSyncingOver()"  style="vertical-align: middle; align-self: center; padding-top: 20px; width: 80%;">
     <h6 class="example-h2">Syncing : {{posService.upSyncPercent}} %</h6>
     <section class="example-section">
       <mat-progress-bar mode="determinate" [value]="posService.upSyncPercent"></mat-progress-bar>
     </section>
-  </div>
+  </div> -->
  
 
 
@@ -73,7 +71,7 @@
                       
                             <mat-form-field>
                                 <mat-label>Select a Price Level</mat-label>
-                                <mat-select required ngModel (selectionChange) = "this.posService.savePriceList($event.value)" name = "priceSelect">
+                                <mat-select required ngModel (selectionChange) = "this.databaseService.savePriceList($event.value)" name = "priceSelect">
                                         <mat-option value = "">Not Applicable</mat-option>
                                         <mat-option *ngFor = 'let v of user.salesVoucherSettings.priceLists' [value] = "v">
                                             {{v}}
@@ -83,7 +81,7 @@
                         
                             <mat-form-field>
                                 <mat-label>Select a Godown</mat-label>
-                                <mat-select ngModel required name= 'godownSelect' (selectionChange) = "this.posService.saveGodown($event.value)">
+                                <mat-select ngModel required name= 'godownSelect' (selectionChange) = "this.databaseService.saveGodown($event.value)">
                                         <mat-option value = "">Not Applicable</mat-option>
                                         <mat-option *ngFor = 'let v of user.godownList' [value] = "v">
                                             {{v}}

@@ -7,6 +7,8 @@ import { Observable, from } from 'rxjs';
 import { startWith, map, filter } from 'rxjs/operators';
 import { PosService } from 'src/app/shared/pos.service';
 import { MatSelect } from '@angular/material';
+import { DatabaseService } from 'src/app/shared/database.service';
+import { AppComponent } from 'src/app/app.component';
 
 
 @Component({
@@ -36,12 +38,16 @@ export class InventorySelectionComponent implements OnInit {
   @ViewChild('quantityField', { static: false }) quantityRef: ElementRef;
   @ViewChild('invField', { static: false }) productRef: ElementRef;
   @ViewChild('batchField', { static: false }) batchRef: MatSelect;
-  constructor(private apiService?: ApiService, private posService?: PosService) { }
+  databaseService: DatabaseService;
+  constructor(private apiService?: ApiService, ) 
+  { 
+    this.databaseService = AppComponent.databaseService;
+  }
 
   ngOnInit() {
     this.endVoucher = {"NAME": "END OF LIST"}
     
-    this.posService.getItems().then(
+    this.databaseService.getItems().then(
       res => {this.products = res
         console.log(res)
         this.filteredOptions = this.productControl.valueChanges.pipe(
@@ -51,7 +57,7 @@ export class InventorySelectionComponent implements OnInit {
       }
     )
 
-    this.posService.getProductBatch().then(
+    this.databaseService.getProductBatch().then(
       res => {
         console.log(res);
         this.batches = res;
@@ -158,7 +164,7 @@ export class InventorySelectionComponent implements OnInit {
         console.log(this.batchControl.value);
         inventoryEntry.BATCHALLOCATIONS_LIST = new BATCHALLOCATIONSLIST();
         inventoryEntry.BATCHALLOCATIONS_LIST.BATCHNAME = this.batchControl.value.NAME;
-        inventoryEntry.BATCHALLOCATIONS_LIST.GODOWNNAME = this.posService.getGodown();
+        inventoryEntry.BATCHALLOCATIONS_LIST.GODOWNNAME = this.databaseService.getGodown();
         inventoryEntry.BATCHALLOCATIONS_LIST.BILLEDQTY = inventoryEntry.BILLEDQTY;
         inventoryEntry.BATCHALLOCATIONS_LIST.ACTUALQTY = inventoryEntry.ACTUALQTY;
         inventoryEntry.BATCHALLOCATIONS_LIST.AMOUNT = inventoryEntry.RATE * inventoryEntry.BILLEDQTY;

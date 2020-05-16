@@ -329,7 +329,7 @@
                                              name="ledgerNameSelect">
                                             <option selected (value) = "null" ></option>
                                                 <ng-container *ngFor = "let ledger of ledger$ | async">
-                                                    <option (value) = "ledger">{{ledger}}</option>
+                                                    <option (value) = "ledger.ENVELOPE.BODY.DATA.TALLYMESSAGE.LEDGER.NAME">{{ledger.ENVELOPE.BODY.DATA.TALLYMESSAGE.LEDGER.NAME}}</option>
                                                 </ng-container>
                                             </select>
                                             </td>

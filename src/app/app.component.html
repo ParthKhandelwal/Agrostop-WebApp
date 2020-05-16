@@ -1,2 +1,4 @@
-
-<router-outlet></router-outlet>
+<div *ngIf= '!database.syncingOver()' class="crop">
+    <img src="assets/img/agrostop_black.png">
+</div>
+<router-outlet *ngIf = 'database.syncingOver()'></router-outlet>

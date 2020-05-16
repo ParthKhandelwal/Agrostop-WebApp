@@ -5,6 +5,8 @@ import { CookieService } from 'ngx-cookie-service';
 import { ApiService } from '../shared/api.service';
 import { AuthenticationService } from '../shared/authentication.service';
 import { first } from 'rxjs/operators';
+import { DatabaseService } from '../shared/database.service';
+import { AppComponent } from '../app.component';
 
 @Component({
   selector: 'app-login-form',
@@ -21,12 +23,14 @@ export class LoginFormComponent implements OnInit {
   loading = false;
   submitted = false;
   returnUrl: string;
+  databaseService: DatabaseService;
 
   constructor(private apiService?: ApiService, private router?:Router, private cookie?: CookieService,
     private authenticationService?: AuthenticationService, private route?: ActivatedRoute,) {
     if (this.authenticationService.currentUser) {
       this.router.navigate(['/home']);
     }
+    this.databaseService = AppComponent.databaseService;
   }
 
   ngOnInit() {
@@ -41,10 +45,13 @@ export class LoginFormComponent implements OnInit {
     this.loading = true;
     this.authenticationService.authenticate(this.user)
       .subscribe(
-        data => {
+        async data => {
           console.log(data);
           this.invalidPassword = false;
-          this.router.navigateByUrl("/home");
+          this.databaseService.enablePOSMode().then(
+            res => this.router.navigateByUrl("/home")
+          );
+          
         },
         error => {
           if (error.status == 401){

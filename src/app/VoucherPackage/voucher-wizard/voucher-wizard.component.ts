@@ -11,6 +11,8 @@ import { ThemePalette, MatDialog, MatDialogConfig } from '@angular/material';
 import uniqid from 'uniqid'
 import { InvoicePrintViewComponent } from 'src/app/PrintPackage/invoice-print-view/invoice-print-view.component';
 import { UniqueSelectionDispatcher } from '@angular/cdk/collections';
+import { DatabaseService } from 'src/app/shared/database.service';
+import { AppComponent } from 'src/app/app.component';
 
 
 
@@ -41,12 +43,15 @@ export class VoucherWizardComponent implements OnInit, AfterViewInit {
   @Input('voucher') voucher: VOUCHER;
   @Input('date') date: Date;
   printView: boolean = false;
-
+  private databaseService: DatabaseService;
   
-  constructor(public posService?: PosService, private apiService?: ApiService, private dialog?: MatDialog,) { }
+  constructor( private apiService?: ApiService, private dialog?: MatDialog,) {
+    this.databaseService = AppComponent.databaseService;
+   }
   ngAfterViewInit(): void {
 
     if (this.editMode){
+    
       this.switchInventory();
       
     } else if (this.voucher.ORDERNUMBER){
@@ -69,8 +74,8 @@ export class VoucherWizardComponent implements OnInit, AfterViewInit {
     this.voucher = new VOUCHER();
     this.voucher.DATE = new Date();
     this.voucher._REMOTEID = uniqid();
-    const voucherType = this.posService.getVoucherType();
-    const posClass = this.posService.getPOSClass();
+    const voucherType = this.databaseService.getVoucherType();
+    const posClass = this.databaseService.getPOSClass();
     this.voucher.VOUCHERTYPENAME = voucherType.NAME;
     this.voucher._VCHTYPE = voucherType.NAME;
     this.voucher._OBJVIEW = "Invoice Voucher View";
@@ -79,7 +84,7 @@ export class VoucherWizardComponent implements OnInit, AfterViewInit {
     this.voucher.PERSISTEDVIEW = "Invoice Voucher View";
     this.voucher.VOUCHERNUMBER = "TT-" + this.voucher._REMOTEID;
     this.voucher.LEDGERENTRIES_LIST = [];
-    this.voucher.PRICELEVEL = this.posService.getPriceList();
+    this.voucher.PRICELEVEL = this.databaseService.getPriceList();
 
     this.ledgerList = [];
     var tempArray: any[] = [];
@@ -91,11 +96,11 @@ export class VoucherWizardComponent implements OnInit, AfterViewInit {
     for (let ledger of tempArray){
       if (ledger.NAME){
 
-      this.posService.getLedger(ledger.NAME.content).then(
+      this.databaseService.getLedger(ledger.NAME.content).then(
         res1 =>{
           var res: any;
           if (res1 == null){
-             res = this.posService.saveLedger(ledger.NAME);
+             res = this.databaseService.saveLedger(ledger.NAME);
           } else {
            res = res1
           }
@@ -236,7 +241,7 @@ export class VoucherWizardComponent implements OnInit, AfterViewInit {
       res => {
         if (res.RESPONSE.CREATED == 0 && res.RESPONSE.UPDATED == 0){
      
-          this.posService.addCacheVoucher(this.voucher).then(
+          this.databaseService.addCacheVoucher(this.voucher).then(
             () => {
               this.valueChanged.emit("voucherCompleted");
               this.loading = false;
@@ -255,7 +260,7 @@ export class VoucherWizardComponent implements OnInit, AfterViewInit {
       },
       err => {
        
-          this.posService.addCacheVoucher(this.voucher).then(
+          this.databaseService.addCacheVoucher(this.voucher).then(
             () => {
               
               this.valueChanged.emit("voucherCompleted");
@@ -275,23 +280,23 @@ export class VoucherWizardComponent implements OnInit, AfterViewInit {
 
   forceStop(){
     location.reload();
-    this.posService.ledgerPercent = 100;
-    this.posService.customerPercent = 100;
-    this.posService.batchPercent = 100;
-    this.posService.itemPercent = 100;
+    this.databaseService.ledgerPercent = 100;
+    this.databaseService.customerPercent = 100;
+    this.databaseService.batchPercent = 100;
+    this.databaseService.itemPercent = 100;
   }
 
   async downSync(){
       this.syncing = true;
       console.log("Started");
-      await this.posService.enablePOSMode();
+      await this.databaseService.enablePOSMode();
     
   }
 
   upSync(){
     this.upSyncing = true;
     console.log("Started");
-    this.posService.syncAllCacheVouchers();
+    this.databaseService.syncAllCacheVouchers();
   }
 
   printVoucher(){

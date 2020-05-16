@@ -1,4 +1,6 @@
 import { Component } from '@angular/core';
+import { DatabaseService } from './shared/database.service';
+import { ApiService } from './shared/api.service';
 
 @Component({
   selector: 'app-root',
@@ -6,5 +8,11 @@ import { Component } from '@angular/core';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
+  
   title = 'Agrostop-WebApp';
+
+  public static databaseService: DatabaseService;
+  constructor(public database? : DatabaseService){
+    AppComponent.databaseService = database;
+  }
 }

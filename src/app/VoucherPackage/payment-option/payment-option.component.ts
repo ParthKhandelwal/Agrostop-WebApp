@@ -9,6 +9,8 @@ import { getRtlScrollAxisType } from '@angular/cdk/platform';
 import { PosService } from 'src/app/shared/pos.service';
 import { CashTenderedComponent } from '../cash-tendered/cash-tendered.component';
 import { User } from 'src/app/Model/user';
+import { DatabaseService } from 'src/app/shared/database.service';
+import { AppComponent } from 'src/app/app.component';
 
 @Component({
   selector: 'payment-option',
@@ -45,15 +47,17 @@ export class PaymentOptionComponent implements OnInit {
   @ViewChild('ledgerSelection', { static: false }) ledgerSelectionRef: MatAutocomplete;
   @ViewChild('cashLedgerSelection', {static: false}) cashLedgerSelection: ElementRef;
 
-
+    databaseService: DatabaseService;
 
     onlinePayment: boolean = false;
     bankTransfer: boolean = false;
-  constructor(private apiService?: ApiService, private posService?: PosService,private dialog?: MatDialog) { };
+  constructor(private apiService?: ApiService,private dialog?: MatDialog) {
+    this.databaseService = AppComponent.databaseService;
+   };
 
   async ngOnInit() {
 
-    this.user = this.posService.getUser();
+    this.user = this.databaseService.getUser();
     
     await this.calculateTAX();
     console.log(this.voucher);
@@ -63,7 +67,7 @@ export class PaymentOptionComponent implements OnInit {
         if( o.LEDGERNAME != null){
           this.cashLedgers.push({"_NAME" : o.LEDGERNAME});
         } else {
-          this.posService.getLedgers().then(
+          this.databaseService.getLedgers().then(
             res => {
               this.cashLedgers = res;
               console.log(res);
@@ -85,9 +89,9 @@ export class PaymentOptionComponent implements OnInit {
         if( this.giftLedgerEntry.LEDGERNAME != null){
           this.ledgers.push({"_NAME" : this.giftLedgerEntry.LEDGERNAME});
          }else {
-          this.posService.openDatabase().then(
-            res =>{
-              this.posService.getLedgers().then(
+      
+            
+              this.databaseService.getLedgers().then(
                 res => {this.ledgers = res
                   console.log(this.ledgers);
                   this.filteredOptions = this.ledgerControl.valueChanges.pipe(
@@ -96,8 +100,8 @@ export class PaymentOptionComponent implements OnInit {
                   );
                 }
               );
-            }
-          )
+            
+          
          }
          return true;
       }
@@ -225,9 +229,9 @@ export class PaymentOptionComponent implements OnInit {
       for (let item of this.voucher.ALLINVENTORYENTRIES_LIST){
      
         if(ledger.ISDEEMEDPOSITIVE != null && ledger.ISDEEMEDPOSITIVE == "No"){
-          await this.posService.getStockItem(item.STOCKITEMNAME).then(
+          await this.databaseService.getStockItem(item.STOCKITEMNAME).then(
             async res => {
-              await this.posService.getLedger(ledger.LEDGERNAME).then(
+              await this.databaseService.getLedger(ledger.LEDGERNAME).then(
                 led => {
                   ledger.AMOUNT = ledger.AMOUNT + Math.round((item.AMOUNT * this.getTaxRate(res, this.getGSTDutyHead(led)))) / 100; 
                   ledger.AMOUNT = Math.round(ledger.AMOUNT*100) / 100;

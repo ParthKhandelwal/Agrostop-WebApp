@@ -1,9 +1,5 @@
 
-  
-  <div *ngIf= 'loading'>
-    loading...
-  </div>
-  <div *ngIf = '!loading' class="d-flex login-dark" style="height: 650px;background-image: url(&quot;assets/img/login_background.jpg&quot;);">
+  <div *ngIf = '!loading && databaseService.syncingOver()' class="d-flex login-dark" style="height: 650px;background-image: url(&quot;assets/img/login_background.jpg&quot;);">
     <div class="col-4 align-content-start" style="width: 30%;height: 100%;padding: 0;">
       <form class="shadow" method="post"
             data-type="default" #f='ngForm' (submit)="f.form.valid && validate()" accept-charset="UTF-8" role="form"
@@ -27,4 +23,9 @@
                <div class="form-group"><button class="btn btn-primary btn-block" type="submit">Log In</button></div><a class="forgot" href="#">Forgot your email or password?</a>
       </form>
     </div>
+  </div>
+
+
+  <div *ngIf = "!databaseService.syncingOver()" class="d-flex login-dark" style="height: 650px;background-image: url(&quot;assets/img/login_background.jpg&quot;);">
+    Fetching data from tally
   </div>

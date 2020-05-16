@@ -29,6 +29,8 @@ import { User } from 'src/app/Model/user';
 import { analyzeAndValidateNgModules } from '@angular/compiler';
 import { ReceiptService } from 'src/app/shared/receipt.service';
 import { CreateOrderFormComponent } from '../create-order-form/create-order-form.component';
+import { DatabaseService } from 'src/app/shared/database.service';
+import { AppComponent } from 'src/app/app.component';
 
 @Component({
   selector: 'app-create-voucher',
@@ -45,15 +47,17 @@ export class CreateVoucherComponent implements OnInit {
   orderView: boolean;
   user: User;
   upSyncing: boolean;
+  databaseService: DatabaseService;
   downSyncing: boolean;
-  constructor(private apiService: ApiService,private dialog?: MatDialog, public posService?: PosService, 
+  constructor(private dialog?: MatDialog,
     private paymentService?: PaymentServiceService, private receiptService?: ReceiptService) {
-    this.posService.openDatabase();
-    this.user = this.posService.getUser();
+    this.databaseService = AppComponent.databaseService;
+    this.user = this.databaseService.getUser();
+    
   }
 
   ngOnInit() {
-    this.posService.saveCompany();
+    this.databaseService.saveCompany();
     
   }
 
@@ -65,7 +69,7 @@ export class CreateVoucherComponent implements OnInit {
 
   createSalesVoucher(){
     //Check whether all the required data is available
-      this.posService;
+      this.databaseService;
   }
 
 
@@ -73,20 +77,19 @@ export class CreateVoucherComponent implements OnInit {
     console.log(value)
     let service;
     if (value.voucherCategory == "Sales"){
-       service = this.posService;
+       service = this.databaseService;
     }else if (value.voucherCategory == "Payment") {
       service = this.paymentService;
     }else if (value.voucherCategory == "Receipt") {
       console.log(value.voucherCategory);
       service = this.receiptService;
     }else{
-      service = this.posService;
+      service = this.databaseService;
     }
 
     let voucherType: any;
-    let posClass: any;
-    this.apiService.getVoucherType(value.voucherTypeName).subscribe(
-      res => {voucherType = res.ENVELOPE.BODY.DATA.TALLYMESSAGE.VOUCHERTYPE;
+    this.databaseService.getVoucherTypeByName(value.voucherTypeName).then(
+      res => {voucherType = res;
         console.log(service);
         service.saveVoucherType(voucherType);
       if (voucherType["VOUCHERCLASSLIST.LIST"] instanceof Array){
@@ -163,12 +166,12 @@ export class CreateVoucherComponent implements OnInit {
 
   upSyncPOSVouchers(){
     this.upSyncing = true;
-    this.posService.syncAllCacheVouchers();
+    this.databaseService.syncAllCacheVouchers();
   }
 
   async downSyncPOSVouchers(){
     this.downSyncing = true;
-    await this.posService.enablePOSMode();
+    await this.databaseService.enablePOSMode();
   }
 
   upSyncPaymentVouchers(){

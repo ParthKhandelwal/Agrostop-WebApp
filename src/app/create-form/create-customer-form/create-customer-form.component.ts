@@ -38,6 +38,7 @@ export class CreateCustomerFormComponent implements OnInit {
   }
 
   ngOnInit() {
+    console.log(this.customer);
     this.apiService.getAddresses().subscribe(
       res => {
         this.addresses = res;
@@ -54,7 +55,7 @@ export class CreateCustomerFormComponent implements OnInit {
 
 
   displayFnProduct(user?: any): string | undefined {
-    return user && user.NAME ? user.NAME : '';
+    return user && user._id ? user._id : '';
   }
   private address_filter(value: string): any[] {
     const filterValue = value.toString().toLowerCase();
@@ -64,7 +65,6 @@ export class CreateCustomerFormComponent implements OnInit {
   submit(): void{
     this.apiService.addCustomer(this.customer).subscribe(
       res =>{
-    
         this.dialogRef.close(res);
       },
       err =>{

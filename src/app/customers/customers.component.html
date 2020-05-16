@@ -1,88 +1,97 @@
-<div>
+
+
+
+
+
+
   <app-navigation-bar >
-
-
-    <div class="row; htmlPage">
-      <div class="col-lg-8 col-md-12">
-          <div class="card">
-              <div class="card-header card-header-tabs card-header-primary">
-                  <div class="nav-tabs-navigation">
-                      <div class="nav-tabs-wrapper">
-                          <span class="nav-tabs-title">Upload:</span>
-                          <ul class="nav nav-tabs" data-tabs="tabs">
-                              <li class="nav-item active">
-                                  <a href="#profile" class="nav-link" data-toggle="tab">
-                                      <i class="material-icons">bug_report</i> Address
-                                      <div class="ripple-container"></div>
-                                  </a>
-                              </li>
-                              <li class="nav-item">
-                                  <a href="#messages" class="nav-link" data-toggle="tab">
-                                      <i class="material-icons">code</i> Customer
-                                      <div class="ripple-container"></div>
-                                  </a>
-                              </li>
-                              <li class="nav-item">
-                                  <a href="#settings" class="nav-link" data-toggle="tab">
-                                      <i class="material-icons">cloud</i> NA
-                                      <div class="ripple-container"></div>
-                                  </a>
-                              </li>
-                          </ul>
-                      </div>
-                  </div>
-              </div>
-              <div class="card-body">
-                  <div class="tab-content">
-                      <div class="tab-pane active" id="profile">
-                        <p class="mb-0">Upload the address list in csv format. The order of the column should be the following: <br>
-                            <strong style="padding-left: 10px;">Code, Name, Tehsil, District, State, Near Branch</strong> 
-                        </p>
-                        <div style="padding-top: 10px; padding-bottom: 10px; padding-left: 20px;">
-                            <input type="file" class="upload" (change)="changeListener($event.target.files)">
+    <div class="htmlPage">
+    <mat-tab-group>
+        <mat-tab label="Customers">
+            <app-customer-list-view></app-customer-list-view>
+        </mat-tab>
+        <mat-tab label="Addresses"> 
+            <div class="row; htmlPage">
+                <div class="col-lg-8 col-md-12">
+                    <div class="card">
+                        <div class="card-header card-header-tabs card-header-primary">
+                            <div class="nav-tabs-navigation">
+                                <div class="nav-tabs-wrapper">
+                                    <span class="nav-tabs-title">Upload:</span>
+                                    <ul class="nav nav-tabs" data-tabs="tabs">
+                                        <li class="nav-item active">
+                                            <a href="#profile" class="nav-link" data-toggle="tab">
+                                                <i class="material-icons">bug_report</i> Address
+                                                <div class="ripple-container"></div>
+                                            </a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a href="#messages" class="nav-link" data-toggle="tab">
+                                                <i class="material-icons">code</i> Customer
+                                                <div class="ripple-container"></div>
+                                            </a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a href="#settings" class="nav-link" data-toggle="tab">
+                                                <i class="material-icons">cloud</i> NA
+                                                <div class="ripple-container"></div>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
                         </div>
-                        <button mat-button (click) = "upload()">Upload</button>
-                      </div>
-                      <div class="tab-pane" id="messages">
-                          Second Tab
-                      </div>
-                      <div class="tab-pane" id="settings">
-                          Third Tab
-                      </div>
-                  </div>
+                        <div class="card-body">
+                            <div class="tab-content">
+                                <div class="tab-pane active" id="profile">
+                                  <p class="mb-0">Upload the address list in csv format. The order of the column should be the following: <br>
+                                      <strong style="padding-left: 10px;">Code, Name, Tehsil, District, State, Near Branch</strong> 
+                                  </p>
+                                  <div style="padding-top: 10px; padding-bottom: 10px; padding-left: 20px;">
+                                      <input type="file" class="upload" (change)="changeListener($event.target.files)">
+                                  </div>
+                                  <button mat-button (click) = "upload()">Upload</button>
+                                </div>
+                                <div class="tab-pane" id="messages">
+                                    Second Tab
+                                </div>
+                                <div class="tab-pane" id="settings">
+                                    Third Tab
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
               </div>
-          </div>
-      </div>
+              <div class="row" style="padding-left: 30px; padding-top: 30px; padding-right: 30px;">
+                  <div class="card">
+                      <div class="card-content table-responsive table-full-width">
+                        <table class="table">
+                          <thead >
+                              <ng-container *ngFor = "let field of fields">
+                                  <th>{{field}}</th>
+                              </ng-container>
+                              
+                          </thead>
+                          <tbody>
+                              <ng-container *ngFor = "let item of results">
+                                  <tr [ngClass] = "'item[fields.length + 1]' ? 'text-danger' : 'text-success'">
+                                      <ng-container *ngFor = "let i of item">
+                                        <td>{{i}}</td>
+                                      </ng-container>
+                                  </tr>
+                              </ng-container>
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+          
+              </div>
+        </mat-tab>
+    </mat-tab-group>
     </div>
-    <div class="row" style="padding-left: 30px; padding-top: 30px; padding-right: 30px;">
-        <div class="card">
-            <div class="card-content table-responsive table-full-width">
-              <table class="table">
-                <thead >
-                    <ng-container *ngFor = "let field of fields">
-                        <th>{{field}}</th>
-                    </ng-container>
-                    
-                </thead>
-                <tbody>
-                    <ng-container *ngFor = "let item of results">
-                        <tr [ngClass] = "'item[fields.length + 1]' ? 'text-danger' : 'text-success'">
-                            <ng-container *ngFor = "let i of item">
-                              <td>{{i}}</td>
-                            </ng-container>
-                        </tr>
-                    </ng-container>
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-    </div>
-
-
-    <router-outlet></router-outlet>
   </app-navigation-bar>
-</div>
+
 
 
 

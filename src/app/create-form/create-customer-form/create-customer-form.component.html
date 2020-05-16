@@ -47,22 +47,19 @@
                     <div class="row">
                       <div class="col-md-12">
                         <div class="form-group">
-                          <label class="bmd-label-floating">Adress</label>
+                        
                           <mat-form-field class="example-full-width" style="width: 150px;">
-                            <input #invField type="text"
-                                   placeholder="Pick one"
+                            <mat-label>Pick an Address</mat-label>
+                            <input type="text"
                                    name = "address"
-                                   aria-label="Number"
                                    matInput
                                    [formControl]="addressControl"
                                    [(ngModel)] = "customer.addressId"
-                                   [matAutocomplete]="auto"
-                                
-                                   style="width:100% !important" >
+                                   [matAutocomplete]="auto">  
                             <mat-autocomplete [panelWidth]="600" #auto="matAutocomplete"
                                               [displayWith]= "displayFnProduct">
                                             
-                              <mat-option *ngFor="let option of filteredOptions | async" [value]="option.id">
+                              <mat-option *ngFor="let option of filteredOptions | async" [value]="option._id">
                                 <th scope="row">
                                   <div class="p-2">
                                     <div class="ml-3 d-inline-block align-middle">
@@ -73,6 +70,7 @@
                               </mat-option>
                             </mat-autocomplete>
                           </mat-form-field>
+                          
                         </div>
                       </div>
                     </div>
