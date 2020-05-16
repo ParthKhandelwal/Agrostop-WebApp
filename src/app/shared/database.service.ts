@@ -300,18 +300,16 @@ export class DatabaseService {
     }
   
   
-    async saveAddresses(){
-      await this.apiService.getAddresses().subscribe(
-        async res => {
+    saveAddresses(){
+       this.apiService.getAddresses().subscribe(
+         res => {
           const length: number = res.length;
           var index: number = 0;
           for (let address of res){
-             await this.db.update("Addresses", address).then(
-               res2 => {
+              this.db.update("Addresses", address)
                 index++;
                 this.addressPercent = Math.round((index/length) * 100);
-               }
-             );
+              
           }
           
         },
