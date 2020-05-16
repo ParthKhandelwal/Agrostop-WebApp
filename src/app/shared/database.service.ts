@@ -167,7 +167,6 @@ export class DatabaseService {
     saveAllBatches(guid: string){
       this.apiService.getTallyData(guid).subscribe(
         (res) => {
-          this.db.clear("Batches")
           var length: number  = 0;
           var index: number= 0;
           for (let batchList of res){
@@ -204,7 +203,7 @@ export class DatabaseService {
     saveAllItems(guid: string){
       this.apiService.getTallyData(guid).subscribe(
         (res) => {
-          this.db.clear("items");
+    
           const length: number  = res.length;
           var index: number= 0;
           for (let item of res){
