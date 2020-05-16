@@ -176,12 +176,11 @@ export class DatabaseService {
                 length = length + batchList.BATCHLIST.BATCH.length;
                 for (let re of batchList.BATCHLIST.BATCH){
                   re.productId = batchList.productId;
-                  this.db.update("Batches", re).then(
-                    res => {
+                  this.db.update("Batches", re)
+                
                       index++;
                       this.batchPercent =  Math.round((index/length) * 100);
-                    }
-                  )
+                   
                 }
               } else {
                 length++;
