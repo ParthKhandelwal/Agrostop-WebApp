@@ -14,7 +14,7 @@
       <th mat-header-cell *matHeaderCellDef mat-sort-header>Order Id <br> Status</th>
       <td mat-cell *matCellDef="let row">
         {{row.orderId}}<br>
-        <span [ngClass]="row.completed ?  'badge badge-success' : 'badge badge-danger'">{{row.completed ? "Complete" : "Incomplete"}}</span>
+        <span [ngClass]="row.completed ?  'badge badge-success' : 'badge badge-danger'">{{row.voucherId ? "Complete" : "Incomplete"}}</span>
       </td>
     </ng-container>
 
