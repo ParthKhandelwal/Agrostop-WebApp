@@ -26,11 +26,7 @@ export class ProcessOrderFormComponent implements OnInit {
   private router? :Router,auth?: AuthenticationService , @Inject(ApiService) private apiService? : ApiService, 
   private orderService?: OrderService) {
     if (data != null){
-      this.dataOrder = data;
-      this.order =  this.apiService.getOrderDetails(data.id).subscribe(
-        res => {this.order = res},
-        err => {console.log(err)}
-      );
+      this.order = data;
     }
   }
 

@@ -85,7 +85,8 @@ import {MatTabsModule} from '@angular/material/tabs';
 import { PapaParseModule } from 'ngx-papaparse';
 import {NgxImageCompressService} from 'ngx-image-compress';
 import { ProcessOrderFormComponent } from './create-form/process-order-form/process-order-form.component';
-
+import {MatStepperModule} from '@angular/material/stepper';
+import {MatCheckboxModule} from '@angular/material/checkbox';
 @NgModule({
   declarations: [
     AppComponent,
@@ -171,7 +172,9 @@ import { ProcessOrderFormComponent } from './create-form/process-order-form/proc
     NgxPrintModule,
     NgxBarcodeModule,
     PapaParseModule,
-    MatTabsModule
+    MatTabsModule,
+    MatStepperModule,
+    MatCheckboxModule
 
   ],
   providers: [CookieService, ApiService, DatePipe, MatDialog, NgxImageCompressService,AgroStorageService, MatDialogConfig, {
@@ -182,6 +185,6 @@ import { ProcessOrderFormComponent } from './create-form/process-order-form/proc
     ],
   bootstrap: [AppComponent],
   entryComponents: [CreateCustomerFormComponent, CreateTaxDetailsFormComponent, InvoicePrintViewComponent, CashTenderedComponent, CreateStockItemFormComponent, CustomerTableComponent, ConfirmationBoxComponent, CreateAddressFormComponent,
-    PaymentOptionComponent, CustomerViewComponent, ProcessOrderFormComponent]
+    PaymentOptionComponent, CustomerViewComponent, ProcessOrderFormComponent, CreateOrderFormComponent]
 })
 export class AppModule { }

@@ -27,7 +27,7 @@ export class OrderTableComponent implements OnInit {
   completeOrder: boolean = false;
   voucher: VOUCHER;
 
-  displayedColumns = ['id', 'dateOfCreation', 'customerId', 'update'];
+  displayedColumns = ['id', 'dateOfCreation', 'method','customerId', 'update'];
 
 
   constructor(private apiService: ApiService, 
@@ -82,16 +82,19 @@ export class OrderTableComponent implements OnInit {
     const dialogConfig = new MatDialogConfig();
     dialogConfig.autoFocus = true;
     dialogConfig.width = "50%";
-    const dialogRef = this.dialog.open(ProcessOrderFormComponent, {
-      data: order,
+    const dialogRef = this.dialog.open(CreateOrderFormComponent, {
+      data: order.orderId,
       maxHeight: '90vh'
     });
 
     dialogRef.afterClosed().subscribe(
       res => {
-        console.log(res);
-        this.voucher = res;
-        this.completeOrder = true;
+        if (res != null){
+          console.log(res);
+          this.voucher = res;
+          this.completeOrder = true;
+        }
+       
       }
     )
     

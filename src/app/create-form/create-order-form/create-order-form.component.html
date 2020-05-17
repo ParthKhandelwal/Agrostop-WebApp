@@ -1,132 +1,293 @@
-<div class="column">
-  <form #orderForm="ngForm" (ngSubmit) = "saveOrder()">
 
-    <div class="row">
-      <mat-form-field>
-        <mat-label>Select place of supply</mat-label>
-        <mat-select required [(ngModel)] = "order.customerId" name = "placeOfSupply">
-          <mat-option *ngFor = "let godown of godowns$ | async" [value] = "godown">{{godown}}</mat-option>
-        </mat-select>
-      </mat-form-field>
-  
+<form *ngIf = "order">
+<mat-horizontal-stepper linear labelPosition="bottom" #stepper>
+  <mat-step [completed] = "order.customerId">
+
+      <ng-template matStepLabel>Choose Customer</ng-template>
       <mat-form-field class="example-full-width" style="padding-left: 50px;">
-          <input #customerField type="text"
-                 placeholder="Pick one"
-                 aria-label="Number"
-                 matInput
-                 [formControl]="customerControl"
-                 [matAutocomplete]="auto"
-                 [(ngModel)]="this.order.customerId"
-                 style="width:100% !important"
-                 required
-                 >
-          <mat-autocomplete autoActiveFirstOption [panelWidth]="500"
-                            #auto="matAutocomplete"
-                            
-                            [displayWith]="displayFnCustomer()">
-            
-            <mat-option *ngFor="let option of customerFilteredOptions | async" [value]="option.id">
-              <th scope="row">
-                <div class="p-2">
-                  <div class="ml-3 d-inline-block align-middle">
-                    <h6 class="mb-0 font-weight-bold">{{option.name}}</h6>
-                  </div>
+        <input #customerField type="text"
+               placeholder="Pick one"
+               aria-label="Number"
+               matInput
+               [formControl]="customerControl"
+               [matAutocomplete]="auto"
+               [(ngModel)]="this.order.customerId"
+               style="width:100% !important"
+               required
+               >
+        <mat-autocomplete autoActiveFirstOption [panelWidth]="500"
+                          #auto="matAutocomplete"
+                          (optionSelected) = "getCustomer()"
+                          [displayWith]="displayFnCustomer()">
+          
+          <mat-option *ngFor="let option of customerFilteredOptions | async" [value]="option.id">
+            <th scope="row">
+              <div class="p-2">
+                <div class="ml-3 d-inline-block align-middle">
+                  <h6 class="mb-0 font-weight-bold">{{option.name}}</h6>
                 </div>
-              </th>
-              <td class="align-middle font-italics">S/O {{option.fatherName}}</td>
-              <td class="align-middle"><strong>{{option.addressId}}</strong></td>
-            </mat-option>
-          </mat-autocomplete>
-        </mat-form-field>
+              </div>
+            </th>
+            <td class="align-middle font-italics">S/O {{option.fatherName}}</td>
+            <td class="align-middle"><strong>{{option.addressId}}</strong></td>
+          </mat-option>
+        </mat-autocomplete>
+      </mat-form-field>
 
-    </div>
+      <div *ngIf = "customer">
+         <div class="col">
+           <div class="row">
+             <div class="col">
+               <mat-form-field>
+                 <label>Customer Name</label>
+                <input matInput [value] = "customer.name" readonly>
+               </mat-form-field>
+             </div>
+             <div class="col">
+              <mat-form-field>
+                <label>Father's Name</label>
+               <input matInput [value] = "customer.fatherName" readonly>
+              </mat-form-field>
+            </div>
+           </div>
+         
+         
+         <div class="row">
+          <div class="col">
+            <mat-form-field>
+              <label>Phone Number</label>
+             <input matInput [value] = "customer.phoneNumber" readonly>
+            </mat-form-field>
+          </div>
+          <div class="col">
+           <mat-form-field>
+             <label>Land Holding</label>
+            <input matInput [value] = "customer.landHolding" readonly>
+           </mat-form-field>
+         </div>
+         </div>
+        </div>
+      </div>
+
+       
+      <div>
+        <button [disabled] ="!order.customerId"  mat-button matStepperNext>Next</button>
+      </div>
+ 
+  </mat-step>
+  <mat-step [completed] = "order.itemList.length > 0">
+
+      <ng-template matStepLabel>Select Inventory</ng-template>
+      <div class="row">
   
-    <div class="row">
-  
-      <table class="table">
-        <thead>
-            <tr>
-                <th class="text-center">#</th>
-                <th>Name</th>
-                <th>Rate</th>
-                <th>Quantity</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td class="text-center">1</td>
-                <td>
-                  <mat-form-field class="example-full-width" style="width: 150px;">
-                    <input #invField type="text"
-                           placeholder="Pick one"
-                           aria-label="Number"
-                           matInput
-                           [formControl]="productControl"
-                           [matAutocomplete]="autoProduct"
-                           name = "name"
-                           [(ngModel)] = "item.item"
-                        
-                           style="width:100% !important" >
-                    <mat-autocomplete #invField [panelWidth]="300" #autoProduct="matAutocomplete"
-                                      (optionSelected) = "rateRef.nativeElement.focus()"
-                                      [displayWith]= "displayFnProduct">
-                                      
-                      <mat-option *ngFor="let option of filteredOptions | async" [value]="option">
-                        <th scope="row">
-                          <div class="p-2">
-                            <div class="ml-3 d-inline-block align-middle">
-                              <h6 class="mb-0 font-weight-bold">{{option}}</h6>
+        <table class="table">
+          <thead>
+              <tr>
+                  <th class="text-center">#</th>
+                  <th>Name</th>
+                  <th>Rate</th>
+                  <th>Quantity</th>
+              </tr>
+          </thead>
+          <tbody>
+              <tr>
+                  <td class="text-center">{{this.order.itemList.length + 1}}</td>
+                  <td>
+                    <mat-form-field class="example-full-width" style="width: 150px;">
+                      <input #invField type="text"
+                             placeholder="Pick one"
+                             aria-label="Number"
+                             matInput
+                             [formControl]="productControl"
+                             [matAutocomplete]="autoProduct"
+                             name = "name"
+                             style="width:100% !important" >
+                      <mat-autocomplete #invField [panelWidth]="300" #autoProduct="matAutocomplete"
+                                        (optionSelected) = "validateProduct($event.option.value)"
+                                        [displayWith]= "displayFnProduct">
+                                        
+                        <mat-option *ngFor="let option of filteredOptions | async" [value]="option">
+                          <th scope="row">
+                            <div class="p-2">
+                              <div class="ml-3 d-inline-block align-middle">
+                                <h6 class="mb-0 font-weight-bold">{{option.NAME}}</h6>
+                              </div>
                             </div>
-                          </div>
-                        </th>
-                      </mat-option>
-                    </mat-autocomplete>
-                  </mat-form-field>
-                </td>
-                <td>
-                  <mat-form-field>
-                    <input #rateField matInput type = "number" [(ngModel)] = "item.rate"
-                    (keydown.enter) = "quantityRef.nativeElement.focus(); false"
-                    name = "rate">
-                  </mat-form-field>
-                </td>
-                <td>
-                  <mat-form-field>
-                    <input #quantityField matInput type = "number" [(ngModel)] = "item.qty"
-                    (keydown.enter) = "addProduct();productRef.nativeElement.focus(); false"
-                    name = "qty">
-                  </mat-form-field>
-                </td>
-                <td class="td-actions text-right">
-                    <button type="button" rel="tooltip" class="btn btn-danger" (click) = "addProduct()">
-                        <i class="material-icons">add</i>
-                    </button>
-                </td>
-            </tr>
-            <tr *ngFor = "let item of order.itemList; let i = index">
-                <td class="text-center">{{i+1}}</td>
-                <td>{{item.item}}</td>
-                <td>{{item.rate}}</td>
-                <td>{{item.qty}}</td>
-                <td class="td-actions text-right">
-                  
-                    <button type="button" rel="tooltip" class="btn btn-danger btn-round" (click) = "deleteItem(i+1)">
-                        <i class="material-icons">close</i>
-                    </button>
-                </td>
-            </tr>
-            
-        </tbody>
-    </table>
-
-
-    </div>
-    <div class="row">
-      <button mat-button type="submit" [disabled] = "orderForm.invalid">Save</button>
-    </div>
-
-  </form>
-
+                          </th>
+                        </mat-option>
+                      </mat-autocomplete>
+                    </mat-form-field>
+                  </td>
+                  <td>
+                    <mat-form-field>
+                      <input #rateField matInput type = "number" [(ngModel)] = "item.rate"
+                      (keydown.enter) = "quantityRef.nativeElement.focus(); false"
+                      name = "rate">
+                    </mat-form-field>
+                  </td>
+                  <td>
+                    <mat-form-field>
+                      <input #quantityField matInput type = "number" [(ngModel)] = "item.qty"
+                      (keydown.enter) = "addProduct();productRef.nativeElement.focus(); false"
+                      name = "qty">
+                    </mat-form-field>
+                  </td>
+                 
+              </tr>
+              <tr *ngFor = "let item of order.itemList; let i = index">
+                  <td class="text-center">{{i+1}}</td>
+                  <td>{{item.item}}</td>
+                  <td>{{item.rate}}</td>
+                  <td>{{item.qty}}</td>
+                  <td class="td-actions text-right">
+                    
+                      <button type="button" rel="tooltip" class="btn btn-danger btn-round" (click) = "deleteItem(i+1)">
+                          <i class="material-icons">close</i>
+                      </button>
+                  </td>
+              </tr>
+              
+          </tbody>
+      </table>
   
+  
+      </div>
+      <div>
+        <button mat-button matStepperPrevious>Back</button>
+        <button mat-button matStepperNext>Next</button>
+      </div>
+    
+  </mat-step>
 
-</div>
+  <mat-step [completed] = 'order.deliveryDetails.deliveryType 
+  && (order.deliveryDetails.delivered? order.deliveryDetails.deliveryBy : true )'>
+    <ng-template matStepLabel>Delivery Options</ng-template>
+    <div class = "col">
+      <div class = "row">
+        <div class="col">
+          <mat-form-field>
+            <mat-select required name = "deliveryType" placeholder = "Select delivery type" [(ngModel)] = this.order.deliveryDetails.deliveryType>
+              <mat-option value="HOMEDELIVERY"> Home Delivery</mat-option>
+              <mat-option value="STOREPICKUP"> Store Pickup</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+        <div class = "col">
+          <mat-form-field>
+            <mat-label>Expected Delivery Date</mat-label>
+            <input matInput name = "deliveryDate" [matDatepicker]="picker" [(ngModel)] = "order.deliveryDetails.expectedBy">
+            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+            <mat-datepicker #picker></mat-datepicker>
+          </mat-form-field>
+        </div>
+      </div>
+      <div class = "row">
+        <div class = "col">
+          <mat-form-field>
+          <mat-select name = "user" placeholder= "Select a delivery agent" [(ngModel)] = "order.deliveryDetails.deliveryBy">
+            <mat-option [value] = "null">Not Applicable</mat-option>
+            <mat-option *ngFor = "let user of userList$ | async" [value] = "user.userName">{{user.name}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+        </div>
+        <div class = "col">
+            <mat-checkbox name= "delivered" class="example-margin" [(ngModel)]="order.deliveryDetails.delivered">Delivered</mat-checkbox>
+        </div>
+      </div>
+      <div class = "row">
+        <div class = "col">
+          <mat-form-field *ngIf = "order.deliveryDetails.deliveryType == 'HOMEDELIVERY'">
+            <mat-label>Shipping Address</mat-label>
+            <textarea name = "address" [(ngModel)] = "order.deliveryDetails.address" matInput placeholder="Enter the shipping address"></textarea>
+          </mat-form-field>
+        </div>
+        <div class="col">
+          <mat-form-field>
+            <mat-label>Comments</mat-label>
+            <textarea matInput placeholder="Enter any comments for this order" name = "deliveryComments" [(ngModel)] = order.deliveryDetails.comments></textarea>
+          </mat-form-field>
+        </div>
+      </div>
+    </div>
+    <div>
+      <button mat-button matStepperPrevious>Back</button>
+      <button mat-button matStepperNext>Next</button>
+    </div>
+  </mat-step>
+
+  <mat-step [completed] = 'order.paymentDetails.paymentType 
+  && (order.paymentDetails.paymentVerified ? order.paymentDetails.verificationDate && order.paymentDetails.paymentVerifiedBy : true )'>
+    <ng-template matStepLabel>Payment Details</ng-template>
+    <div class ="col">
+      <div class="row">
+        <div class = "col">
+          <mat-form-field>
+            <mat-select required placeholder = "Select a payment type" name = "paymentType" [(ngModel)] = "order.paymentDetails.paymentType">
+              <mat-option value ="ONLINEPAYMENT">Online Payment</mat-option>
+              <mat-option value = "PAYATSTORE">Pay at Store</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+        <div class = "col">
+          <mat-form-field *ngIf = 'order.paymentDetails.paymentVerified'>
+            <mat-label>Payment Verification Date</mat-label>
+            <input matInput [required] = 'order.paymentDetails.paymentVerified' name = "verificationDate" [matDatepicker]="verificationPicker" [(ngModel)] = "order.paymentDetails.verificationDate">
+            <mat-datepicker-toggle matSuffix [for]="verificationPicker"></mat-datepicker-toggle>
+            <mat-datepicker #verificationPicker></mat-datepicker>
+          </mat-form-field>
+        </div>
+      </div>
+      <div class="row">
+        <div class = "col">
+          <mat-checkbox name= "verified" [(ngModel)]="order.paymentDetails.paymentVerified">Payment Verified</mat-checkbox>
+        </div>
+        <div class = "col">
+          <mat-form-field *ngIf = 'order.paymentDetails.paymentVerified'>
+            <mat-select [required] = "order.paymentDetails.paymentVerified" name = "user" placeholder= "Payment verified by" [(ngModel)] = "order.paymentDetails.paymentVerifiedBy">
+              <mat-option [value] = "null">Not Applicable</mat-option>
+              <mat-option *ngFor = "let user of userList$ | async" [value] = "user.userName">{{user.name}}</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+      </div>
+      <div class = "row">
+        <mat-form-field>
+          <mat-label>Comments</mat-label>
+          <textarea matInput placeholder="Enter any comments for this payment" name = "paymentComments" [(ngModel)] = order.paymentDetails.comments></textarea>
+        </mat-form-field>
+      </div>
+    </div>
+    <div>
+      <button mat-button matStepperPrevious>Back</button>
+      <button mat-button matStepperNext>Next</button>
+    </div>
+  </mat-step>
+
+
+  <mat-step>
+    <ng-template matStepLabel>Voucher Details</ng-template>
+    <p>{{order.voucherId? 'Voucher has been created for this order': "Voucher has not been create for this order"}}</p>
+    <div>
+      <button mat-button matStepperPrevious>Back</button>
+      <button mat-button matStepperNext>Next</button>
+    </div>
+  </mat-step>
+
+  <mat-step>
+    <ng-template matStepLabel>Done</ng-template>
+    <p>You are now done.</p>
+    <div>
+      <button mat-button matStepperPrevious>Back</button>
+      <button mat-button (click)="saveOrder()">Save</button>
+    </div>
+  </mat-step>
+</mat-horizontal-stepper>
+
+</form>
+
+
+
+
+
+
+

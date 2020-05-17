@@ -16,8 +16,8 @@ import { CookieService } from 'ngx-cookie-service';
 })
 export class DatabaseService {
 
-  public WEB_SOCKET_URL = "https://agrostop-web-server.herokuapp.com"
-  //public WEB_SOCKET_URL = "http://localhost:5000";
+  //public WEB_SOCKET_URL = "https://agrostop-web-server.herokuapp.com"
+  public WEB_SOCKET_URL = "http://localhost:5000";
   public batchPercent: number = 100;
   public itemPercent: number = 100;
   public ledgerPercent: number = 100;
@@ -93,14 +93,14 @@ export class DatabaseService {
       this.sendRequestForLedgers();
       this.sendRequestForBatches();
 
-      var user: User = this.getUser();
-      for (let name of user.voucherTypes){
-        this.sendRequestForVoucherType(name.voucherTypeName);
-      }
+  var user: User = this.getUser();
+  for (let name of user.voucherTypes){
+    this.sendRequestForVoucherType(name.voucherTypeName);
+  }
       
      
 
-      }
+}
 
 
    getItems(): Promise<any>{

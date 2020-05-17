@@ -1,11 +1,14 @@
-import { Component, OnInit, ElementRef, ViewChild } from '@angular/core';
+import { Component, OnInit, ElementRef, ViewChild, Inject } from '@angular/core';
 import { VoucherService } from '../../shared/voucher.service';
 import { ApiService } from 'src/app/shared/api.service';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { startWith, map } from 'rxjs/operators';
 import { FormControl } from '@angular/forms';
 import { Order, OrderItem } from 'src/app/Model/order';
 import { Customer } from 'src/app/Model/customer';
+import { DatabaseService } from 'src/app/shared/database.service';
+import { AppComponent } from 'src/app/app.component';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material';
 
 @Component({
   selector: 'app-create-order-form',
@@ -22,16 +25,32 @@ export class CreateOrderFormComponent implements OnInit {
   customers: Customer[] = [];
   order:Order;
   godowns$: Observable<any>;
+  userList$: Observable<any>;
   item: OrderItem = new OrderItem();
   @ViewChild('quantityField', { static: false }) quantityRef: ElementRef;
   @ViewChild('invField', { static: false }) productRef: ElementRef;
   @ViewChild('rateField', { static: false }) rateRef: ElementRef;
-
-  constructor(public apiService?: ApiService) { }
+  customer: Customer;
+  databaseService: DatabaseService;
+  constructor(public apiService?: ApiService,@Inject(MAT_DIALOG_DATA) public data?: any, private dialogRef?: MatDialogRef<CreateOrderFormComponent>,) {
+    this.databaseService = AppComponent.databaseService;
+    if (this.data){
+      this.apiService.getOrder(this.data).subscribe(
+        res => {
+          this.order = res;
+          this.getCustomer();
+        },
+        err => console.log(err)
+      )
+    } else {
+      this.order = new Order();
+    }
+   }
 
   ngOnInit() {
-    this.order = new Order();
-    this.apiService.getAllStockItemsForBilling().subscribe(
+
+    
+    this.databaseService.getAllStockItemsForBilling().then(
       res => {this.products = res
         console.log(res)
         this.filteredOptions = this.productControl.valueChanges.pipe(
@@ -41,7 +60,7 @@ export class CreateOrderFormComponent implements OnInit {
       }
     )
 
-    this.apiService.getCustomers().subscribe(
+    this.databaseService.getCustomers().then(
       res => {
         this.customers = res;
         this.customerFilteredOptions = this.customerControl.valueChanges.pipe(
@@ -51,11 +70,22 @@ export class CreateOrderFormComponent implements OnInit {
       }
     )
      
+      this.userList$ = this.apiService.getAllUsers();
 
-    this.godowns$ = this.apiService.getGodownNames();
     
 
   }
+
+  getCustomer(){
+    this.databaseService.getCustomer(this.order.customerId).then(
+      res => {
+        console.log(res);
+        this.customer = res
+      }
+    );
+  }
+
+ 
 
   private customer_filter(value: string): Customer[] {
     const filterValue = value.toString().toLowerCase();
@@ -68,12 +98,27 @@ export class CreateOrderFormComponent implements OnInit {
 
   private product_filter(value: string): any[] {
     const filterValue = value.toString().toLowerCase();
-    return this.products.filter(option => option.toLowerCase().indexOf(filterValue) === 0);
+    return this.products.filter(option => option.NAME.toLowerCase().indexOf(filterValue) === 0);
   }
 
   displayFnProduct(user?: any): string | undefined {
-    return user ? user : '';
+    return user && user.NAME ? user.NAME : '';
   }
+
+
+  validateProduct(product: any){
+    console.log(product);
+    this.item.item = product.NAME;
+    this.item.rate = this.chooseRate(product);
+    this.item.qty = 1;
+    this.productControl.setValue("");
+    this.rateRef.nativeElement.focus();
+  }
+
+  chooseRate(product: any): number{
+    return 0;
+  }
+
 
   saveOrder(){
     this.order.dateOfCreation = new Date();
@@ -90,7 +135,6 @@ export class CreateOrderFormComponent implements OnInit {
   }
 
   addProduct(){
-    console.log(this.item);
     this.order.itemList.push(this.item);
     this.item = new OrderItem();
     this.item.item = ""

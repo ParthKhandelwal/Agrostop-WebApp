@@ -12,6 +12,9 @@ paymentDetails: PaymentDetails;
 
 constructor(){
     this.itemList = [];
+    this.deliveryDetails = new DeliveryDetails();
+    this.paymentDetails = new PaymentDetails();
+    this.orderCharges = [];
 }
 }
 
@@ -28,7 +31,7 @@ export class OrderCharge{
 }
 
 export class PaymentDetails{
-    paymentType: PaymentType;
+    paymentType: string;
     paymentVerified: boolean;
     paymentVerifiedBy: string;
     verificationDate: Date;
@@ -36,7 +39,7 @@ export class PaymentDetails{
 }
 
 export class DeliveryDetails{
-    deliveryType: DeliveryType;
+    deliveryType: string;
     address: string;
     expectedBy: Date;
     delivered: boolean;

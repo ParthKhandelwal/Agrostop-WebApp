@@ -11,10 +11,10 @@
 
     <!-- Id Column -->
     <ng-container matColumnDef="id">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>Order Id</th>
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Order Id <br> Status</th>
       <td mat-cell *matCellDef="let row">
-        {{row.id}}<br>
-        <span [ngClass]="row.completed ? 'text-success' : 'text-danger'">{{row.completed ? "Complete" : "Incomplete"}}</span>
+        {{row.orderId}}<br>
+        <span [ngClass]="row.completed ?  'badge badge-success' : 'badge badge-danger'">{{row.completed ? "Complete" : "Incomplete"}}</span>
       </td>
     </ng-container>
 
@@ -27,15 +27,29 @@
 
     <!-- Land Holding Column -->
     <ng-container matColumnDef="customerId">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>Customer</th>
-      <td mat-cell *matCellDef="let row">{{row.customerId}}</td>
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Customer<br> Address</th>
+      <td mat-cell *matCellDef="let row">
+        {{row.customer? row.customer.name: "NA"}}<br>
+        {{row.address[0] ? row.address[0].name : ""}}
+      </td>
+
+    </ng-container>
+
+    <ng-container matColumnDef="method">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Delivery Type <br> Payment Method</th>
+      <td mat-cell *matCellDef="let row">
+        {{row.deliveryDetails? row.deliveryDetails.deliveryType: "NA"}}<br>
+        {{row.paymentDetails? row.paymentDetails.paymentType: "NA"}}
+      </td>
+
     </ng-container>
 
     <ng-container matColumnDef="update">
       <th mat-header-cell *matHeaderCellDef mat-sort-header></th>
       <td mat-cell *matCellDef="let row">
-        <button mat-button (click) = "process(row)">Process</button>
-          
+        <button mat-icon-button (click) = "process(row)">
+          <mat-icon>more_vert</mat-icon>
+        </button>
       </td>
     </ng-container>
 

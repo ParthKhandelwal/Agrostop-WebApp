@@ -10,6 +10,7 @@ import { ApiService } from './shared/api.service';
 export class AppComponent {
   
   title = 'Agrostop-WebApp';
+  proceed : boolean = false;
 
   public static databaseService: DatabaseService;
   constructor(public database? : DatabaseService){
