@@ -266,7 +266,44 @@
 
   <mat-step>
     <ng-template matStepLabel>Voucher Details</ng-template>
-    <p>{{order.voucherId? 'Voucher has been created for this order': "Voucher has not been create for this order"}}</p>
+    <div *ngIf = "!order.voucherId">
+      <p>If you wish to create a voucher against this order please select the voucher type and price list option.</p>
+      <div ar class="row">
+        <div class="col">
+          <mat-form-field>
+            <mat-select name = "voucherType" placeholder = "Select voucher type" [(ngModel)] = "voucherType">
+              <mat-option *ngFor = "let v of user.voucherTypes" [value] = "v.voucherTypeName">{{v.voucherTypeName}}</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+        <div class="col">
+          <mat-form-field>
+            <mat-select name = "priceList" placeholder = "Select price list" [(ngModel)] = "priceList">
+              <mat-option *ngFor = "let v of user.salesVoucherSettings.priceLists" [value] = "v">{{v}}</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+        <div class="col">
+          <mat-form-field>
+            <mat-select name = "godown" placeholder = "Select a godown" [(ngModel)] = "godown">
+              <mat-option *ngFor = "let v of user.godownList" [value] = "v">{{v}}</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+      </div>
+      <div class="row">
+        <div class = "col" *ngIf = "voucherType && priceList && godown">
+          <mat-checkbox name= "voucher" [(ngModel)]="createVoucherAfterSave">Create a voucher against this order after closing</mat-checkbox>
+        </div>
+
+      </div>
+    </div>
+    
+    <div *ngIf = "order.voucherId">
+      <p>A voucher has successfully created for this order.</p>
+      <p>Voucher Number: {{order.voucherId}}</p>
+    </div>
+    
     <div>
       <button mat-button matStepperPrevious>Back</button>
       <button mat-button matStepperNext>Next</button>

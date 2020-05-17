@@ -142,7 +142,7 @@ export class CustomerSelectionComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(
       (res1: Order) => {
-        this.orderService.convertOrder(res1, this.voucher).then(res => {
+        this.orderService.convertOrder(res1, this.voucher, this.databaseService.getVoucherType(), this.databaseService.getPriceList(), this.databaseService.getGodown()).then(res => {
           this.voucher = res;
         
           console.log(this.voucher);

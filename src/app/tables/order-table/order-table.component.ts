@@ -72,10 +72,6 @@ export class OrderTableComponent implements OnInit {
   }
 
   completeVoucher(order: Order){
-    this.orderService.convertOrder(order, this.voucher).then(res => {
-      this.voucher = res;
-      this.completeOrder = true;
-    });
   }
 
   process(order){
@@ -89,9 +85,10 @@ export class OrderTableComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(
       res => {
-        if (res != null){
-          console.log(res);
-          this.voucher = res;
+        console.log(res);
+        if (res.createVoucher){
+          this.voucher = new VOUCHER();
+          this.orderService.convertOrder(res.order, this.voucher, res.voucherType, res.priceList, res.godown);
           this.completeOrder = true;
         }
        

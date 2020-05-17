@@ -9,6 +9,7 @@ import { Customer } from 'src/app/Model/customer';
 import { DatabaseService } from 'src/app/shared/database.service';
 import { AppComponent } from 'src/app/app.component';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material';
+import { User } from 'src/app/Model/user';
 
 @Component({
   selector: 'app-create-order-form',
@@ -32,7 +33,13 @@ export class CreateOrderFormComponent implements OnInit {
   @ViewChild('rateField', { static: false }) rateRef: ElementRef;
   customer: Customer;
   databaseService: DatabaseService;
-  constructor(public apiService?: ApiService,@Inject(MAT_DIALOG_DATA) public data?: any, private dialogRef?: MatDialogRef<CreateOrderFormComponent>,) {
+  voucherType: string;
+  priceList: string;
+  godown: string;
+  user: User;
+  createVoucherAfterSave: boolean = false;
+  constructor(public apiService?: ApiService,@Inject(MAT_DIALOG_DATA) public data?: any, 
+  private dialogRef?: MatDialogRef<CreateOrderFormComponent>) {
     this.databaseService = AppComponent.databaseService;
     if (this.data){
       this.apiService.getOrder(this.data).subscribe(
@@ -45,6 +52,7 @@ export class CreateOrderFormComponent implements OnInit {
     } else {
       this.order = new Order();
     }
+    this.user = this.databaseService.getUser();
    }
 
   ngOnInit() {
@@ -126,6 +134,9 @@ export class CreateOrderFormComponent implements OnInit {
     this.apiService.saveOrder(this.order).subscribe(
       res => {
         alert("Order Saved");
+        this.dialogRef.close({"createVoucher" : this.createVoucherAfterSave,
+      "voucherType": this.voucherType, "priceList": this.priceList, 
+      "order": this.order, "godown": this.godown})
         
       },
       err => {
@@ -142,6 +153,10 @@ export class CreateOrderFormComponent implements OnInit {
 
   deleteItem(i : number) {
     this.order.itemList.splice(i, 1);
+  }
+
+  createVoucher(){
+
   }
 
 }

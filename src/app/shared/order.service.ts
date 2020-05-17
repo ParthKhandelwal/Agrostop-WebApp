@@ -2,38 +2,64 @@ import { Injectable } from '@angular/core';
 import { ApiService } from './api.service';
 import { Order, OrderItem } from '../Model/order';
 import { VOUCHER, ALLINVENTORYENTRIESLIST, BATCHALLOCATIONSLIST, EXPIRYPERIOD, ACCOUNTINGALLOCATIONSLIST, LEDGERENTRIESLIST, OLDAUDITENTRYIDSLIST } from '../Model/voucher';
-import { PosService } from './pos.service';
 import uniqid from 'uniqid'
+import { DatabaseService } from './database.service';
+import { AppComponent } from '../app.component';
+import { User } from '../Model/user';
 
 @Injectable({
   providedIn: 'root'
 })
 export class OrderService {
 
-  constructor(private apiService?: ApiService, private posService?: PosService) {
-
+  databaseService: DatabaseService
+  constructor(private apiService?: ApiService) {
+    this.databaseService = AppComponent.databaseService;
   }
 
-  public async convertOrder(order: Order, voucher: VOUCHER): Promise<VOUCHER>{
+  public async convertOrder(order: Order, voucher: VOUCHER, voucherType: string, priceList: string, godown: string): Promise<VOUCHER>{
     voucher.ORDERNUMBER = order.id;
     for(let item of order.itemList){
-      await this.addInventoryToVoucher(item, this.posService.getGodown(), voucher);
+      await this.addInventoryToVoucher(item, godown, voucher);
     }
+    const user: User = this.databaseService.getUser();
+    var posClass: any; 
+    await this.databaseService.getVoucherTypeByName(voucherType).then(
+      res=> {
+        var posClassName:string;
+        user.voucherTypes
+        .filter((v) => v.voucherTypeName == voucherType)
+        .forEach((v)=> posClassName = v.voucherClass);
+        var classList: any[] = [];
+        if (res && res["VOUCHERCLASSLIST.LIST"]){
+          if (res["VOUCHERCLASSLIST.LIST"] instanceof Array){
+            classList = res["VOUCHERCLASSLIST.LIST"];
+          }else{
+            classList.push(res["VOUCHERCLASSLIST.LIST"]);
+          }
+        }else {
+          alert("Please choose a different voucher type or contact administrator.")
+          return;
+        }
+        posClass = classList.filter((p) => p.CLASSNAME.content == posClassName)[0];
+      },
+      err => {
+        console.log(err);
+      }
+    );
     console.log(voucher);
     voucher.DATE = new Date();
     voucher._REMOTEID = uniqid();
-    voucher.ENTEREDBY = this.posService.getUser().tallyUserName;
-    const voucherType = this.posService.getVoucherType();
-    const posClass = this.posService.getPOSClass();
-    voucher.VOUCHERTYPENAME = voucherType.NAME;
-    voucher._VCHTYPE = voucherType.NAME;
+    voucher.ENTEREDBY = user.tallyUserName;
+    voucher.VOUCHERTYPENAME = voucherType;
+    voucher._VCHTYPE = voucherType;
     voucher._OBJVIEW = "Invoice Voucher View";
     voucher._ACTION = "Create";
     voucher.CLASSNAME = posClass.CLASSNAME.content;
     voucher.PERSISTEDVIEW = "Invoice Voucher View";
     voucher.VOUCHERNUMBER = "TT-" + voucher._REMOTEID;
     voucher.LEDGERENTRIES_LIST = [];
-    voucher.PRICELEVEL = this.posService.getPriceList();
+    voucher.PRICELEVEL = priceList;
     voucher.BASICBUYERNAME = order.customerId;
     var tempArray: any[] = [];
     if (posClass["LEDGERENTRIESLIST.LIST"] instanceof Array){
@@ -44,11 +70,11 @@ export class OrderService {
     for (let ledger of tempArray){
       if (ledger.NAME){
 
-      await this.posService.getLedger(ledger.NAME.content).then(
+      await this.databaseService.getLedger(ledger.NAME.content).then(
         async res1 =>{
           var res: any;
           if (res1 == null){
-             res = this.posService.saveLedger(ledger.NAME);
+             res = this.databaseService.saveLedger(ledger.NAME);
           } else {
            res = res1
           }
@@ -103,7 +129,6 @@ export class OrderService {
       voucher.LEDGERENTRIES_LIST.push(ledgerEntry);
     }
 
-     console.log(voucher);
      return voucher;
    }
 
@@ -115,13 +140,13 @@ export class OrderService {
     item.RATE = orderItem.rate;
     item.AMOUNT = item.BILLEDQTY * item.RATE;
     item.ISDEEMEDPOSITIVE = "No";
-    return await this.posService.getStockItem(item.STOCKITEMNAME).then(
+    return await this.databaseService.getStockItem(item.STOCKITEMNAME).then(
       async res1 => {
         const res = res1;
         console.log(res)
         item.BATCHALLOCATIONS_LIST = new BATCHALLOCATIONSLIST();
         
-        var batch = (await this.posService.getProductBatch())
+        var batch = (await this.databaseService.getProductBatch())
                         .filter(res => res.productId == orderItem.item)
                         .sort((a,b) => {
                           if (a.EXPIRYDATE && b.EXPIRYDATE){
