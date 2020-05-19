@@ -1,147 +1,244 @@
-<div class="container" id="print-section" ng-hide> 
-  <div *ngIf = "true"> 
-  <div class="col-md-12">
-      <div class="invoice">
-         <!-- begin invoice-company -->
-         <div class="invoice-company text-inverse f-w-600">
-            <span class="pull-right hidden-print">
-           </span>
-            INVOICE
-         </div>
-         <!-- end invoice-company -->
-         <!-- begin invoice-header -->
-         <div class="invoice-header" >
-            <div class="invoice-from" *ngIf = "this.company">
-               <small>Company Details</small>
-               <address class="m-t-5 m-b-5">
-                  <strong class="text-inverse">{{company.REQNAME}}</strong><br>
-                  <ng-container *ngFor = "let address of company['ADDRESS.LIST'].ADDRESS">
-                    {{address}}<br>
-                  </ng-container>
-               </address>
-            </div>
-            <div class="invoice-to">
-               <small>Customer Details</small>
-               <address class="m-t-5 m-b-5">
-                  <strong class="text-inverse">{{customer ? customer.name : voucher.BASICBUYERNAME}}</strong><br>
-                  <strong class="text-inverse">{{customer ? "S/O " + customer.fatherName : ""}}</strong><br>
-                  <div *ngIf ="!address && voucher.ADDRESS_LIST">
-                     <ng-container  *ngFor = "let add of voucher.ADDRESS_LIST">
-                        {{add.ADDRESS}}<br>
-                     </ng-container>
-                  </div >
-                  <div *ngIf ="address">
-                     <ng-container>
-                        {{address.name}}, {{address.districtName}}<br>
-                     </ng-container>
-                  </div >
-                  
-                  
-               </address>
-            </div>
-            <div class="invoice-date">
-               <small>Invoice </small>
-               <div class="date text-inverse m-t-5">{{date | date: 'dd-MMM-yyyy'}}</div>
-               <div class="invoice-detail">
-                  # {{voucher.VOUCHERNUMBER}}<br>
-                  {{voucher.VOUCHERTYPENAME}}<br>
-                  <ngx-barcode (bc-value)="voucher._REMOTEID" [bc-display-value]="true" bc-height ="30px"></ngx-barcode>
+
+<div id="app" class="container invoice">
+   <div class="row">
+       <!-- data -->
+       <div class="col-3 data py-4">
+           <div class="line mt-4 mb-4"></div>
+           <h1>INVOICE</h1>
+
+           <div class="data-box">
+               <div class="data-separator d-block my-2"></div>
+               <h4 class="text-muted font-weight-light">No.</h4>
+               <h4 class="font-weight-bold">{{voucher.VOUCHERNUMBER}}</h4>
+           </div>
+           <div class="data-box">
+               <div class="data-separator d-block my-2"></div>
+               <h4 class="text-muted font-weight-light">INVOICE DATE</h4>
+               <h4 class="font-weight-bold">{{voucher.DATE | date: "MMMM dd, yyyy"}}</h4>
+           </div>
+           <div class="data-box">
+               <div class="data-separator d-block my-2"></div>
+               <h4 class="text-muted font-weight-light">TOTAL</h4>
+               <h4 class="font-weight-bold">{{getTotal() | currency: 'INR'}}</h4>
+           </div>
+           <div class="data-box">
+               <h5 class="font-weight-bold">TERMS</h5>
+               <p>Goods sold once can not be returned.</p>
+               <p>Keep it away from childrens</p>
+           </div>
+           <div class="data-box">
+               <h5 class="font-weight-bold">PAYMENT METHODS</h5>
+               <ng-container *ngFor = "let ledger of voucher.LEDGERENTRIES_LIST">
+                    <div style="width: 100%;" *ngIf = "ledger.POSPAYMENTTYPE && ledger.AMOUNT && ledger.AMOUNT < 0">
+                        <span class="font-weight-light" style="width: 70%; float: left;">{{ledger.POSPAYMENTTYPE == "Gift" ? "On Account" : ledger.POSPAYMENTTYPE}}</span>
+                        <span class="font-weight-light" style="width: 30%; float: right;">{{ledger.AMOUNT * (-1) | currency: 'INR'}}</span>
+                    </div>
+                </ng-container>
+           </div>
+           <div class="data-box align-text-bottom">
+                <img src="http://agrostop.herokuapp.com/assets/img/agrostop_black.png" alt="" class="img-fluid">
+           </div>
+       </div>
+       <!-- end data -->
+
+       <!-- content -->
+       <div class="col-9 content py-4">
+           <div class="line mt-4 mb-4"></div>
+           <!-- header -->
+           <div class="header">
+               <div class="row">
+                   <div class="col-6 from">
+                       <span class="d-block font-weight-light">FROM:</span>
+                       <h4>Tirupati Traders</h4>
+                       <span class="d-block font-weight-light">Jawahar Marg, Nalkheda</span>
+                       <span class="d-block font-weight-light">Some License Number</span>
+                       <span class="d-block font-weight-light">+91 9826648580</span>
+                       <span class="d-block font-weight-light">tirupatitradersnalkheda@gmail.com</span>
+                   </div>
+                   <div class="col-6 to" *ngIf = "customer">
+                       <span class="d-block font-weight-light">TO:</span>
+                       <h4>{{customer.name}}</h4>
+                       <span class="d-block font-weight-light">S/O {{customer.fatherName}}</span>
+                       <div *ngIf = "address">
+                            <span class="d-block font-weight-light">{{address.name}}, {{address.districtName}}</span>
+                            <span class="d-block font-weight-light">{{address.stateName}}</span>
+                       </div>
+                       <span class="d-block font-weight-light">{{customer.customerId}}</span>
+                   </div>
+                   <div class="col-6 to" *ngIf = "!customer">
+                    <span class="d-block font-weight-light">TO:</span>
+                    <h4>{{voucher.BASICBUYERNAME}}</h4>
+                    <span class="d-block font-weight-light">{{voucher.ADDRESS_LIST.ADDRESS}}</span>
+                    
+                </div>
                </div>
-            </div>
-         </div>
-         <!-- end invoice-header -->
-         <!-- begin invoice-content -->
-         <div class="invoice-content">
-            <!-- begin table-responsive -->
-            <div class="table-responsive">
-               <table class="table table-invoice">
-                  <thead>
-                     <tr>
-                        <th>Product</th>
-                        <th class="text-center" width="10%">Batch</th>
-                        <th class="text-center" width="10%">Rate</th>
-                        <th class="text-center" width="10%">QTY</th>
-                        <th class="text-right" width="20%">TOTAL</th>
-                     </tr>
-                  </thead>
-                  <tbody>
-                    <ng-container *ngFor = "let items of stockItems">
-                      <tr>
-                        <td>
-                           <span class="text-inverse">{{items.STOCKITEMNAME}}</span><br>
-                           <small>{{items.tallyObject && items.tallyObject.CATEGORY ? items.tallyObject.CATEGORY.content : ""}}</small>
-                        </td>
-                        <td class="text-center">
-                          <span class="text-inverse">{{items.BATCHALLOCATIONS_LIST.BATCHNAME}}</span> <br>
-                          <small>{{items.BATCHALLOCATIONS_LIST.EXPIRYPERIOD.DATE}}</small>
-                        </td>
-                        <td class="text-center">₹ {{items.RATE}}</td>
-                        <td class="text-center">{{items.ACTUALQTY}}</td>
-                        <td class="text-right">₹ {{items.AMOUNT}}</td>
-                     </tr>
-                    </ng-container>
-                     
-                     
-                  </tbody>
-               </table>
-            </div>
-            <!-- end table-responsive -->
-            <!-- begin invoice-price -->
-            <div class="invoice-price">
-               <div class="invoice-price-left">
-                  <div class="invoice-price-row">
-                     <div class="sub-price">
-                        <small>SUBTOTAL</small>
-                        <span class="text-inverse">₹ {{getSubTotal()}}</span>
-                     </div>
-                     <ng-container *ngFor = "let led of voucher.LEDGERENTRIES_LIST">
-                        <div *ngIf = "led.METHODTYPE == 'GST'">
-                           <div class="sub-price">
-                              <i class="fa fa-plus text-muted"></i>
-                           </div>
-                           <div class="sub-price">
-                              <small>{{led.LEDGERNAME}}</small>
-                              <span class="text-inverse">₹ {{led.AMOUNT}}</span>
-                           </div>
+           </div>
+           <!-- end header -->
+
+           <!-- note -->
+           <!-- <div class="row my-4">
+               <div class="col-12">
+                   <p class="text-justify">Quis sunt mollit nostrud aliqua consectetur voluptate eiusmod proident aute laboris non reprehenderit magna qui. Esse occaecat laboris laborum dolore excepteur enim laboris.</p>
+               </div>
+           </div> -->
+           <!-- end note -->
+
+           <!-- items-header -->
+           <div class="items-header">
+               <div class="row mt-4 items-header font-weight-bold">
+                   <div class="col-12 my-2">
+                       <div class="line"></div>
+                   </div>
+                   <div class="col-4">DESCRIPTION</div>
+                   <div class="col-3 text-center">BATCH</div>
+                   <div class="col-1 text-center">PRICE</div>
+                   <div class="col-2 text-center">QTY</div>
+                   <div class="col-1 text-right">TOTAL</div>
+                   <div class="col-12 my-2">
+                       <div class="line"></div>
+                   </div>
+               </div>
+           </div>
+           <!-- end items-header -->
+
+           <!-- items -->
+           <div class="items">
+               <ng-container *ngFor = "let item of stockItems">
+                    <div class="row mt-2 list-content">
+                        <div class="col-4">
+                            <p class="without-margin">{{item.STOCKITEMNAME}} ({{item.tallyObject && item.tallyObject["GSTDETAILS.LIST"] && item.tallyObject["GSTDETAILS.LIST"].HSNCODE ? item.tallyObject["GSTDETAILS.LIST"].HSNCODE.content: "NA"}})</p>
+                            <p class="without-margin text-muted">
+                                <small>{{item.tallyObject && item.tallyObject.CATEGORY 
+                                    ? item.tallyObject.CATEGORY.content 
+                                    : ""}}</small>
+                            </p>
                         </div>
-                     </ng-container>
-                  </div>
+                        <div class="col-3 text-center">
+                            <p class="without-margin">{{item.BATCHALLOCATIONS_LIST.BATCHNAME}}</p>
+                            <p class="without-margin text-muted">
+                                <small><strong>EXP: </strong>{{item.BATCHALLOCATIONS_LIST.EXPIRYPERIOD.DATE}}</small>
+                            </p>
+                        </div>
+                        <div class="col-1 text-center">{{item.RATE | currency: "INR"}}</div>
+                        <div class="col-2 text-center">{{item.BILLEDQTY}}</div>
+                        <div class="col-1 text-right">{{item.RATE * item.BILLEDQTY | currency: "INR"}}</div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12 my-2">
+                            <div class="line-light"></div>
+                        </div>
+                    </div>
+               </ng-container>
+               
+           </div>
+           <!-- end items -->
+
+           <!-- values -->
+           <div class="values">
+               <div class="row">
+                   <div class="col-12 my-2">
+                       <div class="line"></div>
+                   </div>
                </div>
-               <div class="invoice-price-right">
-                  <small>TOTAL</small> <span class="f-w-600">₹ {{getTotal()}}</span>
+               <div class="row mt-2 list-content">
+                   <div class="col-10 font-weight-bold">
+                       SUBTOTAL
+                   </div>
+                   <div class="col-2 text-right font-weight-bold">{{getSubTotal() | currency: "INR"}}</div>
                </div>
+               <ng-container *ngFor = "let led of voucher.LEDGERENTRIES_LIST">
+                <div *ngIf = "led.METHODTYPE && led.AMOUNT && led.AMOUNT != 0" class="row mt-2 list-content">
+                    <div class="col-10">
+                        {{led.LEDGERNAME}}
+                    </div>
+                    <div class="col-2 text-right">{{led.AMOUNT | currency: 'INR'}}</div>
+                </div>
+               </ng-container>
+               
+                <div class="col-12 my-2">
+                    <div class="line-end"></div>
+                </div>
+               <div class="row mt-2 list-content">
+                   <div class="col-9">
+                       <h3 class="font-weight-bold">TOTAL</h3>
+                   </div>
+                   <div class="col-3 text-right">
+                       <h3 class="font-weight-bold">{{getTotal()| currency:'INR'}}</h3>
+                   </div>
+               </div>
+           </div>
+           <!-- end values -->
+
+
+
+
+           <!-- signature -->
+           <div class="signature my-4" *ngIf= "user">
+               <div class="row">
+                   <div class="col-12 text-right">
+                       <h4 class="font-weight-bold">{{user.name}}</h4>
+                       <span class="d-block font-weight-light">Authorised</span>
+                   </div>
+               </div>
+           </div>
+           <!-- end signature -->
+
+           <div class="items-header">
+                <div class="row mt-4 items-header font-weight-bold">
+                    <div class="col-12 my-2">
+                        <div class="line"></div>
+                    </div>
+                    <div class="col-3">HSNCODE</div>
+                    <div class="col-2 text-center">CGST RATE</div>
+                    <div class="col-2 text-center">CGST AMT</div>
+                    
+                    <div class="col-2 text-right">SGST RATE</div>
+                    <div class="col-2 text-right">SGST AMT</div>
+                    <div class="col-12 my-2">
+                        <div class="line"></div>
+                    </div>
+                </div>
             </div>
-            <!-- end invoice-price -->
-         </div>
-         <!-- end invoice-content -->
-         <!-- begin invoice-note -->
-         <div class="invoice-note">
-            * Make all cheques payable to [Your Company Name]<br>
-            * Payment is due within 30 days<br>
-            * If you have any questions concerning this invoice, contact  [Name, Phone Number, Email]
-         </div>
-         <!-- end invoice-note -->
-         <!-- begin invoice-footer -->
-         <div class="invoice-footer">
-            <p class="text-center m-b-5 f-w-600">
-               THANK YOU FOR YOUR BUSINESS
-            </p>
-            <p class="text-center">
-               <span class="m-r-10"><i class="fa fa-fw fa-lg fa-globe"></i> agrostop.com</span>
-               <span class="m-r-10"><i class="fa fa-fw fa-lg fa-phone-volume"></i></span>
-               <span class="m-r-10"><i class="fa fa-fw fa-lg fa-envelope"></i> {{company ? company.EMAIL.content: ""}}</span>
-            </p>
-         </div>
-         <!-- end invoice-footer -->
-      </div>
+
+           <div *ngIf = "hsnDetails" class = "items">
+            <ng-container *ngFor = "let tax of hsnDetails | keyvalue">
+                <div class="row mt-2 list-content">
+                    <div class="col-3">
+                        <p class="without-margin">{{tax.value.hsnCode}}</p>
+                    </div>
+                    <div class="col-2 text-center">{{tax.value.cgst.rate * 0.01 | percent}}</div>
+                    <div class="col-2 text-center">{{(tax.value.cgst.amount * 0.01 | number: '1.2-2') | currency: 'INR'}}</div>
+                    <div class="col-2 text-right">{{tax.value.sgst.rate * 0.01 | percent}}</div>
+                    <div class="col-2 text-right">{{(tax.value.sgst.amount * 0.01 | number: '1.2-2') | currency: 'INR'}}</div>
+                </div>
+                <div class="row">
+                    <div class="col-12 my-2">
+                        <div class="line-light"></div>
+                    </div>
+                </div>
+           </ng-container>
+           </div>
+
+           <!-- gratitude -->
+           <div class="gratitude text-center my-4">
+               <p class="text-muted">If not already done so, we recommend registering yourself with Agrostop for more tailored experiences.</p>
+               <h2>Thank you</h2>
+           </div>
+           <!-- end gratitude -->
+
+           <!-- pagination -->
+           <!-- <div class="invoice-pagination text-right">
+               <p class="text-muted text-right">Page 1 of 1</p>
+           </div> -->
+           <!-- end pagination -->
+       </div>
+       <!-- end content -->
    </div>
-  </div>
 </div>
 
 <div>
-  <button [useExistingCss]="true"
-  (click) =  "valueChanged.emit('saved')"
-    printSectionId="print-section"
-    ngxPrint mat-button style="float: right;">print</button>
-    <button (click) =  "valueChanged.emit('saved')" mat-button style="float: left;"> cancel</button>
-</div>
+    <button mat-raised-button style="float: right;" [useExistingCss]="true"
+    (click) =  "valueChanged.emit('saved')"
+      printSectionId="app"
+      ngxPrint>print</button>
+  </div>

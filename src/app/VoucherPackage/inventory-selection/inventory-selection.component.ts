@@ -168,7 +168,7 @@ export class InventorySelectionComponent implements OnInit {
         inventoryEntry.BATCHALLOCATIONS_LIST.BILLEDQTY = inventoryEntry.BILLEDQTY;
         inventoryEntry.BATCHALLOCATIONS_LIST.ACTUALQTY = inventoryEntry.ACTUALQTY;
         inventoryEntry.BATCHALLOCATIONS_LIST.AMOUNT = inventoryEntry.RATE * inventoryEntry.BILLEDQTY;
-        inventoryEntry.BATCHALLOCATIONS_LIST.EXPIRYPERIOD = new EXPIRYPERIOD(this.batchControl.value.EXPIRYPERIOD)
+        inventoryEntry.BATCHALLOCATIONS_LIST.EXPIRYPERIOD = new EXPIRYPERIOD(new  Date(this.batchControl.value.EXPIRYDATE));
         
 
         inventoryEntry.AMOUNT = inventoryEntry.RATE * inventoryEntry.BILLEDQTY;
