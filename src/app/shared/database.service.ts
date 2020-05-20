@@ -617,17 +617,22 @@ export class DatabaseService {
           for (let voucher of vouchers){
             this.apiService.saveTallyVoucher(voucher).subscribe(
               res => {
-                console.log('Voucher saved Successfully');
-                index++;
-                this.upSyncPercent = Math.round((index/length)* 100);
-                this.db.delete('cacheVoucher', voucher.VOUCHERNUMBER).then(
-                    () => {
-                      // Do something after delete
-                    },
-                    error => {
-                      console.log(error);
-                    }
-                  );
+                console.log(res);
+                if (res && res.RESPONSE){
+                  if (res.RESPONSE.CREATED == 1 || res.RESPONSE.ALTERED == 1){
+                    index++;
+                    this.upSyncPercent = Math.round((index/length)* 100);
+                    this.db.delete('cacheVoucher', voucher.VOUCHERNUMBER).then(
+                        () => {
+                          // Do something after delete
+                        },
+                        error => {
+                          console.log(error);
+                        }
+                      );
+                  }
+                }
+                
               },
               err => {
                 console.log('Voucher could not be saved');
