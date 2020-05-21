@@ -62,6 +62,17 @@ export class DayBookComponent implements OnInit {
     this.toDate.setValue(new Date());
     this.fromDate.setValue(new Date());
     this.sync();
+    this.posService.openDatabase().then(
+      res =>{
+        this.posService.getAllCacheVouchers().then(
+          (res) => {
+            this.cacheVouchers = res;
+            console.log(res);
+          }
+        );
+       
+      }
+    );
     
   }
 
@@ -169,17 +180,7 @@ export class DayBookComponent implements OnInit {
         }
       )
     
-      this.posService.openDatabase().then(
-        res =>{
-          this.posService.getAllCacheVouchers().then(
-            (res) => {
-              this.cacheVouchers = res;
-              console.log(res);
-            }
-          );
-         
-        }
-      );
+      
      
     
   }
