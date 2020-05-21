@@ -39,29 +39,11 @@ export class CustomerSelectionComponent implements OnInit {
   constructor(private apiService?: ApiService, private dialog?: MatDialog,
     private dialogConfig?: MatDialogConfig, private orderService?: OrderService) {
       this.databaseService = AppComponent.databaseService
+      this.databaseService.openDatabase().then(() => this.getCustomers());
      }
 
   ngOnInit() {
-    console.log(this.voucher);
-
-        this.databaseService.getCustomers().then(
-          res => {
-            this.customers = res
-            this.NACustomer.id = "NA";
-            this.NACustomer.name = "END OF LIST";
-            this.NACustomer.phoneNumber = "NA";
-            this.customers.push(this.NACustomer)
-            this.customerRef.nativeElement.focus();
-            if(this.voucher.BASICBUYERNAME){
-              this.customer = this.customers.filter(obj => obj.id == this.voucher.BASICBUYERNAME)[0];    
-              console.log(this.customer);  
-            }
-            this.filteredOptions = this.customerControl.valueChanges.pipe(
-              startWith(''),
-              map(value => this.customer_filter(value))
-            );
-          }
-        );
+        
       
     
     
@@ -71,7 +53,27 @@ export class CustomerSelectionComponent implements OnInit {
     
 
   }
-  
+
+  getCustomers(){
+    this.databaseService.getCustomers().then(
+      res => {
+        this.customers = res
+        this.NACustomer.id = "NA";
+        this.NACustomer.name = "END OF LIST";
+        this.NACustomer.phoneNumber = "NA";
+        this.customers.push(this.NACustomer)
+        this.customerRef.nativeElement.focus();
+        if(this.voucher.BASICBUYERNAME){
+          this.customer = this.customers.filter(obj => obj.id == this.voucher.BASICBUYERNAME)[0];    
+          console.log(this.customer);  
+        }
+        this.filteredOptions = this.customerControl.valueChanges.pipe(
+          startWith(''),
+          map(value => this.customer_filter(value))
+        );
+      }
+    );
+  }
   
   
 

@@ -1,46 +1,9 @@
+<div class="htmlPage">
+<mat-tab-group>
+    <mat-tab label="Vouchers"> 
+        
 
-
-  <!-- <div *ngIf = "!posService.syncingOver()"  style="vertical-align: middle; align-self: center; padding-top: 20px; width: 80%;">
-    <h6 class="example-h2">Getting Customers : {{posService.customerPercent}} %</h6>
-    <section class="example-section">
-      <mat-progress-bar mode="determinate" [value]="posService.customerPercent"></mat-progress-bar>
-    </section>
-
-    <h6 class="example-h2">Getting Ledgers : {{posService.ledgerPercent}} %</h6>
-    <section class="example-section">
-      <mat-progress-bar mode="determinate" [value]="posService.ledgerPercent"></mat-progress-bar>
-    </section>
-
-    <h6 class="example-h2">Getting Items : {{posService.itemPercent}} %</h6>
-    <section class="example-section">
-      <mat-progress-bar mode="determinate" [value]="posService.itemPercent"></mat-progress-bar>
-    </section>
-
-    <h6 class="example-h2">Getting Batches : {{posService.batchPercent}} %</h6>
-    <section class="example-section">
-      <mat-progress-bar mode="determinate" [value]="posService.batchPercent"></mat-progress-bar>
-    </section>
-    
-    <div>
-      <button type="button" class="btn btn-danger" (click) = "reload()" style="vertical-align: middle; align-self: center;">Force Stop</button>
-    </div>
-
-  </div> -->
-<!-- 
-  <div *ngIf = "!posService.upSyncingOver()"  style="vertical-align: middle; align-self: center; padding-top: 20px; width: 80%;">
-    <h6 class="example-h2">Syncing : {{posService.upSyncPercent}} %</h6>
-    <section class="example-section">
-      <mat-progress-bar mode="determinate" [value]="posService.upSyncPercent"></mat-progress-bar>
-    </section>
-  </div> -->
- 
-
-
-
-
-
-
-
+        
 <div *ngIf = "!(posVoucherView || paymentVoucherView || receiptVoucherView)" style="padding-top: 100px;">
 
     <div class="container d-flex">
@@ -235,3 +198,13 @@
 
 
 
+
+
+
+    </mat-tab>
+    <mat-tab label="Sales Voucher">     
+        <voucher-wizard [(voucher)]="voucher" voucherType = "Sales" (isOrder) ="false"></voucher-wizard>
+    </mat-tab>
+    <mat-tab label="Third"> Content 3 </mat-tab>
+  </mat-tab-group>
+</div>

@@ -87,6 +87,7 @@ import {NgxImageCompressService} from 'ngx-image-compress';
 import { ProcessOrderFormComponent } from './create-form/process-order-form/process-order-form.component';
 import {MatStepperModule} from '@angular/material/stepper';
 import {MatCheckboxModule} from '@angular/material/checkbox';
+import {MatExpansionModule} from '@angular/material/expansion';
 @NgModule({
   declarations: [
     AppComponent,
@@ -174,7 +175,8 @@ import {MatCheckboxModule} from '@angular/material/checkbox';
     PapaParseModule,
     MatTabsModule,
     MatStepperModule,
-    MatCheckboxModule
+    MatCheckboxModule,
+    MatExpansionModule
 
   ],
   providers: [CookieService, ApiService, DatePipe, MatDialog, NgxImageCompressService,AgroStorageService, MatDialogConfig, {

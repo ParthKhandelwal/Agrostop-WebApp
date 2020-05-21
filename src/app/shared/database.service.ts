@@ -44,13 +44,30 @@ export class DatabaseService {
       let objectStore4 = evt.currentTarget.result.createObjectStore('Ledgers', {keyPath: "NAME",autoIncrement: false, unique: true });
       let objectStore7 = evt.currentTarget.result.createObjectStore('Voucher Types', {keyPath: "NAME",autoIncrement: false, unique: true });
 
-      let objectStore5 = evt.currentTarget.result.createObjectStore('Batches', {autoIncrement: true, unique: true });
+      let objectStore5 = evt.currentTarget.result.createObjectStore('Batches', {keyPath : "BATCHID", autoIncrement: false, unique: true });
       let objectStore6 = evt.currentTarget.result.createObjectStore('Addresses', {    keyPath: "_id",autoIncrement: false, unique: true });
 
       //objectStore.createIndex('name', 'name', { unique: false });
       //objectStore.createIndex('email', 'email', { unique: true });
     })
    }
+
+
+   async openDatabase(): Promise<any>{
+    return this.database = this.db.openDatabase(1, evt => {
+      let objectStore = evt.currentTarget.result.createObjectStore('cacheVoucher', { keyPath: "VOUCHERNUMBER",autoIncrement: false, unique:true });
+      let objectStore2 = evt.currentTarget.result.createObjectStore('items', { keyPath: "NAME",autoIncrement: false, unique: true });
+      let objectStore3 = evt.currentTarget.result.createObjectStore('customers', {keyPath: "id", autoIncrement: false, unique: true });
+      let objectStore4 = evt.currentTarget.result.createObjectStore('Ledgers', {keyPath: "NAME",autoIncrement: false, unique: true });
+      let objectStore7 = evt.currentTarget.result.createObjectStore('Voucher Types', {keyPath: "NAME",autoIncrement: false, unique: true });
+
+      let objectStore5 = evt.currentTarget.result.createObjectStore('Batches', {keyPath: "BATCHID", autoIncrement: false, unique: true });
+      let objectStore6 = evt.currentTarget.result.createObjectStore('Addresses', {    keyPath: "_id",autoIncrement: false, unique: true });
+
+      //objectStore.createIndex('name', 'name', { unique: false });
+      //objectStore.createIndex('email', 'email', { unique: true });
+    })
+  }
 
    
 
@@ -513,6 +530,10 @@ export class DatabaseService {
     getProductBatch(): Promise<any[]>{
       return this.db.getAll("Batches");
     }
+
+    getBatches(productId: string): Promise<any>{
+      return this.db.getByIndex("Batches", "productId",productId);
+    }
   
     getLedger(name : string): Promise<any>{
       return this.db.getByKey("Ledgers", name);
@@ -629,7 +650,7 @@ export class DatabaseService {
                         error => {
                           console.log(error);
                         }
-                      );
+                    );
                   }
                 }
                 

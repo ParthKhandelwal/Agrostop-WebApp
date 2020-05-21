@@ -66,11 +66,10 @@
                        <span class="d-block font-weight-light">{{customer.customerId}}</span>
                    </div>
                    <div class="col-6 to" *ngIf = "!customer">
-                    <span class="d-block font-weight-light">TO:</span>
-                    <h4>{{voucher.BASICBUYERNAME}}</h4>
-                    <span class="d-block font-weight-light">{{voucher.ADDRESS_LIST.ADDRESS}}</span>
-                    
-                </div>
+                        <span class="d-block font-weight-light">TO:</span>
+                        <h4>{{voucher.BASICBUYERNAME}}</h4>
+                        <span class="d-block font-weight-light">{{voucher.ADDRESS_LIST ? voucher.ADDRESS_LIST.ADDRESS: ""}}</span>
+                    </div>
                </div>
            </div>
            <!-- end header -->
@@ -206,9 +205,9 @@
                     <div class="col-3">
                         <p class="without-margin">{{tax.value.hsnCode}}</p>
                     </div>
-                    <div class="col-2 text-center">{{tax.value.cgst.rate * 0.01 | percent}}</div>
+                    <div class="col-2 text-center">{{tax.value.cgst.rate}}%</div>
                     <div class="col-2 text-center">{{(tax.value.cgst.amount * 0.01 | number: '1.2-2') | currency: 'INR'}}</div>
-                    <div class="col-2 text-right">{{tax.value.sgst.rate * 0.01 | percent}}</div>
+                    <div class="col-2 text-right">{{tax.value.sgst.rate}}%</div>
                     <div class="col-2 text-right">{{(tax.value.sgst.amount * 0.01 | number: '1.2-2') | currency: 'INR'}}</div>
                 </div>
                 <div class="row">

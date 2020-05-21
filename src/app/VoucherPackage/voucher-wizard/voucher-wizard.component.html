@@ -1,136 +1,443 @@
 
-  <div class="image-container set-full-height custom" style="background-image: url('assets/img/wizard.jpg')">
-   
-    <!--   Big container   -->
-    <div class="container">
-      <div class="row">
-      <div class="col-sm-8 col-sm-offset-2">
+<div>
+<form>
+
+
+  <mat-horizontal-stepper linear = true labelPosition="bottom" #stepper>
+    <mat-step [completed] = "this.voucher.VOUCHERTYPENAME && this.voucher.PRICELEVEL
+     && this.godownName  && this.voucher.DATE">
+        <ng-template matStepLabel>Voucher Details</ng-template>
+        <div class = "row">
+        <div class = "col">
+          <mat-form-field>
+            <mat-label>Select a Voucher Type</mat-label>
+            <mat-select [(ngModel)] = "voucher.VOUCHERTYPENAME" required 
+            name = "voucherTypeSelect" (selectionChange) = "this.databaseService.saveVoucherType($event.value)">
+                    <ng-container *ngFor = 'let v of user.voucherTypes'>
+                        <mat-option [value] = "null">Not Applicable</mat-option>
+                        <mat-option *ngIf = "v.voucherCategory == 'Sales'" [value] = "v.voucherTypeName" >
+                            {{v.voucherTypeName}}
+                        </mat-option>
+                    </ng-container>
+            </mat-select>
+          </mat-form-field>
+        </div>
+          
+
+        <div class ="col">
+          <mat-form-field>
+            <mat-label>Select a Price Level</mat-label>
+            <mat-select required [(ngModel)] = "voucher.PRICELEVEL" name = "priceSelect"
+            (selectionChange) = "this.databaseService.savePriceList($event.value)">
+                    <mat-option [value] = "null">Not Applicable</mat-option>
+                    <mat-option *ngFor = 'let v of user.salesVoucherSettings.priceLists' [value] = "v">
+                        {{v}}
+                    </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
         
-          <!--      Wizard container        -->
-        <div class="wizard-container" >
-            
-            
+    
+        <div class="col">
+          <mat-form-field>
+            <mat-label>Select a Godown</mat-label>
+            <mat-select [(ngModel)] = "godownName" required name= 'godownSelect' (selectionChange) = "databaseService.saveGodown($event.value)">
+                    <mat-option [value] = "null">Not Applicable</mat-option>
+                    <mat-option *ngFor = 'let v of user.godownList' [value] = "v">
+                        {{v}}
+                    </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
 
-          <div class="card wizard-card" data-color="orange" id="wizardProfile">
-
-            <div *ngIf = "loading" style="vertical-align: middle; align-self: center;">
-              <img src="assets/img/agrostop.gif" alt="Saving Voucher..." width="100px" height="100px">
-            </div>
-
-            <div *ngIf = "!loading">
-              <form action="" method="">
-                <!--        You can switch ' data-color="orange" '  with one of the next bright colors: "blue", "green", "orange", "red"          -->
-
-                <div class="wizard-header" *ngIf ="this.voucher != null">
-                  <h3>
-                    <b>SALES</b> INVOICE <br>
-                    <small>
+        <div class = "col">
+          <mat-form-field>
+            <mat-label>Choose a date</mat-label>
+            <input matInput required [(ngModel)] = "voucher.DATE" name = "voucherDate" [matDatepicker]="picker">
+            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+            <mat-datepicker #picker></mat-datepicker>
+          </mat-form-field>
+        </div>
+      </div>
+        
+        <div class="row" style="float: right;">
+          <button autofocus mat-button matStepperNext>Next</button>
+        </div>
+    </mat-step>
+    <mat-step [completed] = "this.customer">
+      
+        <ng-template matStepLabel>Customer Details</ng-template>
+        <div class="row">
+          <div class = "col">
+              <div class="row">
+                <div class = "col">
+                  <mat-form-field class="example-full-width">
+                    <input #customerField type="text"
+                           placeholder="Select Customer"
+                           aria-label="Number"
+                           matInput
+                           [formControl]="customerControl"
+                           [matAutocomplete]="auto"
+                           [(ngModel)]="customer">
+                    <mat-autocomplete autoActiveFirstOption [panelWidth]="500"
+                                      #auto="matAutocomplete"
+                                      (optionSelected) = "addCustomer($event.option.value)"
+                                      [displayWith]="displayFnCustomer">
                       
-                        {{voucher.VOUCHERTYPENAME}}
-                      
-                    </small><br>
-                    
-                    
-                  </h3>
-                </div>
-                
-
-                <div class="wizard-navigation">
-                  
-                  <div class="container-tab wizard-navigation" >
-                    
-                    
-                    
-                    
-                  </div>
-                </div>
-                
-
-                <div style="padding-left: 20px;">
-                  <mat-form-field>
-                    <mat-label>Choose a date</mat-label>
-                    <input matInput [matDatepicker]= "picker" name = "date" [(ngModel)] = 'this.voucher.DATE'>
-                    <mat-datepicker-toggle matSuffix [for]= "picker" ></mat-datepicker-toggle>
-                    <mat-datepicker #picker></mat-datepicker>
+                      <mat-option *ngFor="let option of customerFilteredOptions | async" [value]="option">
+                        <th scope="row">
+                          <div class="p-2">
+                            <div class="ml-3 d-inline-block align-middle">
+                              <h6 class="mb-0 font-weight-bold">{{option.name}}</h6>
+                            </div>
+                          </div>
+                        </th>
+                        <td class="align-middle font-italics">S/O {{option.fatherName}}</td>
+                        <td class="align-middle"><strong>{{option.addressId}}</strong></td>
+                      </mat-option>
+                    </mat-autocomplete>
                   </mat-form-field>
                 </div>
-
-
-
-                <!--VOUCHER SETTINGS-->
-                <div *ngIf = "voucherSettings">
-                <voucher-setting #voucherSettingsComponenet (valueChanged) ="next()"  [(voucher)] = "voucher" [(ledgerList)] = "ledgerList"></voucher-setting>
+                <div class = "col">
+                  <button mat-button color="accent" (click)='createCustomerAction()' name="button" class="createButton">
+                    <mat-icon aria-hidden="false" aria-label="Example home icon">add</mat-icon>
+                  </button>
                 </div>
-
-                
-                
-                    
-
-                <!--CUSTOMER SELECTION-->
-                <div *ngIf="customerSelection">
-                  <customer-selection (valueChange)="next()" [(isOrder)] = "isOrder" [(voucher)]="voucher" ></customer-selection>
-                </div>
-
-                <!--INVENTORY SELECTION-->
-                <div *ngIf="inventorySelection">
-                  <inventory-selection (valueChanged) ="next()" [(isOrder)] ="isOrder" [(voucher)]="voucher" [(productList)] ="productList" [(ledgerList)] = "ledgerList"></inventory-selection>
-                </div>
-
-                <!--PAYMENT-->
-                <div *ngIf="payment && !isOrder">
-                  <payment-option (valueChanged) ="save()" [(isOrder)] = "isOrder" [(voucher)] ="voucher" [(productList)] ="productList"></payment-option>
-                </div>
-
-                <div class="wizard-footer height-wizard">
-                  <div class="pull-right" *ngIf="!(isOrder && inventorySelection)">
-                    <button class='btn btn-next btn-fill btn-warning btn-wd btn-sm' (click)="next()"> Next</button>
+              </div>
+              <div *ngIf = "customer">
+                <div class = "row">
+                  <div class="col">
+                    <mat-form-field>
+                      <label>Name</label>
+                      <input matInput readonly [(ngModel)] = "customer.name" name = "customerName">
+                    </mat-form-field>
                   </div>
-                  <div class="pull-right" *ngIf="isOrder && inventorySelection">
-                    <button class='btn btn-next btn-fill btn-warning btn-wd btn-sm' (click)="save()"> Save</button>
+                  <div class="col">
+                    <mat-form-field>
+                      <label>Father Name</label>
+                      <input matInput readonly [(ngModel)] = "customer.fatherName" name = "customerFatherName">
+                    </mat-form-field>
                   </div>
-
-                  <div class="pull-left">
-                    <button class='btn btn-previous btn-fill btn-default btn-wd btn-sm' name='previous' (click)="previous()" [disabled]="customerSelection">Previous</button>
-                  </div>
-                  <div class="clearfix"></div>
                 </div>
-
-              </form>
+                <div class = "row">
+                  <div class="col">
+                    <mat-form-field>
+                      <label>Phone Number</label>
+                      <input matInput readonly [(ngModel)] = "customer.phoneNumber" name = "phoneNumber">
+                    </mat-form-field>
+                  </div>
+                  <div class="col">
+                    <mat-form-field>
+                      <label>LandHolding</label>
+                      <input matInput readonly [(ngModel)] = "customer.landHolding" name = "customerLandHolding">
+                    </mat-form-field>
+                  </div>
+                </div>
+                <div class = "row" *ngIf = "customer.fullAddress">
+                  <div class="col" >
+                    <mat-form-field>
+                      <label>Village</label>
+                      <input matInput readonly [(ngModel)] = "customer.fullAddress.name" name = "addressName">
+                    </mat-form-field>
+                  </div>
+                  <div class="col">
+                    <mat-form-field>
+                      <label>Tehsil</label>
+                      <input matInput readonly [(ngModel)] = "customer.fullAddress.tehsilName" name = "addressTehsilName">
+                    </mat-form-field>
+                  </div>
+                  <div class="col">
+                    <mat-form-field>
+                      <label>District</label>
+                      <input matInput readonly [(ngModel)] = "customer.fullAddress.districtName" name = "addressDistrictName">
+                    </mat-form-field>
+                  </div>
+                  <div class="col">
+                    <mat-form-field>
+                      <label>State</label>
+                      <input matInput readonly [(ngModel)] = "customer.fullAddress.stateName" name = "addressStateName">
+                    </mat-form-field>
+                  </div>
+                </div>
+              </div>
+              
+            
+          </div>
+          <div class = "col">
+            <div *ngIf = "!customer">
+              
             </div>
+          </div>
+        </div>
+        <div>
+          <button mat-button matStepperPrevious>Back</button>
+          <button mat-button matStepperNext>Next</button>
+        </div>
+    
+    </mat-step>
+
+    <mat-step [completed] = "this.voucher.ALLINVENTORYENTRIES_LIST.length > 0">
+      <ng-template matStepLabel>Inventory Details</ng-template>
+      <div class = "col">
+        <div class = "row">
+            <!-- PRODUCT ENTRY GOES HERE -->
+              <div class="col">
+                <mat-form-field class="example-full-width" style="width: 150px;">
+                  <input #invField type="text"
+                         placeholder="Pick one"
+                         aria-label="Number"
+                         matInput
+                         [formControl]="productControl"
+                         [matAutocomplete]="productAuto"
+                      
+                         style="width:100% !important" >
+                  <mat-autocomplete [panelWidth]="300" #productAuto="matAutocomplete"
+                                    [displayWith]= "displayFnProduct">
+                                   
+                    <mat-option *ngFor="let option of productFilteredOptions | async" [value]="option">
+                      <th scope="row">
+                        <div class="p-2">
+                          <div class="ml-3 d-inline-block align-middle">
+                            <h6 class="mb-0 font-weight-bold">{{option.NAME}}</h6>
+                          </div>
+                        </div>
+                      </th>
+                    </mat-option>
+                  </mat-autocomplete>
+                </mat-form-field>
+              </div>
+              <div class="col">
+                <mat-form-field>
+                  <input #quantityField type= "number" placeholder="Enter Quantity" matInput name ="qty" [formControl] = "qtyControl">
+                </mat-form-field>
+                
+              </div>
+              <div class="col">
+                <mat-form-field *ngIf = "productControl.value">
+                  <input #rateField type= "number" placeholder="Enter Rate" [value] = "getRate(productControl.value).rate" matInput name ="rate" [formControl] = "rateControl">
+                </mat-form-field>
+              </div>
+              <div class="col">
+                <mat-form-field *ngIf = "productControl.value">
+                  <mat-select #batchField placeholder = "Select batch" [formControl] = "batchControl"
+                  (selectionChange) = "validateInventoryEntry()">
+                    <mat-option style="width: 400px;" *ngFor = "let batch of productControl.value.BATCHES" [value] = "batch">
+                      <span>{{batch.NAME}}</span>
+                      <span>
+                        <small style="float: right;">EXP: {{batch.EXPIRYDATE}}</small>
+                      </span>
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </div>
+            
+          
+        </div>
+      <div class="row">
+        <div class="col">
+          <mat-accordion>
+            <mat-expansion-panel *ngFor = "let product of voucher.ALLINVENTORYENTRIES_LIST; let i = index">
+              <mat-expansion-panel-header>
+                <mat-panel-title>
+                  
+                    {{product.STOCKITEMNAME}}
+        
+                  
+                </mat-panel-title>
+                <mat-panel-description>
+                  <div style="float: left;">Qty: {{product.ACTUALQTY}}</div>
+                </mat-panel-description>
+              </mat-expansion-panel-header>
+              <!-- ENTER DESCRIPTION OF THE ITEM HERE -->
+              <div class="col">
+                <div class = "row">
+                  <div class="col">
+                    <mat-form-field>
+                      <input matInput placeholder = "Batch Name" readonly [value] = "product.BATCHALLOCATIONS_LIST.BATCHNAME">
+                    </mat-form-field>
+                  </div>
+                  <div class="col">
+                    <mat-form-field>
+                      <input matInput placeholder = "Batch Expiry Date" readonly [value] = "product.BATCHALLOCATIONS_LIST.EXPIRYPERIOD.DATE">
+                    </mat-form-field>
+                  </div>
+                  
+                </div>
+                <div class="row">
+                  <div class = "col">
+                    <mat-form-field>
+                      <input matInput placeholder = "Rate" readonly [value] = "product.RATE">
+                    </mat-form-field>
+                  </div>
+                  <div class="col">
+                    <button mat-button color="warn" name="button" (click)="this.deleteStockItem(i)">
+                      <mat-icon aria-hidden="false" aria-label="Example home icon">delete</mat-icon>
+                    </button>
+                  </div>
+                  
+                </div>
+                
+              </div>
+              
+              
+            </mat-expansion-panel>
+           
+          </mat-accordion>
+         
+        </div>
+
+        <div class="col" *ngIf = "voucher.ALLINVENTORYENTRIES_LIST && voucher.LEDGERENTRIES_LIST">
+          <mat-accordion>
+            <ng-container  *ngFor = "let ledger of voucher.LEDGERENTRIES_LIST; let i = index">
+              <mat-expansion-panel *ngIf = "!ledger.POSPAYMENTTYPE">
+                <mat-expansion-panel-header>
+                  <mat-panel-title>
+                    
+                      {{ledger.LEDGERNAME}}
+          
+                  </mat-panel-title>
+                  <mat-panel-description>
+                    <div style="float: left;">{{ledger.AMOUNT | currency:'INR'}}</div>
+                  </mat-panel-description>
+                </mat-expansion-panel-header>
+                <!-- ENTER DESCRIPTION OF THE ITEM HERE -->
+                <div class="col">
+                  <div class = "row">
+                    <div class="col">
+                      <mat-form-field> 
+                        <input type = 'number' matInput [name]="ledger.LEDGERNAME" placeholder = "Amount" [readonly] = "ledger.METHODTYPE != 'As User Defined Value'" [(ngModel)] = "ledger.AMOUNT">
+                      </mat-form-field>
+                    </div>
+                    
+                    
+                  </div>
+                  <div class="row">
+                    
+                    
+                  </div>
+                  
+                </div>
+                
+                
+              </mat-expansion-panel>
+            </ng-container>
+           
+          </mat-accordion>
+        </div>
+        
+      </div>
+      </div>
+      
+      <div>
+        <button mat-button matStepperPrevious>Back</button>
+        <button mat-button matStepperNext>Next</button>
+      </div>
+    </mat-step>
+
+    <mat-step [completed] = "getRemainingBalance() == 0">
+      <ng-template matStepLabel>Payment Details</ng-template>
+      <div class="row">
+        <div class="col">
+          <mat-accordion>
+            <ng-container  *ngFor = "let ledger of voucher.LEDGERENTRIES_LIST; let i = index">
+              <mat-expansion-panel *ngIf = "ledger.POSPAYMENTTYPE">
+                <mat-expansion-panel-header>
+                  <mat-panel-title>
+                    
+                      {{ledger.POSPAYMENTTYPE}}
+          
+                  </mat-panel-title>
+                  <mat-panel-description>
+                    <div style="float: left;">{{ledger.AMOUNT | currency:'INR'}}</div>
+                  </mat-panel-description>
+                </mat-expansion-panel-header>
+                <!-- ENTER DESCRIPTION OF THE ITEM HERE -->
+                <div class="col">
+                  <div class = "row">
+                    <div class="col">
+                      <mat-form-field> 
+                        <mat-select placeholder= "Select ledger" [name]="ledger.POSPAYMENTTYPE" [(ngModel)] = "ledger.LEDGERNAME">
+                          <ng-container *ngIf = "ledger.POSPAYMENTTYPE == 'Gift'">
+                            <mat-option *ngFor = "let led of sundryDebtors" [value] = "led.NAME">{{led.NAME}}</mat-option>
+                          </ng-container>
+                          
+                          <ng-container *ngIf = "ledger.POSPAYMENTTYPE == 'Cash'">
+                            <ng-container *ngFor = "let led of user.cashBankProfile">
+                              <mat-option *ngIf = "led.type == 'Cash-in-hand'" [value] = "led.ledger">{{led.ledger}}</mat-option>
+                            </ng-container>
+                          </ng-container>
+
+                          <ng-container *ngIf = "ledger.POSPAYMENTTYPE == 'Card'">
+                            <ng-container *ngFor = "let led of user.cashBankProfile">
+                              <mat-option *ngIf = "led.type == 'Bank Accounts'" [value] = "led.ledger">{{led.ledger}}</mat-option>
+                            </ng-container>
+                          </ng-container>
+                          <ng-container *ngIf = "ledger.POSPAYMENTTYPE == 'Cheque'">
+                            <ng-container *ngFor = "let led of user.cashBankProfile">
+                              <mat-option *ngIf = "led.type == 'Bank Accounts'" [value] = "led.ledger">{{led.ledger}}</mat-option>
+                            </ng-container>
+                          </ng-container>
+                          
+                        </mat-select>
+                      </mat-form-field>
+                    </div>
+                    <div class="col">
+                      <mat-form-field *ngIf = "ledger.LEDGERNAME"> 
+                        <input type = 'number' matInput [name]="ledger.LEDGERNAME" placeholder = "Amount" [(ngModel)] = "ledger.AMOUNT" (ng-value) = "ledger.POSPAYMENTTYPE == 'Cash' ? getRemainingBalance(): 0">
+                      </mat-form-field>
+                    </div>
+                    
+                    
+                  </div>
+                  <div class="row">
+                    
+                    
+                  </div>
+                  
+                </div>
+                
+                
+              </mat-expansion-panel>
+            </ng-container>
+           
+          </mat-accordion>
+        </div>
+        <div class = "col">
+          <div class="row">
+            <div class="col">
+              <mat-form-field>
+                <input matInput placeholder="Total" readonly name="voucherTotal" [value] = "getTotal()">
+              </mat-form-field>
+            </div>
+            <div class="col">
+              <mat-form-field>
+                <input matInput placeholder="Remaining Balance" readonly name="voucherRemainingBalance" [value] = "getRemainingBalance()">
+              </mat-form-field>
             </div>
           </div>
           
-          
+        </div>
+      </div>
 
 
+      <div>
+        <button mat-button matStepperPrevious>Back</button>
+        <button mat-button matStepperNext>Next</button>
+      </div>
+    </mat-step>
 
-          
-          
-        <!-- PAYMENT VOUCHER wizard container -->
+    <mat-step >
+      <ng-template matStepLabel>Done</ng-template>
+      <p>You are now done.</p>
+      <section >
+        <mat-checkbox name ="saveOffline" [(ngModel)]="saveOffline">Save Offline</mat-checkbox>
+      </section>
+      <div>
+        <button mat-button matStepperPrevious>Back</button>
+        <button mat-button (click)=" save(); stepper.reset();">Reset</button>
+      </div>
+    </mat-step>
+  </mat-horizontal-stepper>
 
-
-
-
-
-
-      </div><!-- end row -->
-    </div> <!--  big container -->
-
-
-  </div>
-
- 
-
-
-<!--   Core JS Files   -->
-<script src="assets/js/jquery-2.2.4.min.js" type="text/javascript"></script>
-<script src="assets/js/bootstrap.min.js" type="text/javascript"></script>
-<script src="assets/js/jquery.bootstrap.wizard.js" type="text/javascript"></script>
-
-<!--  Plugin for the Wizard -->
-<script src="assets/js/gsdk-bootstrap-wizard.js"></script>
-
-<!--  More information about jquery.validate here: http://jqueryvalidation.org/	 -->
-<script src="assets/js/jquery.validate.min.js"></script>
-
-
+</form>
+</div>

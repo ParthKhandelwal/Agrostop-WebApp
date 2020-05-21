@@ -184,12 +184,7 @@ export class InventorySelectionComponent implements OnInit {
       
         this.voucher.ALLINVENTORYENTRIES_LIST.push(inventoryEntry);
         this.renew()
-     
-   
-    
-    
-    
-   
+
     
   }
 
