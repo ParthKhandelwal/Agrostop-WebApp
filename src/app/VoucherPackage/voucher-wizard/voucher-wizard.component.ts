@@ -16,6 +16,9 @@ import { AppComponent } from 'src/app/app.component';
 import { FormControl } from '@angular/forms';
 import { timingSafeEqual } from 'crypto';
 import { CreateCustomerFormComponent } from 'src/app/create-form/create-customer-form/create-customer-form.component';
+import { CustomerViewComponent } from 'src/app/view/customer-view/customer-view.component';
+import { Order } from 'src/app/Model/order';
+import { OrderService } from 'src/app/shared/order.service';
 
 
 
@@ -52,7 +55,7 @@ export class VoucherWizardComponent implements OnInit, AfterViewInit {
   @ViewChild('batchField', { static: false }) batchRef: MatSelect;
   saveOffline: boolean = false;
   
-  constructor( private apiService?: ApiService, private dialog?: MatDialog,) {
+  constructor( private apiService?: ApiService, private dialog?: MatDialog, private orderService?: OrderService) {
     this.databaseService = AppComponent.databaseService;
     this.user = this.databaseService.getUser();
     this.databaseService.openDatabase().then(
@@ -233,6 +236,29 @@ export class VoucherWizardComponent implements OnInit, AfterViewInit {
     console.log(this.voucher);
     this.voucher.BASICBUYERNAME = value.id;
     this.voucher.ADDRESS_LIST = new ADDRESSLIST(value.addressId, "","", "");
+  }
+
+  viewCustomerProfile(id) {
+    const dialogConfig = new MatDialogConfig();
+    dialogConfig.autoFocus = true;
+    dialogConfig.width = "50%";
+
+    const dialogRef = this.dialog.open(CustomerViewComponent, {
+      data: id,
+      maxHeight: '90vh'
+    });
+
+    dialogRef.afterClosed().subscribe(
+      (res1: Order) => {
+        this.orderService.convertOrder(res1, this.voucher, this.databaseService.getVoucherType(), this.databaseService.getPriceList(), this.databaseService.getGodown()).then(res => {
+          this.voucher = res;
+        
+          console.log(this.voucher);
+        });
+      }
+    );
+
+    
   }
 
   

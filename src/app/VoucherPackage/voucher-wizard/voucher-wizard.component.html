@@ -12,7 +12,7 @@
           <mat-form-field>
             <mat-label>Select a Voucher Type</mat-label>
             <mat-select [(ngModel)] = "voucher.VOUCHERTYPENAME" required 
-            name = "voucherTypeSelect" (selectionChange) = "this.databaseService.saveVoucherType($event.value)">
+            name = "voucherTypeSelect">
                     <ng-container *ngFor = 'let v of user.voucherTypes'>
                         <mat-option [value] = "null">Not Applicable</mat-option>
                         <mat-option *ngIf = "v.voucherCategory == 'Sales'" [value] = "v.voucherTypeName" >
@@ -28,7 +28,7 @@
           <mat-form-field>
             <mat-label>Select a Price Level</mat-label>
             <mat-select required [(ngModel)] = "voucher.PRICELEVEL" name = "priceSelect"
-            (selectionChange) = "this.databaseService.savePriceList($event.value)">
+            >
                     <mat-option [value] = "null">Not Applicable</mat-option>
                     <mat-option *ngFor = 'let v of user.salesVoucherSettings.priceLists' [value] = "v">
                         {{v}}
@@ -41,7 +41,7 @@
         <div class="col">
           <mat-form-field>
             <mat-label>Select a Godown</mat-label>
-            <mat-select [(ngModel)] = "godownName" required name= 'godownSelect' (selectionChange) = "databaseService.saveGodown($event.value)">
+            <mat-select [(ngModel)] = "godownName" required name= 'godownSelect'>
                     <mat-option [value] = "null">Not Applicable</mat-option>
                     <mat-option *ngFor = 'let v of user.godownList' [value] = "v">
                         {{v}}
@@ -164,9 +164,7 @@
             
           </div>
           <div class = "col">
-            <div *ngIf = "!customer">
-              
-            </div>
+            <button mat-raised-button (click) = "viewCustomerProfile(customer.id)">View Customer Profile</button>
           </div>
         </div>
         <div>
