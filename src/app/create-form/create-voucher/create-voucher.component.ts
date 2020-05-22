@@ -21,7 +21,7 @@ import { CashTenderedComponent } from '../../VoucherPackage/cash-tendered/cash-t
 import { InvoicePrintViewComponent } from '../../PrintPackage/invoice-print-view/invoice-print-view.component';
 import { VoucherService } from '../../shared/voucher.service';
 import { PosService } from '../../shared/pos.service';
-import { AccountingVoucher, ALLINVENTORYENTRIESLIST } from '../../Model/voucher';
+import { AccountingVoucher, ALLINVENTORYENTRIESLIST, PrintConfiguration, LicenseNumbers } from '../../Model/voucher';
 import { VOUCHER } from '../../Model/voucher';
 import { NgxIndexedDB } from 'ngx-indexed-db';
 import { PaymentServiceService } from 'src/app/shared/payment-service.service';
@@ -49,7 +49,9 @@ export class CreateVoucherComponent implements OnInit {
   upSyncing: boolean;
   databaseService: DatabaseService;
   downSyncing: boolean;
+  printConf: PrintConfiguration = new PrintConfiguration();
   constructor(private dialog?: MatDialog,
+    private apiService?: ApiService,
     private paymentService?: PaymentServiceService, private receiptService?: ReceiptService) {
     this.databaseService = AppComponent.databaseService;
     this.user = this.databaseService.getUser();
@@ -201,6 +203,24 @@ export class CreateVoucherComponent implements OnInit {
 
   reload(){
     location.reload();
+  }
+
+  addLicenseNumbers(name:string, number:string){
+    if (name && number){
+      var l = new LicenseNumbers();
+      l.licenseName = name;
+      l.licenseNumber = number;
+      this.printConf.licenseNumbers.push(l);
+    }
+    
+  }
+
+  submitConfig(){
+    this.apiService.savePrintConfiguration(this.printConf).subscribe(
+      (res) => {
+        alert("Saved Successfully")
+      }
+    );
   }
 }
 

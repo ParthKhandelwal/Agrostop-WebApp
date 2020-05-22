@@ -1,13 +1,14 @@
 import { Component, OnInit, Inject, Input, Output, EventEmitter } from '@angular/core';
 import { Customer } from '../../Model/customer';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
-import { VOUCHER, ALLINVENTORYENTRIESLIST } from '../../Model/voucher';
+import { VOUCHER, ALLINVENTORYENTRIESLIST, PrintConfiguration } from '../../Model/voucher';
 import { ApiService } from 'src/app/shared/api.service';
 import { PosService } from 'src/app/shared/pos.service';
 import { Address } from 'src/app/Model/address';
 import { DatabaseService } from 'src/app/shared/database.service';
 import { AppComponent } from 'src/app/app.component';
 import { User } from 'src/app/Model/user';
+
 
 
 
@@ -32,6 +33,7 @@ export class InvoicePrintViewComponent implements OnInit {
   databaseService: DatabaseService;
   user: User;
   hsnDetails: Map<string, PrintTaxItem> = new Map();
+  printConf: PrintConfiguration;
 
   constructor(@Inject(MAT_DIALOG_DATA) public data?: any,private apiService?: ApiService) {
     this.databaseService = AppComponent.databaseService;
@@ -49,6 +51,9 @@ export class InvoicePrintViewComponent implements OnInit {
           );
         }
       );
+      this.databaseService.getPrintConfigurations(this.voucher.VOUCHERTYPENAME).then(
+        res=> this.printConf = res
+      )
       this.stockItems = this.voucher.ALLINVENTORYENTRIES_LIST;
       this.databaseService.getItems().then((re: any[]) =>{
         for (let item of this.stockItems){

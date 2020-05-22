@@ -7,7 +7,7 @@ import * as Stomp from 'stompjs';
 import * as SockJS from 'sockjs-client';
 import { Customer } from '../Model/customer';
 import { Address } from 'cluster';
-import { VOUCHER } from '../Model/voucher';
+import { VOUCHER, PrintConfiguration } from '../Model/voucher';
 import { User } from '../Model/user';
 import { CookieService } from 'ngx-cookie-service';
 
@@ -16,8 +16,8 @@ import { CookieService } from 'ngx-cookie-service';
 })
 export class DatabaseService {
 
-  public WEB_SOCKET_URL = "https://agrostop-web-server.herokuapp.com"
-  //public WEB_SOCKET_URL = "http://localhost:5000";
+  //public WEB_SOCKET_URL = "https://agrostop-web-server.herokuapp.com"
+  public WEB_SOCKET_URL = "http://localhost:5000";
   public batchPercent: number = 100;
   public itemPercent: number = 100;
   public ledgerPercent: number = 100;
@@ -44,9 +44,10 @@ export class DatabaseService {
       let objectStore3 = evt.currentTarget.result.createObjectStore('customers', {keyPath: "id", autoIncrement: false, unique: true });
       let objectStore4 = evt.currentTarget.result.createObjectStore('Ledgers', {keyPath: "NAME",autoIncrement: false, unique: true });
       let objectStore7 = evt.currentTarget.result.createObjectStore('Voucher Types', {keyPath: "NAME",autoIncrement: false, unique: true });
+      let objectStore8 = evt.currentTarget.result.createObjectStore('Addresses', {    keyPath: "_id",autoIncrement: false, unique: true });
 
       let objectStore5 = evt.currentTarget.result.createObjectStore('Batches', {keyPath : "BATCHID", autoIncrement: false, unique: true });
-      let objectStore6 = evt.currentTarget.result.createObjectStore('Addresses', {    keyPath: "_id",autoIncrement: false, unique: true });
+      let objectStore6 = evt.currentTarget.result.createObjectStore('PrintConfiguration', {    keyPath: "voucherType",autoIncrement: false, unique: true });
 
       //objectStore.createIndex('name', 'name', { unique: false });
       //objectStore.createIndex('email', 'email', { unique: true });
@@ -61,9 +62,10 @@ export class DatabaseService {
       let objectStore3 = evt.currentTarget.result.createObjectStore('customers', {keyPath: "id", autoIncrement: false, unique: true });
       let objectStore4 = evt.currentTarget.result.createObjectStore('Ledgers', {keyPath: "NAME",autoIncrement: false, unique: true });
       let objectStore7 = evt.currentTarget.result.createObjectStore('Voucher Types', {keyPath: "NAME",autoIncrement: false, unique: true });
+      let objectStore8 = evt.currentTarget.result.createObjectStore('Addresses', {    keyPath: "_id",autoIncrement: false, unique: true });
 
-      let objectStore5 = evt.currentTarget.result.createObjectStore('Batches', {keyPath: "BATCHID", autoIncrement: false, unique: true });
-      let objectStore6 = evt.currentTarget.result.createObjectStore('Addresses', {    keyPath: "_id",autoIncrement: false, unique: true });
+      let objectStore5 = evt.currentTarget.result.createObjectStore('Batches', {keyPath : "BATCHID", autoIncrement: false, unique: true });
+      let objectStore6 = evt.currentTarget.result.createObjectStore('PrintConfiguration', {    keyPath: "voucherType",autoIncrement: false, unique: true });
 
       //objectStore.createIndex('name', 'name', { unique: false });
       //objectStore.createIndex('email', 'email', { unique: true });
@@ -277,6 +279,17 @@ export class DatabaseService {
             && res.ENVELOPE.BODY.DATA.TALLYMESSAGE && res.ENVELOPE.BODY.DATA.TALLYMESSAGE.VOUCHERTYPE){
               var voucherType = res.ENVELOPE.BODY.DATA.TALLYMESSAGE.VOUCHERTYPE;
               this.db.update("Voucher Types", voucherType);
+              this.apiService.getPrintConfiguration(voucherType.NAME).subscribe(
+                (res)=>{
+                  if(res){
+                    console.log(res)
+                    res.voucherType = voucherType.NAME
+                    this.db.update("PrintConfiguration",res);
+                  }
+                  
+                },
+                err => console.log(err)
+              )
               
               var classList: any[] = [];
               if(voucherType["VOUCHERCLASSLIST.LIST"] instanceof Array){
@@ -420,6 +433,11 @@ export class DatabaseService {
     return await this.db.getAll("items");
     }
   
+
+    getPrintConfigurations(id: string): Promise<PrintConfiguration>{
+      return this.db.getByKey("PrintConfiguration", id);
+    }
+
     getStockItem(str: string): Promise<any>{
       return this.db.getByKey("items", str);
     }
