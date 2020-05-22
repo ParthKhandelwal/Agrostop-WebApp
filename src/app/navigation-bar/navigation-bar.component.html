@@ -171,20 +171,39 @@ The above copyright notice and this permission notice shall be included in all c
                 </a>
               </li>
               <li class="nav-item dropdown">
-                <a class="nav-link" href="http://example.com" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                  <i class="material-icons">notifications</i>
-                  <span class="notification">5</span>
-                  <p class="d-lg-none d-md-block">
-                    Some Actions
-                  </p>
-                </a>
-                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownMenuLink">
-                  <a class="dropdown-item" href="#">Mike John responded to your email</a>
-                  <a class="dropdown-item" href="#">You have 5 new tasks</a>
-                  <a class="dropdown-item" href="#">You're now friend with Andrew</a>
-                  <a class="dropdown-item" href="#">Another Notification</a>
-                  <a class="dropdown-item" href="#">Another One</a>
-                </div>
+    
+                <button mat-icon-button (click) = "updateDatabaseStats()" [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
+                  <mat-icon>sync</mat-icon>
+                </button>
+                <mat-menu #menu="matMenu">
+                  <button mat-menu-item>
+                  
+                    <span>{{numberOfStockItems}} Stock Items</span>
+                  </button>
+                  <button mat-menu-item>
+                 
+                    <span>{{numberOfLedgers}} Ledgers</span>
+                  </button>
+                  <button mat-menu-item>
+              
+                    <span>{{numberOfCustomers}} Customers</span>
+                  </button>
+                  <button mat-menu-item>
+              
+                    <span>{{numberOfAddresses}} Addresses</span>
+                  </button>
+                  <button mat-menu-item>
+              
+                    <span>{{numberOfVoucherTypes}} Voucher Types</span>
+                  </button>
+                  <button mat-menu-item>
+              
+                    <span>{{numberOfBatches}} Batches</span>
+                  </button>
+                  <button mat-menu-item (click) = "deleteDatabase()">Delete local database</button>
+                  <button mat-menu-item (click) = "this.databaseService.enablePOSMode()">Sync Database</button>
+
+                </mat-menu>
               </li>
               <li class="nav-item dropdown">
                 <a class="nav-link" href="javascript:;" id="navbarDropdownProfile" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">

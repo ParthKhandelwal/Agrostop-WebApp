@@ -72,6 +72,11 @@ export class DatabaseService {
     })
   }
 
+  clearDatabse(){
+    this.db.deleteDatabase();
+  }
+
+  
    
 
    maintainConnection(){

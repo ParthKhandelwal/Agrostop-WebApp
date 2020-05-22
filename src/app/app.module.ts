@@ -89,6 +89,7 @@ import {MatStepperModule} from '@angular/material/stepper';
 import {MatCheckboxModule} from '@angular/material/checkbox';
 import {MatExpansionModule} from '@angular/material/expansion';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
+import {MatMenuModule} from '@angular/material/menu';
 @NgModule({
   declarations: [
     AppComponent,
@@ -178,7 +179,8 @@ import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
     MatStepperModule,
     MatCheckboxModule,
     MatExpansionModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    MatMenuModule
   ],
   providers: [CookieService, ApiService, DatePipe, MatDialog, NgxImageCompressService,AgroStorageService, MatDialogConfig, {
       provide: HTTP_INTERCEPTORS,
