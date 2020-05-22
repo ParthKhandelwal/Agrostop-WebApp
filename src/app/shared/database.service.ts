@@ -32,6 +32,7 @@ export class DatabaseService {
   stompClient: any;
   map: Map<string, string> = new Map();
   user: User;
+  numberOfCacheVoucher: number = 0;
 
 
   constructor(private apiService?: ApiService, private cookie?: CookieService) {
@@ -582,16 +583,15 @@ export class DatabaseService {
       
     }
   
-  countCacheVoucher(): number{
+  countCacheVoucher(){
     this.db.count('cacheVoucher').then(
       voucherCount => {
-      return voucherCount;
+        this.numberOfCacheVoucher = voucherCount;
       },
       error => {
         console.log(error);
       }
     );
-    return 0;
   }
   
     getUser(): User{
@@ -629,14 +629,14 @@ export class DatabaseService {
     syncAllCacheVouchers(){
       this.upSyncPercent = 0;
       this.db.getAll('cacheVoucher').then(
-        (vouchers: any[]) => {
+        async (vouchers: any[]) => {
           if (vouchers == null || vouchers.length == 0){
             this.upSyncPercent = 100;
           }
           const length: number = vouchers.length;
           var index: number = 0;
           for (let voucher of vouchers){
-            this.apiService.saveTallyVoucher(voucher).subscribe(
+           await this.apiService.saveTallyVoucher(voucher).subscribe(
               res => {
                 console.log(res);
                 if (res && res.RESPONSE){

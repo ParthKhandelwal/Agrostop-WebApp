@@ -22,7 +22,7 @@ export class InvoicePrintViewComponent implements OnInit {
   @Output("valueChanged") valueChanged = new EventEmitter();
   customer: Customer;
   uniqueHSN: PrintTaxItem[] = [];
-
+  complete:boolean;
   stockItems: any [] =[];
   company: any;
   items$: Promise<any[]>;
@@ -70,6 +70,7 @@ export class InvoicePrintViewComponent implements OnInit {
             taxItem.cgst.amount = taxItem.cgst.amount + this.calculateCGST(item);
             taxItem.sgst.amount = taxItem.sgst.amount + this.calculateSGST(item);
           }
+          this.complete = true;
         }
       })
       

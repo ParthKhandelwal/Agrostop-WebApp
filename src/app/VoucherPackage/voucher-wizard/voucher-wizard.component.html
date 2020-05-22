@@ -1,6 +1,7 @@
 
 <div>
-<form>
+  <mat-spinner *ngIf = "saving"></mat-spinner>
+<form *ngIf = "!saving">
 
 
   <mat-horizontal-stepper linear = true labelPosition="bottom" #stepper>
@@ -11,11 +12,12 @@
         <div class = "col">
           <mat-form-field>
             <mat-label>Select a Voucher Type</mat-label>
-            <mat-select [(ngModel)] = "voucher.VOUCHERTYPENAME" required 
-            name = "voucherTypeSelect">
+            <mat-select [(ngModel)] = "voucherType" required 
+            name = "voucherTypeSelectSales" (selectionChange) = "getVoucherType($event.value)">
+                    <mat-option [value] = "null">Not Applicable</mat-option>
                     <ng-container *ngFor = 'let v of user.voucherTypes'>
-                        <mat-option [value] = "null">Not Applicable</mat-option>
-                        <mat-option *ngIf = "v.voucherCategory == 'Sales'" [value] = "v.voucherTypeName" >
+                        
+                        <mat-option  *ngIf = "v.voucherCategory == 'Sales'" [value] = "v" >
                             {{v.voucherTypeName}}
                         </mat-option>
                     </ng-container>
@@ -28,7 +30,7 @@
           <mat-form-field>
             <mat-label>Select a Price Level</mat-label>
             <mat-select required [(ngModel)] = "voucher.PRICELEVEL" name = "priceSelect"
-            >
+            (selectionChange) = "this.databaseService.savePriceList($event.value); setNewVoucher()">
                     <mat-option [value] = "null">Not Applicable</mat-option>
                     <mat-option *ngFor = 'let v of user.salesVoucherSettings.priceLists' [value] = "v">
                         {{v}}
@@ -41,7 +43,8 @@
         <div class="col">
           <mat-form-field>
             <mat-label>Select a Godown</mat-label>
-            <mat-select [(ngModel)] = "godownName" required name= 'godownSelect'>
+            <mat-select [(ngModel)] = "godownName" required name= 'godownSelect'
+            (selectionChange) = "this.databaseService.saveGodown($event.value); setNewVoucher()">
                     <mat-option [value] = "null">Not Applicable</mat-option>
                     <mat-option *ngFor = 'let v of user.godownList' [value] = "v">
                         {{v}}
@@ -59,6 +62,19 @@
           </mat-form-field>
         </div>
       </div>
+
+        <div class = "row">
+          <div class="col" *ngIf = "(createOnline$() | async) && databaseService.numberOfCacheVoucher">
+            <div class="row">
+              <p>There are currently {{databaseService.numberOfCacheVoucher}} vouchers offline</p><br>
+              
+            </div>
+            <button mat-button  (click) = "this.databaseService.syncAllCacheVouchers()">
+              <mat-icon>cloud_upload</mat-icon> Upload Vouchers
+            </button>
+            
+          </div>
+        </div>
         
         <div class="row" style="float: right;">
           <button autofocus mat-button matStepperNext>Next</button>
@@ -164,11 +180,13 @@
             
           </div>
           <div class = "col">
-            <button mat-raised-button (click) = "viewCustomerProfile(customer.id)">View Customer Profile</button>
+            <div  *ngIf = "customer && customer.id">
+              <button mat-raised-button (click) = "viewCustomerProfile(customer.id)">View Customer Profile</button>
+            </div>
           </div>
         </div>
         <div>
-          <button mat-button matStepperPrevious>Back</button>
+          <button mat-button matStepperPrevious >Back</button>
           <button mat-button matStepperNext>Next</button>
         </div>
     
@@ -381,7 +399,7 @@
                     </div>
                     <div class="col">
                       <mat-form-field *ngIf = "ledger.LEDGERNAME"> 
-                        <input type = 'number' matInput [name]="ledger.LEDGERNAME" placeholder = "Amount" [(ngModel)] = "ledger.AMOUNT" (ng-value) = "ledger.POSPAYMENTTYPE == 'Cash' ? getRemainingBalance(): 0">
+                        <input type = 'number' matInput [name]="ledger.LEDGERNAME" placeholder = "Amount"  [(ngModel)] = "ledger.AMOUNT" (ng-value) = "ledger.POSPAYMENTTYPE == 'Cash' ? getRemainingBalance(): 0">
                       </mat-form-field>
                     </div>
                     

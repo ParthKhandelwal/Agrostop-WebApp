@@ -88,6 +88,7 @@ import { ProcessOrderFormComponent } from './create-form/process-order-form/proc
 import {MatStepperModule} from '@angular/material/stepper';
 import {MatCheckboxModule} from '@angular/material/checkbox';
 import {MatExpansionModule} from '@angular/material/expansion';
+import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 @NgModule({
   declarations: [
     AppComponent,
@@ -176,8 +177,8 @@ import {MatExpansionModule} from '@angular/material/expansion';
     MatTabsModule,
     MatStepperModule,
     MatCheckboxModule,
-    MatExpansionModule
-
+    MatExpansionModule,
+    MatProgressSpinnerModule
   ],
   providers: [CookieService, ApiService, DatePipe, MatDialog, NgxImageCompressService,AgroStorageService, MatDialogConfig, {
       provide: HTTP_INTERCEPTORS,

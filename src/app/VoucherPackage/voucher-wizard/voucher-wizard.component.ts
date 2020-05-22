@@ -1,12 +1,12 @@
 import { Component, OnInit, Input, EventEmitter, Output, ViewChild, AfterViewInit, ElementRef } from '@angular/core';
 import { VOUCHER, LEDGERENTRIESLIST, OLDAUDITENTRYIDSLIST, ALLINVENTORYENTRIESLIST, BATCHALLOCATIONSLIST, EXPIRYPERIOD, ACCOUNTINGALLOCATIONSLIST, ADDRESSLIST } from '../../Model/voucher';
 import { VoucherService } from '../../shared/voucher.service';
-import { User } from '../../Model/user';
+import { User, VoucherTypeClass } from '../../Model/user';
 import { Customer } from '../../Model/customer';
 import { ApiService } from '../../shared/api.service';
 import { PosService } from 'src/app/shared/pos.service';
 import { merge, fromEvent, Observable, Observer, of, from } from 'rxjs';
-import { map, filter, startWith } from 'rxjs/operators';
+import { map, filter, startWith, flatMap } from 'rxjs/operators';
 import { ThemePalette, MatDialog, MatDialogConfig, MatSelect } from '@angular/material';
 import uniqid from 'uniqid'
 import { InvoicePrintViewComponent } from 'src/app/PrintPackage/invoice-print-view/invoice-print-view.component';
@@ -49,17 +49,22 @@ export class VoucherWizardComponent implements OnInit, AfterViewInit {
   customer: Customer;
   @Input("voucher") voucher: VOUCHER;
   @ViewChild('quantityField', { static: false }) quantityRef: ElementRef;
+  @ViewChild('quantityField', { static: false }) customerRef: ElementRef;
   @ViewChild('rateField', { static: false }) rateRef: ElementRef;
 
   @ViewChild('invField', { static: false }) productRef: ElementRef;
   @ViewChild('batchField', { static: false }) batchRef: MatSelect;
   saveOffline: boolean = false;
+  voucherType: VoucherTypeClass; 
+  saving:boolean;
+  cacheVoucher: number;
   
   constructor( private apiService?: ApiService, private dialog?: MatDialog, private orderService?: OrderService) {
     this.databaseService = AppComponent.databaseService;
     this.user = this.databaseService.getUser();
     this.databaseService.openDatabase().then(
-      () => this.setNewVoucher(),
+      () => {this.setNewVoucher()
+      },
     )
     
    }
@@ -142,14 +147,22 @@ export class VoucherWizardComponent implements OnInit, AfterViewInit {
   }
 
   setNewVoucher(){
+    
+    this.databaseService.countCacheVoucher();
     this.customer = new Customer();
     this.renew();
     this.godownName = this.databaseService.getGodown();
+    const voucherType = this.databaseService.getVoucherType();
+    const posClass = this.databaseService.getPOSClass();
+    const priceList = this.databaseService.getPriceList();
+    this.voucherType = this.user.voucherTypes.filter((v) => v.voucherTypeName == voucherType.NAME)[0];
+    if (!voucherType && !posClass && !this.godownName && !priceList ){
+      return;
+    }
     this.voucher = new VOUCHER();
     this.voucher.DATE = new Date();
     this.voucher._REMOTEID = uniqid();
-    const voucherType = this.databaseService.getVoucherType();
-    const posClass = this.databaseService.getPOSClass();
+    
     this.voucher.VOUCHERTYPENAME = voucherType.NAME;
     this.voucher._VCHTYPE = voucherType.NAME;
     this.voucher._OBJVIEW = "Invoice Voucher View";
@@ -158,7 +171,7 @@ export class VoucherWizardComponent implements OnInit, AfterViewInit {
     this.voucher.PERSISTEDVIEW = "Invoice Voucher View";
     this.voucher.VOUCHERNUMBER = "TT-" + this.voucher._REMOTEID;
     this.voucher.LEDGERENTRIES_LIST = [];
-    this.voucher.PRICELEVEL = this.databaseService.getPriceList();
+    this.voucher.PRICELEVEL = priceList;
 
     this.ledgerList = [];
     var tempArray: any[] = [];
@@ -231,6 +244,45 @@ export class VoucherWizardComponent implements OnInit, AfterViewInit {
 
   }
 
+  getVoucherType(value){
+    
+    const service = this.databaseService;
+    
+
+    let voucherType: any;
+    this.databaseService.getVoucherTypeByName(value.voucherTypeName).then(
+      res => {voucherType = res;
+        console.log(service);
+        service.saveVoucherType(voucherType);
+      if (voucherType["VOUCHERCLASSLIST.LIST"] instanceof Array){
+        var found : boolean = false;
+        for (let item of voucherType["VOUCHERCLASSLIST.LIST"]){
+          console.log(item.CLASSNAME.content);
+          console.log()
+          if (item.CLASSNAME.content == value.voucherClass){
+            service.saveClass(item);
+            this.setNewVoucher();
+            found = true;
+          }
+        }
+        if (!found){
+          alert("The POS Class does not exists. Please ask administrator to update your profile.")
+        }
+      } else {
+        if (voucherType["VOUCHERCLASSLIST.LIST"].CLASSNAME.content == value.voucherClass){
+          service.saveClass(voucherType["VOUCHERCLASSLIST.LIST"]);
+        }else {
+          alert("The POS Class does not exists. Please ask administrator to update your profile.")
+        }
+      }
+
+      },
+      err => {
+        console.log(err);
+      }
+    )
+    
+  }
 
   addCustomer(value){
     console.log(this.voucher);
@@ -263,7 +315,12 @@ export class VoucherWizardComponent implements OnInit, AfterViewInit {
 
   
   save() {
-    
+    this.saving = true;
+    this.voucher.LEDGERENTRIES_LIST.map((ledger) => {
+      if (ledger.POSPAYMENTTYPE){
+        ledger.AMOUNT = ledger.AMOUNT * (-1);
+      }
+    });
 
     if (this.saveOffline){
       this.databaseService.addCacheVoucher(this.voucher).then(
@@ -278,6 +335,7 @@ export class VoucherWizardComponent implements OnInit, AfterViewInit {
           if (res && res.RESPONSE){
           if (res.RESPONSE.CREATED == 1 || res.RESPONSE.UPDATED == 1){
             alert("Voucher Saved to Tally Successfully")
+            this.saving = false
             this.printVoucher();
           } else {
             
@@ -285,6 +343,7 @@ export class VoucherWizardComponent implements OnInit, AfterViewInit {
             this.databaseService.addCacheVoucher(this.voucher).then(
               () => {
                 this.printVoucher();
+                this.saving = false;
               }
             )
             
@@ -293,6 +352,7 @@ export class VoucherWizardComponent implements OnInit, AfterViewInit {
           this.databaseService.addCacheVoucher(this.voucher).then(
             () => {
               this.printVoucher();
+              this.saving = false;
             }
           )
         }
@@ -303,6 +363,7 @@ export class VoucherWizardComponent implements OnInit, AfterViewInit {
               () => {
                 
                 this.printVoucher();
+                this.saving = false;
           
                 
               }
