@@ -327,6 +327,7 @@ export class VoucherWizardComponent implements OnInit, AfterViewInit {
         () => {
           console.log("Saving Voucher locally...")
           this.printVoucher();
+          this.saving = false;
         }
       )
     }else {
