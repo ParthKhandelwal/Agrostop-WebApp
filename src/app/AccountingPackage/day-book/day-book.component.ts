@@ -15,6 +15,9 @@ import * as Stomp from 'stompjs';
 import * as SockJS from 'sockjs-client';
 import uniqid from 'uniqid';
 import { DatePipe } from '@angular/common';
+import { DatabaseService } from 'src/app/shared/database.service';
+import { AppComponent } from 'src/app/app.component';
+import { Address } from 'src/app/Model/address';
 
 
 
@@ -53,18 +56,20 @@ export class DayBookComponent implements OnInit {
   filterOperation: any[] = [
     "Equal"
   ]
-
+  databaseService: DatabaseService;
   filterValue$: any[];
 
-  constructor(private apiService?: ApiService,private datePipe?: DatePipe, private router?: Router, private posService?: PosService) { }
+  constructor(private apiService?: ApiService,private datePipe?: DatePipe, private router?: Router ) {
+    this.databaseService = AppComponent.databaseService;
+   }
 
   ngOnInit() {
     this.toDate.setValue(new Date());
     this.fromDate.setValue(new Date());
     this.sync();
-    this.posService.openDatabase().then(
+    this.databaseService.openDatabase().then(
       res =>{
-        this.posService.getAllCacheVouchers().then(
+        this.databaseService.getAllCacheVouchers().then(
           (res) => {
             this.cacheVouchers = res;
             console.log(res);
@@ -111,7 +116,7 @@ export class DayBookComponent implements OnInit {
   }
 
   createVoucherRequest(){
-    const user = this.posService.getUser();
+    const user = this.databaseService.getUser();
     var request : Request = new Request("VOUCHER");
     request.guid = uniqid();
     request.fromDate = this.datePipe.transform(this.fromDate.value, "yyyyMMdd");
@@ -151,13 +156,13 @@ export class DayBookComponent implements OnInit {
             
             this.vouchers.sort((a,b) => new Date(a.DATE).getTime() - new Date(b.DATE).getTime())
             this.vouchers.map(res => {
-              this.posService.getCustomer(res.BASICBUYERNAME).then(
+              this.databaseService.getCustomer(res.BASICBUYERNAME).then(
                 customer=> {
                   res.BASICBUYERNAME = customer ? customer.name : res.BASICBUYERNAME;
                 }
               )
-              this.posService.getAddress(res.ADDRESS+"").then(
-                address=> {
+              this.databaseService.getAddress(res.ADDRESS+"").then(
+                (address : Address)=> {
                   res.ADDRESS = address ? address.name : res.ADDRESS;
                 }
               )
@@ -250,15 +255,15 @@ export class DayBookComponent implements OnInit {
           this.voucher.DATE = new Date(this.voucher.DATE);
           this.apiService.getVoucherType(this.voucher.VOUCHERTYPENAME).subscribe(
             res => {
-              this.posService.saveVoucherType(res);
-              this.posService.savePriceList(this.voucher.PRICELEVEL);
+              this.databaseService.saveVoucherType(res);
+              this.databaseService.savePriceList(this.voucher.PRICELEVEL);
               if (!(this.voucher.ALLINVENTORYENTRIES_LIST instanceof Array)){
                 const item: ALLINVENTORYENTRIESLIST = this.voucher.ALLINVENTORYENTRIES_LIST;
                 this.voucher.ALLINVENTORYENTRIES_LIST = [];
                 this.voucher.ALLINVENTORYENTRIES_LIST.push(item);
               }
               
-              this.posService.saveGodown(this.voucher.ALLINVENTORYENTRIES_LIST[0].BATCHALLOCATIONS_LIST.GODOWNNAME);
+              this.databaseService.saveGodown(this.voucher.ALLINVENTORYENTRIES_LIST[0].BATCHALLOCATIONS_LIST.GODOWNNAME);
               this.loading = false;
               this.editMode = true;
             }
@@ -272,7 +277,6 @@ export class DayBookComponent implements OnInit {
       this.voucher = m;
       this.loading = false;
       this.editMode = true;
-      this.posService.deleteVoucher(this.voucher.VOUCHERNUMBER);
     }
     
     
@@ -310,7 +314,7 @@ export class DayBookComponent implements OnInit {
   getFilterValue(value){
     console.log(value);
     if (value == "Voucher Type"){
-      this.filterValue$ = this.posService.getUser().voucherTypes.map((voucherType:VoucherTypeClass) => voucherType.voucherTypeName);
+      this.filterValue$ = this.databaseService.getUser().voucherTypes.map((voucherType:VoucherTypeClass) => voucherType.voucherTypeName);
     } else if (value == "Tally Username"){
 
     }

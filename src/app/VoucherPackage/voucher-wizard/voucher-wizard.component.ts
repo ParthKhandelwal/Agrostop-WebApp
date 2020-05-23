@@ -55,6 +55,7 @@ export class VoucherWizardComponent implements OnInit, AfterViewInit {
   @ViewChild('invField', { static: false }) productRef: ElementRef;
   @ViewChild('batchField', { static: false }) batchRef: MatSelect;
   saveOffline: boolean = false;
+  disableSaveOption: boolean;
   voucherType: VoucherTypeClass; 
   saving:boolean;
   cacheVoucher: number;
@@ -63,7 +64,16 @@ export class VoucherWizardComponent implements OnInit, AfterViewInit {
     this.databaseService = AppComponent.databaseService;
     this.user = this.databaseService.getUser();
     this.databaseService.openDatabase().then(
-      () => {this.setNewVoucher()
+      () => {
+        if (this.voucher){
+          this.godownName = this.voucher.ALLINVENTORYENTRIES_LIST[0].BATCHALLOCATIONS_LIST.GODOWNNAME
+          this.voucherType = this.user.voucherTypes.filter((v) => v.voucherTypeName == this.voucher.VOUCHERTYPENAME)[0];
+          this.saveOffline = !this.voucher.MASTERID;
+          this.disableSaveOption = true;
+        }else {
+          this.setNewVoucher()
+        }
+        
       },
     )
     
@@ -81,7 +91,9 @@ export class VoucherWizardComponent implements OnInit, AfterViewInit {
           )
           return cus;
         });
-        console.log(this.customers);
+        
+        this.customer = this.customers.filter((cus) => cus.id == this.voucher.BASICBUYERNAME)[0];
+
         this.customerFilteredOptions = this.customerControl.valueChanges.pipe(
           startWith(''),
           map(value => this.customer_filter(value))
@@ -129,8 +141,12 @@ export class VoucherWizardComponent implements OnInit, AfterViewInit {
 
   private customer_filter(value: string): Customer[] {
     const filterValue = value.toString().toLowerCase();
-    return this.customers.filter(option => 
-      option.phoneNumber.toLowerCase().indexOf(filterValue) === 0);
+    return this.customers.filter(option => {
+      return option.phoneNumber.toLowerCase().indexOf(filterValue) === 0 
+      || option.name.toLowerCase().indexOf(filterValue) === 0;
+    }
+    )
+      
   }
 
   private product_filter(value: string): any[] {
@@ -318,7 +334,7 @@ export class VoucherWizardComponent implements OnInit, AfterViewInit {
     this.saving = true;
     this.voucher.LEDGERENTRIES_LIST.map((ledger) => {
       if (ledger.POSPAYMENTTYPE){
-        ledger.AMOUNT = ledger.AMOUNT * (-1);
+        ledger.AMOUNT = Math.abs(ledger.AMOUNT) * (-1);
       }
     });
 
@@ -602,18 +618,28 @@ export class VoucherWizardComponent implements OnInit, AfterViewInit {
     }
   }
 
+  cashLedger: LEDGERENTRIESLIST;
   getRemainingBalance(){
     var temp: number = 0;
-    var cashLedger: LEDGERENTRIESLIST = new LEDGERENTRIESLIST();
+    var withoutCash: number = 0;
+    if (!this.cashLedger){
+      this.cashLedger = this.voucher.LEDGERENTRIES_LIST.filter((led) => led.POSPAYMENTTYPE === "Cash")[0]; 
+    }
     
     for (let i of this.voucher.LEDGERENTRIES_LIST){
       if ((i.POSPAYMENTTYPE != null && i.POSPAYMENTTYPE != "") && i.AMOUNT != null){
         temp = temp + i.AMOUNT;
+        if (i.POSPAYMENTTYPE != "Cash"){
+          withoutCash = withoutCash + i.AMOUNT;
+        }
       }
+      
     }
-    
+    if (this.cashLedger){
+      this.cashLedger.AMOUNT = (Math.round((this.getTotal() - withoutCash)*100))/100;
+    }
 
-    return (Math.round((this.getTotal() - temp)*100))/100;
+    return 0;
   }
 
   getTotal(){
@@ -643,7 +669,6 @@ export class VoucherWizardComponent implements OnInit, AfterViewInit {
 
     return returnNumber;
   }
-
 
 
   createOnline$() {

@@ -6,7 +6,7 @@ import uniqid from 'uniqid';
 import * as Stomp from 'stompjs';
 import * as SockJS from 'sockjs-client';
 import { Customer } from '../Model/customer';
-import { Address } from 'cluster';
+import { Address } from '../Model/address';
 import { VOUCHER, PrintConfiguration } from '../Model/voucher';
 import { User } from '../Model/user';
 import { CookieService } from 'ngx-cookie-service';
@@ -73,7 +73,7 @@ export class DatabaseService {
   }
 
   clearDatabse(){
-    this.db.deleteDatabase();
+    this.db.deleteDatabase().then(() => alert("Database deleted successfully"));
   }
 
   

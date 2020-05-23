@@ -80,7 +80,7 @@
           <button autofocus mat-button matStepperNext>Next</button>
         </div>
     </mat-step>
-    <mat-step [completed] = "this.customer">
+    <mat-step [completed] = "this.customer && this.customer.id">
       
         <ng-template matStepLabel>Customer Details</ng-template>
         <div class="row">
@@ -350,7 +350,7 @@
       </div>
     </mat-step>
 
-    <mat-step [completed] = "getRemainingBalance() == 0">
+    <mat-step>
       <ng-template matStepLabel>Payment Details</ng-template>
       <div class="row">
         <div class="col">
@@ -442,10 +442,31 @@
       </div>
     </mat-step>
 
+    <mat-step *ngIf = "cashLedger && cashLedger.AMOUNT != 0" [completed] = "voucher.POSCASHRECEIVED >= cashLedger.AMOUNT">
+      <ng-template matStepLabel>Cash Tendered</ng-template>
+      <div class="row">
+        <div class="col">
+          <mat-form-field>
+            <input matInput placeholder="Total Cash Amount" readonly name="cashAmount" [(ngModel)] = "cashLedger.AMOUNT">
+          </mat-form-field>
+        </div>
+        <div class="col">
+          <mat-form-field>
+            <input matInput placeholder="Enter Cash Recieved" name="cashRecieved" [(ngModel)] = "voucher.POSCASHRECEIVED">
+          </mat-form-field>
+        </div>
+        <div class="col">
+          <mat-form-field *ngIf = "voucher.POSCASHRECEIVED">
+            <input matInput placeholder="Cash Tendered" readonly name="cashTendered" [value] = "voucher.POSCASHRECEIVED - cashLedger.AMOUNT">
+          </mat-form-field>
+        </div>
+      </div>
+    </mat-step>
+
     <mat-step >
       <ng-template matStepLabel>Done</ng-template>
       <p>You are now done.</p>
-      <section >
+      <section *ngIf = "!disableSaveOption" >
         <mat-checkbox name ="saveOffline" [(ngModel)]="saveOffline">Save Offline</mat-checkbox>
       </section>
       <div>

@@ -52,7 +52,9 @@ export class InvoicePrintViewComponent implements OnInit {
         }
       );
       this.databaseService.getPrintConfigurations(this.voucher.VOUCHERTYPENAME).then(
-        res=> this.printConf = res
+        res=> {
+          this.printConf = res
+        }
       )
       this.stockItems = this.voucher.ALLINVENTORYENTRIES_LIST;
       this.databaseService.getItems().then((re: any[]) =>{

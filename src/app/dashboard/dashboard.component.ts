@@ -42,25 +42,25 @@ export class DashboardComponent implements OnInit {
 
   ngOnInit() {
     
-    this.salesSummary$ = this.apiService.getSevenDaySummary();
-    this.salesSummary$.subscribe(
-      res => {
-        console.log(res);
-        this.chartDatasets[0].data = res.THISYEAR.map((d) => d.CREDITAMOUNT * (1))
-        this.chartDatasets[0].label = "This Year"
-        this.chartDatasets[1].data = res.PREVYEAR.map((d) => d.CREDITAMOUNT * (1))
-        this.chartDatasets[1].label = "Previous Year"
-        this.chartLabels = res.THISYEAR.map((d) => d.REFDAY)
-        if (this.chartDatasets[0].data[6] == 0){
-          this.increasePercent = 0;
+    // this.salesSummary$ = this.apiService.getSevenDaySummary();
+    // this.salesSummary$.subscribe(
+    //   res => {
+    //     console.log(res);
+    //     this.chartDatasets[0].data = res.THISYEAR.map((d) => d.CREDITAMOUNT * (1))
+    //     this.chartDatasets[0].label = "This Year"
+    //     this.chartDatasets[1].data = res.PREVYEAR.map((d) => d.CREDITAMOUNT * (1))
+    //     this.chartDatasets[1].label = "Previous Year"
+    //     this.chartLabels = res.THISYEAR.map((d) => d.REFDAY)
+    //     if (this.chartDatasets[0].data[6] == 0){
+    //       this.increasePercent = 0;
           
-        }else {
-          this.increasePercent = Math.round((this.chartDatasets[0].data[7] - this.chartDatasets[0].data[6])*100 / this.chartDatasets[0].data[6])
-        }
-        this.updateTime = new Date()
-        console.log(this.chartDatasets)
-      }
-    );
+    //     }else {
+    //       this.increasePercent = Math.round((this.chartDatasets[0].data[7] - this.chartDatasets[0].data[6])*100 / this.chartDatasets[0].data[6])
+    //     }
+    //     this.updateTime = new Date()
+    //     console.log(this.chartDatasets)
+    //   }
+    // );
     
     
     
