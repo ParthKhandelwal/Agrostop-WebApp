@@ -119,13 +119,18 @@ export class DatabaseService {
     
       this.sendRequestForBatches();
 
+  this.sendAllVoucherTypeRequests();
+      
+
+     
+
+}
+
+sendAllVoucherTypeRequests(){
   var user: User = this.getUser();
   for (let name of user.voucherTypes){
     this.sendRequestForVoucherType(name.voucherTypeName);
   }
-      
-     
-
 }
 
 
