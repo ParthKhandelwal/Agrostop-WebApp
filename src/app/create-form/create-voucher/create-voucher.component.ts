@@ -49,6 +49,11 @@ export class CreateVoucherComponent implements OnInit {
   upSyncing: boolean;
   databaseService: DatabaseService;
   downSyncing: boolean;
+  voucherNumbering: any = {
+    "voucherType": "",
+    "prefix": "",
+    "seq": ""
+  }
   printConf: PrintConfiguration = new PrintConfiguration();
   constructor(private dialog?: MatDialog,
     private apiService?: ApiService,
@@ -220,6 +225,12 @@ export class CreateVoucherComponent implements OnInit {
       (res) => {
         alert("Saved Successfully")
       }
+    );
+  }
+
+  saveCounter(){
+    this.apiService.saveCounter(this.voucherNumbering).subscribe(
+      (res) => alert("Configuration saved successfully")
     );
   }
 }

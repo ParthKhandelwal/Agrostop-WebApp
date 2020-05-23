@@ -205,98 +205,164 @@
     <mat-tab label="Sales Voucher">     
         <voucher-wizard [(voucher)]="voucher" voucherType = "Sales" (isOrder) ="false"></voucher-wizard>
     </mat-tab>
-    <mat-tab label="Print Configurations"> 
-        <div class = "col">
-            <div class= 'row'>
-                <div class="col">
-                    <mat-form-field>
-                    <mat-select name = "voucherTypeNamePC" [(ngModel)] = "printConf.voucherType" placeholder = "Select Voucher Type">
-                        <mat-option *ngFor = "let v of user.voucherTypes" [value] = "v.voucherTypeName">{{v.voucherTypeName}}</mat-option>
-                    </mat-select>
-                </mat-form-field>
-                </div>
-            </div>
+    <mat-tab label="Configurations"> 
 
-            <div class= 'row'>
-                <div class="col">
-                    <mat-form-field>
-                        <input matInput name = "headingPC" [(ngModel)] = "printConf.name" placeholder="Enter CompanyName">
-                    </mat-form-field>
-                </div>
-                <div class="col">
-                    <mat-form-field>
-                        <input matInput name = "emailIdPC" [(ngModel)] = "printConf.emailId" placeholder="Enter EmailId">
-                    </mat-form-field>
-                </div>
-                <div class="col">
-                    <mat-form-field>
-                        <input matInput name = "contactNumberPC" [(ngModel)] = "printConf.contactNumber" placeholder="Enter Contact Number">
-                    </mat-form-field>
-                </div>
-            </div>
-           
-            <div class="row">
-                <div class="col">
-                    <mat-list role="list">
-                        <mat-list-item role="listitem">
-                            <mat-form-field>
-                                <input #address matInput name = "headingPC"  placeholder="Enter Address Line">
-                                <button mat-button *ngIf ="address.value"  matSuffix mat-icon-button aria-label="Clear" (click)="printConf.address.push(address.value)">
-                                    <mat-icon>add</mat-icon>
-                                </button>
-                            </mat-form-field>
-                        </mat-list-item>
-                        <mat-list-item role="listitem" *ngFor = "let address of printConf.address">{{address}}</mat-list-item>
-                        
-                      </mat-list>
+
+        <mat-accordion>
+            <mat-expansion-panel>
+              <mat-expansion-panel-header>
+                <mat-panel-title>
+                  Print Configurations
+                </mat-panel-title>
+                <mat-panel-description>
+                  Configure how your invoice looks
+                </mat-panel-description>
+              </mat-expansion-panel-header>
+                        <div class="row">
+          
                     
-                </div>
-                <div class="col">
-                    <mat-list role="list">
-                        <mat-list-item role="listitem">
-                            <mat-form-field>
-                                <textarea #tAndC matInput name = "tAndCPC" placeholder="Enter Terms and Conditions Line"></textarea>
-                                
-                                <button mat-button *ngIf ="tAndC.value"  matSuffix mat-icon-button aria-label="Clear" (click)="printConf.termsAndConditions.push(tAndC.value)">
-                                    <mat-icon>add</mat-icon>
-                                </button>
-                            </mat-form-field>
-                        </mat-list-item>
-                        <mat-list-item role="listitem" *ngFor = "let address of printConf.termsAndConditions">{{address}}</mat-list-item>
-                        
-                    </mat-list>
-                </div>
-
-               
-               
-            </div>
-            <div class = "row">
-               
-                <div class="col">
-                    <mat-list role="list">
-                        <mat-list-item role="listitem">
+                            <div class = "col">
+                                <div class= 'row'>
+                                    <div class="col">
+                                        <mat-form-field>
+                                        <mat-select name = "voucherTypeNamePC" [(ngModel)] = "printConf.voucherType" placeholder = "Select Voucher Type">
+                                            <mat-option *ngFor = "let v of user.voucherTypes" [value] = "v.voucherTypeName">{{v.voucherTypeName}}</mat-option>
+                                        </mat-select>
+                                    </mat-form-field>
+                                    </div>
+                                </div>
+                
+                                <div class= 'row'>
+                                    <div class="col">
+                                        <mat-form-field>
+                                            <input matInput name = "headingPC" [(ngModel)] = "printConf.name" placeholder="Enter CompanyName">
+                                        </mat-form-field>
+                                    </div>
+                                    <div class="col">
+                                        <mat-form-field>
+                                            <input matInput name = "emailIdPC" [(ngModel)] = "printConf.emailId" placeholder="Enter EmailId">
+                                        </mat-form-field>
+                                    </div>
+                                    <div class="col">
+                                        <mat-form-field>
+                                            <input matInput name = "contactNumberPC" [(ngModel)] = "printConf.contactNumber" placeholder="Enter Contact Number">
+                                        </mat-form-field>
+                                    </div>
+                                </div>
                             
-                                <mat-form-field>
-                                    <input matInput #lname name = "licenseName"  placeholder="Enter License Name">
-                                </mat-form-field>
-                                <mat-form-field>
-                                    <input  matInput #lnumber name = "licenseNumber"  placeholder="Enter License Number">
-                                    <button mat-button matSuffix mat-icon-button (click)="addLicenseNumbers(lname.value, lnumber.value)">
-                                        <mat-icon>add</mat-icon>
-                                    </button>
-                                </mat-form-field>
+                                <div class="row">
+                                    <div class="col">
+                                        <mat-list role="list">
+                                            <mat-list-item role="listitem">
+                                                <mat-form-field>
+                                                    <input #address matInput name = "headingPC"  placeholder="Enter Address Line">
+                                                    <button mat-button *ngIf ="address.value"  matSuffix mat-icon-button aria-label="Clear" (click)="printConf.address.push(address.value)">
+                                                        <mat-icon>add</mat-icon>
+                                                    </button>
+                                                </mat-form-field>
+                                            </mat-list-item>
+                                            <mat-list-item role="listitem" *ngFor = "let address of printConf.address">{{address}}</mat-list-item>
+                                            
+                                        </mat-list>
+                                        
+                                    </div>
+                                    <div class="col">
+                                        <mat-list role="list">
+                                            <mat-list-item role="listitem">
+                                                <mat-form-field>
+                                                    <textarea #tAndC matInput name = "tAndCPC" placeholder="Enter Terms and Conditions Line"></textarea>
+                                                    
+                                                    <button mat-button *ngIf ="tAndC.value"  matSuffix mat-icon-button aria-label="Clear" (click)="printConf.termsAndConditions.push(tAndC.value)">
+                                                        <mat-icon>add</mat-icon>
+                                                    </button>
+                                                </mat-form-field>
+                                            </mat-list-item>
+                                            <mat-list-item role="listitem" *ngFor = "let address of printConf.termsAndConditions">{{address}}</mat-list-item>
+                                            
+                                        </mat-list>
+                                    </div>
+                
                                 
-                         
-                        </mat-list-item>
-                        <mat-list-item role="listitem" *ngFor = "let address of printConf.licenseNumbers">{{address.licenseName}} : {{address.licenseNumber}}</mat-list-item>
-                        
-                    </mat-list>
-                </div>
-                <div class="col">
-                    <button mat-raised-button (click) = "submitConfig()">Save</button>
-                </div>
-            </div>
-        </div>    
+                                
+                                </div>
+                                <div class = "row">
+                                
+                                    <div class="col">
+                                        <mat-list role="list">
+                                            <mat-list-item role="listitem">
+                                                
+                                                    <mat-form-field>
+                                                        <input matInput #lname name = "licenseName"  placeholder="Enter License Name">
+                                                    </mat-form-field>
+                                                    <mat-form-field>
+                                                        <input  matInput #lnumber name = "licenseNumber"  placeholder="Enter License Number">
+                                                        <button mat-button matSuffix mat-icon-button (click)="addLicenseNumbers(lname.value, lnumber.value)">
+                                                            <mat-icon>add</mat-icon>
+                                                        </button>
+                                                    </mat-form-field>
+                                                    
+                                            
+                                            </mat-list-item>
+                                            <mat-list-item role="listitem" *ngFor = "let address of printConf.licenseNumbers">{{address.licenseName}} : {{address.licenseNumber}}</mat-list-item>
+                                            
+                                        </mat-list>
+                                    </div>
+                                    <div class="col">
+                                        <button mat-raised-button (click) = "submitConfig()">Save</button>
+                                    </div>
+                                </div>
+                            </div>    
+                        </div>
+              
+            </mat-expansion-panel>
+            <mat-expansion-panel>
+              <mat-expansion-panel-header>
+                <mat-panel-title>
+                  Voucher Numbering
+                </mat-panel-title>
+                <mat-panel-description>
+                 Configure Voucher Numbering
+                </mat-panel-description>
+              </mat-expansion-panel-header>
+              <div class="row">
+            
+            
+                    <div class="col">
+                        <mat-form-field>
+                        <mat-select name = "voucherTypeNamePC" [(ngModel)] = "voucherNumbering.voucherType" placeholder = "Select Voucher Type">
+                            <mat-option *ngFor = "let v of user.voucherTypes" [value] = "v.voucherTypeName">{{v.voucherTypeName}}</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                    </div>
+                    <div class="col">
+                        <mat-form-field>
+                            <input matInput name="startFrom" placeholder="Prefix" [(ngModel)] ="voucherNumbering.prefix">
+                        </mat-form-field>
+                    </div>
+                    <div class ="col">
+                        <mat-form-field>
+                            <input matInput name="startFrom" placeholder="Start From" type = "number" [(ngModel)] ="voucherNumbering.seq">
+                        </mat-form-field>
+                    </div>
+                    <div class="col">
+                        <button mat-raised-button (click) = "saveCounter()">Save</button>
+
+                    </div>
+                
+
+                 </div>
+            </mat-expansion-panel>
+          </mat-accordion>
+
+
+
+
+
+
+        
+        <mat-divider></mat-divider>
+        
     </mat-tab>
+    
   </mat-tab-group>
 </div>

@@ -38,6 +38,10 @@ export class ApiService {
     return this.httpClient.get<any>(this.BASE_URL + 'counters/getNext?voucherType='+name);
   }
 
+  saveCounter(counter: any): Observable<any>{
+    return this.httpClient.post(this.BASE_URL+"counters/save", counter);
+  }
+
   public WEB_SOCKET_URL = "https://agrostop-web-server.herokuapp.com"
   private BASE_URL = "https://agrostop-web-server.herokuapp.com/api/";
 

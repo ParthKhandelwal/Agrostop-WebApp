@@ -347,7 +347,7 @@ export class VoucherWizardComponent implements OnInit, AfterViewInit {
     });
     this.apiService.getVoucherNumber(this.voucher.VOUCHERTYPENAME).subscribe(
       (res) => {
-        this.voucher.VOUCHERNUMBER = res.seq;
+        this.voucher.VOUCHERNUMBER = res.prefix + res.seq;
         if (this.saveOffline){
           this.databaseService.addCacheVoucher(this.voucher).then(
             () => {
