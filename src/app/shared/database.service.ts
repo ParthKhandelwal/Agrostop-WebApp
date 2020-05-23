@@ -27,7 +27,7 @@ export class DatabaseService {
 
 
   database: Promise<any>;
-  db = new NgxIndexedDB('agrostop', 1);
+  db = new NgxIndexedDB('agrostop', 2);
   connected: boolean;
   stompClient: any;
   map: Map<string, string> = new Map();
@@ -73,7 +73,7 @@ export class DatabaseService {
   }
 
   clearDatabse(){
-    this.db.deleteDatabase().then(() => alert("Database deleted successfully"));
+    this.openDatabase().then(() => this.db.deleteDatabase());
   }
 
   
@@ -113,9 +113,10 @@ export class DatabaseService {
    this.saveCustomers();
   
   // this.saveLedgers();
+  this.sendRequestForAllLedgers();
    this.saveAddresses();
   this.sendRequestForItems();
-      this.sendRequestForLedgers();
+    
       this.sendRequestForBatches();
 
   var user: User = this.getUser();
@@ -354,8 +355,13 @@ export class DatabaseService {
         }
       )
     }
+
+    public sendRequestForAllLedgers(){
+      this.sendRequestForLedgers("Sundry Debtors");
+      this.sendRequestForLedgers("Indirect Expenses");
+    }
   
-    sendRequestForBatches(){
+   public sendRequestForBatches(){
       var request: Request = new Request("BATCH");
       request.guid = uniqid("BATCH-");
       request.name = "";
@@ -364,7 +370,7 @@ export class DatabaseService {
       this.sendRequest(request);
     }
 
-    sendRequestForVoucherType(name: string){
+    public sendRequestForVoucherType(name: string){
       var list: string[] = [];
       list.push("Voucher Class List");
       var request: Request = new Request("VOUCHERTYPE");
@@ -375,7 +381,7 @@ export class DatabaseService {
       this.sendRequest(request);
     }
   
-    sendRequestForLedgers(){
+    public sendRequestForLedgers(groupName:string){
       var list: string[] = [];
           list.push("NAME");
           list.push("PARENT");
@@ -384,13 +390,13 @@ export class DatabaseService {
       request.fetchList = list;
       request.name = "";
       request.guid = uniqid("LEDGER-")
-      request.filter = "$Parent =" + "\"Sundry Debtors\""
+      request.filter = "$Parent =" + "\""+groupName+"\""
       this.map.set(request.guid, "LEDGER");
       this.sendRequest(request);
     }
   
 
-    sendRequestForLedgersDutiesAndTaxes(){
+    public sendRequestForLedgersDutiesAndTaxes(){
       var list: string[] = [];
           list.push("*.*");
       var request:Request = new Request("LEDGER")
@@ -402,7 +408,7 @@ export class DatabaseService {
       this.sendRequest(request);
     }
 
-    sendRequestForItems(){
+    public sendRequestForItems(){
       var list: string[] = [];
           list.push("NAME");
           list.push("PARENT");

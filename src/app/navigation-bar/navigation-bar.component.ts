@@ -24,6 +24,7 @@ export class NavigationBarComponent implements OnInit {
   numberOfVoucherTypes: number;
   numberOfCustomers: number;
   numberOfAddresses: number;
+  numberOfPrintCOnf: number;
   databaseService: DatabaseService;
   
 
@@ -61,6 +62,9 @@ export class NavigationBarComponent implements OnInit {
     );
     this.databaseService.db.count('Batches').then(
       res => this.numberOfBatches = res
+    );
+    this.databaseService.db.count('PrintConfiguration').then(
+      res => this.numberOfPrintCOnf = res
     );
 
     

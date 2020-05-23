@@ -176,30 +176,53 @@ The above copyright notice and this permission notice shall be included in all c
                   <mat-icon>sync</mat-icon>
                 </button>
                 <mat-menu #menu="matMenu">
-                  <button mat-menu-item>
+                  <span mat-menu-item style = "width: 300px;">
                   
-                    <span>{{numberOfStockItems}} Stock Items</span>
-                  </button>
-                  <button mat-menu-item>
+                    <span style="float: left;">{{numberOfStockItems}} Stock Items</span>
+                    <button style="float: right;" mat-icon-button (click) = "databaseService.sendRequestForItems()"> 
+                      <mat-icon>sync</mat-icon>
+                    </button>
+                  </span>
+                  <div mat-menu-item>
                  
                     <span>{{numberOfLedgers}} Ledgers</span>
-                  </button>
-                  <button mat-menu-item>
+                    <button style="float: right;" mat-icon-button (click) = "databaseService.sendRequestForAllLedgers();"> 
+                      <mat-icon>sync</mat-icon>
+                    </button>
+                  </div>
+                  <div mat-menu-item>
               
                     <span>{{numberOfCustomers}} Customers</span>
-                  </button>
-                  <button mat-menu-item>
+                    <button style="float: right;" mat-icon-button (click) = "databaseService.saveCustomers()"> 
+                      <mat-icon>sync</mat-icon>
+                    </button>
+                  </div>
+                  <div mat-menu-item>
               
                     <span>{{numberOfAddresses}} Addresses</span>
-                  </button>
-                  <button mat-menu-item>
+                    <button style="float: right;" mat-icon-button (click) = "databaseService.saveAddresses()"> 
+                      <mat-icon>sync</mat-icon>
+                    </button>
+                  </div>
+                  <div mat-menu-item>
               
                     <span>{{numberOfVoucherTypes}} Voucher Types</span>
-                  </button>
-                  <button mat-menu-item>
+                    <button style="float: right;" mat-icon-button (click) = "databaseService.sendRequestForVoucherType()"> 
+                      <mat-icon>sync</mat-icon>
+                    </button>
+                  </div>
+                  <div mat-menu-item>
               
                     <span>{{numberOfBatches}} Batches</span>
-                  </button>
+                    <button style="float: right;" mat-icon-button (click) = "databaseService.sendRequestForBatches()"> 
+                      <mat-icon>sync</mat-icon>
+                    </button>
+                  </div>
+                  <div mat-menu-item>
+              
+                    <span>{{numberOfPrintCOnf}} Print Configurations</span>
+                    
+                  </div>
                   <button mat-menu-item (click) = "deleteDatabase()">Delete local database</button>
                   <button mat-menu-item (click) = "this.databaseService.enablePOSMode()">Sync Database</button>
 

@@ -260,6 +260,8 @@ export class VoucherWizardComponent implements OnInit, AfterViewInit {
 
   }
 
+
+
   getVoucherType(value){
     
     const service = this.databaseService;
