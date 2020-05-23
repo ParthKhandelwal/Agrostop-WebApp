@@ -69,6 +69,13 @@ export class VoucherWizardComponent implements OnInit, AfterViewInit {
           this.godownName = this.voucher.ALLINVENTORYENTRIES_LIST[0].BATCHALLOCATIONS_LIST.GODOWNNAME
           this.voucherType = this.user.voucherTypes.filter((v) => v.voucherTypeName == this.voucher.VOUCHERTYPENAME)[0];
           this.saveOffline = !this.voucher.MASTERID;
+          this.voucher.LEDGERENTRIES_LIST.filter((l) => l.POSPAYMENTTYPE != null).map((l) => {
+            var ledgerEntry: LEDGERENTRIESLIST = new LEDGERENTRIESLIST();
+            ledgerEntry.AMOUNT = Math.abs(l.AMOUNT);
+            ledgerEntry.POSPAYMENTTYPE = ledgerEntry.POSPAYMENTTYPE;
+            ledgerEntry.LEDGERNAME = ledgerEntry.LEDGERNAME;
+            return ledgerEntry;
+          })
           this.disableSaveOption = true;
         }else {
           this.setNewVoucher()

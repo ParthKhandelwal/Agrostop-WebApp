@@ -176,12 +176,13 @@ The above copyright notice and this permission notice shall be included in all c
                   <mat-icon>sync</mat-icon>
                 </button>
                 <mat-menu #menu="matMenu">
-                  <span mat-menu-item style = "width: 300px;">
-                  
+                  <span mat-menu-item style = "width: 300px; height: 50px;">
+                    
                     <span style="float: left;">{{numberOfStockItems}} Stock Items</span>
                     <button style="float: right;" mat-icon-button (click) = "databaseService.sendRequestForItems()"> 
                       <mat-icon>sync</mat-icon>
                     </button>
+                    
                   </span>
                   <div mat-menu-item>
                  
