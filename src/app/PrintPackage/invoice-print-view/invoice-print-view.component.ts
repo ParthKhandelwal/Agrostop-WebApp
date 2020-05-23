@@ -57,12 +57,10 @@ export class InvoicePrintViewComponent implements OnInit {
         }
       )
       this.stockItems = this.voucher.ALLINVENTORYENTRIES_LIST;
-      this.databaseService.getItems().then((re: any[]) =>{
-        for (let item of this.stockItems){
-          if (!item.tallyObject){
-            item.tallyObject = re.filter((i) => i.NAME == item.STOCKITEMNAME)[0];
-            item.RATE = this.getNumbers(item.RATE);
-            item.ACTUALQTY = this.getNumbers(item.ACTUALQTY);
+      this.voucher.ALLINVENTORYENTRIES_LIST.forEach((item) => {
+        this.databaseService.getStockItem(item.STOCKITEMNAME).then(
+          (res) => {
+            item.tallyObject = res;
             var taxItem: PrintTaxItem = this.hsnDetails.get(item.tallyObject["GSTDETAILS.LIST"].HSNCODE);
 
             if (!taxItem && item.tallyObject && item.tallyObject["GSTDETAILS.LIST"] 
@@ -76,12 +74,14 @@ export class InvoicePrintViewComponent implements OnInit {
             }
             taxItem.cgst.amount = taxItem.cgst.amount + this.calculateCGST(item);
             taxItem.sgst.amount = taxItem.sgst.amount + this.calculateSGST(item);
+            
           }
-          this.complete = true;
-        }
-      })
-      
-        
+        ).then(()=>
+          this.complete = true
+        )
+      });
+
+            
         //this.company = this.databaseService.getCompany();
    
         this.date = new Date(this.voucher.DATE);   

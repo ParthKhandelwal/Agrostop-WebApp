@@ -185,7 +185,7 @@
             </div>
           </div>
         </div>
-        <div>
+        <div style="float: right;">
           <button mat-button matStepperPrevious >Back</button>
           <button mat-button matStepperNext>Next</button>
         </div>
@@ -205,7 +205,6 @@
                          matInput
                          [formControl]="productControl"
                          [matAutocomplete]="productAuto"
-                      
                          style="width:100% !important" >
                   <mat-autocomplete [panelWidth]="300" #productAuto="matAutocomplete"
                                     [displayWith]= "displayFnProduct">
@@ -344,7 +343,7 @@
       </div>
       </div>
       
-      <div>
+      <div style="float: right;">
         <button mat-button matStepperPrevious>Back</button>
         <button mat-button matStepperNext>Next</button>
       </div>
@@ -436,7 +435,7 @@
       </div>
 
 
-      <div>
+      <div style="float: right;">
         <button mat-button matStepperPrevious>Back</button>
         <button mat-button matStepperNext>Next</button>
       </div>
@@ -461,6 +460,11 @@
           </mat-form-field>
         </div>
       </div>
+
+      <div style="float: right;">
+        <button mat-button matStepperPrevious>Back</button>
+        <button mat-button matStepperNext>Next</button>
+      </div>
     </mat-step>
 
     <mat-step >
@@ -469,7 +473,7 @@
       <section *ngIf = "!disableSaveOption" >
         <mat-checkbox name ="saveOffline" [(ngModel)]="saveOffline">Save Offline</mat-checkbox>
       </section>
-      <div>
+      <div >
         <button mat-button matStepperPrevious>Back</button>
         <button mat-button (click)=" save(); stepper.reset();">Save</button>
       </div>
