@@ -7,16 +7,18 @@
        <!-- data -->
        <div class="col-3 data py-4">
            <div class="line mt-4 mb-4"></div>
-           <h1>INVOICE</h1>
+           <h1 *ngIf = "match()">DELIVERY MEMO</h1>
+           <h3 *ngIf = "!match()">INVOICE</h3>
 
            <div class="data-box">
                <div class="data-separator d-block my-2"></div>
-               <h4 class="text-muted font-weight-light">No.</h4>
+               <h4 class="text-muted font-weight-light" *ngIf = "match()">Memo No.</h4>
+               <h4 class="text-muted font-weight-light" *ngIf = "!match()">No.</h4>
                <h4 class="font-weight-bold">{{voucher.VOUCHERNUMBER}}</h4>
            </div>
            <div class="data-box">
                <div class="data-separator d-block my-2"></div>
-               <h4 class="text-muted font-weight-light">INVOICE DATE</h4>
+               <h4 class="text-muted font-weight-light">DATE</h4>
                <h4 class="font-weight-bold">{{voucher.DATE | date: "MMMM dd, yyyy"}}</h4>
            </div>
            <div class="data-box">
@@ -228,6 +230,7 @@
            <div class="gratitude my-4">
                 <ul *ngFor = "let tc of printConf.termsAndConditions">
                     <li>{{tc}}</li>
+                    <li *ngIf = "match()">Due to troubles in internet connectivity we are unable to provide you an invoice at this point. Please collect it later</li>
                 </ul>
             </div>
             <div class="gratitude text-center my-4">

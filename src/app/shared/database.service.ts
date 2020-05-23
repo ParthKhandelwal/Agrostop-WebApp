@@ -670,31 +670,67 @@ sendAllVoucherTypeRequests(){
           const length: number = vouchers.length;
           var index: number = 0;
           for (let voucher of vouchers){
-           await this.apiService.saveTallyVoucher(voucher).subscribe(
-              res => {
-                console.log(res);
-                if (res && res.RESPONSE){
-                  if (res.RESPONSE.CREATED == 1 || res.RESPONSE.ALTERED == 1){
-                    index++;
-                    this.upSyncPercent = Math.round((index/length)* 100);
-                    this.db.delete('cacheVoucher', voucher.VOUCHERNUMBER).then(
-                        () => {
-                          // Do something after delete
-                        },
-                        error => {
-                          console.log(error);
+            if ((voucher.VOUCHERNUMBER + "").match('^DM-')){
+              await this.apiService.getVoucherNumber(voucher.VOUCHERTYPENAME).subscribe(
+                async (num) => {
+                  voucher.VOUCHERNUMBER = num.seq;
+                  await this.apiService.saveTallyVoucher(voucher).subscribe(
+                    res => {
+                      console.log(res);
+                      if (res && res.RESPONSE){
+                        if (res.RESPONSE.CREATED == 1 || res.RESPONSE.ALTERED == 1){
+                          index++;
+                          this.upSyncPercent = Math.round((index/length)* 100);
+                          this.db.delete('cacheVoucher', voucher.VOUCHERNUMBER).then(
+                              () => {
+                                // Do something after delete
+                              },
+                              error => {
+                                console.log(error);
+                              }
+                          );
                         }
-                    );
+                      }
+                      
+                    },
+                    err => {
+                      this.addCacheVoucher(voucher).then(
+                        (res) => {
+                          this.deleteVoucher("DM-"+voucher.VOUCHERNUMBER);
+                        }
+                        );
+                      console.log('Voucher could not be saved');
+                      alert("Voucher could not be saved");  
+                    }
+                  );
+              });
+            } else {
+              await this.apiService.saveTallyVoucher(voucher).subscribe(
+                res => {
+                  console.log(res);
+                  if (res && res.RESPONSE){
+                    if (res.RESPONSE.CREATED == 1 || res.RESPONSE.ALTERED == 1){
+                      index++;
+                      this.upSyncPercent = Math.round((index/length)* 100);
+                      this.db.delete('cacheVoucher', voucher.VOUCHERNUMBER).then(
+                          () => {
+                            // Do something after delete
+                          },
+                          error => {
+                            console.log(error);
+                          }
+                      );
+                    }
                   }
+                  
+                },
+                err => {
+                  console.log('Voucher could not be saved');
+                  alert("Voucher could not be saved");  
                 }
-                
-              },
-              err => {
-                console.log('Voucher could not be saved');
-                alert("Voucher could not be saved");  
-              }
-            );
-  
+              );
+            }
+            
           }
         },
         err =>{

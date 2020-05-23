@@ -34,6 +34,10 @@ export class ApiService {
     return this.httpClient.get<any>(this.BASE_URL + 'vouchers/getCompany?companyName=' + name);
   }
 
+  getVoucherNumber(name:string): Observable<any>{
+    return this.httpClient.get<any>(this.BASE_URL + 'counters/getNext?voucherType='+name);
+  }
+
   public WEB_SOCKET_URL = "https://agrostop-web-server.herokuapp.com"
   private BASE_URL = "https://agrostop-web-server.herokuapp.com/api/";
 
@@ -134,8 +138,8 @@ getStockItemGroupsByName(): Observable<any[]>{
     return this.httpClient.post<any>(this.BASE_URL + 'customer/create', customer);
   }
 
-  deleteCustomer(customer: Customer): Observable<any> {
-    return this.httpClient.delete(this.BASE_URL + 'customer/delete/' + customer.customerId);
+  deleteCustomer(customer: string): Observable<any> {
+    return this.httpClient.delete(this.BASE_URL + 'customer/delete/?id=' + customer);
   }
 
 

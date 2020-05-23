@@ -72,7 +72,8 @@ constructor(private apiService: ApiService, private dialog?: MatDialog, private 
     });
 dialogRef.afterClosed().subscribe(result => {
       if(result) {
-        this.apiService.deleteCustomer(data).subscribe(
+        console.log(data);
+        this.apiService.deleteCustomer(data.id).subscribe(
           res =>{
             alert("Customer deleted successfully");
           },

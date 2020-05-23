@@ -93,7 +93,9 @@ export class InvoicePrintViewComponent implements OnInit {
   
   }
 
-  
+  match(){
+    return (this.voucher.VOUCHERNUMBER + "").match('^DM-');
+  }
 
   calculateCGSTRate(item : any): number{
     if (item && item.tallyObject && item.tallyObject["GSTDETAILS.LIST"] 
