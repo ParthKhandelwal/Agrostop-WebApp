@@ -419,6 +419,7 @@ sendAllVoucherTypeRequests(){
           list.push("PARENT");
           list.push("CATEGORY");
           list.push("GSTDETAILS.HSNCODE");
+          list.push("GSTDETAILS.APPLICABLEFROM");
           list.push("GSTDETAILS.STATEWISEDETAILS.STATENAME");
           list.push("GSTDETAILS.STATEWISEDETAILS.RATEDETAILS.GSTRATEDUTYHEAD");
           list.push("GSTDETAILS.STATEWISEDETAILS.RATEDETAILS.GSTRATE");

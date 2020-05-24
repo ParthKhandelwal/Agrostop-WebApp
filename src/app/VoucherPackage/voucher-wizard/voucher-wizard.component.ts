@@ -7,7 +7,7 @@ import { ApiService } from '../../shared/api.service';
 import { PosService } from 'src/app/shared/pos.service';
 import { merge, fromEvent, Observable, Observer, of, from } from 'rxjs';
 import { map, filter, startWith, flatMap } from 'rxjs/operators';
-import { ThemePalette, MatDialog, MatDialogConfig, MatSelect } from '@angular/material';
+import { ThemePalette, MatDialog, MatDialogConfig, MatSelect, MatStepper, MatHorizontalStepper, MatInput } from '@angular/material';
 import uniqid from 'uniqid'
 import { InvoicePrintViewComponent } from 'src/app/PrintPackage/invoice-print-view/invoice-print-view.component';
 import { UniqueSelectionDispatcher } from '@angular/cdk/collections';
@@ -50,7 +50,8 @@ export class VoucherWizardComponent implements OnInit, AfterViewInit {
   @Input("voucher") voucher: VOUCHER;
   @ViewChild('quantityField', { static: false }) quantityRef: ElementRef;
   @ViewChild('quantityField', { static: false }) customerRef: ElementRef;
-  @ViewChild('rateField', { static: false }) rateRef: ElementRef;
+  @ViewChild('rateField', { static: false }) rateRef: ElementRef;  
+  @ViewChild('cashRecievedField', { static: false }) cashRecievedRef: ElementRef;  
 
   @ViewChild('invField', { static: false }) productRef: ElementRef;
   @ViewChild('batchField', { static: false }) batchRef: MatSelect;
@@ -59,6 +60,7 @@ export class VoucherWizardComponent implements OnInit, AfterViewInit {
   voucherType: VoucherTypeClass; 
   saving:boolean;
   cacheVoucher: number;
+  endVoucher: any ={"NAME": "END OF LIST"};
   
   constructor( private apiService?: ApiService, private dialog?: MatDialog, private orderService?: OrderService) {
     this.databaseService = AppComponent.databaseService;
@@ -141,6 +143,7 @@ export class VoucherWizardComponent implements OnInit, AfterViewInit {
     
     
   }
+
 
   ngOnInit() {        
       
@@ -308,10 +311,11 @@ export class VoucherWizardComponent implements OnInit, AfterViewInit {
     
   }
 
-  addCustomer(value){
-    console.log(this.voucher);
+  addCustomer(value, stepper){
     this.voucher.BASICBUYERNAME = value.id;
     this.voucher.ADDRESS_LIST = new ADDRESSLIST(value.addressId, "","", "");
+    stepper._selectedIndex = 2;
+
   }
 
   viewCustomerProfile(id) {
@@ -412,13 +416,7 @@ export class VoucherWizardComponent implements OnInit, AfterViewInit {
           }
         )
       }
-      )
-   
-
-    
-    
-
-    
+      )  
     
   }
 
@@ -499,6 +497,17 @@ export class VoucherWizardComponent implements OnInit, AfterViewInit {
     return returnObject;
   }
 
+
+  selectInventory(stepper){
+    if (this.productControl.value == this.endVoucher){
+      stepper._selectedIndex = 3;
+      this.cashRecievedRef.nativeElement.focus();
+      return;
+    }
+    this.rateControl.setValue( this.getRate(this.productControl.value).rate);
+    this.quantityRef.nativeElement.focus();
+  }
+
   validateInventoryEntry(){
     if (this.productControl.value == null || this.productControl.value ==""){
       this.productRef.nativeElement.focus();
@@ -507,6 +516,7 @@ export class VoucherWizardComponent implements OnInit, AfterViewInit {
    
     if (this.batchControl.value == null){
       alert("Please select a batch");
+      this.batchRef.focus();
       return;
     }
     if (this.qtyControl.value == null || this.qtyControl.value == 0){
@@ -520,16 +530,8 @@ export class VoucherWizardComponent implements OnInit, AfterViewInit {
     inventoryEntry.BILLEDQTY = this.qtyControl.value;
     inventoryEntry.ACTUALQTY = inventoryEntry.BILLEDQTY;
     inventoryEntry.ISDEEMEDPOSITIVE = "No";
-    var rateObject = this.getRate(res);
-    if (rateObject.exists){
-      inventoryEntry.RATE = rateObject.rate;
-    }else {
-      alert("There is no price set for this item. Try changing price list or contact administrator.")
-      this.renew();
-      return;
-    }
-    
-    console.log(this.batchControl.value);
+    inventoryEntry.RATE = this.rateControl.value;
+    console.log(this.rateControl.value)
     inventoryEntry.BATCHALLOCATIONS_LIST = new BATCHALLOCATIONSLIST();
     inventoryEntry.BATCHALLOCATIONS_LIST.BATCHNAME = this.batchControl.value.NAME;
     inventoryEntry.BATCHALLOCATIONS_LIST.GODOWNNAME = this.databaseService.getGodown();
@@ -543,11 +545,19 @@ export class VoucherWizardComponent implements OnInit, AfterViewInit {
 
     inventoryEntry.AMOUNT = inventoryEntry.RATE * inventoryEntry.BILLEDQTY;
     inventoryEntry.ACCOUNTINGALLOCATIONS_LIST = new ACCOUNTINGALLOCATIONSLIST();
-    inventoryEntry.ACCOUNTINGALLOCATIONS_LIST.LEDGERNAME = res["SALESLIST.LIST"].NAME.content;
-    inventoryEntry.ACCOUNTINGALLOCATIONS_LIST.CLASSRATE = res["SALESLIST.LIST"].CLASSRATE.content;
-    inventoryEntry.ACCOUNTINGALLOCATIONS_LIST.LEDGERFROMITEM = res["SALESLIST.LIST"].LEDGERFROMITEM.content;
-    inventoryEntry.ACCOUNTINGALLOCATIONS_LIST.GSTOVRDNNATURE = res["SALESLIST.LIST"].GSTCLASSIFICATIONNATURE.content;
-    inventoryEntry.ACCOUNTINGALLOCATIONS_LIST.REMOVEZEROENTRIES = res["SALESLIST.LIST"].REMOVEZEROENTRIES.content;
+    var SALESLIST: any;
+    if (res["SALESLIST.LIST"] instanceof Array){
+      SALESLIST = res["SALESLIST.LIST"][0];
+    } else{
+      SALESLIST= res["SALESLIST.LIST"];
+    }
+      
+    
+    inventoryEntry.ACCOUNTINGALLOCATIONS_LIST.LEDGERNAME = SALESLIST.NAME.content;
+    inventoryEntry.ACCOUNTINGALLOCATIONS_LIST.CLASSRATE = SALESLIST.CLASSRATE.content;
+    inventoryEntry.ACCOUNTINGALLOCATIONS_LIST.LEDGERFROMITEM = SALESLIST.LEDGERFROMITEM.content;
+    inventoryEntry.ACCOUNTINGALLOCATIONS_LIST.GSTOVRDNNATURE = SALESLIST.GSTCLASSIFICATIONNATURE.content;
+    inventoryEntry.ACCOUNTINGALLOCATIONS_LIST.REMOVEZEROENTRIES = SALESLIST.REMOVEZEROENTRIES.content;
     inventoryEntry.ACCOUNTINGALLOCATIONS_LIST.AMOUNT = inventoryEntry.AMOUNT;
     inventoryEntry.ACCOUNTINGALLOCATIONS_LIST.LEDGERFROMITEM = "Yes"
     inventoryEntry.ACCOUNTINGALLOCATIONS_LIST.ISDEEMEDPOSITIVE = "No"
@@ -568,7 +578,7 @@ export class VoucherWizardComponent implements OnInit, AfterViewInit {
   }
 
   deleteStockItem(pos: number){
-    this.voucher.ALLINVENTORYENTRIES_LIST.splice(pos);
+    this.voucher.ALLINVENTORYENTRIES_LIST.splice(pos,1);
     this.adjustLedgers();
   }
 
@@ -600,10 +610,38 @@ export class VoucherWizardComponent implements OnInit, AfterViewInit {
         
               this.databaseService.getStockItem(product.STOCKITEMNAME).then( (item) => {
             
-                if (item["GSTDETAILS.LIST"] 
-              && item["GSTDETAILS.LIST"]["STATEWISEDETAILS.LIST"] 
-              && item["GSTDETAILS.LIST"]["STATEWISEDETAILS.LIST"]["RATEDETAILS.LIST"]){
-                var gstRate = item["GSTDETAILS.LIST"]["STATEWISEDETAILS.LIST"]["RATEDETAILS.LIST"]
+                var GSTDETAILS: any;
+                var gstlist: any[] =[];
+                var STATEWISEDETAILS:any;
+                var RATEDETAILS:any[];
+                if (item["GSTDETAILS.LIST"] instanceof Array){
+                    gstlist = item["GSTDETAILS.LIST"]
+                }else {
+                  
+                  gstlist.push(item["GSTDETAILS.LIST"]);
+                  
+                }
+                GSTDETAILS = gstlist.filter((g) => new Date(g.APPLICABLEFROM.content) < new Date())
+                .sort((b,a) => new Date(a.APPLICABLEFROM.content).getTime() - new Date(b.APPLICABLEFROM.content).getTime())[0];
+             
+
+                if (GSTDETAILS){
+                  if(GSTDETAILS["STATEWISEDETAILS.LIST"] instanceof Array){
+                    STATEWISEDETAILS = GSTDETAILS["STATEWISEDETAILS.LIST"][0];
+                  }else {
+                    STATEWISEDETAILS = GSTDETAILS["STATEWISEDETAILS.LIST"]
+                  }
+                  if (STATEWISEDETAILS){
+                    if (STATEWISEDETAILS["RATEDETAILS.LIST"] instanceof Array){
+                      RATEDETAILS = STATEWISEDETAILS["RATEDETAILS.LIST"];
+                    }else {
+                      RATEDETAILS.push(STATEWISEDETAILS["RATEDETAILS.LIST"]);
+                    }
+                  }
+                }
+                
+                
+                var gstRate = RATEDETAILS
                 .filter((rate) => rate.GSTRATEDUTYHEAD.content == gstDutyHead)[0]
                 .GSTRATE.content
                
@@ -611,7 +649,7 @@ export class VoucherWizardComponent implements OnInit, AfterViewInit {
                 ledger.AMOUNT = ledger.AMOUNT + (Math.round(gstRate * product.AMOUNT *1.0)/100);
                 this.adjustRounding();
       
-              }
+              
               } );
               
             }
@@ -625,7 +663,6 @@ export class VoucherWizardComponent implements OnInit, AfterViewInit {
           for (let item of this.voucher.LEDGERENTRIES_LIST){
             if (item.AMOUNT != null && item.METHODTYPE !="As Total Amount Rounding"
             && (item.POSPAYMENTTYPE == null || item.POSPAYMENTTYPE == "")){
-              console.log(item.AMOUNT);
               total = total + item.AMOUNT;
             }
           }

@@ -87,29 +87,23 @@
           <div class = "col">
               <div class="row">
                 <div class = "col">
-                  <mat-form-field class="example-full-width">
+                  <mat-form-field>
                     <input #customerField type="text"
                            placeholder="Select Customer"
-                           aria-label="Number"
                            matInput
                            [formControl]="customerControl"
                            [matAutocomplete]="auto"
                            [(ngModel)]="customer">
                     <mat-autocomplete autoActiveFirstOption [panelWidth]="500"
                                       #auto="matAutocomplete"
-                                      (optionSelected) = "addCustomer($event.option.value)"
+                                      (optionSelected) = "addCustomer($event.option.value, stepper);"
                                       [displayWith]="displayFnCustomer">
                       
                       <mat-option *ngFor="let option of customerFilteredOptions | async" [value]="option">
-                        <th scope="row">
-                          <div class="p-2">
-                            <div class="ml-3 d-inline-block align-middle">
-                              <h6 class="mb-0 font-weight-bold">{{option.name}}</h6>
-                            </div>
-                          </div>
-                        </th>
-                        <td class="align-middle font-italics">S/O {{option.fatherName}}</td>
-                        <td class="align-middle"><strong>{{option.addressId}}</strong></td>
+                        <h6>{{option.name}}, S/O {{option.fatherName}}<br>
+                          <small><strong>Address: </strong>{{option.fullAddress?option.fullAddress.name: ""}} </small>
+                        </h6>
+                        
                       </mat-option>
                     </mat-autocomplete>
                   </mat-form-field>
@@ -192,23 +186,35 @@
     
     </mat-step>
 
-    <mat-step [completed] = "this.voucher.ALLINVENTORYENTRIES_LIST.length > 0">
+    <mat-step #invStep [completed] = "this.voucher.ALLINVENTORYENTRIES_LIST.length > 0">
       <ng-template matStepLabel>Inventory Details</ng-template>
       <div class = "col">
         <div class = "row">
             <!-- PRODUCT ENTRY GOES HERE -->
               <div class="col">
                 <mat-form-field class="example-full-width" style="width: 150px;">
-                  <input #invField type="text"
+                  <input #invField
+                   type="text"
                          placeholder="Pick one"
-                         aria-label="Number"
                          matInput
+                         name = "selectProductAuto"
                          [formControl]="productControl"
                          [matAutocomplete]="productAuto"
+                         
                          style="width:100% !important" >
-                  <mat-autocomplete [panelWidth]="300" #productAuto="matAutocomplete"
-                                    [displayWith]= "displayFnProduct">
-                                   
+                  <mat-autocomplete   [panelWidth]="300" #productAuto="matAutocomplete" position = "above"
+                  (optionSelected) = "selectInventory(stepper, productAuto)"
+                                    [displayWith]= "displayFnProduct" autoActiveFirstOption (opened)= "productRef.nativeElement.focus()">              
+
+                    <mat-option [value]="endVoucher">
+                      <th scope="row">
+                        <div class="p-2">
+                          <div class="ml-3 d-inline-block align-middle">
+                            <h6 class="mb-0 font-weight-bold">{{endVoucher.NAME}}</h6>
+                          </div>
+                        </div>
+                      </th>
+                    </mat-option>
                     <mat-option *ngFor="let option of productFilteredOptions | async" [value]="option">
                       <th scope="row">
                         <div class="p-2">
@@ -223,13 +229,13 @@
               </div>
               <div class="col">
                 <mat-form-field>
-                  <input #quantityField type= "number" placeholder="Enter Quantity" matInput name ="qty" [formControl] = "qtyControl">
+                  <input #quantityField type= "number" (keydown.enter) = "rateRef.nativeElement.focus();false" placeholder="Enter Quantity" matInput name ="qty" [formControl] = "qtyControl">
                 </mat-form-field>
                 
               </div>
               <div class="col">
                 <mat-form-field *ngIf = "productControl.value">
-                  <input #rateField type= "number" placeholder="Enter Rate" [value] = "getRate(productControl.value).rate" matInput name ="rate" [formControl] = "rateControl">
+                  <input #rateField type= "number" (keydown.enter) = "batchRef.focus();false" placeholder="Enter Rate" [(value)] = "getRate(productControl.value).rate" matInput name ="rate" [formControl] = "rateControl">
                 </mat-form-field>
               </div>
               <div class="col">
@@ -249,6 +255,47 @@
           
         </div>
       <div class="row">
+        
+
+        <div class="col" *ngIf = "voucher.ALLINVENTORYENTRIES_LIST && voucher.LEDGERENTRIES_LIST">
+          <mat-accordion>
+            <ng-container  *ngFor = "let ledger of voucher.LEDGERENTRIES_LIST; let i = index">
+              <mat-expansion-panel *ngIf = "!ledger.POSPAYMENTTYPE">
+                <mat-expansion-panel-header>
+                  <mat-panel-title>
+                    
+                      {{ledger.LEDGERNAME}}
+          
+                  </mat-panel-title>
+                  <mat-panel-description>
+                    <div style="float: left;">{{ledger.AMOUNT | currency:'INR'}}</div>
+                  </mat-panel-description>
+                </mat-expansion-panel-header>
+                <!-- ENTER DESCRIPTION OF THE ITEM HERE -->
+                <div class="col">
+                  <div class = "row">
+                    <div class="col">
+                      <mat-form-field> 
+                        <input type = 'number' matInput [name]="ledger.LEDGERNAME" placeholder = "Amount" [readonly] = "ledger.METHODTYPE != 'As User Defined Value'" [(ngModel)] = "ledger.AMOUNT">
+                      </mat-form-field>
+                    </div>
+                    
+                    
+                  </div>
+                  <div class="row">
+                    
+                    
+                  </div>
+                  
+                </div>
+                
+                
+              </mat-expansion-panel>
+            </ng-container>
+           
+          </mat-accordion>
+        </div>
+
         <div class="col">
           <mat-accordion>
             <mat-expansion-panel *ngFor = "let product of voucher.ALLINVENTORYENTRIES_LIST; let i = index">
@@ -299,45 +346,6 @@
            
           </mat-accordion>
          
-        </div>
-
-        <div class="col" *ngIf = "voucher.ALLINVENTORYENTRIES_LIST && voucher.LEDGERENTRIES_LIST">
-          <mat-accordion>
-            <ng-container  *ngFor = "let ledger of voucher.LEDGERENTRIES_LIST; let i = index">
-              <mat-expansion-panel *ngIf = "!ledger.POSPAYMENTTYPE">
-                <mat-expansion-panel-header>
-                  <mat-panel-title>
-                    
-                      {{ledger.LEDGERNAME}}
-          
-                  </mat-panel-title>
-                  <mat-panel-description>
-                    <div style="float: left;">{{ledger.AMOUNT | currency:'INR'}}</div>
-                  </mat-panel-description>
-                </mat-expansion-panel-header>
-                <!-- ENTER DESCRIPTION OF THE ITEM HERE -->
-                <div class="col">
-                  <div class = "row">
-                    <div class="col">
-                      <mat-form-field> 
-                        <input type = 'number' matInput [name]="ledger.LEDGERNAME" placeholder = "Amount" [readonly] = "ledger.METHODTYPE != 'As User Defined Value'" [(ngModel)] = "ledger.AMOUNT">
-                      </mat-form-field>
-                    </div>
-                    
-                    
-                  </div>
-                  <div class="row">
-                    
-                    
-                  </div>
-                  
-                </div>
-                
-                
-              </mat-expansion-panel>
-            </ng-container>
-           
-          </mat-accordion>
         </div>
         
       </div>
@@ -451,7 +459,7 @@
         </div>
         <div class="col">
           <mat-form-field>
-            <input matInput placeholder="Enter Cash Recieved" name="cashRecieved" [(ngModel)] = "voucher.POSCASHRECEIVED">
+            <input #cashRecievedField matInput placeholder="Enter Cash Recieved" name="cashRecieved" [(ngModel)] = "voucher.POSCASHRECEIVED">
           </mat-form-field>
         </div>
         <div class="col">

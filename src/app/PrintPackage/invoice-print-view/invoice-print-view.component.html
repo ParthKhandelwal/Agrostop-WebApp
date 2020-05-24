@@ -228,10 +228,13 @@
 
            <!-- gratitude -->
            <div class="gratitude my-4">
-                <ul *ngFor = "let tc of printConf.termsAndConditions">
-                    <li>{{tc}}</li>
+                <ul >
+                    <ng-container *ngFor = "let tc of printConf.termsAndConditions">
+                        <li>{{tc}}</li>
+                    </ng-container>
+                    
                     <li *ngIf = "match()">Due to troubles in internet connectivity we are unable to provide you an invoice at this point. Please collect it later</li>
-                    <li *ngIf = "voucher.NARRATION">{{voucher.NARRATION}}</li>
+                    <li *ngIf = "voucher.NARRATION">NARRATION: {{voucher.NARRATION}}</li>
                 </ul>
             </div>
             <div class="gratitude text-center my-4">
