@@ -61,19 +61,53 @@ export class InvoicePrintViewComponent implements OnInit {
         this.databaseService.getStockItem(item.STOCKITEMNAME).then(
           (res) => {
             item.tallyObject = res;
-            var taxItem: PrintTaxItem = this.hsnDetails.get(item.tallyObject["GSTDETAILS.LIST"].HSNCODE);
 
-            if (!taxItem && item.tallyObject && item.tallyObject["GSTDETAILS.LIST"] 
-            && item.tallyObject["GSTDETAILS.LIST"].HSNCODE){
+                var GSTDETAILS: any;
+                var gstlist: any[] =[];
+                var STATEWISEDETAILS:any;
+                var RATEDETAILS:any[];
+                if (item.tallyObject["GSTDETAILS.LIST"] instanceof Array){
+                    gstlist = item.tallyObject["GSTDETAILS.LIST"]
+                }else {
+                  
+                  gstlist.push(item.tallyObject["GSTDETAILS.LIST"]);
+                  
+                }
+                GSTDETAILS = gstlist.filter((g) => new Date(g.APPLICABLEFROM.content) < new Date())
+                .sort((b,a) => new Date(a.APPLICABLEFROM.content).getTime() - new Date(b.APPLICABLEFROM.content).getTime())[0];
+             
+
+                if (GSTDETAILS){
+                  if(GSTDETAILS["STATEWISEDETAILS.LIST"] instanceof Array){
+                    STATEWISEDETAILS = GSTDETAILS["STATEWISEDETAILS.LIST"][0];
+                  }else {
+                    STATEWISEDETAILS = GSTDETAILS["STATEWISEDETAILS.LIST"]
+                  }
+                  if (STATEWISEDETAILS){
+                    if (STATEWISEDETAILS["RATEDETAILS.LIST"] instanceof Array){
+                      RATEDETAILS = STATEWISEDETAILS["RATEDETAILS.LIST"];
+                    }else {
+                      RATEDETAILS.push(STATEWISEDETAILS["RATEDETAILS.LIST"]);
+                    }
+                  }
+                }
+                var CGST = RATEDETAILS
+                .filter((rate) => rate.GSTRATEDUTYHEAD.content == 'Central Tax')[0]
+                var SGST = RATEDETAILS
+                .filter((rate) => rate.GSTRATEDUTYHEAD.content == 'State Tax')[0]
+
+            var taxItem: PrintTaxItem = this.hsnDetails.get(GSTDETAILS.HSNCODE);
+
+            if (!taxItem && item.tallyObject && GSTDETAILS 
+            && GSTDETAILS.HSNCODE){
               taxItem = new PrintTaxItem();
-              taxItem.hsnCode = item.tallyObject["GSTDETAILS.LIST"].HSNCODE.content;
-              taxItem.cgst.rate = this.calculateCGSTRate(item);
-              taxItem.sgst.rate = this.calculateSGSTRate(item);
-              console.log(taxItem);
+              taxItem.hsnCode = GSTDETAILS.HSNCODE.content;
+              taxItem.cgst.rate = CGST.GSTRATE.content;
+              taxItem.sgst.rate = SGST.GSTRATE.content;
               this.hsnDetails.set(taxItem.hsnCode, taxItem);
             }
-            taxItem.cgst.amount = taxItem.cgst.amount + this.calculateCGST(item);
-            taxItem.sgst.amount = taxItem.sgst.amount + this.calculateSGST(item);
+            taxItem.cgst.amount = taxItem.cgst.amount + this.calculate(taxItem.cgst.rate, item.AMOUNT);
+            taxItem.sgst.amount = taxItem.sgst.amount + this.calculate(taxItem.sgst.rate, item.AMOUNT);
             
           }
         ).then(()=>
@@ -97,54 +131,12 @@ export class InvoicePrintViewComponent implements OnInit {
     return (this.voucher.VOUCHERNUMBER + "").match('^DM-');
   }
 
-  calculateCGSTRate(item : any): number{
-    if (item && item.tallyObject && item.tallyObject["GSTDETAILS.LIST"] 
-    && item.tallyObject["GSTDETAILS.LIST"]["STATEWISEDETAILS.LIST"] && 
-    item.tallyObject["GSTDETAILS.LIST"]["STATEWISEDETAILS.LIST"]["RATEDETAILS.LIST"]
-    &&  item.tallyObject["GSTDETAILS.LIST"]["STATEWISEDETAILS.LIST"]["RATEDETAILS.LIST"] instanceof Array){
-    var rateList: any[] = item.tallyObject["GSTDETAILS.LIST"]["STATEWISEDETAILS.LIST"]["RATEDETAILS.LIST"].filter((r) => r.GSTRATEDUTYHEAD.content == "Central Tax");
-      return rateList[0].GSTRATE.content;
-    } else {
-      return 0;
-    }
+
+  calculate(rate: number, amount: number): number{
+    return rate * amount;
   }
 
-  calculateSGSTRate(item : any): number{
-    if (item && item.tallyObject && item.tallyObject["GSTDETAILS.LIST"] 
-    && item.tallyObject["GSTDETAILS.LIST"]["STATEWISEDETAILS.LIST"] && 
-    item.tallyObject["GSTDETAILS.LIST"]["STATEWISEDETAILS.LIST"]["RATEDETAILS.LIST"]
-    &&  item.tallyObject["GSTDETAILS.LIST"]["STATEWISEDETAILS.LIST"]["RATEDETAILS.LIST"] instanceof Array){
-    var rateList: any[] = item.tallyObject["GSTDETAILS.LIST"]["STATEWISEDETAILS.LIST"]["RATEDETAILS.LIST"].filter((r) => r.GSTRATEDUTYHEAD.content == "State Tax");
-      return rateList[0].GSTRATE.content;
-    } else {
-      return 0;
-    }
-  }
-
-  calculateCGST(item : any): number{
-    if (item && item.tallyObject && item.tallyObject["GSTDETAILS.LIST"] 
-    && item.tallyObject["GSTDETAILS.LIST"]["STATEWISEDETAILS.LIST"] && 
-    item.tallyObject["GSTDETAILS.LIST"]["STATEWISEDETAILS.LIST"]["RATEDETAILS.LIST"]
-    &&  item.tallyObject["GSTDETAILS.LIST"]["STATEWISEDETAILS.LIST"]["RATEDETAILS.LIST"] instanceof Array){
-    var rateList: any[] = item.tallyObject["GSTDETAILS.LIST"]["STATEWISEDETAILS.LIST"]["RATEDETAILS.LIST"].filter((r) => r.GSTRATEDUTYHEAD.content == "Central Tax");
-      return rateList[0].GSTRATE.content * item.AMOUNT;
-    } else {
-      return 0;
-    }
-  }
-
-  calculateSGST(item: any): number {
-    if (item && item.tallyObject && item.tallyObject["GSTDETAILS.LIST"] 
-    && item.tallyObject["GSTDETAILS.LIST"]["STATEWISEDETAILS.LIST"] && 
-    item.tallyObject["GSTDETAILS.LIST"]["STATEWISEDETAILS.LIST"]["RATEDETAILS.LIST"]
-    &&  item.tallyObject["GSTDETAILS.LIST"]["STATEWISEDETAILS.LIST"]["RATEDETAILS.LIST"] instanceof Array){
-    var rateList: any[] = item.tallyObject["GSTDETAILS.LIST"]["STATEWISEDETAILS.LIST"]["RATEDETAILS.LIST"].filter((r) => r.GSTRATEDUTYHEAD.content == "State Tax");
-      return rateList[0].GSTRATE.content * item.AMOUNT;
-    } else {
-      return 0;
-    }
-  }
-
+ 
   getNumbers(temp: string): number{
     var returnNumber;
     temp = temp +"";

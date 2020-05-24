@@ -18,6 +18,8 @@ import { DatePipe } from '@angular/common';
 import { DatabaseService } from 'src/app/shared/database.service';
 import { AppComponent } from 'src/app/app.component';
 import { Address } from 'src/app/Model/address';
+import { MatDialogConfig, MatDialog } from '@angular/material';
+import { InvoicePrintViewComponent } from 'src/app/PrintPackage/invoice-print-view/invoice-print-view.component';
 
 
 
@@ -59,7 +61,7 @@ export class DayBookComponent implements OnInit {
   databaseService: DatabaseService;
   filterValue$: any[];
 
-  constructor(private apiService?: ApiService,private datePipe?: DatePipe, private router?: Router ) {
+  constructor(private apiService?: ApiService,private dialog?: MatDialog, private datePipe?: DatePipe, private router?: Router ) {
     this.databaseService = AppComponent.databaseService;
    }
 
@@ -324,6 +326,33 @@ export class DayBookComponent implements OnInit {
     return object instanceof Array;
   }
 
+  printOnline(voucher){
+    this.apiService.getTallyFullVoucher(voucher.MASTERID).subscribe((res)=>{
+      const dialogConfig = new MatDialogConfig();
+      dialogConfig.autoFocus = true;
+      dialogConfig.width = "50%";
+      const dialogRef = this.dialog.open(InvoicePrintViewComponent, {data: res, maxHeight: '90vh'});
+       dialogRef.afterClosed().subscribe(
+         res => {
+          
+         }
+       )
+    },
+    err => console.log(err))
+    
+  }
+
+  printOffline(v){
+    const dialogConfig = new MatDialogConfig();
+      dialogConfig.autoFocus = true;
+      dialogConfig.width = "50%";
+      const dialogRef = this.dialog.open(InvoicePrintViewComponent, {data: v, maxHeight: '90vh'});
+       dialogRef.afterClosed().subscribe(
+         res => {
+          
+         }
+       )
+  }
 
   
 }

@@ -96,9 +96,7 @@
               <div class="table-responsive">
                 <table class="table">
                   <thead class=" text-primary">
-                    <th>
-
-                    </th>
+                   
                   <th>
                     Date
                   </th>
@@ -121,11 +119,7 @@
 
                     <ng-container *ngFor="let v of filteredArray">
                       <tr *ngIf = "v">
-                        <td>
-                          <button mat-button (click)="v.toggle = !v.toggle">
-                            <mat-icon>add</mat-icon>
-                          </button>
-                        </td>
+                
                         <td>
                           {{ v.DATE | date: "dd-MMM-yyyy"}}<br>
                           <span  class="badge badge-success">Online</span>
@@ -146,9 +140,23 @@
                           {{ getVoucherTotal(v.LEDGERENTRIES.LEDGER) | currency : 'INR'}}
                         </td>
                         <td>
-                          <button mat-mini-fab aria-label="Example icon-button with a heart icon" (click)="edit(v, true)">
-                            <mat-icon>edit</mat-icon>
+                          <button mat-icon-button [matMenuTriggerFor]="menu">
+                            <mat-icon>more_vert</mat-icon>
                           </button>
+                          <mat-menu #menu="matMenu">
+                            <button mat-menu-item (click) = "edit(v, false)">
+                              <mat-icon>edit</mat-icon>
+                              <span>Edit</span>
+                            </button>
+                            <button mat-menu-item (click) = "printOnline(v)">
+                              <mat-icon>print</mat-icon>
+                              <span>Print</span>
+                            </button>
+                            <button mat-menu-item (click)="v.toggle = !v.toggle">
+                              <mat-icon>view_list</mat-icon>
+                              <span>View Inventory</span>
+                            </button>
+                          </mat-menu>
                         </td>
                       </tr>
                      <table *ngIf = "v.toggle && v.INVENTORYENTRIES.STOCKITEM">
@@ -190,11 +198,7 @@
                     </ng-container>
                     <ng-container *ngFor="let v of cacheVouchers">
                       <tr *ngIf = "v">
-                        <td>
-                          <button mat-button (click)="v.toggle = !v.toggle">
-                            <mat-icon>add</mat-icon>
-                          </button>
-                        </td>
+                        
                         <td>
                           {{ v.DATE | date: "dd-MMM-yyyy"}}<br>
                           <span  class="badge badge-danger">Offline</span>
@@ -216,9 +220,23 @@
                           {{ getTotal(v) | currency : 'INR'}}
                         </td>
                         <td>
-                          <button mat-mini-fab aria-label="Example icon-button with a heart icon" (click)="edit(v, false)">
-                            <mat-icon>edit</mat-icon>
+                          <button mat-icon-button [matMenuTriggerFor]="menu">
+                            <mat-icon>more_vert</mat-icon>
                           </button>
+                          <mat-menu #menu="matMenu">
+                            <button mat-menu-item (click) = "edit(v, false)">
+                              <mat-icon>edit</mat-icon>
+                              <span>Edit</span>
+                            </button>
+                            <button mat-menu-item (click) = "printOffline(v)">
+                              <mat-icon>print</mat-icon>
+                              <span>Print</span>
+                            </button>
+                            <button mat-menu-item (click)="v.toggle = !v.toggle">
+                              <mat-icon>view_list</mat-icon>
+                              <span>View Inventory</span>
+                            </button>
+                          </mat-menu>
                         </td>
                       </tr>
                      <table *ngIf = "v.toggle && v.INVENTORYENTRIES.STOCKITEM">
