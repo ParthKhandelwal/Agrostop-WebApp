@@ -54,12 +54,12 @@
                                    name = "address"
                                    matInput
                                    [formControl]="addressControl"
-                                   [(ngModel)] = "customer.addressId"
+                                   [(ngModel)] = "address"
                                    [matAutocomplete]="auto">  
                             <mat-autocomplete [panelWidth]="600" #auto="matAutocomplete"
                                               [displayWith]= "displayFnProduct">
                                             
-                              <mat-option *ngFor="let option of filteredOptions | async" [value]="option._id">
+                              <mat-option *ngFor="let option of filteredOptions | async" [value]="option">
                                 <th scope="row">
                                   <div class="p-2">
                                     <div class="ml-3 d-inline-block align-middle">

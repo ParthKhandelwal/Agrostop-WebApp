@@ -22,6 +22,7 @@ export class CreateCustomerFormComponent implements OnInit {
   customer: Customer = new Customer();
   filteredOptions: Observable<any[]>;
   addressControl = new FormControl();
+  address: any;
 
 
 
@@ -42,6 +43,7 @@ export class CreateCustomerFormComponent implements OnInit {
     this.apiService.getAddresses().subscribe(
       res => {
         this.addresses = res;
+        this.address = this.addresses.filter((a) => a._id == this.customer.addressId)[0];
         this.filteredOptions = this.addressControl.valueChanges.pipe(
           startWith(''),
           map(value => this.address_filter(value))
@@ -55,7 +57,7 @@ export class CreateCustomerFormComponent implements OnInit {
 
 
   displayFnProduct(user?: any): string | undefined {
-    return user && user._id ? user._id : '';
+    return user && user._id ? user.name : '';
   }
   private address_filter(value: string): any[] {
     const filterValue = value.toString().toLowerCase();
@@ -63,6 +65,7 @@ export class CreateCustomerFormComponent implements OnInit {
   }
 
   submit(): void{
+    this.customer.addressId = this.address._id
     this.apiService.addCustomer(this.customer).subscribe(
       res =>{
         this.dialogRef.close(res);
