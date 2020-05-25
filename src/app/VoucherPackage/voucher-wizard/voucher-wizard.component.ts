@@ -637,13 +637,13 @@ export class VoucherWizardComponent implements OnInit, AfterViewInit {
 
 
 }
-
+productFocus:boolean;
   renew(){
     this.productControl.setValue("");
     this.qtyControl.setValue(null);
     this.rateControl.setValue(null);
     this.batchControl.setValue(null);
-    this.productRef.nativeElement.focus();
+    this.productFocus = true;
   }
 
   deleteStockItem(pos: number){

@@ -197,18 +197,48 @@
 
   </div>
 
- 
 
 
-<!--   Core JS Files   -->
-<script src="assets/js/jquery-2.2.4.min.js" type="text/javascript"></script>
-<script src="assets/js/bootstrap.min.js" type="text/javascript"></script>
-<script src="assets/js/jquery.bootstrap.wizard.js" type="text/javascript"></script>
+<form>
+<mat-horizontal-stepper linear #stepper>
+  <mat-step>
+    
+      <ng-template matStepLabel>Fill out your name</ng-template>
+      <mat-form-field>
+        <mat-label>Name</mat-label>
+        <input matInput placeholder="Last name, First name" formControlName="firstCtrl" required>
+      </mat-form-field>
+      <div>
+        <button mat-button matStepperNext>Next</button>
+      </div>
+  </mat-step>
+  <mat-step >
+      <ng-template matStepLabel>Ledger Details</ng-template>
+      <div class="col">
+        <div class="row">
+          <div class = "col">
 
-<!--  Plugin for the Wizard -->
-<script src="assets/js/gsdk-bootstrap-wizard.js"></script>
+          </div>
+          <div class="col">
+            
+          </div>
+        </div>
+        <div class="row">
 
-<!--  More information about jquery.validate here: http://jqueryvalidation.org/	 -->
-<script src="assets/js/jquery.validate.min.js"></script>
-
-
+        </div>
+      </div>
+      <div>
+        <button mat-button matStepperPrevious>Back</button>
+        <button mat-button matStepperNext>Next</button>
+      </div>
+  </mat-step>
+  <mat-step>
+    <ng-template matStepLabel>Done</ng-template>
+    <p>You are now done.</p>
+    <div>
+      <button mat-button matStepperPrevious>Back</button>
+      <button mat-button (click)="stepper.reset()">Reset</button>
+    </div>
+  </mat-step>
+</mat-horizontal-stepper>
+</form>

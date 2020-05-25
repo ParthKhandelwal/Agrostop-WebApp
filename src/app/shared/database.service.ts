@@ -683,11 +683,9 @@ sendAllVoucherTypeRequests(){
                         if (res.RESPONSE.CREATED == 1 || res.RESPONSE.ALTERED == 1){
                           index++;
                           this.upSyncPercent = Math.round((index/length)* 100);
-                          this.addCacheVoucher(voucher).then(
-                            (res) => {
+                          
                               this.deleteVoucher("DM-"+voucher.VOUCHERNUMBER);
-                            }
-                            );
+                          
                         }
                       }
                       
@@ -695,7 +693,7 @@ sendAllVoucherTypeRequests(){
                     err => {
                       this.addCacheVoucher(voucher).then(
                         (res) => {
-                          this.deleteVoucher("DM-"+voucher.VOUCHERNUMBER);
+                          this.deleteVoucher("DM-"+voucher._REMOTEID);
                         }
                         );
                       console.log('Voucher could not be saved');
