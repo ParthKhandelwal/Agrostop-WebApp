@@ -57,7 +57,6 @@ export class OrderService {
     voucher._ACTION = "Create";
     voucher.CLASSNAME = posClass.CLASSNAME.content;
     voucher.PERSISTEDVIEW = "Invoice Voucher View";
-    voucher.VOUCHERNUMBER = "TT-" + voucher._REMOTEID;
     voucher.LEDGERENTRIES_LIST = [];
     voucher.PRICELEVEL = priceList;
     voucher.BASICBUYERNAME = order.customerId;

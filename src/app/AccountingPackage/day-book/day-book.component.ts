@@ -276,6 +276,7 @@ export class DayBookComponent implements OnInit {
       )
       
     } else {
+      
       this.voucher = m;
       this.loading = false;
       this.editMode = true;

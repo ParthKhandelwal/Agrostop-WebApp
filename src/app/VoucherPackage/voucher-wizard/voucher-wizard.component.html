@@ -63,7 +63,7 @@
         </div>
       </div>
 
-        <div class = "row">
+        <!-- <div class = "row">
           <div class="col" *ngIf = "(createOnline$() | async) && databaseService.numberOfCacheVoucher">
             <div class="row">
               <p>There are currently {{databaseService.numberOfCacheVoucher}} vouchers offline</p><br>
@@ -74,7 +74,7 @@
             </button>
             
           </div>
-        </div>
+        </div> -->
         
         <div class="row" style="float: right;">
           <button autofocus mat-button matStepperNext>Next</button>
@@ -204,7 +204,7 @@
                          style="width:100% !important" >
                   <mat-autocomplete   [panelWidth]="300" #productAuto="matAutocomplete" position = "above"
                   (optionSelected) = "selectInventory(stepper, productAuto)"
-                                    [displayWith]= "displayFnProduct" autoActiveFirstOption (opened)= "productRef.nativeElement.focus()">              
+                                    [displayWith]= "displayFnProduct" autoActiveFirstOption>              
 
                     <mat-option [value]="endVoucher">
                       <th scope="row">

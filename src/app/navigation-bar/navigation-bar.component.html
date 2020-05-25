@@ -154,11 +154,7 @@ The above copyright notice and this permission notice shall be included in all c
           <div class="collapse navbar-collapse justify-content-end">
             <form class="navbar-form">
               <div class="input-group no-border">
-                <input type="text" value="" class="form-control" placeholder="Search...">
-                <button type="submit" class="btn btn-white btn-round btn-just-icon">
-                  <i class="material-icons">search</i>
-                  <div class="ripple-container"></div>
-                </button>
+                <span>{{currentUser.name | uppercase}}</span>
               </div>
             </form>
             <ul class="navbar-nav">
@@ -221,6 +217,14 @@ The above copyright notice and this permission notice shall be included in all c
                   </div>
                   <div mat-menu-item>
               
+                    <span>{{numberOfVouchers}} Offline Vouchers</span>
+                    <button style="float: right;" mat-icon-button (click) = "this.databaseService.syncAllCacheVouchers()"> 
+                      <mat-icon>sync</mat-icon>
+                    </button>
+                  </div>
+                  
+                  <div mat-menu-item>
+              
                     <span>{{numberOfPrintCOnf}} Print Configurations</span>
                     
                   </div>
@@ -230,17 +234,21 @@ The above copyright notice and this permission notice shall be included in all c
                 </mat-menu>
               </li>
               <li class="nav-item dropdown">
-                <a class="nav-link" href="javascript:;" id="navbarDropdownProfile" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                  <i class="material-icons">person</i>
-                  <p class="d-lg-none d-md-block">
-                    Account
-                  </p>
-                </a>
+                <button mat-icon-button [matMenuTriggerFor]="profileMenu" aria-label="Example icon-button with a menu">
+                  <mat-icon>person</mat-icon>
+                </button>
                 <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownProfile">
-                  <a class="dropdown-item" href="#">Profile</a>
-                  <a class="dropdown-item" href="#">Settings</a>
-                  <div class="dropdown-divider"></div>
-                  <a class="dropdown-item" href="#">Log out</a>
+                  <mat-menu #profileMenu="matMenu">
+                    <button mat-menu-item>
+                      <mat-icon>perm_identity</mat-icon>
+                      <span>Profile</span>
+                    </button>
+                    <button mat-menu-item (click) = "logout()">
+                      <mat-icon>exit_to_app</mat-icon>
+                      <span>Log Out</span>
+                    </button>
+
+                  </mat-menu>
                 </div>
               </li>
             </ul>

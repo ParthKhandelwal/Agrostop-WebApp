@@ -84,11 +84,11 @@ export class OrderTableComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe(
-      res => {
+      async res => {
         console.log(res);
         if (res.createVoucher){
           this.voucher = new VOUCHER();
-          this.orderService.convertOrder(res.order, this.voucher, res.voucherType, res.priceList, res.godown);
+          await this.orderService.convertOrder(res.order, this.voucher, res.voucherType, res.priceList, res.godown);
           this.completeOrder = true;
         }
        
