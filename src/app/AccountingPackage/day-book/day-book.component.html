@@ -214,7 +214,7 @@
                           {{ v.BASICBUYERNAME}}
                         </td>
                         <td>
-                          {{ v.ADDRESS_LIST.ADDRESS[0]}}
+                          {{ v.ADDRESS_LIST? v.ADDRESS_LIST.ADDRESS[0]:""}}
                         </td>
                         <td class="text-primary">
                           {{ getTotal(v) | currency : 'INR'}}

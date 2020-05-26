@@ -10,6 +10,9 @@ import { Address } from '../Model/address';
 import { VOUCHER, PrintConfiguration } from '../Model/voucher';
 import { User } from '../Model/user';
 import { CookieService } from 'ngx-cookie-service';
+import { of, from } from 'rxjs';
+import { watch } from 'fs';
+import { async } from '@angular/core/testing';
 
 @Injectable({
   providedIn: 'root'
@@ -39,7 +42,7 @@ export class DatabaseService {
     this.sync();
     setInterval(this.maintainConnection, 10000)
     this.database = this.db.openDatabase(1, evt => {
-      let objectStore = evt.currentTarget.result.createObjectStore('cacheVoucher', { keyPath: "VOUCHERNUMBER",autoIncrement: false, unique:true });
+      let objectStore = evt.currentTarget.result.createObjectStore('cacheVoucher', { keyPath: "_REMOTEID",autoIncrement: false, unique:true });
       let objectStore2 = evt.currentTarget.result.createObjectStore('items', { keyPath: "NAME",autoIncrement: false, unique: true });
       let objectStore3 = evt.currentTarget.result.createObjectStore('customers', {keyPath: "id", autoIncrement: false, unique: true });
       let objectStore4 = evt.currentTarget.result.createObjectStore('Ledgers', {keyPath: "NAME",autoIncrement: false, unique: true });
@@ -660,80 +663,47 @@ sendAllVoucherTypeRequests(){
         }
       );
     }
+
   
     syncAllCacheVouchers(){
-      this.upSyncPercent = 0;
-      this.db.getAll('cacheVoucher').then(
-        async (vouchers: any[]) => {
-          if (vouchers == null || vouchers.length == 0){
-            this.upSyncPercent = 100;
-          }
-          const length: number = vouchers.length;
-          var index: number = 0;
-          for (let voucher of vouchers){
-            if ((voucher.VOUCHERNUMBER + "").match('^DM-')){
-              await this.apiService.getVoucherNumber(voucher.VOUCHERTYPENAME).subscribe(
-                async (num) => {
-                  voucher.VOUCHERNUMBER = num.prefix + num.seq;
-                  voucher.NARRATION = "This bill is generated against DM-"+voucher._REMOTEID 
-                  await this.apiService.saveTallyVoucher(voucher).subscribe(
-                    res => {
-                      console.log(res);
-                      if (res && res.RESPONSE){
-                        if (res.RESPONSE.CREATED == 1 || res.RESPONSE.ALTERED == 1){
-                          index++;
-                          this.upSyncPercent = Math.round((index/length)* 100);
-                          
-                              this.deleteVoucher("DM-"+voucher.VOUCHERNUMBER);
-                          
-                        }
-                      }
-                      
-                    },
-                    err => {
-                      this.addCacheVoucher(voucher).then(
-                        (res) => {
-                          this.deleteVoucher("DM-"+voucher._REMOTEID);
-                        }
-                        );
-                      console.log('Voucher could not be saved');
-                      alert("Voucher could not be saved");  
-                    }
-                  );
-              });
-            } else {
-              await this.apiService.saveTallyVoucher(voucher).subscribe(
-                res => {
-                  console.log(res);
-                  if (res && res.RESPONSE){
-                    if (res.RESPONSE.CREATED == 1 || res.RESPONSE.ALTERED == 1){
-                      index++;
-                      this.upSyncPercent = Math.round((index/length)* 100);
-                      this.db.delete('cacheVoucher', voucher.VOUCHERNUMBER).then(
-                          () => {
-                            // Do something after delete
-                          },
-                          error => {
-                            console.log(error);
-                          }
-                      );
-                    }
-                  }
+      this.getAllCacheVouchers().then((vouchers: any[]) => {
+        vouchers.sort((a,b) => a.DATE.getTime() - b.DATE.getTime())
+                .map(async (voucher) => {
+                  if ((voucher.VOUCHERNUMBER + "").match('^DM-')){
+                    var num = await this.apiService.getVoucherNumber(voucher.VOUCHERTYPENAME).toPromise();
+                    voucher.VOUCHERNUMBER = num.prefix + num.seq;
+                    voucher.NARRATION = "This bill is generated against DM-"+voucher._REMOTEID 
+                    return voucher;
                   
-                },
-                err => {
-                  console.log('Voucher could not be saved');
-                  alert("Voucher could not be saved");  
-                }
-              );
-            }
-            
-          }
-        },
-        err =>{
-          alert ("Error ocurred")
-        }
-      );
+                  }else {
+                    return voucher;
+                  }
+                })
+                .forEach( async (voucherPromise) => {
+                      var voucher = await voucherPromise
+                      console.log(voucher);
+                      this.apiService.saveTallyVoucher(voucher).subscribe(
+                        (res) => {
+                          if (res && res.RESPONSE){
+                            if (res.RESPONSE.CREATED == 1 || res.RESPONSE.ALTERED == 1){
+                              this.deleteVoucher(voucher._REMOTEID);
+                            } else {
+                              this.addCacheVoucher(voucher);
+                              console.log(res.RESPONSE.ERROR);
+                            }
+                          } else {
+                            this.addCacheVoucher(voucher);
+                          }
+                        },
+                        err => {
+                          console.log(err);
+                          this.addCacheVoucher(voucher);
+                        }
+                        )
+                  
+                  
+                })
+      })      
     }
   
 }
