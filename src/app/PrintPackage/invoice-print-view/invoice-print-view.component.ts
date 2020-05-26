@@ -76,7 +76,6 @@ export class InvoicePrintViewComponent implements OnInit {
                 GSTDETAILS = gstlist.filter((g) => new Date(g.APPLICABLEFROM.content) < new Date())
                 .sort((b,a) => new Date(a.APPLICABLEFROM.content).getTime() - new Date(b.APPLICABLEFROM.content).getTime())[0];
              
-
                 if (GSTDETAILS){
                   if(GSTDETAILS["STATEWISEDETAILS.LIST"] instanceof Array){
                     STATEWISEDETAILS = GSTDETAILS["STATEWISEDETAILS.LIST"][0];

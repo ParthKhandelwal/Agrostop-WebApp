@@ -113,7 +113,7 @@
                <ng-container *ngFor = "let item of stockItems">
                     <div class="row mt-2 list-content">
                         <div class="col-4">
-                            <p class="without-margin">{{item.STOCKITEMNAME}} ({{item.tallyObject && item.tallyObject["GSTDETAILS.LIST"] && item.tallyObject["GSTDETAILS.LIST"].HSNCODE ? item.tallyObject["GSTDETAILS.LIST"].HSNCODE.content: "NA"}})</p>
+                            <p class="without-margin">{{item.STOCKITEMNAME}} ({{item.tallyObject && item.tallyObject["GSTDETAILS.LIST"] ? (item.tallyObject["GSTDETAILS.LIST"].HSNCODE ? item.tallyObject["GSTDETAILS.LIST"].HSNCODE.content : item.tallyObject["GSTDETAILS.LIST"][0].HSNCODE.content): "NA"}})</p>
                             <p class="without-margin text-muted">
                                 <small>{{item.tallyObject && item.tallyObject.CATEGORY 
                                     ? item.tallyObject.CATEGORY.content 
@@ -127,7 +127,7 @@
                             </p>
                         </div>
                         <div class="col-1 text-center">{{item.RATE | currency: "INR"}}</div>
-                        <div class="col-2 text-center">{{item.BILLEDQTY}}</div>
+                        <div class="col-2 text-center">{{item.BILLEDQTY}} {{item.BASEUNITS? item.BASEUNITS.content : ""}}</div>
                         <div class="col-1 text-right">{{item.RATE * item.BILLEDQTY | currency: "INR"}}</div>
                     </div>
                     <div class="row">

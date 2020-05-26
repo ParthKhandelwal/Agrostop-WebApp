@@ -202,7 +202,7 @@
                          [matAutocomplete]="productAuto"
                          (focus) = "productFocus"
                          style="width:100% !important" >
-                  <mat-autocomplete   [panelWidth]="300" #productAuto="matAutocomplete" position = "above"
+                  <mat-autocomplete  [panelWidth]="300" #productAuto="matAutocomplete" position = "above"
                   (optionSelected) = "selectInventory(stepper, productAuto)"
                                     [displayWith]= "displayFnProduct" autoActiveFirstOption>              
 

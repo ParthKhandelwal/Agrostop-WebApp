@@ -192,6 +192,14 @@ export class DayBookComponent implements OnInit {
     
   }
 
+  getVoucherTotalOffline(list){
+    var total: number = 0;
+      for (let item of list){
+        total = total + (item.POSPAYMENTTYPE && item.AMOUNT ? (item.AMOUNT) : 0);
+      }
+      return total*(-1);
+  }
+
   getVoucherTotal(list){
   
     if (list instanceof Array){
@@ -211,6 +219,15 @@ export class DayBookComponent implements OnInit {
     var total : number = 0;
     for(let v of this.vouchers ){
       total = total + this.getVoucherTotal(v.LEDGERENTRIES.LEDGER)
+    }
+    return total;
+  }
+
+
+  dayBookTotalOffline(): number{
+    var total : number = 0;
+    for(let v of this.cacheVouchers ){
+      total = total + this.getVoucherTotalOffline(v.LEDGERENTRIES_LIST)
     }
     return total;
   }
@@ -290,7 +307,6 @@ export class DayBookComponent implements OnInit {
   }
 
   filter(){
-    
     this.filteredArray = this.vouchers.filter((voucher: any) => {
         
         if (voucher.VOUCHER){

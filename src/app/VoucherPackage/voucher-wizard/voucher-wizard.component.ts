@@ -326,7 +326,7 @@ export class VoucherWizardComponent implements OnInit, AfterViewInit {
 
   addCustomer(value, stepper){
     this.voucher.BASICBUYERNAME = value.id;
-    this.voucher.ADDRESS_LIST = new ADDRESSLIST(value.addressId, "","", "");
+    this.voucher.ADDRESS_LIST = new ADDRESSLIST(value.name, value.fullAddress.name,"", "");
     stepper._selectedIndex = 2;
 
   }

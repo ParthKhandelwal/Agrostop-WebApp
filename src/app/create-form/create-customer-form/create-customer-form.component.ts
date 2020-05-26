@@ -1,6 +1,4 @@
-import { Component, OnInit, Inject, Input } from '@angular/core';
-import { HttpClient, HttpResponse, HttpHeaders } from '@angular/common/http';
-import { CookieService } from 'ngx-cookie-service';
+import { Component, OnInit, Inject, ViewChild, ElementRef } from '@angular/core';
 import { Router } from '@angular/router';
 import { Customer } from '../../Model/customer';
 import { Address } from '../../Model/address';
@@ -23,6 +21,10 @@ export class CreateCustomerFormComponent implements OnInit {
   filteredOptions: Observable<any[]>;
   addressControl = new FormControl();
   address: any;
+  @ViewChild('fatherNameRef', { static: false }) fatherName: ElementRef;
+  @ViewChild('landHolding', { static: false }) landHolding: ElementRef;
+  @ViewChild('phoneNumber', { static: false }) phoneNumber: ElementRef;  
+  @ViewChild("addressRef", { static: false }) addressRef: ElementRef;  
 
 
 
@@ -35,7 +37,11 @@ export class CreateCustomerFormComponent implements OnInit {
       this.customer.phoneNumber= data.phoneNumber;
       this.customer.addressId = data.addressId;
       this.customer.landHolding = data.landHolding;
+      this.customer.gSTREGISTRATIONTYPE = data.gSTREGISTRATIONTYPE;
+    }else{
+      this.customer.gSTREGISTRATIONTYPE = "Consumer";
     }
+
   }
 
   ngOnInit() {
