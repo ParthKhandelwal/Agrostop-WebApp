@@ -7,6 +7,8 @@ import { MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
 import { Observable } from 'rxjs';
 import { startWith, map } from 'rxjs/operators';
 import { FormControl } from '@angular/forms';
+import { DatabaseService } from 'src/app/shared/database.service';
+import { AppComponent } from 'src/app/app.component';
 
 
 @Component({
@@ -15,12 +17,13 @@ import { FormControl } from '@angular/forms';
   styleUrls: ['./create-customer-form.component.css']
 })
 export class CreateCustomerFormComponent implements OnInit {
-
+  disableSaveButton: boolean;
   addresses: Address[] = [];
   customer: Customer = new Customer();
   filteredOptions: Observable<any[]>;
   addressControl = new FormControl();
   address: any;
+  databaseService: DatabaseService;
   @ViewChild('fatherNameRef', { static: false }) fatherName: ElementRef;
   @ViewChild('landHolding', { static: false }) landHolding: ElementRef;
   @ViewChild('phoneNumber', { static: false }) phoneNumber: ElementRef;  
@@ -41,12 +44,13 @@ export class CreateCustomerFormComponent implements OnInit {
     }else{
       this.customer.gSTREGISTRATIONTYPE = "Consumer";
     }
+    this.databaseService= AppComponent.databaseService;
 
   }
 
   ngOnInit() {
     console.log(this.customer);
-    this.apiService.getAddresses().subscribe(
+    this.databaseService.getAddresses().then(
       res => {
         this.addresses = res;
         this.address = this.addresses.filter((a) => a._id == this.customer.addressId)[0];
@@ -71,10 +75,12 @@ export class CreateCustomerFormComponent implements OnInit {
   }
 
   submit(): void{
+    this.disableSaveButton = true;
     this.customer.addressId = this.address._id
     this.apiService.addCustomer(this.customer).subscribe(
       res =>{
         this.dialogRef.close(res);
+        this.disableSaveButton = false;
       },
       err =>{
         console.log(err);

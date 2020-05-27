@@ -144,6 +144,10 @@ sendAllVoucherTypeRequests(){
     async getCustomers():Promise<any[]>{
     return  await this.db.getAll("customers");
     }
+
+    async getAddresses():Promise<any[]>{
+      return  await this.db.getAll("Addresses");
+      }
   
     async getCustomer(id: string):Promise<Customer>{
       return  await this.db.getByKey("customers", id);

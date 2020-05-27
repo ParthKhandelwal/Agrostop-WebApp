@@ -433,7 +433,7 @@
               </mat-form-field>
             </div>
             <div class="col">
-              <mat-form-field>
+              <mat-form-field *ngIf = "voucher.ALLINVENTORYENTRIES_LIST.length > 0">
                 <input matInput placeholder="Remaining Balance" readonly name="voucherRemainingBalance" [value] = "getRemainingBalance()">
               </mat-form-field>
             </div>
