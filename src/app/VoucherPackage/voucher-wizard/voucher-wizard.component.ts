@@ -606,7 +606,7 @@ export class VoucherWizardComponent implements OnInit, AfterViewInit {
     inventoryEntry.BATCHALLOCATIONS_LIST.GODOWNNAME = this.databaseService.getGodown();
     inventoryEntry.BATCHALLOCATIONS_LIST.BILLEDQTY = inventoryEntry.BILLEDQTY;
     inventoryEntry.BATCHALLOCATIONS_LIST.ACTUALQTY = inventoryEntry.ACTUALQTY;
-    inventoryEntry.BATCHALLOCATIONS_LIST.AMOUNT = inventoryEntry.RATE * inventoryEntry.BILLEDQTY;
+    inventoryEntry.BATCHALLOCATIONS_LIST.AMOUNT = Math.round(inventoryEntry.RATE * inventoryEntry.BILLEDQTY*100)/100;
     inventoryEntry.BATCHALLOCATIONS_LIST.EXPIRYPERIOD = new EXPIRYPERIOD(this.batchControl.value.EXPIRYDATE 
       ? new Date(this.batchControl.value.EXPIRYDATE)
       : null);
