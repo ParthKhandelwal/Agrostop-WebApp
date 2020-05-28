@@ -612,7 +612,7 @@ export class VoucherWizardComponent implements OnInit, AfterViewInit {
       : null);
     
 
-    inventoryEntry.AMOUNT = inventoryEntry.RATE * inventoryEntry.BILLEDQTY;
+    inventoryEntry.AMOUNT =  Math.round(inventoryEntry.RATE * inventoryEntry.BILLEDQTY*100)/100;
     inventoryEntry.ACCOUNTINGALLOCATIONS_LIST = new ACCOUNTINGALLOCATIONSLIST();
     var SALESLIST: any;
     if (res["SALESLIST.LIST"] instanceof Array){
