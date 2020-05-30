@@ -13,6 +13,7 @@ import { CookieService } from 'ngx-cookie-service';
 import { of, from } from 'rxjs';
 import { watch } from 'fs';
 import { async } from '@angular/core/testing';
+import { StockItem } from '../Model/stock-item';
 
 @Injectable({
   providedIn: 'root'
@@ -247,7 +248,9 @@ sendAllVoucherTypeRequests(){
           for (let item of res){
             if (item && item.ENVELOPE && item.ENVELOPE.BODY && item.ENVELOPE.BODY.DATA
               && item.ENVELOPE.BODY.DATA.TALLYMESSAGE && item.ENVELOPE.BODY.DATA.TALLYMESSAGE.STOCKITEM ){
-                this.db.update("items", item.ENVELOPE.BODY.DATA.TALLYMESSAGE.STOCKITEM)
+                var stockItem: StockItem = new StockItem();
+                stockItem.convertFromJSON(item.ENVELOPE.BODY.DATA.TALLYMESSAGE.STOCKITEM);
+                this.db.update("items", stockItem)
                   
                    index++;
                    this.itemPercent = Math.round((index/length) * 100);

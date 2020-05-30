@@ -15,6 +15,7 @@ import { CreateCustomerFormComponent } from 'src/app/create-form/create-customer
 import { CustomerViewComponent } from 'src/app/view/customer-view/customer-view.component';
 import { Order } from 'src/app/Model/order';
 import { OrderService } from 'src/app/shared/order.service';
+import { StockItem } from 'src/app/Model/stock-item';
 
 
 
@@ -39,6 +40,7 @@ export class VoucherWizardComponent implements OnInit, AfterViewInit {
   batchControl = new FormControl();
   customerFilteredOptions: Observable<Customer[]>;
   productControl = new FormControl();
+  rateIncControl = new FormControl();
   productFilteredOptions: Observable<any[]>;
   user: User;
   ledgerList: any[] = [];
@@ -128,7 +130,7 @@ export class VoucherWizardComponent implements OnInit, AfterViewInit {
         (batches)=> {
           this.batches = batches;
           this.databaseService.getAllStockItemsForBilling().then(
-            (res) => {
+            (res: StockItem[]) => {
               
      
               this.products = res.map((pro) => {
@@ -567,14 +569,23 @@ export class VoucherWizardComponent implements OnInit, AfterViewInit {
   }
 
 
-  selectInventory(stepper){
+  selectInventory(stepper, pro:StockItem){
     if (this.productControl.value == this.endVoucher){
       stepper._selectedIndex = 3;
       this.cashRecievedRef.nativeElement.focus();
       return;
     }
-    this.rateControl.setValue( this.getRate(this.productControl.value).rate);
+    console.log(pro)
+    var temp = Object.assign(new StockItem(), pro);
+    this.rateControl.setValue( temp.getRate(this.voucher.PRICELEVEL));
+    this.rateIncControl.setValue(temp.getRateInclusiveOfTax(this.rateControl.value, ""));
     this.quantityRef.nativeElement.focus();
+  }
+
+  setRateInclusiveOfTax(){
+    var temp = Object.assign(new StockItem(), this.productControl.value);
+    this.rateIncControl.setValue(temp.getRateInclusiveOfTax(this.rateControl.value, ""));
+    this.batchRef.focus();
   }
 
   validateInventoryEntry(){
@@ -592,7 +603,7 @@ export class VoucherWizardComponent implements OnInit, AfterViewInit {
       this.quantityRef.nativeElement.focus();
       return;
     }
-    const res = this.productControl.value;
+    const res: StockItem = this.productControl.value;
     console.log(res);
     var inventoryEntry: ALLINVENTORYENTRIESLIST = new ALLINVENTORYENTRIESLIST();
     inventoryEntry.STOCKITEMNAME = res.NAME;
@@ -614,19 +625,14 @@ export class VoucherWizardComponent implements OnInit, AfterViewInit {
 
     inventoryEntry.AMOUNT =  Math.round(inventoryEntry.RATE * inventoryEntry.BILLEDQTY*100)/100;
     inventoryEntry.ACCOUNTINGALLOCATIONS_LIST = new ACCOUNTINGALLOCATIONSLIST();
-    var SALESLIST: any;
-    if (res["SALESLIST.LIST"] instanceof Array){
-      SALESLIST = res["SALESLIST.LIST"][0];
-    } else{
-      SALESLIST= res["SALESLIST.LIST"];
-    }
+    
       
     
-    inventoryEntry.ACCOUNTINGALLOCATIONS_LIST.LEDGERNAME = SALESLIST.NAME.content;
-    inventoryEntry.ACCOUNTINGALLOCATIONS_LIST.CLASSRATE = SALESLIST.CLASSRATE.content;
-    inventoryEntry.ACCOUNTINGALLOCATIONS_LIST.LEDGERFROMITEM = SALESLIST.LEDGERFROMITEM.content;
-    inventoryEntry.ACCOUNTINGALLOCATIONS_LIST.GSTOVRDNNATURE = SALESLIST.GSTCLASSIFICATIONNATURE.content;
-    inventoryEntry.ACCOUNTINGALLOCATIONS_LIST.REMOVEZEROENTRIES = SALESLIST.REMOVEZEROENTRIES.content;
+    inventoryEntry.ACCOUNTINGALLOCATIONS_LIST.LEDGERNAME = res.salesList[0].name;
+    inventoryEntry.ACCOUNTINGALLOCATIONS_LIST.CLASSRATE = res.salesList[0].classRate;
+    inventoryEntry.ACCOUNTINGALLOCATIONS_LIST.LEDGERFROMITEM = res.salesList[0].ledgerFromItem;
+    inventoryEntry.ACCOUNTINGALLOCATIONS_LIST.GSTOVRDNNATURE = res.salesList[0].gstCLassificationNature;
+    inventoryEntry.ACCOUNTINGALLOCATIONS_LIST.REMOVEZEROENTRIES = res.salesList[0].removeZeroEntries;
     inventoryEntry.ACCOUNTINGALLOCATIONS_LIST.AMOUNT = inventoryEntry.AMOUNT;
     inventoryEntry.ACCOUNTINGALLOCATIONS_LIST.LEDGERFROMITEM = "Yes"
     inventoryEntry.ACCOUNTINGALLOCATIONS_LIST.ISDEEMEDPOSITIVE = "No"
@@ -677,45 +683,10 @@ productFocus:boolean;
        
             for (let product of this.voucher.ALLINVENTORYENTRIES_LIST){
         
-              this.databaseService.getStockItem(product.STOCKITEMNAME).then( (item) => {
-            
-                var GSTDETAILS: any;
-                var gstlist: any[] =[];
-                var STATEWISEDETAILS:any;
-                var RATEDETAILS:any[];
-                if (item["GSTDETAILS.LIST"] instanceof Array){
-                    gstlist = item["GSTDETAILS.LIST"]
-                }else {
-                  
-                  gstlist.push(item["GSTDETAILS.LIST"]);
-                  
-                }
-                GSTDETAILS = gstlist.filter((g) => new Date(g.APPLICABLEFROM.content) < new Date())
-                .sort((b,a) => new Date(a.APPLICABLEFROM.content).getTime() - new Date(b.APPLICABLEFROM.content).getTime())[0];
-             
-
-                if (GSTDETAILS){
-                  if(GSTDETAILS["STATEWISEDETAILS.LIST"] instanceof Array){
-                    STATEWISEDETAILS = GSTDETAILS["STATEWISEDETAILS.LIST"][0];
-                  }else {
-                    STATEWISEDETAILS = GSTDETAILS["STATEWISEDETAILS.LIST"]
-                  }
-                  if (STATEWISEDETAILS){
-                    if (STATEWISEDETAILS["RATEDETAILS.LIST"] instanceof Array){
-                      RATEDETAILS = STATEWISEDETAILS["RATEDETAILS.LIST"];
-                    }else {
-                      RATEDETAILS.push(STATEWISEDETAILS["RATEDETAILS.LIST"]);
-                    }
-                  }
-                }
-                
-                
-                var gstRate = RATEDETAILS
-                .filter((rate) => rate.GSTRATEDUTYHEAD.content == gstDutyHead)[0]
-                .GSTRATE.content
-               
-                
-                ledger.AMOUNT = ledger.AMOUNT + (Math.round(gstRate * product.AMOUNT *1.0)/100);
+              this.databaseService.getStockItem(product.STOCKITEMNAME).then( (productItem: StockItem) => {
+                var item = Object.assign(new StockItem(), productItem);
+              
+                ledger.AMOUNT = ledger.AMOUNT + item.getTax(product.BILLEDQTY,product.RATE,"",gstDutyHead)
                 this.adjustRounding();
       
               
@@ -798,11 +769,9 @@ productFocus:boolean;
   }
 
   getNumbers(temp: string): number{
-    
     var returnNumber;
     returnNumber = temp.replace(/\//g, "");
     returnNumber = returnNumber.replace(/[^\d.-]/g, "");
-
     return returnNumber;
   }
 

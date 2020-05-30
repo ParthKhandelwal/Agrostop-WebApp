@@ -8,6 +8,7 @@ import { Address } from 'src/app/Model/address';
 import { DatabaseService } from 'src/app/shared/database.service';
 import { AppComponent } from 'src/app/app.component';
 import { User } from 'src/app/Model/user';
+import { StockItem } from 'src/app/Model/stock-item';
 
 
 
@@ -59,50 +60,16 @@ export class InvoicePrintViewComponent implements OnInit {
       this.stockItems = this.voucher.ALLINVENTORYENTRIES_LIST;
       this.voucher.ALLINVENTORYENTRIES_LIST.forEach((item) => {
         this.databaseService.getStockItem(item.STOCKITEMNAME).then(
-          (res) => {
-            item.tallyObject = res;
+          (res: StockItem) => {
+            var tallyObject: StockItem = Object.assign(new StockItem, res);
+            item.tallyObject = tallyObject;
+            var taxItem: PrintTaxItem = this.hsnDetails.get(tallyObject.getHSNCODE());
 
-                var GSTDETAILS: any;
-                var gstlist: any[] =[];
-                var STATEWISEDETAILS:any;
-                var RATEDETAILS:any[];
-                if (item.tallyObject["GSTDETAILS.LIST"] instanceof Array){
-                    gstlist = item.tallyObject["GSTDETAILS.LIST"]
-                }else {
-                  
-                  gstlist.push(item.tallyObject["GSTDETAILS.LIST"]);
-                  
-                }
-                GSTDETAILS = gstlist.filter((g) => new Date(g.APPLICABLEFROM.content) < new Date())
-                .sort((b,a) => new Date(a.APPLICABLEFROM.content).getTime() - new Date(b.APPLICABLEFROM.content).getTime())[0];
-             
-                if (GSTDETAILS){
-                  if(GSTDETAILS["STATEWISEDETAILS.LIST"] instanceof Array){
-                    STATEWISEDETAILS = GSTDETAILS["STATEWISEDETAILS.LIST"][0];
-                  }else {
-                    STATEWISEDETAILS = GSTDETAILS["STATEWISEDETAILS.LIST"]
-                  }
-                  if (STATEWISEDETAILS){
-                    if (STATEWISEDETAILS["RATEDETAILS.LIST"] instanceof Array){
-                      RATEDETAILS = STATEWISEDETAILS["RATEDETAILS.LIST"];
-                    }else {
-                      RATEDETAILS.push(STATEWISEDETAILS["RATEDETAILS.LIST"]);
-                    }
-                  }
-                }
-                var CGST = RATEDETAILS
-                .filter((rate) => rate.GSTRATEDUTYHEAD.content == 'Central Tax')[0]
-                var SGST = RATEDETAILS
-                .filter((rate) => rate.GSTRATEDUTYHEAD.content == 'State Tax')[0]
-
-            var taxItem: PrintTaxItem = this.hsnDetails.get(GSTDETAILS.HSNCODE);
-
-            if (!taxItem && item.tallyObject && GSTDETAILS 
-            && GSTDETAILS.HSNCODE){
+            if (!taxItem && tallyObject){
               taxItem = new PrintTaxItem();
-              taxItem.hsnCode = GSTDETAILS.HSNCODE.content;
-              taxItem.cgst.rate = CGST.GSTRATE.content;
-              taxItem.sgst.rate = SGST.GSTRATE.content;
+              taxItem.hsnCode = tallyObject.getHSNCODE();
+              taxItem.cgst.rate = tallyObject.getTaxRate("", "Central Tax");
+              taxItem.sgst.rate = tallyObject.getTaxRate("", "State Tax");
               this.hsnDetails.set(taxItem.hsnCode, taxItem);
             }
             taxItem.cgst.amount = taxItem.cgst.amount + this.calculate(taxItem.cgst.rate, item.AMOUNT);

@@ -115,8 +115,8 @@
                         <div class="col-4">
                             <p class="without-margin">{{item.STOCKITEMNAME}} ({{item.tallyObject && item.tallyObject["GSTDETAILS.LIST"] ? (item.tallyObject["GSTDETAILS.LIST"].HSNCODE ? item.tallyObject["GSTDETAILS.LIST"].HSNCODE.content : item.tallyObject["GSTDETAILS.LIST"][0].HSNCODE.content): "NA"}})</p>
                             <p class="without-margin text-muted">
-                                <small>{{item.tallyObject && item.tallyObject.CATEGORY 
-                                    ? item.tallyObject.CATEGORY.content 
+                                <small>{{item.tallyObject && item.tallyObject.category
+                                    ? item.tallyObject.category
                                     : ""}}</small>
                             </p>
                         </div>

@@ -203,7 +203,7 @@
                          (focus) = "productFocus"
                          style="width:100% !important" >
                   <mat-autocomplete  [panelWidth]="300" #productAuto="matAutocomplete" position = "above"
-                  (optionSelected) = "selectInventory(stepper, productAuto)"
+                  (optionSelected) = "selectInventory(stepper, $event.option.value)"
                                     [displayWith]= "displayFnProduct" autoActiveFirstOption>              
 
                     <mat-option [value]="endVoucher">
@@ -229,13 +229,18 @@
               </div>
               <div class="col">
                 <mat-form-field>
-                  <input #quantityField type= "number" (keydown.enter) = "rateRef.nativeElement.focus();false" placeholder="Enter Quantity" matInput name ="qty" [formControl] = "qtyControl">
+                  <input #quantityField type= "number" (keydown.enter) = "rateRef.nativeElement.focus();false" [placeholder] = "this.productControl.value ? 'Enter '+this.productControl.value.baseUnits : 'Enter Qty'" matInput name ="qty" [formControl] = "qtyControl">
                 </mat-form-field>
                 
               </div>
               <div class="col">
                 <mat-form-field *ngIf = "productControl.value">
-                  <input #rateField type= "number" (keydown.enter) = "batchRef.focus();false" placeholder="Enter Rate" [(value)] = "getRate(productControl.value).rate" matInput name ="rate" [formControl] = "rateControl">
+                  <input #rateField type= "number" (keydown.enter) = "setRateInclusiveOfTax();false" placeholder="Enter Rate" matInput name ="rate" [formControl] = "rateControl">
+                </mat-form-field>
+              </div>
+              <div class="col">
+                <mat-form-field *ngIf = "productControl.value">
+                  <input type= "number" readonly placeholder="Rate (inc of tax)"  matInput name ="rateIncTax" [formControl] = "rateIncControl">
                 </mat-form-field>
               </div>
               <div class="col">
@@ -306,8 +311,10 @@
         
                   
                 </mat-panel-title>
-                <mat-panel-description>
+                <mat-panel-description style="width: 200px;">
                   <div style="float: left;">Qty: {{product.ACTUALQTY}}</div>
+                  <div style="width: 50px;"></div>
+                  <div style="float: right;">Amount: {{product.AMOUNT}}</div>
                 </mat-panel-description>
               </mat-expansion-panel-header>
               <!-- ENTER DESCRIPTION OF THE ITEM HERE -->
