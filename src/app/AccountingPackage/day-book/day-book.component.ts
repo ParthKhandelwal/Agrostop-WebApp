@@ -155,19 +155,21 @@ export class DayBookComponent implements OnInit {
               this.vouchers = res.VOUCHER;
             }
             
-            
+            console.log(res)
+
             this.vouchers.sort((a,b) => new Date(a.DATE).getTime() - new Date(b.DATE).getTime())
             this.vouchers.map(res => {
               this.databaseService.getCustomer(res.BASICBUYERNAME).then(
                 customer=> {
                   res.BASICBUYERNAME = customer ? customer.name : res.BASICBUYERNAME;
+                  this.databaseService.getAddress(customer.addressId).then(
+                    (address : Address)=> {
+                      res.ADDRESS = address ? address.name : res.ADDRESS;
+                    }
+                  )
                 }
               )
-              this.databaseService.getAddress(res.ADDRESS+"").then(
-                (address : Address)=> {
-                  res.ADDRESS = address ? address.name : res.ADDRESS;
-                }
-              )
+              
               
               return res;
             })
