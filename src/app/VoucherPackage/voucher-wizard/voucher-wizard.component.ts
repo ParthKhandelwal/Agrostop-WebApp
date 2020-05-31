@@ -687,8 +687,9 @@ productFocus:boolean;
                 var item = Object.assign(new StockItem(), productItem);
               
                 ledger.AMOUNT = ledger.AMOUNT + item.getTax(product.BILLEDQTY,product.RATE,"",gstDutyHead)
+                ledger.AMOUNT =  parseFloat((Math.round(ledger.AMOUNT * 100) / 100).toFixed(2));
                 this.adjustRounding();
-      
+                
               
               } );
               
