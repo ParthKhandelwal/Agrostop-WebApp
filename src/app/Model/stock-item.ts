@@ -70,12 +70,22 @@ export class StockItem {
 
 
   getRate(priceLevel: string): number{
-    var priceList: FULLPRICELIST = this.fullPriceList
-    .filter((p) => p.priceLevel == priceLevel)[0];
-    if(priceList){
-      var rate: number = priceList.priceLevelList
+    var priceLevelsList: PRICELEVELLIST[] = [];
+    this.fullPriceList
+    .filter((p) => (p.priceLevel == priceLevel)).forEach((pl) => {
+      console.log(pl);
+      priceLevelsList.push(...pl.priceLevelList);
+    });
+    
+    if(priceLevelsList.length > 0){
+      var sortedOrder = priceLevelsList
+      .filter((p) => p.date <= new Date())
+      .sort((a,b) => b.date.getTime() - a.date.getTime());
+      console.log(sortedOrder);
+
+      var rate: number = priceLevelsList
     .filter((p) => p.date <= new Date())
-    .sort((a,b) => a.date.getTime() - b.date.getTime())[0].rate
+    .sort((a,b) => b.date.getTime() - a.date.getTime())[0].rate
     return parseFloat((Math.round(rate * 100) / 100).toFixed(2));
     }else {
       return 0;
@@ -86,7 +96,7 @@ export class StockItem {
   getTaxRate(state: string, taxType: string): number{
     var gstDetail: GSTDETAILS = this.gstDetailsList
     .filter((p) => p.applicableFrom <= new Date())
-    .sort((a,b) => a.applicableFrom.getTime() - b.applicableFrom.getTime())[0];
+    .sort((a,b) => b.applicableFrom.getTime() - a.applicableFrom.getTime())[0];
     if (gstDetail){
       var statewiseDetails: STATEWISEDETAILS[] = gstDetail.stateWiseDetailsList
       var rateDetailsList: RATEDETAILSLIST[] = state 
