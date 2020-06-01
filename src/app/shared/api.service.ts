@@ -6,7 +6,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { User } from '../Model/user';
 import { CookieService } from 'ngx-cookie-service';
-import { StockItem, UpdateStockItemData, StockCheck, StockCheckItem, PackageRateItem } from '../Model/stock-item';
+import { StockItem, UpdateStockItemData, StockCheck, StockCheckItem, PackageRateItem, ProductGroupFields } from '../Model/stock-item';
 import { UserLogin } from '../login-form/login-form.component';
 import { TaxDetails } from '../Model/tax-details';
 import { DatePipe } from '@angular/common';
@@ -57,7 +57,18 @@ export class ApiService {
   }
 
 
+  getField(type: String): Observable<any>{
+    return this.httpClient.get<any>(this.BASE_URL + 'groupField/getField?type='+type);
+  }
 
+  getFieldNames(type: String): Observable<any>{
+    return this.httpClient.get<any[]>(this.BASE_URL + 'groupField/getNames?type='+type);
+  }
+
+
+  saveField(type: ProductGroupFields): Observable<any>{
+    return this.httpClient.post(this.BASE_URL + 'groupField/save', type);
+  }
 
   authenticate(user: UserLogin) {
     return this.httpClient.post<any>(this.WEB_SOCKET_URL +'/authenticate', user);

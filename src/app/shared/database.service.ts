@@ -10,9 +10,7 @@ import { Address } from '../Model/address';
 import { VOUCHER, PrintConfiguration } from '../Model/voucher';
 import { User } from '../Model/user';
 import { CookieService } from 'ngx-cookie-service';
-import { of, from } from 'rxjs';
-import { watch } from 'fs';
-import { async } from '@angular/core/testing';
+
 import { StockItem } from '../Model/stock-item';
 
 @Injectable({

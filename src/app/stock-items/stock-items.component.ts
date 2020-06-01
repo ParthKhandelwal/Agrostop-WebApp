@@ -1,15 +1,10 @@
-import { Component, OnInit, Inject, ViewChild } from '@angular/core';
-import { Customer } from '../Model/customer';
+import { Component, OnInit} from '@angular/core';
 import { ApiService } from '../shared/api.service';
-import { StockItemTableComponent } from '../tables/stock-item-table/stock-item-table.component';
 import { NavItem } from '../side-navigation-bar/side-navigation-bar.component';
 import { Observable } from 'rxjs';
-import { ProductGroup, Package, PackageRateItem } from '../Model/stock-item';
+import { ProductGroup, Package, PackageRateItem, ProductGroupFields} from '../Model/stock-item';
 import {NgxImageCompressService} from 'ngx-image-compress';
-import { map } from 'rxjs/operators';
-import { stringify } from 'querystring';
 import { Papa } from 'ngx-papaparse';
-import { FileDetector } from 'protractor';
 
 
 @Component({
@@ -35,6 +30,8 @@ export class StockItemsComponent implements OnInit {
   productGroups$ : Observable<any>;
   productImageUrl: any;
   productGroup: ProductGroup;
+  company$: Observable<any>;
+  category$: Observable<any>;
 
   constructor(private apiService?: ApiService, 
     private imageCompress?: NgxImageCompressService, private papa?:Papa) {
@@ -45,6 +42,9 @@ export class StockItemsComponent implements OnInit {
     this.productGroup = new ProductGroup();
     this.getChemicalGroups();
     this.getTallyProducts();
+    this.company$ = this.apiService.getFieldNames("COMPANY");
+    this.category$ = this.apiService.getFieldNames("CATEGORY");
+    
   }
 
   getChemicalGroups(){
@@ -298,6 +298,48 @@ export class StockItemsComponent implements OnInit {
       
     }
   }
+
+  groupField: ProductGroupFields = new ProductGroupFields();
+  saveGroupField(){
+    if (this.groupField.id && this.groupField.fieldType && this.groupField.image){
+      this.apiService.saveField(this.groupField).subscribe(
+        res => {
+          alert("Saved Succesfully");
+          this.groupField = new ProductGroupFields();
+        },
+        err => {
+          alert("Could not save at this time please try again later.")
+          console.log(err);
+        }
+      );
+
+    }
+    
+  }
+
+  async selectGroupFieldImage(){
+
+    await this.imageCompress.uploadFile().then(async ({image, orientation}) => {
+    
+   
+      console.warn('Size in bytes was:', this.imageCompress.byteCount(image));
+     
+      this.groupField.image = image;
+      while(this.imageCompress.byteCount(this.groupField.image) > 50000){
+        await this.imageCompress.compressFile(this.groupField.image, orientation, 50, 50).then(
+          async result => {
+            this.groupField.image = result;
+            console.warn('Size in bytes is now:', this.imageCompress.byteCount(result));
+          }
+        );
+      }
+      console.warn('Size in bytes is finally:', this.imageCompress.byteCount(this.groupField.image));
+    });
+    
+
+  }
+
+
 
 }
 

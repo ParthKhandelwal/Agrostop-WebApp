@@ -48,7 +48,14 @@
                                       </mat-form-field>
                                     
                                     <mat-form-field>
-                                      <input required placeholder = "Enter company name" matInput name = "productGroupCompany" [(ngModel)] = "productGroup.companyName">
+                                      <mat-select placeholder = "Enter company name" name = "productGroupCompany" [(ngModel)] = "productGroup.companyName">
+                                        <mat-option *ngFor = "let cat of company$ | async" [value] = "cat._id">{{cat._id}}</mat-option>
+                                      </mat-select>
+                                    </mat-form-field>
+                                    <mat-form-field>
+                                      <mat-select placeholder = "Select Category Name" name = "categoryNam" [(ngModel)] = "productGroup.categoryName">
+                                        <mat-option *ngFor = "let cat of category$ | async" [value] = "cat._id">{{cat._id}}</mat-option>
+                                      </mat-select>
                                     </mat-form-field>
 
                                     <mat-form-field style="width: 100%;">
@@ -134,9 +141,16 @@
                                             <input readonly placeholder = "Enter name" required matInput name = "productGroupName" [(ngModel)] = "productGroup.name">
                                           </mat-form-field>
                                         
-                                        <mat-form-field>
-                                          <input required placeholder = "Enter company name" matInput name = "productGroupCompany" [(ngModel)] = "productGroup.companyName">
-                                        </mat-form-field>
+                                          <mat-form-field>
+                                            <mat-select placeholder = "Enter company name" name = "productGroupCompany" [(ngModel)] = "productGroup.companyName">
+                                              <mat-option *ngFor = "let cat of company$ | async" [value] = "cat._id">{{cat._id}}</mat-option>
+                                            </mat-select>
+                                          </mat-form-field>
+                                          <mat-form-field>
+                                            <mat-select placeholder = "Select Category Name" name = "categoryNam" [(ngModel)] = "productGroup.categoryName">
+                                              <mat-option *ngFor = "let cat of category$ | async" [value] = "cat._id">{{cat._id}}</mat-option>
+                                            </mat-select>
+                                          </mat-form-field>
     
                                         <mat-form-field style="width: 100%;">
                                           <mat-label>Description</mat-label>
@@ -374,6 +388,48 @@
                 </div>
             </div>
           </div>  
+        </mat-tab>
+
+        <mat-tab label = "Product Group Fields">
+          <form #fieldFoem = 'ngForm'>
+            <div class="row" style="position: relative; padding-left: 50px; width: 100%">
+              <div class="col">
+                <div class="row">
+                  <mat-form-field>
+                    <mat-select name = "type" palceholder = "Select Field Type" [(ngModel)] = "groupField.fieldType">
+                      <mat-option value = "COMPANY">Company</mat-option>
+                      <mat-option value = "CATEGORY">Category</mat-option>
+                      <mat-option value = "Banner">Banner</mat-option>
+                    </mat-select>
+                  </mat-form-field>
+                </div>
+                <div class="row">
+                  <mat-form-field>
+                    <input matInput placeholder="Enter Field Name" name = "fieldId" [(ngModel)] = "groupField.id">
+                  </mat-form-field>
+                </div>
+                <div class="row">
+                  <mat-form-field>
+                    <input matInput type = 'number' placeholder="Enter Priority Level" name = "fieldPriority" [(ngModel)] = "groupField.priorityLevel">
+                  </mat-form-field>
+                </div>
+              </div>
+              <div class = "col">
+                <div class="row">
+                  <mat-checkbox name = "groupactive" [(ngModel)]="groupField.active">Active</mat-checkbox>
+                </div>
+                <div class="row">
+                  <img [src]="this.groupField.image" height="200" style="padding-left: 20px;"> <br/>
+                                    
+                  <button style="padding-left: 20px;" type="button" mat-button (click)="selectGroupFieldImage()">Select File</button>
+              
+                </div>
+                <div class="row">
+                  <button mat-raised-button [disabled] = "fieldFoem.invalid" (click) = 'saveGroupField()'>Save</button>
+                </div>
+              </div>
+            </div>
+          </form>
         </mat-tab>
       </mat-tab-group>
       <router-outlet></router-outlet>

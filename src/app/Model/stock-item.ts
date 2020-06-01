@@ -319,6 +319,7 @@ export class ProductGroup{
   packaging: Package[];
   image: string | ArrayBuffer;
   companyName: string;
+  categoryName: string;
   technicalSet: string[];
   priorityLevel: number;
 
@@ -350,3 +351,15 @@ export class PackageRateItem{
     this.amount = amount;
   }
 }
+
+
+export class ProductGroupFields{
+  image: string | ArrayBuffer;
+  id:string;
+  priorityLevel:number;
+  fieldType: string;
+  active: boolean
+
+
+}
+
