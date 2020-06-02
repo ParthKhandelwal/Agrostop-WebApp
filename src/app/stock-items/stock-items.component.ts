@@ -2,9 +2,11 @@ import { Component, OnInit} from '@angular/core';
 import { ApiService } from '../shared/api.service';
 import { NavItem } from '../side-navigation-bar/side-navigation-bar.component';
 import { Observable } from 'rxjs';
-import { ProductGroup, Package, PackageRateItem, ProductGroupFields} from '../Model/stock-item';
+import { ProductGroup, Package, PackageRateItem, ProductGroupFields, StockItem} from '../Model/stock-item';
 import {NgxImageCompressService} from 'ngx-image-compress';
 import { Papa } from 'ngx-papaparse';
+import { DatabaseService } from '../shared/database.service';
+import { AppComponent } from '../app.component';
 
 
 @Component({
@@ -32,10 +34,10 @@ export class StockItemsComponent implements OnInit {
   productGroup: ProductGroup;
   company$: Observable<any>;
   category$: Observable<any>;
-
+  databaseService: DatabaseService
   constructor(private apiService?: ApiService, 
     private imageCompress?: NgxImageCompressService, private papa?:Papa) {
-
+      this.databaseService = AppComponent.databaseService;
   }
 
   ngOnInit() {
@@ -190,6 +192,16 @@ export class StockItemsComponent implements OnInit {
       (groups: ProductGroup[]) => {
         groups.forEach((group:ProductGroup) => {
           group.packaging.forEach((pack:Package) => {
+            this.databaseService.getStockItem(pack.item).then((product) => {
+              var stockItem: StockItem = Object.assign(new StockItem(), product);
+              var list :PackageRateItem[] = []
+              this.pricemap.forEach((pricelist: string, godown: string) => {
+                var rate: number = stockItem.getRate(pricelist);
+                list.push(new PackageRateItem(godown, rate, stockItem.getRateInclusiveOfTax(rate, "")));
+              })
+            })
+
+
             this.apiService.getStockItem(pack.item).subscribe((res) => {
               console.log(res);
               var response = res.ENVELOPE.BODY.DATA.TALLYMESSAGE.STOCKITEM;

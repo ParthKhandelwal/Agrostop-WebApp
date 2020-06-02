@@ -7,7 +7,7 @@ import * as Stomp from 'stompjs';
 import * as SockJS from 'sockjs-client';
 import { Customer } from '../Model/customer';
 import { Address } from '../Model/address';
-import { VOUCHER, PrintConfiguration } from '../Model/voucher';
+import { VOUCHER, PrintConfiguration, ADDRESSLIST } from '../Model/voucher';
 import { User } from '../Model/user';
 import { CookieService } from 'ngx-cookie-service';
 
@@ -685,7 +685,10 @@ sendAllVoucherTypeRequests(){
                   }
                 })
                 .forEach( async (voucherPromise) => {
-                      var voucher = await voucherPromise
+                      var voucher: VOUCHER = await voucherPromise
+                      var customer:Customer = await this.getCustomer(voucher.BASICBUYERNAME);
+                      voucher.ADDRESS_LIST = new ADDRESSLIST(customer.name, customer.fullAddress.name, 
+                        customer.fullAddress.tehsilName, customer.fullAddress.districtName)
                       console.log(voucher);
                       this.apiService.saveTallyVoucher(voucher).subscribe(
                         (res) => {
