@@ -112,7 +112,7 @@ export class StockItem {
   getTax(qty: number, rate: number,state: string, taxType: string): number{
     var tax: number = this.getTaxRate(state, taxType) * rate * qty;
     const value: number = parseFloat((Math.round(tax) / 100).toFixed(2));
-    console.log(value);
+   
     return value;
   }
 

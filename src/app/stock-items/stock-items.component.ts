@@ -1,7 +1,7 @@
 import { Component, OnInit} from '@angular/core';
 import { ApiService } from '../shared/api.service';
 import { NavItem } from '../side-navigation-bar/side-navigation-bar.component';
-import { Observable } from 'rxjs';
+import { Observable, from } from 'rxjs';
 import { ProductGroup, Package, PackageRateItem, ProductGroupFields, StockItem} from '../Model/stock-item';
 import {NgxImageCompressService} from 'ngx-image-compress';
 import { Papa } from 'ngx-papaparse';
@@ -28,7 +28,7 @@ export class StockItemsComponent implements OnInit {
   ];
   chemicalGroup: any = {};
   chemicalGroups$ : Observable<any>;
-  tallyProducts$ : Observable<any>;
+  tallyProducts : StockItem[];
   productGroups$ : Observable<any>;
   productImageUrl: any;
   productGroup: ProductGroup;
@@ -40,12 +40,18 @@ export class StockItemsComponent implements OnInit {
       this.databaseService = AppComponent.databaseService;
   }
 
-  ngOnInit() {
+  async ngOnInit() {
     this.productGroup = new ProductGroup();
     this.getChemicalGroups();
     this.getTallyProducts();
     this.company$ = this.apiService.getFieldNames("COMPANY");
     this.category$ = this.apiService.getFieldNames("CATEGORY");
+    this.databaseService.openDatabase().then(
+      async (res) =>     {
+        this.tallyProducts = await this.databaseService.getAllStockItemsForBilling();
+      }
+
+    )
     
   }
 
@@ -54,7 +60,7 @@ export class StockItemsComponent implements OnInit {
   }
 
   getTallyProducts(){
-    this.tallyProducts$ = this.apiService.getAllStockItemsForBilling();
+    
   }
 
   deleteChemicalGroup(name: string){
@@ -173,8 +179,8 @@ export class StockItemsComponent implements OnInit {
 //_____________________________________________________________________________
 
 
-  godowns$: Observable<any>
-  priceLists$: Observable<any>
+  godowns: any[];
+  priceLists:any[];
   pricemap: Map<String, String>= new Map()
   results: any[];
   fields: string[];
@@ -182,8 +188,8 @@ export class StockItemsComponent implements OnInit {
   
 
   getPriceData(){
-    this.godowns$ = this.apiService.getGodownNames();
-    this.priceLists$ = this.apiService.getPriceList();
+    this.godowns = this.databaseService.getUser().godownList;
+    this.priceLists = this.databaseService.getUser().salesVoucherSettings.priceLists
   }
 
   updatePrice(){
@@ -199,26 +205,20 @@ export class StockItemsComponent implements OnInit {
                 var rate: number = stockItem.getRate(pricelist);
                 list.push(new PackageRateItem(godown, rate, stockItem.getRateInclusiveOfTax(rate, "")));
               })
+              this.apiService.updatePriceForProductGroup(pack.item, list).subscribe(
+                res => console.log(res),
+                err => console.log(err)
+              );
+              
             })
-
-
-            this.apiService.getStockItem(pack.item).subscribe((res) => {
-              console.log(res);
-              var response = res.ENVELOPE.BODY.DATA.TALLYMESSAGE.STOCKITEM;
-              var list :PackageRateItem[] = []
-              this.pricemap.forEach((pricelist: string, godown: string) => {
-                list.push(new PackageRateItem(godown, this.getRate(pricelist, response), this.getAmount(pricelist, response)))
-              })
-              console.log(list);
-              this.apiService.updatePriceForProductGroup(pack.item, list).subscribe();
-            },
-            err => console.log(err))
+          });
+          
           })
         })
-      }
-    )
-
   }
+    
+
+  
 
  
 

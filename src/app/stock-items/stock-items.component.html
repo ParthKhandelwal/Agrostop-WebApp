@@ -99,7 +99,7 @@
                                       </mat-form-field>
                                       <mat-form-field *ngIf = "packagingInput">
                                         <mat-select placeholder= "select a product" (selectionChange) = "addPackaging($event, packagingInput.value)">
-                                          <ng-container *ngFor = "let item of tallyProducts$ | async">
+                                          <ng-container *ngFor = "let item of tallyProducts">
                                             <mat-option [value] = "item">{{item}}</mat-option>
                                           </ng-container>
                                         </mat-select>
@@ -193,8 +193,8 @@
                                           </mat-form-field>
                                           <mat-form-field *ngIf = "packagingInput">
                                             <mat-select placeholder= "select a product" (selectionChange) = "addPackaging($event, packagingInput.value)">
-                                              <ng-container *ngFor = "let item of tallyProducts$ | async">
-                                                <mat-option [value] = "item">{{item}}</mat-option>
+                                              <ng-container *ngFor = "let item of tallyProducts">
+                                                <mat-option [value] = "item.NAME">{{item.NAME}}</mat-option>
                                               </ng-container>
                                             </mat-select>
                                           </mat-form-field>
@@ -234,12 +234,12 @@
                                         
                                       </thead>
                                       <tbody>
-                                        <tr *ngFor = "let godown of godowns$ | async">
+                                        <tr *ngFor = "let godown of godowns">
                                           <td>{{godown}}</td>
                                           <td>
                                             <mat-form-field>
                                               <mat-select placeholder="select a PriceList" (selectionChange) = "pricemap.set(godown, $event.value)">
-                                                <mat-option [value] = "priceList" *ngFor = "let priceList of priceLists$| async">
+                                                <mat-option [value] = "priceList" *ngFor = "let priceList of priceLists">
                                                   {{priceList}}
                                                 </mat-option>
                                               </mat-select>
