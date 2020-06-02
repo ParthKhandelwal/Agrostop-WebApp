@@ -686,9 +686,6 @@ sendAllVoucherTypeRequests(){
                 })
                 .forEach( async (voucherPromise) => {
                       var voucher: VOUCHER = await voucherPromise
-                      var customer:Customer = await this.getCustomer(voucher.BASICBUYERNAME);
-                      voucher.ADDRESS_LIST = new ADDRESSLIST(customer.name, customer.fullAddress.name, 
-                        customer.fullAddress.tehsilName, customer.fullAddress.districtName)
                       console.log(voucher);
                       this.apiService.saveTallyVoucher(voucher).subscribe(
                         (res) => {
