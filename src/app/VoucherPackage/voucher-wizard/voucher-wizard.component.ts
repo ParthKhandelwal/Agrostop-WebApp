@@ -16,6 +16,7 @@ import { CustomerViewComponent } from 'src/app/view/customer-view/customer-view.
 import { Order } from 'src/app/Model/order';
 import { OrderService } from 'src/app/shared/order.service';
 import { StockItem } from 'src/app/Model/stock-item';
+import { Address } from 'src/app/Model/address';
 
 
 
@@ -45,6 +46,7 @@ export class VoucherWizardComponent implements OnInit, AfterViewInit {
   user: User;
   ledgerList: any[] = [];
   customer: Customer;
+  addressList: any[];
   @Input("voucher") voucher: VOUCHER;
   @ViewChild('quantityField', { static: false }) quantityRef: ElementRef;
   @ViewChild('quantityField', { static: false }) customerRef: ElementRef;
@@ -135,7 +137,8 @@ export class VoucherWizardComponent implements OnInit, AfterViewInit {
      
               this.products = res.map((pro) => {
                 pro.BATCHES = batches.filter((batch) => {
-                  return batch.productId == pro.NAME
+                  return (batch.productId == pro.NAME) && (batch.CLOSINGBALANCE != 0) 
+                  && (batch.EXPIRYDATE ? new Date(batch.EXPIRYDATE) >= new Date(): true);
                 })
                 return pro;
               })
@@ -149,6 +152,18 @@ export class VoucherWizardComponent implements OnInit, AfterViewInit {
         }
       )
         
+      this.databaseService.getAddresses().then(
+        res => {
+          this.addresses = res;
+          this.addressFilteredOptions = this.addressControl.valueChanges.pipe(
+            startWith(''),
+            map(value => this.address_filter(value))
+          );
+        },
+        err=>{
+          console.log("Cannot fetch customer at this moment");
+        }
+      )
 
 
       
@@ -162,6 +177,41 @@ export class VoucherWizardComponent implements OnInit, AfterViewInit {
 
   ngOnInit() {        
       
+  }
+
+  addresses: Address[] = [];
+  addressFilteredOptions: Observable<any[]>;
+  addressControl = new FormControl();
+  address: Address = new Address();
+  disableSaveButton : boolean
+  createCustomer: Customer = new Customer();
+  customerCreationActive: boolean;
+
+  displayFnAddress(user?: any): string | undefined {
+    return user && user._id ? user.name : '';
+  }
+  private address_filter(value: string): any[] {
+    const filterValue = value.toString().toLowerCase();
+    return this.addresses.filter(option => option.name.toLowerCase().indexOf(filterValue) === 0);
+  }
+
+
+  submit(stepper): void{
+    this.disableSaveButton = true;
+    this.createCustomer.addressId = this.address._id
+    this.apiService.addCustomer(this.createCustomer).subscribe(
+      res =>{
+        this.customer = res;
+        this.createCustomer = new Customer();
+        this.disableSaveButton = false;
+        this.customerCreationActive = false;
+        this.addCustomer(this.customer, stepper);
+      },
+      err =>{
+        console.log(err);
+        alert("Cannot create customer at this point");
+      }
+    );
   }
 
   private customer_filter(value: string): Customer[] {

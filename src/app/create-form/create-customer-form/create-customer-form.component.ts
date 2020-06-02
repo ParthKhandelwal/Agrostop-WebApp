@@ -45,7 +45,6 @@ export class CreateCustomerFormComponent implements OnInit {
       this.customer.gSTREGISTRATIONTYPE = "Consumer";
     }
     this.databaseService= AppComponent.databaseService;
-
   }
 
   ngOnInit() {
