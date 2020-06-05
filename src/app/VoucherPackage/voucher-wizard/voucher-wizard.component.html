@@ -97,9 +97,10 @@
                            [(ngModel)]="customer">
                     <mat-autocomplete autoActiveFirstOption [panelWidth]="500"
                                       #auto="matAutocomplete"
-                                      (optionSelected) = "addCustomer($event.option.value, stepper);"
+                                      (optionSelected) = "addCustomer($event.option.value, stepper)"
                                       [displayWith]="displayFnCustomer">
-                      
+                
+
                       <mat-option *ngFor="let option of customerFilteredOptions | async" [value]="option">
                         <h6>{{option.name}}, S/O {{option.fatherName}}<br>
                           <small><strong>Address: </strong>{{option.fullAddress?option.fullAddress.name: ""}} </small>
@@ -110,7 +111,7 @@
                   </mat-form-field>
                 </div>
                 <div class = "col">
-                  <button mat-button color="accent" (click)='createCustomerAction()' name="button" class="createButton">
+                  <button mat-button color="accent" (click)='createNewCustomer()' name="button" class="createButton">
                     <mat-icon aria-hidden="false" aria-label="Example home icon">add</mat-icon>
                   </button>
                 </div>
@@ -179,9 +180,9 @@
               <div class="col">
                 <button  [disabled] = "!(customer && customer.id)" mat-raised-button (click) = "viewCustomerProfile(customer.id)">View Customer Profile</button>
               </div>
-              <div class="col">
-                <button mat-raised-button (click) = "customerCreationActive = true; this.createCustomer.gSTREGISTRATIONTYPE = 'Consumer'">Create Customer</button>
-              </div>
+              <!-- <div class="col">
+                <button mat-raised-button (click) = "createNewCustomer()">Create Customer</button>
+              </div> -->
             </div>
             <div class="row" *ngIf = "customerCreationActive">
               <form #customerForm = "ngForm">
@@ -191,7 +192,7 @@
                   <div class="row">
                     <div class="col">
                     <mat-form-field>
-                      <input matInput required [(ngModel)] = "createCustomer.name" placeholder="Enter Name" autofocus name = "customerName" (keydown.enter) ="fatherNameRef.focus();false" >
+                      <input #createCustomerNameRef matInput required [(ngModel)] = "createCustomer.name" placeholder="Enter Name" autofocus name = "customerName" (keydown.enter) ="fatherNameRef.focus();false" >
                     </mat-form-field>
                     </div>
                     <div class="col">

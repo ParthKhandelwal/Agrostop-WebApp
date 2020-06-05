@@ -6,6 +6,7 @@ export class Address {
    stateName : string;
    countryName : string;
    nearBranch: string;
+   deliveryCharge: number;
    noOfGovernmentLandRecords: number;
  noOfPrivateLandRecords: number;
 areaOfGovenmentLand : number;

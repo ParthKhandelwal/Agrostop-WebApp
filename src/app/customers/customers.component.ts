@@ -64,6 +64,7 @@ export class CustomersComponent implements OnInit {
       address.districtName = item[3];
       address.stateName = item[4];
       address.nearBranch = item[5];
+      address.deliveryCharge = item[6];
       this.apiService.addAddress(address).subscribe(
         res => {
           item[item.length + 1] = true;

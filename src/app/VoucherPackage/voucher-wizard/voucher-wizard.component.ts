@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, EventEmitter, Output, ViewChild, AfterViewInit, ElementRef } from '@angular/core';
+import { Component, OnInit, Input, EventEmitter, Output, ViewChild, AfterViewInit, ElementRef, ChangeDetectorRef } from '@angular/core';
 import { VOUCHER, LEDGERENTRIESLIST, OLDAUDITENTRYIDSLIST, ALLINVENTORYENTRIESLIST, BATCHALLOCATIONSLIST, EXPIRYPERIOD, ACCOUNTINGALLOCATIONSLIST, ADDRESSLIST } from '../../Model/voucher';
 import { User, VoucherTypeClass } from '../../Model/user';
 import { Customer } from '../../Model/customer';
@@ -47,8 +47,12 @@ export class VoucherWizardComponent implements OnInit, AfterViewInit {
   ledgerList: any[] = [];
   customer: Customer;
   addressList: any[];
+  printAfterSave: boolean = true;
+  smsAfterSave: boolean;
   @Input("voucher") voucher: VOUCHER;
   @ViewChild('quantityField', { static: false }) quantityRef: ElementRef;
+  @ViewChild('createCustomerNameRef', { static: false }) newCustomerNameRef: ElementRef;
+
   @ViewChild('quantityField', { static: false }) customerRef: ElementRef;
   @ViewChild('rateField', { static: false }) rateRef: ElementRef;  
   @ViewChild('cashRecievedField', { static: false }) cashRecievedRef: ElementRef;  
@@ -62,7 +66,7 @@ export class VoucherWizardComponent implements OnInit, AfterViewInit {
   cacheVoucher: number;
   endVoucher: any ={"NAME": "END OF LIST"};
   
-  constructor( private apiService?: ApiService, private dialog?: MatDialog, private orderService?: OrderService) {
+  constructor( private cd?: ChangeDetectorRef,private apiService?: ApiService, private dialog?: MatDialog, private orderService?: OrderService) {
     this.databaseService = AppComponent.databaseService;
     this.user = this.databaseService.getUser();
     this.databaseService.openDatabase().then(
@@ -200,12 +204,23 @@ export class VoucherWizardComponent implements OnInit, AfterViewInit {
     this.disableSaveButton = true;
     this.createCustomer.addressId = this.address._id
     this.apiService.addCustomer(this.createCustomer).subscribe(
-      res =>{
-        this.customer = res;
-        this.createCustomer = new Customer();
-        this.disableSaveButton = false;
-        this.customerCreationActive = false;
-        this.addCustomer(this.customer, stepper);
+      result =>{
+        
+        if (result && result.id){
+          this.databaseService.addCustomer(result)
+          this.databaseService.getAddress(result.addressId).then(
+            (add) =>{
+              result.fullAddress = add;
+              this.customers.push(result);
+              this.createCustomer = new Customer();
+              this.disableSaveButton = false;
+              this.customerCreationActive = false;
+              this.customer = result;
+              this.addCustomer(this.customer, stepper);
+            })
+          
+        }
+        
       },
       err =>{
         console.log(err);
@@ -215,7 +230,7 @@ export class VoucherWizardComponent implements OnInit, AfterViewInit {
   }
 
   private customer_filter(value: string): Customer[] {
-    const filterValue = value.toString().toLowerCase();
+    const filterValue = value? value.toString().toLowerCase(): "";
     return this.customers.filter(option => {
       return option.phoneNumber.toLowerCase().indexOf(filterValue) === 0 
       || option.name.toLowerCase().indexOf(filterValue) === 0;
@@ -335,6 +350,14 @@ export class VoucherWizardComponent implements OnInit, AfterViewInit {
   }
 
 
+  createNewCustomer(){
+    this.createCustomer.phoneNumber = this.customerControl.value;
+    this.customerCreationActive = true; 
+    this.createCustomer.gSTREGISTRATIONTYPE = 'Consumer';
+    this.cd.detectChanges();
+    this.newCustomerNameRef.nativeElement.focus();
+  }
+
 
   getVoucherType(value){
     
@@ -380,6 +403,11 @@ export class VoucherWizardComponent implements OnInit, AfterViewInit {
     this.voucher.BASICBUYERNAME = value.id;
     this.voucher.ADDRESS_LIST = new ADDRESSLIST(value.name, value.fullAddress.name,"", "");
     stepper._selectedIndex = 2;
+    
+    setTimeout(()=>{ // this will make the execution after the above boolean has changed
+      this.cd.detectChanges();
+      this.productRef.nativeElement.focus();
+    },1000);
 
   }
 
@@ -545,15 +573,21 @@ export class VoucherWizardComponent implements OnInit, AfterViewInit {
   
 
   printVoucher(){
-  const dialogConfig = new MatDialogConfig();
-   dialogConfig.autoFocus = true;
-   dialogConfig.width = "50%";
-   const dialogRef = this.dialog.open(InvoicePrintViewComponent, {data: this.voucher, maxHeight: '90vh'});
-    dialogRef.afterClosed().subscribe(
-      res => {
-        this.setNewVoucher();
-      }
-    )
+    if(this.printAfterSave){
+      const dialogConfig = new MatDialogConfig();
+      dialogConfig.autoFocus = true;
+      dialogConfig.width = "50%";
+      const dialogRef = this.dialog.open(InvoicePrintViewComponent, {data: this.voucher, maxHeight: '90vh'});
+       dialogRef.afterClosed().subscribe(
+         res => {
+           this.setNewVoucher();
+         }
+       )
+    }
+    if(this.smsAfterSave){
+      alert("Voucher messaging service not available");
+    }
+  
   }
 
   
@@ -622,7 +656,10 @@ export class VoucherWizardComponent implements OnInit, AfterViewInit {
   selectInventory(stepper, pro:StockItem){
     if (this.productControl.value == this.endVoucher){
       stepper._selectedIndex = 3;
-      this.cashRecievedRef.nativeElement.focus();
+      setTimeout(()=>{ // this will make the execution after the above boolean has changed
+        this.cd.detectChanges();
+        this.cashRecievedRef.nativeElement.focus();
+      },1000);
       return;
     }
     console.log(pro)
@@ -639,6 +676,7 @@ export class VoucherWizardComponent implements OnInit, AfterViewInit {
   }
 
   validateInventoryEntry(){
+   
     if (this.productControl.value == null || this.productControl.value ==""){
       this.productRef.nativeElement.focus();
       return;
@@ -690,16 +728,18 @@ export class VoucherWizardComponent implements OnInit, AfterViewInit {
     this.voucher.ALLINVENTORYENTRIES_LIST.push(inventoryEntry);
     this.adjustLedgers();
     this.renew()
-
+    this.cd.detectChanges();
+    this.productRef.nativeElement.focus();
 
 }
 productFocus:boolean;
   renew(){
+    
     this.productControl.setValue("");
     this.qtyControl.setValue(null);
     this.rateControl.setValue(null);
     this.batchControl.setValue(null);
-    this.productFocus = true;
+    
   }
 
   deleteStockItem(pos: number){
@@ -713,7 +753,7 @@ productFocus:boolean;
     .forEach((ledger) => this.calculate(ledger));
     this.voucher.LEDGERENTRIES_LIST.filter((ledger) => !ledger.POSPAYMENTTYPE && ledger.METHODTYPE == "As Total Amount Rounding")
     .forEach((ledger) => this.calculate(ledger));
-   
+   this.cd.detectChanges();
   }
 
   adjustRounding(){
