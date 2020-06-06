@@ -36,6 +36,8 @@ export class PaymentDetails{
     paymentVerifiedBy: string;
     verificationDate: Date;
     comments: string;
+    upiApp: string;
+    upiRefNumber: string;
 }
 
 export class DeliveryDetails{

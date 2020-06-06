@@ -86,7 +86,7 @@ export class OrderTableComponent implements OnInit {
     dialogRef.afterClosed().subscribe(
       async res => {
         console.log(res);
-        if (res.createVoucher){
+        if (res && res.createVoucher){
           this.voucher = new VOUCHER();
           await this.orderService.convertOrder(res.order, this.voucher, res.voucherType, res.priceList, res.godown);
           this.completeOrder = true;

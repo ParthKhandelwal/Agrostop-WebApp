@@ -237,6 +237,19 @@
           </mat-form-field>
         </div>
       </div>
+      <div class="row" *ngIf = 'order.paymentDetails.upiRefNumber'>
+        <div class="col">
+          <mat-form-field>
+          <input matInput readonly [(ngModel)] = "order.paymentDetails.upiRefNumber" name = "upiRefNumber" placeholder="UPI Reference Number">
+        </mat-form-field>
+        </div>
+        <div class="col">
+          <mat-form-field>
+          <input matInput readonly [(ngModel)] = "order.paymentDetails.upiApp" name = "upiApp" placeholder="UPI Application Name">
+        </mat-form-field>
+        </div>
+
+      </div>
       <div class="row">
         <div class = "col">
           <mat-checkbox name= "verified" [(ngModel)]="order.paymentDetails.paymentVerified">Payment Verified</mat-checkbox>
