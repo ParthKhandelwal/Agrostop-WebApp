@@ -294,5 +294,12 @@
   </div>
 
 <div *ngIf ="editMode" class="htmlPage">
-<voucher-wizard editMode ="editMode" [(voucher)] ="voucher" (valueChange)="updateEditMode()"></voucher-wizard>
+  <div class = "row">
+    <button (click) = "editMode = false" mat-mini-fab color="primary">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+  </div>
+  <div class = "row">
+    <voucher-wizard editMode ="editMode" [(voucher)] ="voucher" (valueChange)="updateEditMode()"></voucher-wizard>
+  </div>
 </div>

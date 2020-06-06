@@ -171,7 +171,7 @@ sendAllVoucherTypeRequests(){
           this.stompClient.connect({}, function (frame) {
             that.stompClient.subscribe("/topic/sync", (message) => {
               if (message.body) {
-                console.log(message.body);
+                
                 var type: string = that.map.get(message.body);
                 if (type == "STOCKITEM"){
                   that.saveAllItems(message.body);
