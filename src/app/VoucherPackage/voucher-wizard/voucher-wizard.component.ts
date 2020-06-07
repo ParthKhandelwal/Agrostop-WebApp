@@ -59,7 +59,7 @@ export class VoucherWizardComponent implements OnInit, AfterViewInit {
 
   @ViewChild('invField', { static: false }) productRef: ElementRef;
   @ViewChild('batchField', { static: false }) batchRef: MatSelect;
-  saveOffline: boolean = false;
+  saveOffline: boolean = true;
   disableSaveOption: boolean;
   voucherType: VoucherTypeClass; 
   saving:boolean;
@@ -452,17 +452,27 @@ export class VoucherWizardComponent implements OnInit, AfterViewInit {
       }  
     }
     if(!this.saveOffline) {
-      var res = await this.apiService.saveTallyVoucher(this.voucher).toPromise();
-      if (res && res.RESPONSE){
-        if (res.RESPONSE.CREATED == 1 || res.RESPONSE.UPDATED == 1){
+      this.apiService.saveTallyVoucher(this.voucher).subscribe(
+        res => {
+          if (res && res.RESPONSE){
+            if (res.RESPONSE.CREATED == 1 || res.RESPONSE.UPDATED == 1){
+              this.afterVoucherSaveProcess();
+              return
+            }
+          }
+        },
+        async err => {
+          await this.databaseService.addCacheVoucher(this.voucher);
           this.afterVoucherSaveProcess();
-          return
         }
-      }
+      );
+      
+    }else {
+      await this.databaseService.addCacheVoucher(this.voucher);
+      this.afterVoucherSaveProcess();
+      return; 
     }
-    await this.databaseService.addCacheVoucher(this.voucher);
-    this.afterVoucherSaveProcess();
-    return; 
+    
   }
 
   saveVoucherOffline(voucher){
