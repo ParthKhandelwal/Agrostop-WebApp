@@ -6,6 +6,7 @@ import uniqid from 'uniqid'
 import { DatabaseService } from './database.service';
 import { AppComponent } from '../app.component';
 import { User } from '../Model/user';
+import { StockItem } from '../Model/stock-item';
 
 @Injectable({
   providedIn: 'root'
@@ -141,8 +142,7 @@ export class OrderService {
     item.ISDEEMEDPOSITIVE = "No";
     return await this.databaseService.getStockItem(item.STOCKITEMNAME).then(
       async res1 => {
-        const res = res1;
-        console.log(res)
+        const res: StockItem = Object.assign(new StockItem, res1);
         item.BATCHALLOCATIONS_LIST = new BATCHALLOCATIONSLIST();
         
         var batch = (await this.databaseService.getProductBatch())
@@ -164,11 +164,11 @@ export class OrderService {
 
 
         item.ACCOUNTINGALLOCATIONS_LIST = new ACCOUNTINGALLOCATIONSLIST();
-        item.ACCOUNTINGALLOCATIONS_LIST.LEDGERNAME = res["SALESLIST.LIST"].NAME.content;
-        item.ACCOUNTINGALLOCATIONS_LIST.CLASSRATE = res["SALESLIST.LIST"].CLASSRATE.content;
-        item.ACCOUNTINGALLOCATIONS_LIST.LEDGERFROMITEM = res["SALESLIST.LIST"].LEDGERFROMITEM.content;
-        item.ACCOUNTINGALLOCATIONS_LIST.GSTOVRDNNATURE = res["SALESLIST.LIST"].GSTCLASSIFICATIONNATURE.content;
-        item.ACCOUNTINGALLOCATIONS_LIST.REMOVEZEROENTRIES = res["SALESLIST.LIST"].REMOVEZEROENTRIES.content;
+        item.ACCOUNTINGALLOCATIONS_LIST.LEDGERNAME = res.salesList[0].name;
+        item.ACCOUNTINGALLOCATIONS_LIST.CLASSRATE = res.salesList[0].classRate;
+        item.ACCOUNTINGALLOCATIONS_LIST.LEDGERFROMITEM = res.salesList[0].ledgerFromItem;
+        item.ACCOUNTINGALLOCATIONS_LIST.GSTOVRDNNATURE = res.salesList[0].gstCLassificationNature
+        item.ACCOUNTINGALLOCATIONS_LIST.REMOVEZEROENTRIES = res.salesList[0].removeZeroEntries
         item.ACCOUNTINGALLOCATIONS_LIST.AMOUNT = item.AMOUNT;
         item.ACCOUNTINGALLOCATIONS_LIST.LEDGERFROMITEM = "Yes"
         item.ACCOUNTINGALLOCATIONS_LIST.ISDEEMEDPOSITIVE = "No"

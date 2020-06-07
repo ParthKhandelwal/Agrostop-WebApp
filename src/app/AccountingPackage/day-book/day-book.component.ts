@@ -60,6 +60,7 @@ export class DayBookComponent implements OnInit {
   ]
   databaseService: DatabaseService;
   filterValue$: any[];
+  filterMap: Map<String, any[]>;
 
   constructor(private apiService?: ApiService,private dialog?: MatDialog, private datePipe?: DatePipe, private router?: Router ) {
     this.databaseService = AppComponent.databaseService;
@@ -140,6 +141,7 @@ export class DayBookComponent implements OnInit {
 
 
   getVouchers(guid: string){
+    this.filterMap = new Map();
     this.voucherPercent = 0;
     this.loading = true;
     
@@ -169,11 +171,12 @@ export class DayBookComponent implements OnInit {
                   )
                 }
               )
-              
-              
               return res;
-            })
-           
+            });
+            this.filterMap.set("Voucher Number", [...new Set(this.vouchers.map((v)=> v.VOUCHERNUMBER))]);
+            this.filterMap.set("Customer", [...new Set(this.vouchers.map((v)=> v.BASICBUYERNAME))]);
+            this.filterMap.set("Address", [...new Set(this.vouchers.map((v)=> v.ADDRESS))]);            
+            
             this.filter();
             console.log(this.filteredArray);
             this.loading = false;

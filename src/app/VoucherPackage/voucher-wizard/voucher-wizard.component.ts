@@ -435,140 +435,43 @@ export class VoucherWizardComponent implements OnInit, AfterViewInit {
   }
 
   
-  save() {
+  async save() {
     this.saving = true;
     this.voucher.LEDGERENTRIES_LIST.map((ledger) => {
       if (ledger.POSPAYMENTTYPE){
         ledger.AMOUNT = Math.abs(ledger.AMOUNT) * (-1);
       }
     });
-    if (this.voucher.VOUCHERNUMBER){
-      if (this.saveOffline){
-        this.databaseService.addCacheVoucher(this.voucher).then(
-          () => {
-            console.log("Saving Voucher locally...")
-            this.printVoucher();
-            this.saving = false;
-          }
-        )
-       
+    if (!this.voucher.VOUCHERNUMBER){
+      const num = await this.apiService.getVoucherNumber(this.voucher.VOUCHERTYPENAME).toPromise();
+      if(num && num.seq){
+        this.voucher.VOUCHERNUMBER = num.prefix + num.seq;
       }else {
-        this.apiService.saveTallyVoucher(this.voucher).subscribe(
-          res => {
-            if (res && res.RESPONSE){
-            if (res.RESPONSE.CREATED == 1 || res.RESPONSE.UPDATED == 1){
-              alert("Voucher Saved to Tally Successfully")
-              this.saving = false
-              this.printVoucher();
-            } else {
-              
-    
-              this.databaseService.addCacheVoucher(this.voucher).then(
-                () => {
-                  this.printVoucher();
-                  this.saving = false;
-                }
-              )
-              
-            }
-          }else {
-            this.databaseService.addCacheVoucher(this.voucher).then(
-              () => {
-                this.printVoucher();
-                this.saving = false;
-              }
-            )
-          }
-          },
-          err => {
-           
-              this.databaseService.addCacheVoucher(this.voucher).then(
-                () => {
-                  
-                  this.printVoucher();
-                  this.saving = false;
-            
-                  
-                }
-              )
-            
-            
-          }
-        );
-      }
-      return;
-    }
-    this.apiService.getVoucherNumber(this.voucher.VOUCHERTYPENAME).subscribe(
-      (res) => {
-        this.voucher.VOUCHERNUMBER = res.prefix + res.seq;
-        if (this.saveOffline){
-          this.databaseService.addCacheVoucher(this.voucher).then(
-            () => {
-              console.log("Saving Voucher locally...")
-              this.printVoucher();
-              this.saving = false;
-            }
-          )
-         
-        }else {
-          this.apiService.saveTallyVoucher(this.voucher).subscribe(
-            res => {
-              if (res && res.RESPONSE){
-              if (res.RESPONSE.CREATED == 1 || res.RESPONSE.UPDATED == 1){
-                alert("Voucher Saved to Tally Successfully")
-                this.saving = false
-                this.printVoucher();
-              } else {
-                
-      
-                this.databaseService.addCacheVoucher(this.voucher).then(
-                  () => {
-                    this.printVoucher();
-                    this.saving = false;
-                  }
-                )
-                
-              }
-            }else {
-              this.databaseService.addCacheVoucher(this.voucher).then(
-                () => {
-                  this.printVoucher();
-                  this.saving = false;
-                }
-              )
-            }
-            },
-            err => {
-             
-                this.databaseService.addCacheVoucher(this.voucher).then(
-                  () => {
-                    
-                    this.printVoucher();
-                    this.saving = false;
-              
-                    
-                  }
-                )
-              
-              
-            }
-          );
-        }
-      },
-      err => {
         this.voucher.VOUCHERNUMBER = "DM-"+this.voucher._REMOTEID;
-        this.databaseService.addCacheVoucher(this.voucher).then(
-          () => {
-            console.log("Saving Voucher locally...")
-            this.printVoucher();
-            this.saving = false;
-          }
-        )
+      }  
+    }
+    if(!this.saveOffline) {
+      var res = await this.apiService.saveTallyVoucher(this.voucher).toPromise();
+      if (res && res.RESPONSE){
+        if (res.RESPONSE.CREATED == 1 || res.RESPONSE.UPDATED == 1){
+          this.afterVoucherSaveProcess();
+          return
+        }
       }
-      )  
-    
+    }
+    await this.databaseService.addCacheVoucher(this.voucher);
+    this.afterVoucherSaveProcess();
+    return; 
   }
 
+  saveVoucherOffline(voucher){
+    this.databaseService.addCacheVoucher(voucher);
+  }
+
+  afterVoucherSaveProcess(){
+    this.printVoucher();
+    this.saving = false;
+  }
 
   
 
@@ -656,6 +559,7 @@ export class VoucherWizardComponent implements OnInit, AfterViewInit {
   selectInventory(stepper, pro:StockItem){
     if (this.productControl.value == this.endVoucher){
       stepper._selectedIndex = 3;
+      this.getRemainingBalance();
       setTimeout(()=>{ // this will make the execution after the above boolean has changed
         this.cd.detectChanges();
         this.cashRecievedRef.nativeElement.focus();

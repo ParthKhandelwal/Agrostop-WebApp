@@ -46,6 +46,7 @@
     "ngx-indexed-db": "^2.2.6",
     "ngx-papaparse": "^3.0.4",
     "ngx-print": "^1.2.0-beta.4",
+    "ngx-printer": "^0.7.0",
     "ngx-webstorage-service": "^4.1.0",
     "objectid": "^3.2.1",
     "path": "^0.12.7",
