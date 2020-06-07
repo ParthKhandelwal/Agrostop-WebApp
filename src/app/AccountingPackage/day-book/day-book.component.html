@@ -5,73 +5,101 @@
     <div class="container-fluid">
       <div class="row">
         <div style="align-self: center;">
-          
-
-          <!--FILTER ROW-->
-
-          <div class="table-responsive">
-            <table class="table">
-                <thead>
-                    <tr></tr>
-                </thead>
-                <tbody>
-                    <tr>
-                      <td></td>
-                      <td>
+          <div class="row">
+            <div class="col" style="padding-left: 50px;">
+              <mat-accordion>
+                <mat-expansion-panel>
+                  <mat-expansion-panel-header>
+                    <mat-panel-title>
+                      Date
+                    </mat-panel-title>
+                    <mat-panel-description>
+                      Enter From and To Date 
+                    </mat-panel-description>
+                  </mat-expansion-panel-header>
+                
+                    <div class="row">
+                      <div class="col">
                         <mat-form-field>
                           <mat-label>From</mat-label>
                           <input matInput [matDatepicker]= "Frompicker" [formControl] = 'fromDate'>
                           <mat-datepicker-toggle matSuffix [for]= "Frompicker" ></mat-datepicker-toggle>
                           <mat-datepicker #Frompicker></mat-datepicker>
                         </mat-form-field>
-                      </td>
-                      <td>
+                      </div>
+                      <div class="col">
                         <mat-form-field>
                           <mat-label>To</mat-label>
                           <input matInput [matDatepicker]= "Topicker" [formControl] = 'toDate'>
                           <mat-datepicker-toggle matSuffix [for]= "Topicker" ></mat-datepicker-toggle>
                           <mat-datepicker #Topicker></mat-datepicker>
                         </mat-form-field>
-                      </td>
-                      <td></td>
-                      <td></td>
-                      <td>
-                        <button type="button" class="btn btn-secondary btn-sm" (click) = "createVoucherRequest()">Apply</button>
-                      </td>
-                    </tr>
-                    <tr>
-                        <td>Filter : </td>
-                        <td>
-                          <select (ngModelChange) = "getFilterValue($event)" class="custom-select custom-select-sm" [formControl] = "filterFieldFC">
-                            <option selected value = "">Select field</option>
-                            <ng-container *ngFor = "let item of filterField">
-                              <option (value) = "item">{{item}}</option>
-                            </ng-container>
-                          </select>
-                        </td>
-                        <td>
-                          <select class="custom-select custom-select-sm" [formControl] = "filterOperationFC">
-                            <option value = "">Select operator</option>
-                            <ng-container *ngFor = "let item of filterOperation">
-                              <option (value) = "item">{{item}}</option>
-                            </ng-container>
-                          </select>
-                        </td>     
-                        <td>
-                          <select class="custom-select custom-select-sm" [formControl] = "filterValueFC">
-                            <option value = "">Select value</option>
-                            <ng-container *ngFor = "let item of filterValue$">
-                              <option (value) = "item">{{item}}</option>
-                            </ng-container>
-                          </select>
-                        </td> 
-                         <td><button type="button" class="btn btn-secondary btn-sm" (click) = "filter()">Apply</button></td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-
-
+                      </div>
+                      
+                    </div>
+                    <div class="row">
+                      <div style="float: right;">
+                        <button mat-raised-button color="primary" (click) = "createVoucherRequest()">Apply</button>
+                      </div>
+                    </div>
+                  
+                
+                </mat-expansion-panel>
+              </mat-accordion>
+    
+            </div>
+            <div class="col" style="width: 40%;">
+              <mat-accordion>
+                <mat-expansion-panel>
+                  <mat-expansion-panel-header>
+                    <mat-panel-title>
+                      Filter
+                    </mat-panel-title>
+                    <mat-panel-description>
+                      Select filter here 
+                    </mat-panel-description>
+                  </mat-expansion-panel-header>
+              
+                  <div class="row">
+                    <div class="col">
+                      <mat-form-field>
+                        <mat-select name = "filterField" placeholder = "Select Filter Field" [formControl] = "filterFieldFC">
+                          <mat-option *ngFor = "let item of filterMap|keyvalue" [value] = "item"> {{item.key}}</mat-option>
+                        </mat-select>
+                      </mat-form-field>
+                    </div>
+                    <div class="col">
+                      <div *ngIf = "filterFieldFC.value">
+                        <mat-form-field *ngIf = "filterFieldFC.value.key != 'Amount Greater Than' && filterFieldFC.value.key != 'Amount Smaller Than'">
+                          <mat-select name = "filterVAlue" placeholder = "Select Filter Value" [formControl] = "filterValueFC">
+                            <mat-option *ngFor = "let item of filterFieldFC.value.value" [value] = "item"> {{item}}</mat-option>
+                          </mat-select>
+                        </mat-form-field>
+                        <mat-form-field *ngIf = "filterFieldFC.value.key == 'Amount Greater Than' || filterFieldFC.value.key == 'Amount Smaller Than'">
+                          <input type = 'number' matInput name = "filterVAlueText" placeholder = "Select Filter Value" [formControl] = "filterValueFC">
+                            
+                        </mat-form-field>
+                      </div>
+                      
+                    </div>
+                    
+                  </div>
+                  <div class = "row">
+                    <div class="col" >
+                      <button mat-raised-button  color = "primary" (click) = "filter()">Apply</button>
+                    </div>
+                    <div class="col">
+                      <button mat-raised-button  color = "accent" (click) = "this.filteredArray = this.vouchers">Reset</button>
+                    </div>
+                  </div>
+              
+                
+                </mat-expansion-panel>
+              </mat-accordion>
+    
+            </div>
+          </div>
+   
       
         </div>
         <div class="col-md-12">

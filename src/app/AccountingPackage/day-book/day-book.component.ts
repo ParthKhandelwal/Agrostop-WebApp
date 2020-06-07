@@ -48,6 +48,7 @@ export class DayBookComponent implements OnInit {
   cacheVouchers: any[] = [];
   stompClient: any;
   connected: boolean;
+  filterValue: any;
   map: Map<string, string> = new Map();
 
   filterField: any[] = [
@@ -179,9 +180,15 @@ export class DayBookComponent implements OnInit {
             this.filterMap.set("Voucher Number", [...new Set(this.vouchers.map((v)=> v.VOUCHERNUMBER))]);
             this.filterMap.set("Customer", [...new Set(this.vouchers.map((v)=> v.BASICBUYERNAME))]);
             this.filterMap.set("Address", [...new Set(this.vouchers.map((v)=> v.ADDRESS))]);            
-            
+            this.filterMap.set("Voucher Type", [...new Set(this.vouchers.map((v)=> v.VOUCHERTYPENAME))]);     
+            this.filterMap.set("Amount Greater Than", null);
+            this.filterMap.set("Amount Smaller Than", null);
+            this.filterMap.set("Including Stock Item", [...new Set([].concat(...this.vouchers.map((v)=> v.INVENTORYENTRIES.STOCKITEM)).map((v) => v.STOCKITEMNAME))])
+                   
+
             this.filter();
-            console.log(this.filteredArray);
+            console.log(this.filterMap);
+            console.log(this.filterValue);
             this.loading = false;
             this.voucherPercent = 100;
           } else {
@@ -225,7 +232,7 @@ export class DayBookComponent implements OnInit {
 
   dayBookTotal(): number{
     var total : number = 0;
-    for(let v of this.vouchers ){
+    for(let v of this.filteredArray ){
       total = total + this.getVoucherTotal(v.LEDGERENTRIES.LEDGER)
     }
     return total;
@@ -317,17 +324,34 @@ export class DayBookComponent implements OnInit {
   filter(){
     this.filteredArray = this.vouchers.filter((voucher: any) => {
         
-        if (voucher.VOUCHER){
-          if (this.filterFieldFC.value == "Voucher Type"){
+        if (voucher && this.filterFieldFC.value && this.filterValueFC.value){
+          if (this.filterFieldFC.value.key == "Voucher Type"){
             console.log(voucher);
-            return voucher.VOUCHER.VOUCHERTYPENAME == this.filterValueFC.value;
+            return voucher.VOUCHERTYPENAME == this.filterValueFC.value;
             
-          } else if (this.filterFieldFC.value == "Tally Username"){
-            alert("Not Supported");
-            return true;
-          } else if (this.filterFieldFC.value == "Customer"){
-            alert("Not Supported")
-            return true;
+          } else if (this.filterFieldFC.value.key == "Customer"){
+            return voucher.BASICBUYERNAME == this.filterValueFC.value;
+
+          } else if (this.filterFieldFC.value.key == "Voucher Number"){
+            return voucher.VOUCHERNUMBER == this.filterValueFC.value;
+          }else if (this.filterFieldFC.value.key == "Address"){
+            return voucher.ADDRESS == this.filterValueFC.value;
+
+          }else if (this.filterFieldFC.value.key == "Amount Greater Than"){
+            return this.getVoucherTotal(voucher.LEDGERENTRIES.LEDGER) > this.filterValueFC.value;
+
+          }else if (this.filterFieldFC.value.key == "Amount Smaller Than"){
+            return this.getVoucherTotal(voucher.LEDGERENTRIES.LEDGER) < this.filterValueFC.value;
+
+          }else if (this.filterFieldFC.value.key == "Including Stock Item"){
+            console.log()
+            if(voucher.INVENTORYENTRIES.STOCKITEM instanceof Array){
+              return voucher.INVENTORYENTRIES.STOCKITEM.filter((v)=> v.STOCKITEMNAME == this.filterValueFC.value).length > 0;
+
+            }else {
+              return [voucher.INVENTORYENTRIES.STOCKITEM].filter((v)=> v.STOCKITEMNAME == this.filterValueFC.value).length > 0;
+            }
+
           }
           
         }else {
