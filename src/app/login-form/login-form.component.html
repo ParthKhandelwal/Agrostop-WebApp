@@ -1,31 +1,46 @@
-
-  <div *ngIf = '!loading && databaseService.syncingOver()' class="d-flex login-dark" style="height: 650px;background-image: url(&quot;assets/img/login_background.jpg&quot;);">
-    <div class="col-4 align-content-start" style="width: 30%;height: 100%;padding: 0;">
-      <form class="shadow" method="post"
-            data-type="default" #f='ngForm' (submit)="f.form.valid && validate()" accept-charset="UTF-8" role="form"
-            style="height: 80%;padding: 40px;width: 100%;">
-        <h2 class="sr-only">Login Form</h2>
-        <div class="illustration"><span class="glyphicon glyphicon-envelope"></span> </div>
-        <div class="form-group"><input class="form-control"
-                                       type="text" name="username"
-                 data-type="default"
-               [(ngModel)]="user.username"
-                required
-               #username='ngModel' [ngClass]="{'is-invalid': f.submitted && username.invalid}" placeholder="Username"></div>
-        <div class="form-group">
-          <input class="form-control"
-                         required type="password" name="pass"
-                 data-type="default" [(ngModel)]="user.password" value=""
-               required
-               #password='ngModel' [ngClass]="{'is-invalid': f.submitted && password.invalid}" placeholder="Password"></div>
-        <label *ngIf = 'f.invalid'>Either username or password is empty</label>
-        <label *ngIf = 'invalidPassword'>Incorrect Credentials</label>
-               <div class="form-group"><button class="btn btn-primary btn-block" type="submit">Log In</button></div><a class="forgot" href="#">Forgot your email or password?</a>
-      </form>
-    </div>
+  <div class="mx-auto" style="width: 30%;padding-top: 50px;">
+    <mat-card>
+      <mat-card-header>
+        <mat-card-title>Login</mat-card-title>
+        <mat-card-subtitle>Welcome to Agrostop</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <form #loginForm = "ngForm">
+          <div class="col">
+            <div class="row">
+              <mat-form-field class= "mx-auto">
+                <input #username (keydown.enter) = "password.focus()" autofocus type="text" name="username" matInput [(ngModel)]="user.username" required placeholder="Username">
+  
+              </mat-form-field>
+  
+            </div>
+            <div class="row">
+              <mat-form-field class= "mx-auto">
+                <input #password matInput required type="password" name="pass" data-type="default"
+                  [(ngModel)]="user.password" value="" required placeholder="Password">
+  
+              </mat-form-field>
+            </div>
+            <div class="row">
+                <mat-checkbox class="mx-auto" [(ngModel)]="syncAndProceed">Sync data before proceeding</mat-checkbox>
+            </div>
+            <div class="row" >
+              <div style=" width : 100%; float: right;">
+                <button style="width: 100%;" (click) = "validate()" [disabled] = "loginForm.invalid" mat-raised-button color="primary">Login</button>
+              </div>
+             
+            </div>
+          </div>
+       
+        </form>
+     </mat-card-content>
+     
+    </mat-card>
   </div>
 
 
-  <div *ngIf = "!databaseService.syncingOver()" class="d-flex login-dark" style="height: 650px;background-image: url(&quot;assets/img/login_background.jpg&quot;);">
+
+  <div *ngIf="!databaseService.syncingOver()" class="d-flex login-dark"
+    style="height: 650px;background-image: url(&quot;assets/img/login_background.jpg&quot;);">
     Fetching data from tally
   </div>

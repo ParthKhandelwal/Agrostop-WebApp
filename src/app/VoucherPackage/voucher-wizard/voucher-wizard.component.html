@@ -397,6 +397,9 @@
                   <div style="float: left;">Qty: {{product.ACTUALQTY}}</div>
                   <div style="width: 50px;"></div>
                   <div style="float: right;">Amount: {{product.AMOUNT}}</div>
+                  <button mat-button color="warn" name="button" (click)="this.deleteStockItem(i)">
+                    <mat-icon aria-hidden="false" aria-label="Example home icon">delete</mat-icon>
+                  </button>
                 </mat-panel-description>
               </mat-expansion-panel-header>
               <!-- ENTER DESCRIPTION OF THE ITEM HERE -->

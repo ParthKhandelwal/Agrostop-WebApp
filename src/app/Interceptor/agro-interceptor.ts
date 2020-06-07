@@ -41,12 +41,13 @@ export class AgroInterceptor implements HttpInterceptor {
           
           if (event instanceof HttpResponse) {
             console.log("api call success :", event);
+            
           }
         },
         error => {
           if (event instanceof HttpResponse) {
             console.log("api call error :", event);
-            if ([401, 403].indexOf(error.status) !== -1) {
+            if (error.status == 401 || error.status == 403) {
               // auto logout if 401 Unauthorized or 403 Forbidden response returned from api
               this.authenticationService.logOut();
               location.reload(true);

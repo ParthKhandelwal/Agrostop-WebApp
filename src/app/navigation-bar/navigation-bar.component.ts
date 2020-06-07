@@ -37,6 +37,9 @@ export class NavigationBarComponent implements OnInit {
   ) {
     this.authenticationService.currentUser.subscribe(x => {
       this.currentUser = x
+      if(!(x && x.name)){
+        authenticationService.logOut();
+      }
     });
     this.databaseService = AppComponent.databaseService;
   }

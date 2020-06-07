@@ -24,6 +24,7 @@ export class LoginFormComponent implements OnInit {
   submitted = false;
   returnUrl: string;
   databaseService: DatabaseService;
+  syncAndProceed:boolean = false;
 
   constructor(private apiService?: ApiService, private router?:Router, private cookie?: CookieService,
     private authenticationService?: AuthenticationService, private route?: ActivatedRoute,) {
@@ -48,9 +49,14 @@ export class LoginFormComponent implements OnInit {
         async data => {
           console.log(data);
           this.invalidPassword = false;
-          this.databaseService.enablePOSMode().then(
-            res => this.router.navigateByUrl("/home")
-          );
+          if(this.syncAndProceed){
+            this.databaseService.enablePOSMode().then(
+              res => this.router.navigateByUrl("/home")
+            );
+          } else {
+            this.router.navigateByUrl("/home")
+          }
+          
           
         },
         error => {

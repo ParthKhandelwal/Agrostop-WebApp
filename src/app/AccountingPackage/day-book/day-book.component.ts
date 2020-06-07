@@ -164,11 +164,14 @@ export class DayBookComponent implements OnInit {
               this.databaseService.getCustomer(res.BASICBUYERNAME).then(
                 customer=> {
                   res.BASICBUYERNAME = customer ? customer.name : res.BASICBUYERNAME;
-                  this.databaseService.getAddress(customer.addressId).then(
-                    (address : Address)=> {
-                      res.ADDRESS = address ? address.name : res.ADDRESS;
-                    }
-                  )
+                  if(customer && customer.addressId){
+                    this.databaseService.getAddress(customer.addressId).then(
+                      (address : Address)=> {
+                        res.ADDRESS = address ? address.name : res.ADDRESS;
+                      }
+                    )
+                  }
+                 
                 }
               )
               return res;

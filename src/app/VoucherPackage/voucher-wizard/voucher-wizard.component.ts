@@ -232,7 +232,7 @@ export class VoucherWizardComponent implements OnInit, AfterViewInit {
   private customer_filter(value: string): Customer[] {
     const filterValue = value? value.toString().toLowerCase(): "";
     return this.customers.filter(option => {
-      return option.phoneNumber.toLowerCase().indexOf(filterValue) === 0 
+      return option.phoneNumber.toLowerCase().indexOf(filterValue) == 0 
       || option.name.toLowerCase().indexOf(filterValue) === 0;
     }
     )
@@ -241,7 +241,8 @@ export class VoucherWizardComponent implements OnInit, AfterViewInit {
 
   private product_filter(value: string): any[] {
     const filterValue = value.toString().toLowerCase();
-    return this.products.filter(option => option.NAME.toLowerCase().indexOf(filterValue) === 0);
+    return this.products.filter(option => { 
+      return option.NAME.toLowerCase().indexOf(filterValue) >= 0 });
   }
 
   displayFnCustomer(user?: any): string | undefined {
