@@ -63,7 +63,7 @@
                   <div class="row">
                     <div class="col">
                       <mat-form-field>
-                        <mat-select name = "filterField" placeholder = "Select Filter Field" [formControl] = "filterFieldFC">
+                        <mat-select name = "filterField" (selectionChange) = "filterFieldSelected($event.value.value)" placeholder = "Select Filter Field" [formControl] = "filterFieldFC">
                           <mat-option *ngFor = "let item of filterMap|keyvalue" [value] = "item"> {{item.key}}</mat-option>
                         </mat-select>
                       </mat-form-field>
@@ -71,9 +71,22 @@
                     <div class="col">
                       <div *ngIf = "filterFieldFC.value">
                         <mat-form-field *ngIf = "filterFieldFC.value.key != 'Amount Greater Than' && filterFieldFC.value.key != 'Amount Smaller Than'">
-                          <mat-select name = "filterVAlue" placeholder = "Select Filter Value" [formControl] = "filterValueFC">
+                          <!-- <mat-select name = "filterVAlue" placeholder = "Select Filter Value" [formControl] = "filterValueFC">
                             <mat-option *ngFor = "let item of filterFieldFC.value.value" [value] = "item"> {{item}}</mat-option>
                           </mat-select>
+                        </mat-form-field>
+                        <mat-form-field> -->
+                          <input type="text"
+                                 placeholder = "Select Filter Value"
+                                
+                                 matInput
+                                 [formControl]="filterValueFC"
+                                 [matAutocomplete]="auto">
+                          <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete">
+                            <mat-option *ngFor="let option of filteredOptions | async" [value]="option">
+                              {{option}}
+                            </mat-option>
+                          </mat-autocomplete>
                         </mat-form-field>
                         <mat-form-field *ngIf = "filterFieldFC.value.key == 'Amount Greater Than' || filterFieldFC.value.key == 'Amount Smaller Than'">
                           <input type = 'number' matInput name = "filterVAlueText" placeholder = "Select Filter Value" [formControl] = "filterValueFC">

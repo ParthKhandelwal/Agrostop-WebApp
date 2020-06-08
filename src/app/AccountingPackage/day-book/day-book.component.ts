@@ -8,7 +8,7 @@ import { Observable, from } from 'rxjs';
 import { Router } from '@angular/router';
 import * as cloneDeep from 'lodash/cloneDeep';
 import { FormControl } from '@angular/forms';
-import { map, filter } from 'rxjs/operators';
+import { map, filter, startWith } from 'rxjs/operators';
 import { PosService } from 'src/app/shared/pos.service';
 import { VoucherTypeClass } from 'src/app/Model/user';
 import * as Stomp from 'stompjs';
@@ -50,6 +50,7 @@ export class DayBookComponent implements OnInit {
   connected: boolean;
   filterValue: any;
   map: Map<string, string> = new Map();
+  filteredOptions: Observable<string[]>;
 
   filterField: any[] = [
     "Voucher Type",
@@ -62,6 +63,7 @@ export class DayBookComponent implements OnInit {
   databaseService: DatabaseService;
   filterValue$: any[];
   filterMap: Map<String, any[]>;
+  filterValues: string[];
 
   constructor(private apiService?: ApiService,private dialog?: MatDialog, private datePipe?: DatePipe, private router?: Router ) {
     this.databaseService = AppComponent.databaseService;
@@ -83,6 +85,11 @@ export class DayBookComponent implements OnInit {
       }
     );
     
+  }
+
+  private _filter(value: string): string[] {
+    const filterValue = value.toLowerCase();
+    return this.filterValues.filter(option => option.toLowerCase().indexOf(filterValue) >= 0);
   }
 
   sync(){
@@ -148,7 +155,7 @@ export class DayBookComponent implements OnInit {
     
 
     this.apiService.getTallyData(guid).subscribe(
-        (res: any) =>{
+        async (res: any) =>{
           
           if (res != null){
             if(!(res.VOUCHER instanceof Array)){
@@ -161,29 +168,22 @@ export class DayBookComponent implements OnInit {
             console.log(res)
 
             this.vouchers.sort((a,b) => new Date(a.DATE).getTime() - new Date(b.DATE).getTime())
-            this.vouchers.map(res => {
-              this.databaseService.getCustomer(res.BASICBUYERNAME).then(
-                customer=> {
-                  res.BASICBUYERNAME = customer ? customer.name : res.BASICBUYERNAME;
-                  if(customer && customer.addressId){
-                    this.databaseService.getAddress(customer.addressId).then(
-                      (address : Address)=> {
-                        res.ADDRESS = address ? address.name : res.ADDRESS;
-                      }
-                    )
-                  }
-                 
-                }
-              )
-              return res;
-            });
+            this.vouchers = await this.vouchers.map(async res => {
+                              var customer = await this.databaseService.getCustomer(res.BASICBUYERNAME);
+                              res.BASICBUYERNAME = customer ? customer.name : res.BASICBUYERNAME;
+                                  
+                              if(customer && customer.addressId){
+                                var address = await this.databaseService.getAddress(customer.addressId)
+                                res.ADDRESS = address ? address.name : res.ADDRESS;
+                              }
+                              return res;
+                            });
             this.filterMap.set("Voucher Number", [...new Set(this.vouchers.map((v)=> v.VOUCHERNUMBER))]);
-            this.filterMap.set("Customer", [...new Set(this.vouchers.map((v)=> v.BASICBUYERNAME))]);
             this.filterMap.set("Address", [...new Set(this.vouchers.map((v)=> v.ADDRESS))]);            
             this.filterMap.set("Voucher Type", [...new Set(this.vouchers.map((v)=> v.VOUCHERTYPENAME))]);     
             this.filterMap.set("Amount Greater Than", null);
             this.filterMap.set("Amount Smaller Than", null);
-            this.filterMap.set("Including Stock Item", [...new Set([].concat(...this.vouchers.map((v)=> v.INVENTORYENTRIES.STOCKITEM)).map((v) => v.STOCKITEMNAME))])
+            this.filterMap.set("Including Stock Item", [...new Set([].concat(...this.vouchers.map((v)=> v.INVENTORYENTRIES.STOCKITEM)).map((v) => v? v.STOCKITEMNAME: ""))])
                    
 
             this.filter();
@@ -205,6 +205,15 @@ export class DayBookComponent implements OnInit {
       
      
     
+  }
+
+
+  filterFieldSelected(res){
+    this.filterValues = res;
+    this.filteredOptions = this.filterValueFC.valueChanges.pipe(
+      startWith(''),
+      map(value => this._filter(value))
+    );
   }
 
   getVoucherTotalOffline(list){
