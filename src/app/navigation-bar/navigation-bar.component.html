@@ -172,6 +172,13 @@ The above copyright notice and this permission notice shall be included in all c
                   <mat-icon>sync</mat-icon>
                 </button>
                 <mat-menu #menu="matMenu">
+                  <div mat-menu-item>
+              
+                    <span>Quick Sync</span>
+                    <button style="float: right;" mat-icon-button (click) = "databaseService.initialSync()"> 
+                      <mat-icon>sync</mat-icon>
+                    </button>
+                  </div>
                   <span mat-menu-item style = "width: 300px; height: 50px;">
                     
                     <span style="float: left;">{{numberOfStockItems}} Stock Items</span>

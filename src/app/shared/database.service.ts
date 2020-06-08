@@ -159,6 +159,20 @@ sendAllVoucherTypeRequests(){
     async getVoucherTypeByName(id: string): Promise<any>{
       return await this.db.getByKey("Voucher Types", id);
     }
+
+    initialSync(){
+      this.apiService.getForcedStockItem("STOCKITEM").subscribe(
+        (res) => {
+          this.saveItemsToDatabase(res);
+        }
+      )
+      this.apiService.getForcedStockItem("BATCH").subscribe(
+        (res) => {
+          this.saveBatchesToDatabase(res);
+        }
+      )
+
+    }
   
     sync(){
   
@@ -171,7 +185,21 @@ sendAllVoucherTypeRequests(){
           this.stompClient.connect({}, function (frame) {
             that.stompClient.subscribe("/topic/sync", (message) => {
               if (message.body) {
-                
+                if(message.body == "FORCE-STOCKITEM"){
+                  that.apiService.getForcedStockItem("STOCKITEM").subscribe(
+                    (res) => {
+                      that.saveItemsToDatabase(res);
+                    }
+                  )
+                }
+                if(message.body == "FORCE-BATCH"){
+                  that.apiService.getForcedStockItem("BATCH").subscribe(
+                    (res) => {
+                      that.saveBatchesToDatabase(res);
+                    }
+                  )
+                }
+
                 var type: string = that.map.get(message.body);
                 if (type == "STOCKITEM"){
                   that.saveAllItems(message.body);
@@ -204,44 +232,46 @@ sendAllVoucherTypeRequests(){
     saveAllBatches(guid: string){
       this.apiService.getTallyData(guid).subscribe(
         (res) => {
-          var length: number  = 0;
-          var index: number= 0;
-          for (let batchList of res){
-            if (batchList.BATCHLIST && batchList.BATCHLIST.BATCH){
-              if (batchList.BATCHLIST.BATCH instanceof Array){
-                length = length + batchList.BATCHLIST.BATCH.length;
-                for (let re of batchList.BATCHLIST.BATCH){
-                  re.productId = batchList.productId;
-                  this.db.update("Batches", re)
-                
-                      index++;
-                      this.batchPercent =  Math.round((index/length) * 100);
-                   
-                }
-              } else {
-                length++;
-                var re = batchList.BATCHLIST.BATCH;
-                re.productId = batchList.productId;
-                this.db.update("Batches", re).then(
-                  res => {
-                    index++;
-                    this.batchPercent =  Math.round((index/length) * 100);
-                  }
-                )
-              }
-            }
-          }
-         
+         this.saveBatchesToDatabase(res);
         },
         err => console.log(err)
       );
     }
-  
-    saveAllItems(guid: string){
-      this.apiService.getTallyData(guid).subscribe(
-        (res) => {
-    
-          const length: number  = res.length;
+
+
+    saveBatchesToDatabase(res){
+      var length: number  = 0;
+      var index: number= 0;
+      for (let batchList of res){
+        if (batchList.BATCHLIST && batchList.BATCHLIST.BATCH){
+          if (batchList.BATCHLIST.BATCH instanceof Array){
+            length = length + batchList.BATCHLIST.BATCH.length;
+            for (let re of batchList.BATCHLIST.BATCH){
+              re.productId = batchList.productId;
+              this.db.update("Batches", re)
+            
+                  index++;
+                  this.batchPercent =  Math.round((index/length) * 100);
+               
+            }
+          } else {
+            length++;
+            var re = batchList.BATCHLIST.BATCH;
+            re.productId = batchList.productId;
+            this.db.update("Batches", re).then(
+              res => {
+                index++;
+                this.batchPercent =  Math.round((index/length) * 100);
+              }
+            )
+          }
+        }
+      }
+     
+    }
+
+    saveItemsToDatabase(res){
+      const length: number  = res.length;
           var index: number= 0;
           for (let item of res){
             if (item && item.ENVELOPE && item.ENVELOPE.BODY && item.ENVELOPE.BODY.DATA
@@ -256,6 +286,12 @@ sendAllVoucherTypeRequests(){
               
               }
           }
+    }
+  
+    saveAllItems(guid: string){
+      this.apiService.getTallyData(guid).subscribe(
+        (res) => {
+          this.saveItemsToDatabase(res);
         },
         err => console.log(err)
       );

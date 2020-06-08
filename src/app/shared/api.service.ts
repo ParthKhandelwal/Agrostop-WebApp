@@ -387,4 +387,13 @@ getStockItemGroupsByName(): Observable<any[]>{
     return this.httpClient.get(this.BASE_URL + 'ledger/byGroup?id='+id);
   }
 
+
+
+  //FORCE SYNC IMPLEMENTATION
+
+  getForcedStockItem(type: string): Observable<any[]>{
+    return this.httpClient.get<any[]>(this.BASE_URL + 'forceRequest?type='+type);
+
+  }
+
 }
