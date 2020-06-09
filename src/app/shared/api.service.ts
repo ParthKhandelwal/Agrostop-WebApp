@@ -149,6 +149,11 @@ getStockItemGroupsByName(): Observable<any[]>{
     "&fromDate=" + this.datePipe.transform(fromDate, "yyyyMMdd") + '&toDate=' + this.datePipe.transform(toDate, "yyyyMMdd"));
 
   }
+
+  updateCustomer(customer: Customer): Observable<any>{
+    return this.httpClient.post<any>(this.BASE_URL + 'customer/update', customer);
+  }
+
   addCustomer(customer: Customer): Observable<any> {
     return this.httpClient.post<any>(this.BASE_URL + 'customer/create', customer);
   }

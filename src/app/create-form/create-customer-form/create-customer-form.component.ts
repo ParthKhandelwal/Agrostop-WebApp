@@ -24,6 +24,7 @@ export class CreateCustomerFormComponent implements OnInit {
   addressControl = new FormControl();
   address: any;
   databaseService: DatabaseService;
+  updateMode: boolean = false;
   @ViewChild('fatherNameRef', { static: false }) fatherName: ElementRef;
   @ViewChild('landHolding', { static: false }) landHolding: ElementRef;
   @ViewChild('phoneNumber', { static: false }) phoneNumber: ElementRef;  
@@ -41,6 +42,7 @@ export class CreateCustomerFormComponent implements OnInit {
       this.customer.addressId = data.addressId;
       this.customer.landHolding = data.landHolding;
       this.customer.gSTREGISTRATIONTYPE = data.gSTREGISTRATIONTYPE;
+      this.updateMode = true;
     }else{
       this.customer.gSTREGISTRATIONTYPE = "Consumer";
     }
@@ -76,20 +78,38 @@ export class CreateCustomerFormComponent implements OnInit {
   submit(): void{
     this.disableSaveButton = true;
     this.customer.addressId = this.address._id
-    this.apiService.addCustomer(this.customer).subscribe(
-      res =>{
-        this.dialogRef.close(res);
-        this.disableSaveButton = false;
-      },
-      err =>{
-        console.log(err);
-        if(err.status == 200){
-          this.dialogRef.close(err);
-        }else{
-          this.dialogRef.close(err);
-      }
-      }
-    );
+    if(this.updateMode){
+      this.apiService.updateCustomer(this.customer).subscribe(
+        res =>{
+          this.dialogRef.close(res);
+          this.disableSaveButton = false;
+        },
+        err =>{
+          console.log(err);
+          if(err.status == 200){
+            this.dialogRef.close(err);
+          }else{
+            this.dialogRef.close(err);
+        }
+        }
+      );
+    }else {
+      this.apiService.addCustomer(this.customer).subscribe(
+        res =>{
+          this.dialogRef.close(res);
+          this.disableSaveButton = false;
+        },
+        err =>{
+          console.log(err);
+          if(err.status == 200){
+            this.dialogRef.close(err);
+          }else{
+            this.dialogRef.close(err);
+        }
+        }
+      );
+    }
+   
   }
 
   fillCustomer(customer): void{
