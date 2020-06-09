@@ -18,8 +18,8 @@ import { StockItem } from '../Model/stock-item';
 })
 export class DatabaseService {
 
-  public WEB_SOCKET_URL = "https://agrostop-web-server.herokuapp.com"
-  //public WEB_SOCKET_URL = "http://localhost:5000";
+  //public WEB_SOCKET_URL = "https://agrostop-web-server.herokuapp.com"
+  public WEB_SOCKET_URL = "http://localhost:5000";
   public batchPercent: number = 100;
   public itemPercent: number = 100;
   public ledgerPercent: number = 100;
@@ -200,6 +200,32 @@ sendAllVoucherTypeRequests(){
                   )
                 }
 
+                if(message.body == "FORCE-LEDGER"){
+                  that.apiService.getForcedStockItem("LEDGER").subscribe(
+                    (res) => {
+                      that.saveLedgersToDatabase(res);
+                    }
+                  )
+                }
+
+                if(message.body == "FORCE-VOUCHERTYPE"){
+                  that.apiService.getForcedStockItem("VOUCHERTYPE").subscribe(
+                    (res) => {
+                      for(let type of res){
+                        that.saveVoucherTypeToDatabase(type);
+                      }
+                      
+                    }
+                  )
+                }
+                if(message.body == "FORCE-BATCH"){
+                  that.apiService.getForcedStockItem("BATCH").subscribe(
+                    (res) => {
+                      that.saveBatchesToDatabase(res);
+                    }
+                  )
+                }
+
                 var type: string = that.map.get(message.body);
                 if (type == "STOCKITEM"){
                   that.saveAllItems(message.body);
@@ -301,7 +327,14 @@ sendAllVoucherTypeRequests(){
       this.apiService.getTallyData(guid).subscribe(
         (response) => {
           
-          var res: any[] = [];
+          this.saveLedgersToDatabase(response);
+        },
+        err => console.log(err)
+      );
+    }
+
+    saveLedgersToDatabase(response){
+      var res: any[] = [];
           console.log(response);
           
           if (response instanceof Array){
@@ -321,9 +354,53 @@ sendAllVoucherTypeRequests(){
                 
               }
           }
-        },
-        err => console.log(err)
-      );
+    }
+
+    saveVoucherTypeToDatabase(res){
+      if (res && res.ENVELOPE && res.ENVELOPE.BODY && res.ENVELOPE.BODY.DATA
+        && res.ENVELOPE.BODY.DATA.TALLYMESSAGE && res.ENVELOPE.BODY.DATA.TALLYMESSAGE.VOUCHERTYPE){
+          var voucherType = res.ENVELOPE.BODY.DATA.TALLYMESSAGE.VOUCHERTYPE;
+          this.db.update("Voucher Types", voucherType);
+          this.apiService.getPrintConfiguration(voucherType.NAME).subscribe(
+            (res)=>{
+              if(res){
+                console.log(res)
+                res.voucherType = voucherType.NAME
+                this.db.update("PrintConfiguration",res);
+              }
+              
+            },
+            err => console.log(err)
+          )
+          
+          var classList: any[] = [];
+          if(voucherType["VOUCHERCLASSLIST.LIST"] instanceof Array){
+            classList = voucherType["VOUCHERCLASSLIST.LIST"];
+          }else {
+            classList.push(voucherType["VOUCHERCLASSLIST.LIST"]);
+          }
+          for (let tallyClass of classList){
+            var ledgerList : any[] = [];
+            if (tallyClass["LEDGERENTRIESLIST.LIST"] instanceof Array){
+              ledgerList = tallyClass["LEDGERENTRIESLIST.LIST"];
+            } else {
+              ledgerList.push(tallyClass["LEDGERENTRIESLIST.LIST"])
+            }
+            for (let ledger of ledgerList){
+              if (ledger){
+                console.log(ledger);
+                var request: Request = new Request("LEDGER");
+                request.guid = uniqid("LEDGER");
+                request.name = ledger.NAME.content;
+                request.fetchList = [];
+                request.fetchList.push("*.*");
+                this.map.set(request.guid, "LEDGER");
+                this.sendRequest(request);
+              }
+            }
+          }
+          
+        }
     }
 
     saveAllVoucherTypes(guid: string){
