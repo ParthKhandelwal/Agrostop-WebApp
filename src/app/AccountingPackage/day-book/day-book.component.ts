@@ -165,17 +165,26 @@ export class DayBookComponent implements OnInit {
               this.vouchers = res.VOUCHER;
             }
             
-            console.log(res)
+           
 
-            this.vouchers.sort((a,b) => new Date(a.DATE).getTime() - new Date(b.DATE).getTime())
-            this.vouchers = await this.vouchers.map(async res => {
-                              var customer = await this.databaseService.getCustomer(res.BASICBUYERNAME);
-                              res.BASICBUYERNAME = customer ? customer.name : res.BASICBUYERNAME;
-                                  
-                              if(customer && customer.addressId){
-                                var address = await this.databaseService.getAddress(customer.addressId)
-                                res.ADDRESS = address ? address.name : res.ADDRESS;
-                              }
+            this.vouchers = this.vouchers.sort((a,b) => new Date(a.DATE).getTime() - new Date(b.DATE).getTime())
+                          .filter((v) => v.INVENTORYENTRIES);
+         
+            this.vouchers = this.vouchers.map(res => {
+                              var customer = this.databaseService.getCustomer(res.BASICBUYERNAME).then(
+                                (customer) => {
+                                  res.BASICBUYERNAME = customer ? customer.name : res.BASICBUYERNAME;
+                                  if(customer && customer.addressId){
+                                    var address = this.databaseService.getAddress(customer.addressId).then(
+                                      (address) => {
+                                        res.ADDRESS = address ? address.name : res.ADDRESS;
+                                      }
+                                    )
+                                    
+                                  }
+                                }
+                              );
+                              
                               return res;
                             });
             this.filterMap.set("Voucher Number", [...new Set(this.vouchers.map((v)=> v.VOUCHERNUMBER))]);
@@ -183,12 +192,10 @@ export class DayBookComponent implements OnInit {
             this.filterMap.set("Voucher Type", [...new Set(this.vouchers.map((v)=> v.VOUCHERTYPENAME))]);     
             this.filterMap.set("Amount Greater Than", null);
             this.filterMap.set("Amount Smaller Than", null);
-            this.filterMap.set("Including Stock Item", [...new Set([].concat(...this.vouchers.map((v)=> v.INVENTORYENTRIES.STOCKITEM)).map((v) => v? v.STOCKITEMNAME: ""))])
+            this.filterMap.set("Including Stock Item", [...new Set([].concat(...this.vouchers.map((v)=> v.INVENTORYENTRIES ? v.INVENTORYENTRIES.STOCKITEM: null)).map((v) => v? v.STOCKITEMNAME: ""))])
                    
-
-            this.filter();
-            console.log(this.filterMap);
-            console.log(this.filterValue);
+            console.log(this.vouchers);
+            this.filteredArray = this.vouchers;
             this.loading = false;
             this.voucherPercent = 100;
           } else {
@@ -225,16 +232,18 @@ export class DayBookComponent implements OnInit {
   }
 
   getVoucherTotal(list){
-  
-    if (list instanceof Array){
-      var total: number = 0;
-      for (let item of list){
-        total = total + (item.ISDEEMEDPOSITIVE == "Yes" ? (item.AMOUNT) : 0);
+    if(list){
+      if (list instanceof Array){
+        var total: number = 0;
+        for (let item of list){
+          total = total + (item.ISDEEMEDPOSITIVE == "Yes" ? (item.AMOUNT) : 0);
+        }
+        return total*(-1);
+      } else {
+        return list.ISDEEMEDPOSITIVE == "Yes" ? (list.AMOUNT)*(-1) : 0;
       }
-      return total*(-1);
-    } else {
-      return list.ISDEEMEDPOSITIVE == "Yes" ? (list.AMOUNT)*(-1) : 0;
     }
+    
     
   }
 
@@ -242,7 +251,7 @@ export class DayBookComponent implements OnInit {
   dayBookTotal(): number{
     var total : number = 0;
     for(let v of this.filteredArray ){
-      total = total + this.getVoucherTotal(v.LEDGERENTRIES.LEDGER)
+      total = total + this.getVoucherTotal(v.LEDGERENTRIES ? v.LEDGERENTRIES.LEDGER: null);
     }
     return total;
   }

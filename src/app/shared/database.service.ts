@@ -176,11 +176,7 @@ sendAllVoucherTypeRequests(){
           this.saveLedgersToDatabase(res);
         }
       )
-      this.apiService.getForcedStockItem("VOUCHERTYPE").subscribe(
-        (res) => {
-          this.saveBatchesToDatabase(res);
-        }
-      )
+    
       this.apiService.getForcedStockItem("VOUCHERTYPE").subscribe(
         (res) => {
           for(let type of res){

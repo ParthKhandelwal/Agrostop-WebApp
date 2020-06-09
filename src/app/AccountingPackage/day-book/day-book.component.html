@@ -167,8 +167,8 @@
                         </td>
                         <td>
                           {{ v.VOUCHERNUMBER}}<br>
-                          <span *ngIf = "v.INVENTORYENTRIES.STOCKITEM" class="badge badge-warning">{{v.VOUCHERTYPENAME}}</span>
-                          <span *ngIf = "!v.INVENTORYENTRIES.STOCKITEM" class="badge badge-danger">{{v.VOUCHERTYPENAME}}</span>
+                          <span *ngIf = "v.INVENTORYENTRIES" class="badge badge-warning">{{v.VOUCHERTYPENAME}}</span>
+                          <span *ngIf = "!v.INVENTORYENTRIES" class="badge badge-danger">{{v.VOUCHERTYPENAME}}</span>
                           
                         </td>
                         <td>
@@ -178,7 +178,7 @@
                           {{ v.ADDRESS}}
                         </td>
                         <td class="text-primary">
-                          {{ getVoucherTotal(v.LEDGERENTRIES.LEDGER) | currency : 'INR'}}
+                          {{v.LEDGERENTRIES ? getVoucherTotal(v.LEDGERENTRIES.LEDGER) :0 | currency : 'INR'}}
                         </td>
                         <td>
                           <button mat-icon-button [matMenuTriggerFor]="menu">
