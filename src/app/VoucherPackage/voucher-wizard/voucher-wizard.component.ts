@@ -291,27 +291,26 @@ export class VoucherWizardComponent implements OnInit, AfterViewInit {
 
       this.databaseService.getLedger(ledger.NAME.content).then(
         res1 =>{
-          var res: any;
-          if (res1 == null){
-             res = this.databaseService.saveLedger(ledger.NAME);
-          } else {
-           res = res1
+          if(res1){
+            console.log(res1);
+            var res: any = res1;
+            console.log(res.NAME);
+            var ledgerEntry: LEDGERENTRIESLIST = new LEDGERENTRIESLIST();
+            var oldaudit: OLDAUDITENTRYIDSLIST = new OLDAUDITENTRYIDSLIST();
+            oldaudit.OLDAUDITENTRYIDS = "-1";
+            ledgerEntry.OLDAUDITENTRYIDS_LIST = oldaudit;
+            ledgerEntry.LEDGERNAME = res.NAME;
+            ledgerEntry.METHODTYPE = ledger.METHODTYPE.content
+            ledgerEntry.ISDEEMEDPOSITIVE = res.ISDEEMEDPOSITIVE.content;
+            ledgerEntry.LEDGERFROMITEM = ledger.LEDGERFROMITEM.content;
+            ledgerEntry.ROUNDLIMIT = ledger.ROUNDLIMIT.content;
+            ledgerEntry.ROUNDTYPE = ledger.ROUNDTYPE.content;
+            ledgerEntry.REMOVEZEROENTRIES = ledger.REMOVEZEROENTRIES.content;
+            ledgerEntry.ISPARTYLEDGER = "No";
+            ledgerEntry.tallyObject = res;
+            this.voucher.LEDGERENTRIES_LIST.push(ledgerEntry);
           }
           
-          var ledgerEntry: LEDGERENTRIESLIST = new LEDGERENTRIESLIST();
-          var oldaudit: OLDAUDITENTRYIDSLIST = new OLDAUDITENTRYIDSLIST();
-          oldaudit.OLDAUDITENTRYIDS = "-1";
-          ledgerEntry.OLDAUDITENTRYIDS_LIST = oldaudit;
-          ledgerEntry.LEDGERNAME = res.NAME;
-          ledgerEntry.METHODTYPE = ledger.METHODTYPE.content
-          ledgerEntry.ISDEEMEDPOSITIVE = res.ISDEEMEDPOSITIVE.content;
-          ledgerEntry.LEDGERFROMITEM = ledger.LEDGERFROMITEM.content;
-          ledgerEntry.ROUNDLIMIT = ledger.ROUNDLIMIT.content;
-          ledgerEntry.ROUNDTYPE = ledger.ROUNDTYPE.content;
-          ledgerEntry.REMOVEZEROENTRIES = ledger.REMOVEZEROENTRIES.content;
-          ledgerEntry.ISPARTYLEDGER = "No";
-          ledgerEntry.tallyObject = res;
-          this.voucher.LEDGERENTRIES_LIST.push(ledgerEntry);
         },
         err=>{
           console.log(err);

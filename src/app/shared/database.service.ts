@@ -18,8 +18,8 @@ import { StockItem } from '../Model/stock-item';
 })
 export class DatabaseService {
 
-  public WEB_SOCKET_URL = "https://agrostop-web-server.herokuapp.com"
-  //public WEB_SOCKET_URL = "http://localhost:5000";
+  //public WEB_SOCKET_URL = "https://agrostop-web-server.herokuapp.com"
+  public WEB_SOCKET_URL = "http://localhost:5000";
   public batchPercent: number = 100;
   public itemPercent: number = 100;
   public ledgerPercent: number = 100;
@@ -161,30 +161,33 @@ sendAllVoucherTypeRequests(){
     }
 
     initialSync(){
-      this.apiService.getForcedStockItem("STOCKITEM").subscribe(
-        (res) => {
-          this.saveItemsToDatabase(res);
-        }
-      )
-      this.apiService.getForcedStockItem("BATCH").subscribe(
-        (res) => {
-          this.saveBatchesToDatabase(res);
-        }
-      )
-      this.apiService.getForcedStockItem("LEDGER").subscribe(
-        (res) => {
-          this.saveLedgersToDatabase(res);
-        }
-      )
-    
-      this.apiService.getForcedStockItem("VOUCHERTYPE").subscribe(
-        (res) => {
-          for(let type of res){
-            this.saveVoucherTypeToDatabase(type);
+      this.openDatabase().then((res) => {
+        this.apiService.getForcedStockItem("STOCKITEM").subscribe(
+          (res) => {
+            this.saveItemsToDatabase(res);
           }
-          
-        }
-      )
+        )
+        this.apiService.getForcedStockItem("BATCH").subscribe(
+          (res) => {
+            this.saveBatchesToDatabase(res);
+          }
+        )
+        this.apiService.getForcedStockItem("LEDGER").subscribe(
+          (res) => {
+            this.saveLedgersToDatabase(res);
+          }
+        )
+      
+        this.apiService.getForcedStockItem("VOUCHERTYPE").subscribe(
+          (res) => {
+            for(let type of res){
+              this.saveVoucherTypeToDatabaseQuick(type);
+            }
+            
+          }
+        )
+      })
+      
 
     }
   
@@ -226,7 +229,7 @@ sendAllVoucherTypeRequests(){
                   that.apiService.getForcedStockItem("VOUCHERTYPE").subscribe(
                     (res) => {
                       for(let type of res){
-                        that.saveVoucherTypeToDatabase(type);
+                        that.saveVoucherTypeToDatabaseQuick(type);
                       }
                       
                     }
@@ -368,6 +371,25 @@ sendAllVoucherTypeRequests(){
                 
               }
           }
+    }
+
+    saveVoucherTypeToDatabaseQuick(res){
+      if (res && res.ENVELOPE && res.ENVELOPE.BODY && res.ENVELOPE.BODY.DATA
+        && res.ENVELOPE.BODY.DATA.TALLYMESSAGE && res.ENVELOPE.BODY.DATA.TALLYMESSAGE.VOUCHERTYPE){
+          var voucherType = res.ENVELOPE.BODY.DATA.TALLYMESSAGE.VOUCHERTYPE;
+          this.db.update("Voucher Types", voucherType);
+          this.apiService.getPrintConfiguration(voucherType.NAME).subscribe(
+            (res)=>{
+              if(res){
+                console.log(res)
+                res.voucherType = voucherType.NAME
+                this.db.update("PrintConfiguration",res);
+              }
+              
+            },
+            err => console.log(err)
+          )
+        }
     }
 
     saveVoucherTypeToDatabase(res){
