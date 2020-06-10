@@ -484,22 +484,20 @@ ledgerQuickSyncHelper(pageNumber: number, totalPage: number){
           }
     }
 
-    saveVoucherTypeToDatabaseQuick(items){
+    async saveVoucherTypeToDatabaseQuick(items){
       for(let res of items){
         if (res && res.VOUCHERTYPE){
           var voucherType = res.VOUCHERTYPE;
           this.db.update("Voucher Types", voucherType);
-          this.apiService.getPrintConfiguration(voucherType.NAME).subscribe(
-            (res)=>{
-              if(res){
-                console.log(res)
-                res.voucherType = voucherType.NAME
-                this.db.update("PrintConfiguration",res);
+          var response = await this.apiService.getPrintConfiguration(voucherType.NAME).toPromise()
+          .catch(err => console.log(err));
+         
+              if(response){
+                console.log(response)
+                response.voucherType = voucherType.NAME
+                this.db.update("PrintConfiguration",response);
               }
-              
-            },
-            err => console.log(err)
-          )
+           
         }
       }
       }
