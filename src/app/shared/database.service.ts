@@ -164,17 +164,18 @@ sendAllVoucherTypeRequests(){
       this.openDatabase().then((res) => {
         this.apiService.getForcedStockItem("STOCKITEM").subscribe(
           (res) => {
-            this.saveItemsToDatabase(res);
+            this.saveItemsToDatabaseQuick(res);
           }
         )
         this.apiService.getForcedStockItem("BATCH").subscribe(
           (res) => {
-            this.saveBatchesToDatabase(res);
+            console.log("Saving batches");
+            this.saveBatchesToDatabaseQuick(res);
           }
         )
         this.apiService.getForcedStockItem("LEDGER").subscribe(
           (res) => {
-            this.saveLedgersToDatabase(res);
+            this.saveLedgersToDatabaseQuick(res);
           }
         )
       
@@ -205,14 +206,14 @@ sendAllVoucherTypeRequests(){
                 if(message.body == "FORCE-STOCKITEM"){
                   that.apiService.getForcedStockItem("STOCKITEM").subscribe(
                     (res) => {
-                      that.saveItemsToDatabase(res);
+                      that.saveItemsToDatabaseQuick(res);
                     }
                   )
                 }
                 if(message.body == "FORCE-BATCH"){
                   that.apiService.getForcedStockItem("BATCH").subscribe(
                     (res) => {
-                      that.saveBatchesToDatabase(res);
+                      that.saveBatchesToDatabaseQuick(res);
                     }
                   )
                 }
@@ -220,7 +221,7 @@ sendAllVoucherTypeRequests(){
                 if(message.body == "FORCE-LEDGER"){
                   that.apiService.getForcedStockItem("LEDGER").subscribe(
                     (res) => {
-                      that.saveLedgersToDatabase(res);
+                      that.saveLedgersToDatabaseQuick(res);
                     }
                   )
                 }
@@ -283,9 +284,46 @@ sendAllVoucherTypeRequests(){
 
 
     saveBatchesToDatabase(res){
+      
       var length: number  = 0;
       var index: number= 0;
       for (let batchList of res){
+        
+        if (batchList.BATCHLIST && batchList.BATCHLIST.BATCH){
+          if (batchList.BATCHLIST.BATCH instanceof Array){
+            length = length + batchList.BATCHLIST.BATCH.length;
+            for (let re of batchList.BATCHLIST.BATCH){
+              re.productId = batchList.productId;
+              this.db.update("Batches", re)
+            
+                  index++;
+                  this.batchPercent =  Math.round((index/length) * 100);
+               
+            }
+          } else {
+            length++;
+            var re = batchList.BATCHLIST.BATCH;
+            re.productId = batchList.productId;
+            this.db.update("Batches", re).then(
+              res => {
+                index++;
+                this.batchPercent =  Math.round((index/length) * 100);
+              }
+            )
+          }
+        }
+      }
+     
+    }
+
+    saveBatchesToDatabaseQuick(res){
+      
+      var length: number  = 0;
+      var index: number= 0;
+      for (let batchList of res){
+
+          
+        
         if (batchList.BATCHLIST && batchList.BATCHLIST.BATCH){
           if (batchList.BATCHLIST.BATCH instanceof Array){
             length = length + batchList.BATCHLIST.BATCH.length;
@@ -321,6 +359,23 @@ sendAllVoucherTypeRequests(){
               && item.ENVELOPE.BODY.DATA.TALLYMESSAGE && item.ENVELOPE.BODY.DATA.TALLYMESSAGE.STOCKITEM ){
                 var stockItem: StockItem = new StockItem();
                 stockItem.convertFromJSON(item.ENVELOPE.BODY.DATA.TALLYMESSAGE.STOCKITEM);
+                this.db.update("items", stockItem)
+                  
+                   index++;
+                   this.itemPercent = Math.round((index/length) * 100);
+                  
+              
+              }
+          }
+    }
+
+    saveItemsToDatabaseQuick(res){
+      const length: number  = res.length;
+          var index: number= 0;
+          for (let item of res){
+            if (item && item.STOCKITEM ){
+                var stockItem: StockItem = new StockItem();
+                stockItem.convertFromJSON(item.STOCKITEM);
                 this.db.update("items", stockItem)
                   
                    index++;
@@ -373,10 +428,31 @@ sendAllVoucherTypeRequests(){
           }
     }
 
+    saveLedgersToDatabaseQuick(response){
+      var res: any[] = [];
+        
+          
+          if (response instanceof Array){
+            res = response;
+          }else{
+            res.push(response);
+          }
+          const length: number  = res.length;
+          var index: number= 0;
+          for (let item of res){
+            if (item && item.LEDGER ){
+                this.db.update("Ledgers", item.LEDGER)
+             
+                   index++;
+                   this.ledgerPercent = Math.round((index/length) * 100);
+                
+              }
+          }
+    }
+
     saveVoucherTypeToDatabaseQuick(res){
-      if (res && res.ENVELOPE && res.ENVELOPE.BODY && res.ENVELOPE.BODY.DATA
-        && res.ENVELOPE.BODY.DATA.TALLYMESSAGE && res.ENVELOPE.BODY.DATA.TALLYMESSAGE.VOUCHERTYPE){
-          var voucherType = res.ENVELOPE.BODY.DATA.TALLYMESSAGE.VOUCHERTYPE;
+      if (res && res.VOUCHERTYPE){
+          var voucherType = res.VOUCHERTYPE;
           this.db.update("Voucher Types", voucherType);
           this.apiService.getPrintConfiguration(voucherType.NAME).subscribe(
             (res)=>{
