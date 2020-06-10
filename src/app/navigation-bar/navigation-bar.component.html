@@ -20,6 +20,7 @@ The above copyright notice and this permission notice shall be included in all c
       <div class="logo">
 
         <a class="navibar-brand" href="#"><span>Agro</span>stop</a>
+        
 
       </div>
       <div *ngIf = "isAdmin()" class="sidebar-wrapper">
@@ -289,44 +290,20 @@ The above copyright notice and this permission notice shall be included in all c
             </ul>
           </div>
         </div>
+        
       </nav>
+      <div class="mx-auto" style="width: 80%">
+        <mat-progress-bar mode = "indeterminate" *ngIf = "!databaseService.syncingOver()"></mat-progress-bar>
+      </div>
+      
       <!-- End Navbar -->
       
         <ng-content>
 
         </ng-content>
-    <!--
-      <footer class="footer">
-        <div class="container-fluid">
-          <nav class="float-left">
-            <ul>
-              <li>
-                <a href="https://www.creative-tim.com">
-                  AGROSTOP
-                </a>
-              </li>
-              <li>
-                <a href="https://creative-tim.com/presentation">
-                  About me
-                </a>
-              </li>
-              <li>
-                <a href="http://blog.creative-tim.com">
-                  Blog
-                </a>
-              </li>
-              <li>
-                <a href="https://www.creative-tim.com/license">
-                  Licenses
-                </a>
-              </li>
-            </ul>
-          </nav>
-          <div class="copyright float-right">
-            Copyright by Parth Khandelwal
-          </div>
-        </div>
-      </footer>  -->
+        
+    
     </div>
+    
   </div>
 

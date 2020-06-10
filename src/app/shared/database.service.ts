@@ -12,6 +12,7 @@ import { User } from '../Model/user';
 import { CookieService } from 'ngx-cookie-service';
 
 import { StockItem } from '../Model/stock-item';
+import { MatSnackBar } from '@angular/material';
 
 @Injectable({
   providedIn: 'root'
@@ -37,7 +38,7 @@ export class DatabaseService {
   numberOfCacheVoucher: number = 0;
 
 
-  constructor(private apiService?: ApiService, private cookie?: CookieService) {
+  constructor(private apiService?: ApiService, private cookie?: CookieService, private snackBar?: MatSnackBar) {
     this.sync();
     setInterval(this.maintainConnection, 10000)
     this.database = this.db.openDatabase(1, evt => {
@@ -90,11 +91,11 @@ export class DatabaseService {
 
 
    syncingOver() : boolean{
-    return (this.itemPercent == 100) 
-            && (this.batchPercent == 100)
-            && (this.customerPercent == 100)
-            && (this.ledgerPercent == 100)
-            && (this.addressPercent == 100)
+    return (this.ledgerSavedSoFar == this.totalLedger) 
+            && (this.itemsSavedSoFar == this.totalItems)
+            && (this.batchesSavedSoFar == this.totalBatches)
+            && (this.voucherTypesSavedSoFar == this.totalVoucherTypes)
+           
   }   
   
   upSyncingOver() : boolean{
@@ -135,7 +136,10 @@ sendAllVoucherTypeRequests(){
   }
 }
 
+totalLedger: number =0;
+ledgerSavedSoFar: number = 0;
 async ledgerQuickSync(){
+  this.ledgerSavedSoFar = 0;
   var totalPage : number = 1;
   var currentPage: number = 0;
   while (currentPage <= totalPage){
@@ -143,11 +147,13 @@ async ledgerQuickSync(){
         this.saveLedgersToDatabaseQuick(res.content);
         totalPage = res.totalPages;
         currentPage = currentPage + 1;
-     
+        this.totalLedger = res.totalElements;
   }
   
 }
 
+totalItems: number = 0;
+itemsSavedSoFar: number = 0;
 async itemsQuickSync(){
   var totalPage : number = 1;
   var currentPage: number = 0;
@@ -156,11 +162,15 @@ async itemsQuickSync(){
         this.saveItemsToDatabaseQuick(res.content);
         totalPage = res.totalPages;
         currentPage = currentPage + 1;
+        this.totalItems = res.totalElements;
+
      
   }
   
 }
 
+totalBatches: number = 0;
+batchesSavedSoFar: number = 0;
 async batchesQuickSync(){
   var totalPage : number = 1;
   var currentPage: number = 0;
@@ -169,10 +179,14 @@ async batchesQuickSync(){
         this.saveBatchesToDatabaseQuick(res.content);
         totalPage = res.totalPages;
         currentPage = currentPage + 1;
+        this.totalBatches = res.totalElements;
      
   }
   
 }
+
+totalVoucherTypes: number = 0;
+voucherTypesSavedSoFar: number = 0;
 async vouchertypeQuickSync(){
   var totalPage : number = 1;
   var currentPage: number = 0;
@@ -181,14 +195,13 @@ async vouchertypeQuickSync(){
         this.saveVoucherTypeToDatabaseQuick(res.content);
         totalPage = res.totalPages;
         currentPage = currentPage + 1;
+        this.totalVoucherTypes = res.totalElements;
      
   }
   
 }
 
-ledgerQuickSyncHelper(pageNumber: number, totalPage: number){
 
-}
 
 
    getItems(): Promise<any>{
@@ -363,7 +376,16 @@ ledgerQuickSyncHelper(pageNumber: number, totalPage: number){
             length = length + batchList.BATCHLIST.BATCH.length;
             for (let re of batchList.BATCHLIST.BATCH){
               re.productId = batchList.productId;
-              this.db.update("Batches", re)
+              this.db.update("Batches", re).then(
+                (r)=> {
+                  this.batchesSavedSoFar = this.batchesSavedSoFar +1;
+                  if(this.batchesSavedSoFar == this.totalBatches){
+                    this.snackBar.open(this.batchesSavedSoFar + " Batches Saved Offline","Cancel",{
+                      duration: 5000
+                    });
+                  }
+                }
+              )
             
                   index++;
                   this.batchPercent =  Math.round((index/length) * 100);
@@ -377,6 +399,12 @@ ledgerQuickSyncHelper(pageNumber: number, totalPage: number){
               res => {
                 index++;
                 this.batchPercent =  Math.round((index/length) * 100);
+                this.batchesSavedSoFar = this.batchesSavedSoFar +1;
+                  if(this.batchesSavedSoFar == this.totalBatches){
+                    this.snackBar.open(this.batchesSavedSoFar + " Batches Saved Offline","Cancel",{
+                      duration: 5000
+                    });
+                  }
               }
             )
           }
@@ -410,7 +438,16 @@ ledgerQuickSyncHelper(pageNumber: number, totalPage: number){
             if (item && item.STOCKITEM ){
                 var stockItem: StockItem = new StockItem();
                 stockItem.convertFromJSON(item.STOCKITEM);
-                this.db.update("items", stockItem)
+                this.db.update("items", stockItem).then(
+                  (r) =>{
+                    this.itemsSavedSoFar = this.itemsSavedSoFar + 1;
+                    if(this.itemsSavedSoFar == this.totalItems){
+                      this.snackBar.open(this.itemsSavedSoFar + " Items Saved Offline","Cancel",{
+                        duration: 5000
+                      });
+                    }
+                  }
+                )
                   
                    index++;
                    this.itemPercent = Math.round((index/length) * 100);
@@ -475,7 +512,17 @@ ledgerQuickSyncHelper(pageNumber: number, totalPage: number){
           var index: number= 0;
           for (let item of res){
             if (item && item.LEDGER ){
-                this.db.update("Ledgers", item.LEDGER)
+                this.db.update("Ledgers", item.LEDGER).then(
+                  (r)=>{
+                    this.ledgerSavedSoFar = this.ledgerSavedSoFar + 1
+                    if(this.ledgerSavedSoFar == this.totalLedger){
+                      this.snackBar.open(this.ledgerSavedSoFar + " Ledgers Saved Offline","Cancel",{
+                        duration: 5000
+                      });
+                    }
+                  }
+                )
+                
              
                    index++;
                    this.ledgerPercent = Math.round((index/length) * 100);
@@ -488,7 +535,16 @@ ledgerQuickSyncHelper(pageNumber: number, totalPage: number){
       for(let res of items){
         if (res && res.VOUCHERTYPE){
           var voucherType = res.VOUCHERTYPE;
-          this.db.update("Voucher Types", voucherType);
+          this.db.update("Voucher Types", voucherType).then(
+            r => {
+              this.voucherTypesSavedSoFar = this.voucherTypesSavedSoFar +1;
+                  if(this.voucherTypesSavedSoFar == this.totalVoucherTypes){
+                    this.snackBar.open(this.totalVoucherTypes + " Voucher Types Saved Offline","Cancel",{
+                      duration: 5000
+                    });
+                  }
+            }
+          );
           var response = await this.apiService.getPrintConfiguration(voucherType.NAME).toPromise()
           .catch(err => console.log(err));
          
