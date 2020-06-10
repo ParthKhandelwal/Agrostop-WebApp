@@ -13,6 +13,7 @@ import { CookieService } from 'ngx-cookie-service';
 
 import { StockItem } from '../Model/stock-item';
 import { MatSnackBar } from '@angular/material';
+import groupBy from 'lodash/groupBy';
 
 @Injectable({
   providedIn: 'root'
@@ -368,47 +369,79 @@ async vouchertypeQuickSync(){
       var length: number  = 0;
       var index: number= 0;
       for (let batchList of res){
-
-          
+        if(batchList.BATCHLIST && batchList.BATCHLIST.BATCH){
+          batchList.BATCHLIST.BATCH = (batchList.BATCHLIST.BATCH instanceof Array) 
+                                  ? batchList.BATCHLIST.BATCH 
+                                  : [batchList.BATCHLIST.BATCH]
+         var uniqueBatches = batchList.BATCHLIST.BATCH.map(
+          (r) => {
+            r.productId = batchList.productId
+            return r
+          })
         
-        if (batchList.BATCHLIST && batchList.BATCHLIST.BATCH){
-          if (batchList.BATCHLIST.BATCH instanceof Array){
-            length = length + batchList.BATCHLIST.BATCH.length;
-            for (let re of batchList.BATCHLIST.BATCH){
-              re.productId = batchList.productId;
-              this.db.update("Batches", re).then(
-                (r)=> {
-                  this.batchesSavedSoFar = this.batchesSavedSoFar +1;
-                  if(this.batchesSavedSoFar == this.totalBatches){
-                    this.snackBar.open(this.batchesSavedSoFar + " Batches Saved Offline","Cancel",{
-                      duration: 5000
-                    });
-                  }
-                }
-              )
-            
-                  index++;
-                  this.batchPercent =  Math.round((index/length) * 100);
-               
-            }
-          } else {
-            length++;
-            var re = batchList.BATCHLIST.BATCH;
-            re.productId = batchList.productId;
-            this.db.update("Batches", re).then(
-              res => {
-                index++;
-                this.batchPercent =  Math.round((index/length) * 100);
+          uniqueBatches
+          .reduce((acc: Map<string, any>, val) => {
+          
+            val.CLOSINGBALANCE = (acc.get(val.BATCHID)?acc.get(val.BATCHID).CLOSINGBALANCE: 0) + val.CLOSINGBALANCE;
+            console.log(val.CLOSINGBALANCE);
+            acc.set(val.BATCHID, val)
+            return acc
+          }, new Map())
+          .forEach((value: boolean, key: string) => {
+            this.db.update("Batches", value).then(
+              (r)=> {
                 this.batchesSavedSoFar = this.batchesSavedSoFar +1;
-                  if(this.batchesSavedSoFar == this.totalBatches){
-                    this.snackBar.open(this.batchesSavedSoFar + " Batches Saved Offline","Cancel",{
-                      duration: 5000
-                    });
-                  }
+                if(this.batchesSavedSoFar == this.totalBatches){
+                  this.snackBar.open(this.batchesSavedSoFar + " Batches Saved Offline","Cancel",{
+                    duration: 5000
+                  });
+                }
               }
             )
-          }
+          });
+         
+        
         }
+        
+        
+        // if (batchList.BATCHLIST && batchList.BATCHLIST.BATCH){
+        //   if (batchList.BATCHLIST.BATCH instanceof Array){
+        //     length = length + batchList.BATCHLIST.BATCH.length;
+        //     for (let re of batchList.BATCHLIST.BATCH){
+        //       re.productId = batchList.productId;
+        //       this.db.update("Batches", re).then(
+        //         (r)=> {
+        //           this.batchesSavedSoFar = this.batchesSavedSoFar +1;
+        //           if(this.batchesSavedSoFar == this.totalBatches){
+        //             this.snackBar.open(this.batchesSavedSoFar + " Batches Saved Offline","Cancel",{
+        //               duration: 5000
+        //             });
+        //           }
+        //         }
+        //       )
+            
+        //           index++;
+        //           this.batchPercent =  Math.round((index/length) * 100);
+               
+        //     }
+        //   } else {
+        //     length++;
+        //     var re = batchList.BATCHLIST.BATCH;
+        //     re.productId = batchList.productId;
+        //     this.db.update("Batches", re).then(
+        //       res => {
+        //         index++;
+        //         this.batchPercent =  Math.round((index/length) * 100);
+        //         this.batchesSavedSoFar = this.batchesSavedSoFar +1;
+        //           if(this.batchesSavedSoFar == this.totalBatches){
+        //             this.snackBar.open(this.batchesSavedSoFar + " Batches Saved Offline","Cancel",{
+        //               duration: 5000
+        //             });
+        //           }
+        //       }
+        //     )
+        //   }
+        // }
       }
      
     }

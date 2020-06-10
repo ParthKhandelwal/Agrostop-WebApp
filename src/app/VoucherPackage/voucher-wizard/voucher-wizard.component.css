@@ -14,7 +14,10 @@
  */
 
 
-
+ .mat-option.mat-active {
+  background: black !important;
+  color: white !important;
+}
 
 .container-tab > div {
   display: inline-block;
