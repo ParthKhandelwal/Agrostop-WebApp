@@ -42,14 +42,14 @@ export class ApiService {
     return this.httpClient.post(this.BASE_URL+"counters/save", counter);
   }
 
-  public WEB_SOCKET_URL = "https://agrostop-web-server.herokuapp.com"
-  private BASE_URL = "https://agrostop-web-server.herokuapp.com/api/";
+  //public WEB_SOCKET_URL = "https://agrostop-web-server.herokuapp.com"
+  //private BASE_URL = "https://agrostop-web-server.herokuapp.com/api/";
 
   //private BASE_URL = "http://13.235.37.79/api/";
   //public WEB_SOCKET_URL = "http://13.235.37.79";
 
-  //private BASE_URL = "http://localhost:5000/api/";
-  //public WEB_SOCKET_URL = "http://localhost:5000";
+  private BASE_URL = "http://localhost:5000/api/";
+  public WEB_SOCKET_URL = "http://localhost:5000";
   //public TALLY_HELPER_URL = "http://localhost:8082";
 
   user: User;
@@ -401,4 +401,8 @@ getStockItemGroupsByName(): Observable<any[]>{
 
   }
 
+  getCachePage(page: number, type:string): Observable<any>{
+    return this.httpClient.get<any[]>(this.BASE_URL + 'tallyBuffer/getCacheId?type='+type+"&pageNumber="+page);
+
+  }
 }

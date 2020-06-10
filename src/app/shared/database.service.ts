@@ -18,8 +18,8 @@ import { StockItem } from '../Model/stock-item';
 })
 export class DatabaseService {
 
-  public WEB_SOCKET_URL = "https://agrostop-web-server.herokuapp.com"
-  //public WEB_SOCKET_URL = "http://localhost:5000";
+  //public WEB_SOCKET_URL = "https://agrostop-web-server.herokuapp.com"
+  public WEB_SOCKET_URL = "http://localhost:5000";
   public batchPercent: number = 100;
   public itemPercent: number = 100;
   public ledgerPercent: number = 100;
@@ -135,6 +135,61 @@ sendAllVoucherTypeRequests(){
   }
 }
 
+async ledgerQuickSync(){
+  var totalPage : number = 1;
+  var currentPage: number = 0;
+  while (currentPage <= totalPage){
+    var res  = await this.apiService.getCachePage(currentPage,"LEDGER").toPromise().catch((err) => console.log(err));
+        this.saveLedgersToDatabaseQuick(res.content);
+        totalPage = res.totalPages;
+        currentPage = currentPage + 1;
+     
+  }
+  
+}
+
+async itemsQuickSync(){
+  var totalPage : number = 1;
+  var currentPage: number = 0;
+  while (currentPage <= totalPage){
+    var res  = await this.apiService.getCachePage(currentPage,"STOCKITEM").toPromise().catch((err) => console.log(err));
+        this.saveItemsToDatabaseQuick(res.content);
+        totalPage = res.totalPages;
+        currentPage = currentPage + 1;
+     
+  }
+  
+}
+
+async batchesQuickSync(){
+  var totalPage : number = 1;
+  var currentPage: number = 0;
+  while (currentPage <= totalPage){
+    var res  = await this.apiService.getCachePage(currentPage,"BATCH").toPromise().catch((err) => console.log(err));
+        this.saveBatchesToDatabaseQuick(res.content);
+        totalPage = res.totalPages;
+        currentPage = currentPage + 1;
+     
+  }
+  
+}
+async vouchertypeQuickSync(){
+  var totalPage : number = 1;
+  var currentPage: number = 0;
+  while (currentPage <= totalPage){
+    var res  = await this.apiService.getCachePage(currentPage,"VOUCHERTYPE").toPromise().catch((err) => console.log(err));
+        this.saveVoucherTypeToDatabaseQuick(res.content);
+        totalPage = res.totalPages;
+        currentPage = currentPage + 1;
+     
+  }
+  
+}
+
+ledgerQuickSyncHelper(pageNumber: number, totalPage: number){
+
+}
+
 
    getItems(): Promise<any>{
     return  this.db.getAll("items");
@@ -162,31 +217,10 @@ sendAllVoucherTypeRequests(){
 
     initialSync(){
       this.openDatabase().then((res) => {
-        this.apiService.getForcedStockItem("STOCKITEM").subscribe(
-          (res) => {
-            this.saveItemsToDatabaseQuick(res);
-          }
-        )
-        this.apiService.getForcedStockItem("BATCH").subscribe(
-          (res) => {
-            console.log("Saving batches");
-            this.saveBatchesToDatabaseQuick(res);
-          }
-        )
-        this.apiService.getForcedStockItem("LEDGER").subscribe(
-          (res) => {
-            this.saveLedgersToDatabaseQuick(res);
-          }
-        )
-      
-        this.apiService.getForcedStockItem("VOUCHERTYPE").subscribe(
-          (res) => {
-            for(let type of res){
-              this.saveVoucherTypeToDatabaseQuick(type);
-            }
-            
-          }
-        )
+        this.itemsQuickSync();
+        this.ledgerQuickSync();
+        this.batchesQuickSync();
+        this.vouchertypeQuickSync();
       })
       
 
@@ -450,8 +484,9 @@ sendAllVoucherTypeRequests(){
           }
     }
 
-    saveVoucherTypeToDatabaseQuick(res){
-      if (res && res.VOUCHERTYPE){
+    saveVoucherTypeToDatabaseQuick(items){
+      for(let res of items){
+        if (res && res.VOUCHERTYPE){
           var voucherType = res.VOUCHERTYPE;
           this.db.update("Voucher Types", voucherType);
           this.apiService.getPrintConfiguration(voucherType.NAME).subscribe(
@@ -466,7 +501,9 @@ sendAllVoucherTypeRequests(){
             err => console.log(err)
           )
         }
-    }
+      }
+      }
+      
 
     saveVoucherTypeToDatabase(res){
       if (res && res.ENVELOPE && res.ENVELOPE.BODY && res.ENVELOPE.BODY.DATA
