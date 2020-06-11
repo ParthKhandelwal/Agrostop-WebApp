@@ -1,14 +1,13 @@
 import { Component, OnInit, Inject, Input, Output, EventEmitter, ElementRef, ViewChild } from '@angular/core';
 import { Customer } from '../../Model/customer';
 import {  MAT_DIALOG_DATA, MatDialogRef } from '@angular/material';
-import { VOUCHER, ALLINVENTORYENTRIESLIST, PrintConfiguration } from '../../Model/voucher';
+import { VOUCHER, PrintConfiguration } from '../../Model/voucher';
 import { ApiService } from 'src/app/shared/api.service';
 import { DatabaseService } from 'src/app/shared/database.service';
 import { AppComponent } from 'src/app/app.component';
 import { User } from 'src/app/Model/user';
 import { StockItem } from 'src/app/Model/stock-item';
-import { NgxPrinterService } from 'ngx-printer';
-
+import { NgxPrintDirective } from 'ngx-print';
 
 
 
@@ -37,7 +36,8 @@ export class InvoicePrintViewComponent implements OnInit {
   printConf: PrintConfiguration;
 
   constructor(@Inject(MAT_DIALOG_DATA) public data?: any,
-  private apiService?: ApiService, private printService?: NgxPrinterService, private dialogRef?: MatDialogRef<InvoicePrintViewComponent>) {
+  private apiService?: ApiService, private dialogRef?: MatDialogRef<InvoicePrintViewComponent>,
+ ) {
     this.databaseService = AppComponent.databaseService;
     this.user = this.databaseService.getUser();
     if (data != null) {
@@ -104,7 +104,9 @@ export class InvoicePrintViewComponent implements OnInit {
   }
 
   print(){
-    this.printService.$printItems.subscribe((item) => this.printService.printPrintItems(item));
+    
+    document.getElementById("printButton").click();
+    //this.printService.$printItems.subscribe((item) => this.printService.printPrintItems(item));
     this.dialogRef.close();
     
   }

@@ -2,7 +2,7 @@
     </mat-spinner>
 
 
-<div ngxPrintItem id="app" class="container invoice" *ngIf = "complete">
+<div id="app" class="container invoice" *ngIf = "complete">
    <div class="row">
        <!-- data -->
        <div class="col-3 data py-4">
@@ -254,7 +254,7 @@
 </div>
 
 <div>
-    <button mat-raised-button style="float: right;" [useExistingCss]="true"
+    <button id="printButton" mat-raised-button style="float: right;" [useExistingCss]="true"
     (click) =  "valueChanged.emit('saved')"
       printSectionId="app"
       ngxPrint>print</button>

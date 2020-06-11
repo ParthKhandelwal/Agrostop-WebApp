@@ -74,8 +74,7 @@ import { VoucherSettingComponent } from './VoucherPackage/voucher-setting/vouche
 import {MatProgressBarModule} from '@angular/material/progress-bar';
 
 import { ChartsModule } from 'ng2-charts';
-import {NgxPrintModule} from 'ngx-print';
-import {NgxPrinterModule} from 'ngx-printer';
+import {NgxPrintModule, NgxPrintDirective} from 'ngx-print';
 
 import { StockCheckComponent } from './Products/stock-check/stock-check.component';
 import { PaymentVoucherWizardComponent } from './VoucherPackage/payment-voucher-wizard/payment-voucher-wizard.component';
@@ -93,6 +92,7 @@ import {MatExpansionModule} from '@angular/material/expansion';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import {MatMenuModule} from '@angular/material/menu';
 import {MatSnackBarModule} from '@angular/material/snack-bar';
+
 
 @NgModule({
   declarations: [
@@ -148,7 +148,8 @@ import {MatSnackBarModule} from '@angular/material/snack-bar';
     ReceiptVoucherWizardComponent,
     CashBookComponent,
     UploadAddressesComponent,
-    ProcessOrderFormComponent
+    ProcessOrderFormComponent,
+   
   ],
   imports: [
     BrowserAnimationsModule,
@@ -186,7 +187,7 @@ import {MatSnackBarModule} from '@angular/material/snack-bar';
     MatProgressSpinnerModule,
     MatMenuModule,
     MatSnackBarModule,
-    NgxPrinterModule
+    
 
   ],
   providers: [CookieService, ApiService, DatePipe, MatDialog, NgxImageCompressService,AgroStorageService, MatDialogConfig, {
