@@ -39,64 +39,15 @@ export class InvoicePrintViewComponent implements OnInit {
  ) {
     this.databaseService = AppComponent.databaseService;
     this.user = this.databaseService.getUser();
-    if (data != null) {
-      this.voucher = data;
-      this.databaseService.getCustomer(this.voucher.BASICBUYERNAME).then(
-        (res: Customer) => {
-          console.log(res);
-          this.customer = res
-          this.databaseService.getAddress(res.addressId).then(
-            add => {
-              this.address = add;
-            }
-          );
-        }
-      );
-      this.databaseService.getPrintConfigurations(this.voucher.VOUCHERTYPENAME).then(
-        res=> {
-          this.printConf = res
-        }
-      )
-      this.stockItems = this.voucher.ALLINVENTORYENTRIES_LIST;
-      this.voucher.ALLINVENTORYENTRIES_LIST.forEach((item) => {
-        this.databaseService.getStockItem(item.STOCKITEMNAME).then(
-          (res: StockItem) => {
-            var tallyObject: StockItem = Object.assign(new StockItem, res);
-            item.tallyObject = tallyObject;
-            var taxItem: PrintTaxItem = this.hsnDetails.get(tallyObject.getHSNCODE());
-
-            if (!taxItem && tallyObject){
-              taxItem = new PrintTaxItem();
-              taxItem.hsnCode = tallyObject.getHSNCODE();
-              taxItem.cgst.rate = tallyObject.getTaxRate("", "Central Tax");
-              taxItem.sgst.rate = tallyObject.getTaxRate("", "State Tax");
-              this.hsnDetails.set(taxItem.hsnCode, taxItem);
-            }
-            taxItem.cgst.amount = taxItem.cgst.amount + this.calculate(taxItem.cgst.rate, item.AMOUNT);
-            taxItem.sgst.amount = taxItem.sgst.amount + this.calculate(taxItem.sgst.rate, item.AMOUNT);
-            
-          }
-        ).then(()=>{
-          this.complete = true
-          this.print();
-          console.log("printing");
-
-        }
-          
-        )
-      });
-   
-        this.date = new Date(this.voucher.DATE);   
-
-    }
-  }
-
-  ngOnInit() {
     
   }
 
-  ngAfterViewChecked(){
+  ngOnInit() {
     this.setVoucherToPrint(this.data)
+  }
+
+  ngAfterViewChecked(){
+    
   }
 
   match(){
