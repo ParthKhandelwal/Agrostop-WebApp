@@ -152,8 +152,6 @@ export class DayBookComponent implements OnInit {
     this.filterMap = new Map();
     this.voucherPercent = 0;
     this.loading = true;
-    
-
     this.apiService.getTallyData(guid).subscribe(
         async (res: any) =>{
           
@@ -208,9 +206,6 @@ export class DayBookComponent implements OnInit {
           console.log(err);
         }
       )
-    
-      
-     
     
   }
 
@@ -330,9 +325,7 @@ export class DayBookComponent implements OnInit {
       this.voucher = m;
       this.loading = false;
       this.editMode = true;
-    }
-    
-    
+    } 
   }
 
   updateEditMode() {
@@ -421,5 +414,9 @@ export class DayBookComponent implements OnInit {
        )
   }
 
+  showDaybook(){
+    this.editMode = false;
+    this.ngOnInit();
+  }
   
 }
