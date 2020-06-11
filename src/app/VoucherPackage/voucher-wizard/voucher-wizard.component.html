@@ -4,7 +4,7 @@
 <form *ngIf = "!saving">
 
 
-  <mat-horizontal-stepper linear = true labelPosition="bottom" #stepper>
+  <mat-horizontal-stepper (selectionChange)="setSelect($event)" linear = true labelPosition="bottom" #stepper>
     <mat-step [completed] = "this.voucher.VOUCHERTYPENAME && this.voucher.PRICELEVEL
      && this.godownName  && this.voucher.DATE">
         <ng-template matStepLabel>Voucher Details</ng-template>
@@ -77,7 +77,7 @@
         </div> -->
         
         <div class="row" style="float: right;">
-          <button autofocus mat-button matStepperNext>Next</button>
+          <button  mat-button matStepperNext>Next</button>
         </div>
     </mat-step>
     <mat-step [completed] = "this.customer && this.customer.id">
@@ -192,7 +192,7 @@
                   <div class="row">
                     <div class="col">
                     <mat-form-field>
-                      <input #createCustomerNameRef matInput required [(ngModel)] = "createCustomer.name" placeholder="Enter Name" autofocus name = "customerName" (keydown.enter) ="fatherNameRef.focus();false" >
+                      <input #createCustomerNameRef matInput required [(ngModel)] = "createCustomer.name" placeholder="Enter Name"  name = "customerName" (keydown.enter) ="fatherNameRef.focus();false" >
                     </mat-form-field>
                     </div>
                     <div class="col">
@@ -498,7 +498,7 @@
                     </div>
                     <div class="col">
                       <mat-form-field *ngIf = "ledger.LEDGERNAME"> 
-                        <input type = 'number' matInput [name]="ledger.LEDGERNAME" placeholder = "Amount"  [(ngModel)] = "ledger.AMOUNT" (ng-value) = "ledger.POSPAYMENTTYPE == 'Cash' ? getRemainingBalance(): 0">
+                        <input type = 'number' matInput [name]="ledger.LEDGERNAME" placeholder = "Amount"  [(ngModel)] = "ledger.AMOUNT">
                       </mat-form-field>
                     </div>
                     
@@ -567,15 +567,15 @@
       </div>
     </mat-step>
 
-    <mat-step >
+    <mat-step>
       <ng-template matStepLabel>Done</ng-template>
-      <p>You are now done.</p>
+      <p>Voucher Completed</p>
       <section *ngIf = "!disableSaveOption" >
         <mat-checkbox name ="saveOffline" [(ngModel)]="saveOffline">Save Offline</mat-checkbox>
       </section>
-      <div >
+      <div>
         <button mat-button matStepperPrevious>Back</button>
-        <button mat-button (click)=" save(); stepper.reset();">Save</button>
+        <button id="voucherSaveButton" #voucherSaveButton mat-button (click) =" save(); stepper.reset();">Save</button>
       </div>
     </mat-step>
   </mat-horizontal-stepper>

@@ -205,14 +205,14 @@ export class VoucherWizardComponent implements OnInit, AfterViewInit {
     this.createCustomer.addressId = this.address._id
     this.apiService.addCustomer(this.createCustomer).subscribe(
       result =>{
-        
+        this.createCustomer = new Customer();
+
         if (result && result.id){
           this.databaseService.addCustomer(result)
           this.databaseService.getAddress(result.addressId).then(
             (add) =>{
               result.fullAddress = add;
               this.customers.push(result);
-              this.createCustomer = new Customer();
               this.disableSaveButton = false;
               this.customerCreationActive = false;
               this.customer = result;
@@ -434,16 +434,27 @@ export class VoucherWizardComponent implements OnInit, AfterViewInit {
     
   }
 
+  setSelect(event){
+    console.log("changed: "+ event.selectedIndex);
+    this.cd.detectChanges();
+    if(event.selectedIndex == 5){
+      console.log("Now Saving "+ event.selectedIndex);
+      this.save();
+    }
+  }
   
   async save() {
     this.saving = true;
     this.voucher.LEDGERENTRIES_LIST.map((ledger) => {
       if (ledger.POSPAYMENTTYPE){
         ledger.AMOUNT = Math.abs(ledger.AMOUNT) * (-1);
+        this.cd.detectChanges();
       }
     });
     if (!this.voucher.VOUCHERNUMBER){
-      const num = await this.apiService.getVoucherNumber(this.voucher.VOUCHERTYPENAME).toPromise();
+      const num = await this.apiService.getVoucherNumber(this.voucher.VOUCHERTYPENAME).toPromise()
+      .catch((err) => console.log(err) );
+      
       if(num && num.seq){
         this.voucher.VOUCHERNUMBER = num.prefix + num.seq;
       }else {
@@ -480,6 +491,7 @@ export class VoucherWizardComponent implements OnInit, AfterViewInit {
 
   afterVoucherSaveProcess(){
     this.printVoucher();
+    
     this.saving = false;
   }
 
@@ -667,7 +679,6 @@ productFocus:boolean;
     .forEach((ledger) => this.calculate(ledger));
     this.voucher.LEDGERENTRIES_LIST.filter((ledger) => !ledger.POSPAYMENTTYPE && ledger.METHODTYPE == "As Total Amount Rounding")
     .forEach((ledger) => this.calculate(ledger));
-   this.cd.detectChanges();
   }
 
   adjustRounding(){
@@ -692,6 +703,7 @@ productFocus:boolean;
               
                 ledger.AMOUNT = ledger.AMOUNT + item.getTax(product.BILLEDQTY,product.RATE,"",gstDutyHead)
                 ledger.AMOUNT =  parseFloat((Math.round(ledger.AMOUNT * 100) / 100).toFixed(2));
+                this.cd.detectChanges();
                 this.adjustRounding();
                 
               
@@ -719,6 +731,7 @@ productFocus:boolean;
           }
           
           ledger.AMOUNT =  Math.round((Math.round(total) - total)*100) *0.01;
+          this.cd.detectChanges();
           break;
       case "As User Defined Value":
           break;
@@ -739,7 +752,6 @@ productFocus:boolean;
       if ((i.POSPAYMENTTYPE != null && i.POSPAYMENTTYPE != "") && i.AMOUNT != null){
         temp = temp + i.AMOUNT;
         if (i.POSPAYMENTTYPE != "Cash" && i.AMOUNT){
-        
           withoutCash = withoutCash + i.AMOUNT;
           
         }

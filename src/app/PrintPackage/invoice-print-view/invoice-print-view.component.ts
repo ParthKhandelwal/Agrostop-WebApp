@@ -1,4 +1,4 @@
-import { Component, OnInit, Inject, Input, Output, EventEmitter, ElementRef, ViewChild } from '@angular/core';
+import { Component, OnInit, Inject, Output, EventEmitter } from '@angular/core';
 import { Customer } from '../../Model/customer';
 import {  MAT_DIALOG_DATA, MatDialogRef } from '@angular/material';
 import { VOUCHER, PrintConfiguration } from '../../Model/voucher';
@@ -7,7 +7,6 @@ import { DatabaseService } from 'src/app/shared/database.service';
 import { AppComponent } from 'src/app/app.component';
 import { User } from 'src/app/Model/user';
 import { StockItem } from 'src/app/Model/stock-item';
-import { NgxPrintDirective } from 'ngx-print';
 
 
 
@@ -93,22 +92,15 @@ export class InvoicePrintViewComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.setVoucherToPrint(this.data)
+    
   }
 
-  ngAfterViewInit(){
+  ngAfterViewChecked(){
+    this.setVoucherToPrint(this.data)
   }
 
   match(){
     return (this.voucher.VOUCHERNUMBER + "").match('^DM-');
-  }
-
-  print(){
-    
-    document.getElementById("printButton").click();
-    //this.printService.$printItems.subscribe((item) => this.printService.printPrintItems(item));
-    this.dialogRef.close();
-    
   }
 
 
@@ -137,12 +129,8 @@ export class InvoicePrintViewComponent implements OnInit {
             
           }
         )
-          this.complete = true
-          this.print();
-          console.log("printing");
-          this.print();
+          this.complete = true          
           
-       
       
    
         this.date = new Date(this.voucher.DATE);   
@@ -193,6 +181,27 @@ export class InvoicePrintViewComponent implements OnInit {
     
     
   }
+  
+  print(): void {
+    let printContents, popupWin;
+    printContents = document.getElementById('app').innerHTML;
+    popupWin = window.open();
+    //popupWin = window.open('', '_blank', 'width=600,height=700,scrollbars=no,menubar=no,toolbar=no,location=no,status=no,titlebar=no');
+    popupWin.document.open();
+    popupWin.document.write(`
+      <html>
+        <head>
+          <title>Print tab</title>
+          <link rel="stylesheet" type="text/css" href="invoice-print-view.component.css" />
+          <style>
+          //........Customized style.......
+          </style>
+        </head>
+    <body onload="window.print();window.close()">${printContents}</body>
+      </html>`
+    );
+    popupWin.document.close();
+}
 
  
 
