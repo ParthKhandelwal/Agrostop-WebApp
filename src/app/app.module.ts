@@ -75,6 +75,8 @@ import {MatProgressBarModule} from '@angular/material/progress-bar';
 
 import { ChartsModule } from 'ng2-charts';
 import {NgxPrintModule} from 'ngx-print';
+import {NgxPrinterModule} from 'ngx-printer';
+
 import { StockCheckComponent } from './Products/stock-check/stock-check.component';
 import { PaymentVoucherWizardComponent } from './VoucherPackage/payment-voucher-wizard/payment-voucher-wizard.component';
 import { ReceiptVoucherWizardComponent } from './VoucherPackage/receipt-voucher-wizard/receipt-voucher-wizard.component';
@@ -183,7 +185,9 @@ import {MatSnackBarModule} from '@angular/material/snack-bar';
     MatExpansionModule,
     MatProgressSpinnerModule,
     MatMenuModule,
-    MatSnackBarModule
+    MatSnackBarModule,
+    NgxPrinterModule
+
   ],
   providers: [CookieService, ApiService, DatePipe, MatDialog, NgxImageCompressService,AgroStorageService, MatDialogConfig, {
       provide: HTTP_INTERCEPTORS,

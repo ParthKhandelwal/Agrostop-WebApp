@@ -1,14 +1,13 @@
-import { Component, OnInit, Inject, Input, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Inject, Input, Output, EventEmitter, ElementRef, ViewChild } from '@angular/core';
 import { Customer } from '../../Model/customer';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
+import {  MAT_DIALOG_DATA, MatDialogRef } from '@angular/material';
 import { VOUCHER, ALLINVENTORYENTRIESLIST, PrintConfiguration } from '../../Model/voucher';
 import { ApiService } from 'src/app/shared/api.service';
-import { PosService } from 'src/app/shared/pos.service';
-import { Address } from 'src/app/Model/address';
 import { DatabaseService } from 'src/app/shared/database.service';
 import { AppComponent } from 'src/app/app.component';
 import { User } from 'src/app/Model/user';
 import { StockItem } from 'src/app/Model/stock-item';
+import { NgxPrinterService } from 'ngx-printer';
 
 
 
@@ -22,6 +21,7 @@ export class InvoicePrintViewComponent implements OnInit {
 
   public voucher: VOUCHER;
   @Output("valueChanged") valueChanged = new EventEmitter();
+
   customer: Customer;
   uniqueHSN: PrintTaxItem[] = [];
   complete:boolean;
@@ -36,7 +36,8 @@ export class InvoicePrintViewComponent implements OnInit {
   hsnDetails: Map<string, PrintTaxItem> = new Map();
   printConf: PrintConfiguration;
 
-  constructor(@Inject(MAT_DIALOG_DATA) public data?: any,private apiService?: ApiService) {
+  constructor(@Inject(MAT_DIALOG_DATA) public data?: any,
+  private apiService?: ApiService, private printService?: NgxPrinterService, private dialogRef?: MatDialogRef<InvoicePrintViewComponent>) {
     this.databaseService = AppComponent.databaseService;
     this.user = this.databaseService.getUser();
     if (data != null) {
@@ -76,13 +77,15 @@ export class InvoicePrintViewComponent implements OnInit {
             taxItem.sgst.amount = taxItem.sgst.amount + this.calculate(taxItem.sgst.rate, item.AMOUNT);
             
           }
-        ).then(()=>
+        ).then(()=>{
           this.complete = true
+          this.print();
+          console.log("printing");
+
+        }
+          
         )
       });
-
-            
-        //this.company = this.databaseService.getCompany();
    
         this.date = new Date(this.voucher.DATE);   
 
@@ -90,11 +93,59 @@ export class InvoicePrintViewComponent implements OnInit {
   }
 
   ngOnInit() {
-  
+    this.setVoucherToPrint(this.data)
+  }
+
+  ngAfterViewInit(){
   }
 
   match(){
     return (this.voucher.VOUCHERNUMBER + "").match('^DM-');
+  }
+
+  print(){
+    this.printService.$printItems.subscribe((item) => this.printService.printPrintItems(item));
+    this.dialogRef.close();
+    
+  }
+
+
+  async setVoucherToPrint(data){
+    if (data != null) {
+      this.voucher = data;
+      this.customer = await this.databaseService.getCustomer(this.voucher.BASICBUYERNAME);
+      this.address = await this.databaseService.getAddress(this.customer.addressId);
+      this.printConf = await this.databaseService.getPrintConfigurations(this.voucher.VOUCHERTYPENAME);
+      this.stockItems = this.voucher.ALLINVENTORYENTRIES_LIST;
+      this.voucher.ALLINVENTORYENTRIES_LIST.forEach(async (item) => {
+        var res: StockItem = await this.databaseService.getStockItem(item.STOCKITEMNAME)
+            var tallyObject: StockItem = Object.assign(new StockItem, res);
+            item.tallyObject = tallyObject;
+            var taxItem: PrintTaxItem = this.hsnDetails.get(tallyObject.getHSNCODE());
+
+            if (!taxItem && tallyObject){
+              taxItem = new PrintTaxItem();
+              taxItem.hsnCode = tallyObject.getHSNCODE();
+              taxItem.cgst.rate = tallyObject.getTaxRate("", "Central Tax");
+              taxItem.sgst.rate = tallyObject.getTaxRate("", "State Tax");
+              this.hsnDetails.set(taxItem.hsnCode, taxItem);
+            }
+            taxItem.cgst.amount = taxItem.cgst.amount + this.calculate(taxItem.cgst.rate, item.AMOUNT);
+            taxItem.sgst.amount = taxItem.sgst.amount + this.calculate(taxItem.sgst.rate, item.AMOUNT);
+            
+          }
+        )
+          this.complete = true
+          this.print();
+          console.log("printing");
+          this.print();
+          
+       
+      
+   
+        this.date = new Date(this.voucher.DATE);   
+
+    }
   }
 
 

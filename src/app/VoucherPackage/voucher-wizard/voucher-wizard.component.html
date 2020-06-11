@@ -225,7 +225,7 @@
                                [(ngModel)] = "address"
                                [matAutocomplete]="auto">  
                         <mat-autocomplete [panelWidth]="600" #auto="matAutocomplete"
-                                          [displayWith]= "displayFnAddress" (optionSelected) = "saveButton.focus()">
+                                          [displayWith]= "displayFnAddress" (optionSelected) = "cd.detectChanges(); saveButton.focus()">
                                         
                           <mat-option *ngFor="let option of addressFilteredOptions | async" [value]="option">
                             <th scope="row">
@@ -248,7 +248,7 @@
                   </div>
                   <div class="row">
                     <div class="col">
-                      <button style="float: right;" #saveButton mat-button (click) = "customerCreationActive = false">Cancel</button>
+                      <button style="float: right;"  mat-button (click) = "customerCreationActive = false">Cancel</button>
 
                     </div>
                     <div class="col">

@@ -784,7 +784,10 @@ productFocus:boolean;
   createOnline$() {
     return merge<boolean>(
       fromEvent(window, 'offline').pipe(map(() => false)),
-      fromEvent(window, 'online').pipe(map(() => true)),
+      fromEvent(window, 'online').pipe(map(async () => {
+        await this.databaseService.setNumbersToAllMemos();
+        return true;
+      })),
       new Observable((sub: Observer<boolean>) => {
         sub.next(navigator.onLine);
         sub.complete();

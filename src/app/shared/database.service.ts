@@ -403,48 +403,11 @@ async vouchertypeQuickSync(){
         
         }
         
-        
-        // if (batchList.BATCHLIST && batchList.BATCHLIST.BATCH){
-        //   if (batchList.BATCHLIST.BATCH instanceof Array){
-        //     length = length + batchList.BATCHLIST.BATCH.length;
-        //     for (let re of batchList.BATCHLIST.BATCH){
-        //       re.productId = batchList.productId;
-        //       this.db.update("Batches", re).then(
-        //         (r)=> {
-        //           this.batchesSavedSoFar = this.batchesSavedSoFar +1;
-        //           if(this.batchesSavedSoFar == this.totalBatches){
-        //             this.snackBar.open(this.batchesSavedSoFar + " Batches Saved Offline","Cancel",{
-        //               duration: 5000
-        //             });
-        //           }
-        //         }
-        //       )
-            
-        //           index++;
-        //           this.batchPercent =  Math.round((index/length) * 100);
-               
-        //     }
-        //   } else {
-        //     length++;
-        //     var re = batchList.BATCHLIST.BATCH;
-        //     re.productId = batchList.productId;
-        //     this.db.update("Batches", re).then(
-        //       res => {
-        //         index++;
-        //         this.batchPercent =  Math.round((index/length) * 100);
-        //         this.batchesSavedSoFar = this.batchesSavedSoFar +1;
-        //           if(this.batchesSavedSoFar == this.totalBatches){
-        //             this.snackBar.open(this.batchesSavedSoFar + " Batches Saved Offline","Cancel",{
-        //               duration: 5000
-        //             });
-        //           }
-        //       }
-        //     )
-        //   }
-        // }
+       
       }
      
     }
+
 
     saveItemsToDatabase(res){
       const length: number  = res.length;
@@ -1059,5 +1022,19 @@ async vouchertypeQuickSync(){
                 })
       })      
     }
+
+    async setNumbersToAllMemos(){
+      var vouchers: any[] = await this.getAllCacheVouchers();
+      vouchers.sort((a,b) => a.DATE.getTime() - b.DATE.getTime())
+                .forEach(async (voucher) => {
+                  if ((voucher.VOUCHERNUMBER + "").match('^DM-')){
+                    var num = await this.apiService.getVoucherNumber(voucher.VOUCHERTYPENAME).toPromise();
+                    voucher.VOUCHERNUMBER = num.prefix + num.seq;
+                    voucher.NARRATION = "This bill is generated against DM-"+voucher._REMOTEID 
+                    await this.addCacheVoucher(voucher);
+                  }
+                })
+        
+      }
   
 }
