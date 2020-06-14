@@ -99,28 +99,5 @@ export class CustomersComponent implements OnInit {
   }
 
 
-  uploadCustomer(){
-    for (let item of this.customerResults){
-      if(item[0] != null && item[0] != "" ){
-        var address: Address = new Address();
-      address._id = item[0];
-      address.name = item[1];
-      address.tehsilName = item[2];
-      address.districtName = item[3];
-      address.stateName = item[4];
-      this.apiService.addAddress(address).subscribe(
-        res => {
-          item[item.length + 1] = true;
-        },
-        err => {
-          item[item.length + 1] = false;
-        }
-      )
-      }
-      
-    }
-  }
-
-
 
 }

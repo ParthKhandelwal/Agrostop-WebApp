@@ -10,6 +10,8 @@ import { StockItem } from 'src/app/Model/stock-item';
 
 
 
+
+
 @Component({
   selector: 'invoice-print-view',
   templateUrl: './invoice-print-view.component.html',
@@ -44,6 +46,7 @@ export class InvoicePrintViewComponent implements OnInit {
 
   ngOnInit() {
     this.setVoucherToPrint(this.data)
+ 
   }
 
   ngAfterViewChecked(){
@@ -57,7 +60,7 @@ export class InvoicePrintViewComponent implements OnInit {
 
   async setVoucherToPrint(data){
     if (data != null) {
-      this.voucher = data;
+      this.voucher = Object.assign(new VOUCHER(),data);
       this.customer = await this.databaseService.getCustomer(this.voucher.BASICBUYERNAME);
       this.address = await this.databaseService.getAddress(this.customer.addressId);
       this.printConf = await this.databaseService.getPrintConfigurations(this.voucher.VOUCHERTYPENAME);

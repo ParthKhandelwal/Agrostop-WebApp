@@ -13,7 +13,7 @@ import { CookieService } from 'ngx-cookie-service';
 
 import { StockItem } from '../Model/stock-item';
 import { MatSnackBar } from '@angular/material';
-import groupBy from 'lodash/groupBy';
+
 
 @Injectable({
   providedIn: 'root'

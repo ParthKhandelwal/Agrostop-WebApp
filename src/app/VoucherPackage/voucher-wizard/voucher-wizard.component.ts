@@ -232,7 +232,7 @@ export class VoucherWizardComponent implements OnInit, AfterViewInit {
   private customer_filter(value: string): Customer[] {
     const filterValue = value? value.toString().toLowerCase(): "";
     return this.customers.filter(option => {
-      return option.phoneNumber.toLowerCase().indexOf(filterValue) == 0 
+      return (option.phoneNumber ? option.phoneNumber.toLowerCase().indexOf(filterValue) == 0 : false)
       || option.name.toLowerCase().indexOf(filterValue) === 0;
     }
     )

@@ -38,7 +38,7 @@
                <ng-container *ngFor = "let ledger of voucher.LEDGERENTRIES_LIST">
                     <div style="width: 100%;" *ngIf = "ledger.POSPAYMENTTYPE && ledger.AMOUNT">
                         <span class="font-weight-light" style="width: 70%; float: left;">{{ledger.POSPAYMENTTYPE == "Gift" ? "On Account" : ledger.POSPAYMENTTYPE}}</span>
-                        <span class="font-weight-light" style="width: 30%; float: right;">{{ledger.AMOUNT * (-1) | currency: 'INR'}}</span>
+                        <span class="font-weight-light" style="width: 30%; float: right;">{{(ledger.AMOUNT) | currency: 'INR'}}</span>
                     </div>
                 </ng-container>
            </div>
@@ -214,9 +214,9 @@
                         <p class="without-margin">{{tax.value.hsnCode}}</p>
                     </div>
                     <div class="col-2 text-center">{{tax.value.cgst.rate}}%</div>
-                    <div class="col-2 text-center">{{(tax.value.cgst.amount * 0.01 | number: '1.2-2') | currency: 'INR'}}</div>
+                    <div class="col-2 text-center">{{tax.value.cgst.amount * 0.01 |  currency: 'INR' :true:'1.2-2'}}</div>
                     <div class="col-2 text-right">{{tax.value.sgst.rate}}%</div>
-                    <div class="col-2 text-right">{{(tax.value.sgst.amount * 0.01 | number: '1.2-2') | currency: 'INR'}}</div>
+                    <div class="col-2 text-right">{{(tax.value.sgst.amount * 0.01) | currency: 'INR' :true:'1.2-2'}}</div>
                 </div>
                 <div class="row">
                     <div class="col-12 my-2">
