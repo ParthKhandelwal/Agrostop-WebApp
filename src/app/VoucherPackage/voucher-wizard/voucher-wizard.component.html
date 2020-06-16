@@ -432,12 +432,12 @@
 
                           <ng-container *ngIf = "ledger.POSPAYMENTTYPE == 'Card'">
                             <ng-container *ngFor = "let led of user.cashBankProfile">
-                              <mat-option *ngIf = "led.type == 'Bank Accounts' || led.type == 'Bank OD A/C'" [value] = "led.ledger">{{led.ledger}}</mat-option>
+                              <mat-option *ngIf = "led.type == 'Bank Accounts' || led.type == 'Bank OD A/c'" [value] = "led.ledger">{{led.ledger}}</mat-option>
                             </ng-container>
                           </ng-container>
                           <ng-container *ngIf = "ledger.POSPAYMENTTYPE == 'Cheque'">
                             <ng-container *ngFor = "let led of user.cashBankProfile">
-                              <mat-option *ngIf = "led.type == 'Bank Accounts' || led.type == 'Bank OD A/C'" [value] = "led.ledger">{{led.ledger}}</mat-option>
+                              <mat-option *ngIf = "led.type == 'Bank Accounts' || led.type == 'Bank OD A/c'" [value] = "led.ledger">{{led.ledger}}</mat-option>
                             </ng-container>
                           </ng-container>
                           
