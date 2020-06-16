@@ -94,6 +94,7 @@ export class StockItem {
   }
 
   getTaxRate(state: string, taxType: string): number{
+    console.log(this.gstDetailsList);
     var gstDetail: GSTDETAILS = this.gstDetailsList
     .filter((p) => p.applicableFrom <= new Date())
     .sort((a,b) => b.applicableFrom.getTime() - a.applicableFrom.getTime())[0];

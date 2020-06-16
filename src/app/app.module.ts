@@ -92,6 +92,7 @@ import {MatExpansionModule} from '@angular/material/expansion';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import {MatMenuModule} from '@angular/material/menu';
 import {MatSnackBarModule} from '@angular/material/snack-bar';
+import { AutoCompleteComponent } from './AgroComponent/auto-complete/auto-complete.component';
 
 
 @NgModule({
@@ -149,6 +150,7 @@ import {MatSnackBarModule} from '@angular/material/snack-bar';
     CashBookComponent,
     UploadAddressesComponent,
     ProcessOrderFormComponent,
+    AutoCompleteComponent,
    
   ],
   imports: [

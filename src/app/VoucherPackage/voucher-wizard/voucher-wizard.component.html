@@ -88,27 +88,7 @@
             <ng-container *ngIf = "!customerCreationActive">
               <div class="row">
                 <div class = "col">
-                  <mat-form-field>
-                    <input #customerField type="text"
-                           placeholder="Select Customer"
-                           matInput
-                           [formControl]="customerControl"
-                           [matAutocomplete]="auto"
-                           [(ngModel)]="customer">
-                    <mat-autocomplete autoActiveFirstOption [panelWidth]="500"
-                                      #auto="matAutocomplete"
-                                      (optionSelected) = "addCustomer($event.option.value, stepper)"
-                                      [displayWith]="displayFnCustomer">
-                
-
-                      <mat-option *ngFor="let option of customerFilteredOptions | async" [value]="option">
-                        <h6>{{option.name}}, S/O {{option.fatherName}}<br>
-                          <small><strong>Address: </strong>{{option.fullAddress?option.fullAddress.name: ""}} </small>
-                        </h6>
-                        
-                      </mat-option>
-                    </mat-autocomplete>
-                  </mat-form-field>
+                <auto-complete type="customer" name = "customer" (optionSelected) = "addCustomer($event.option.value, stepper)"></auto-complete>
                 </div>
                 <div class = "col">
                   <button mat-button color="accent" (click)='createNewCustomer()' name="button" class="createButton">
@@ -274,62 +254,30 @@
         <div class = "row">
             <!-- PRODUCT ENTRY GOES HERE -->
               <div class="col">
-                <mat-form-field class="example-full-width" style="width: 150px;">
-                  <input #invField
-                   type="text"
-                         placeholder="Pick one"
-                         matInput
-                         name = "selectProductAuto"
-                         [formControl]="productControl"
-                         [matAutocomplete]="productAuto"
-                         (focus) = "productFocus"
-                         style="width:100% !important" >
-                  <mat-autocomplete  [panelWidth]="300" #productAuto="matAutocomplete" position = "above"
-                  (optionSelected) = "selectInventory(stepper, $event.option.value)"
-                                    [displayWith]= "displayFnProduct" autoActiveFirstOption>              
-
-                    <mat-option [value]="endVoucher">
-                      <th scope="row">
-                        <div class="p-2">
-                          <div class="ml-3 d-inline-block align-middle">
-                            <h6 class="mb-0 font-weight-bold">{{endVoucher.NAME}}</h6>
-                          </div>
-                        </div>
-                      </th>
-                    </mat-option>
-                    <mat-option *ngFor="let option of productFilteredOptions | async" [value]="option">
-                      <th scope="row">
-                        <div class="p-2">
-                          <div class="ml-3 d-inline-block align-middle">
-                            <h6 class="mb-0 font-weight-bold">{{option.NAME}}</h6>
-                          </div>
-                        </div>
-                      </th>
-                    </mat-option>
-                  </mat-autocomplete>
-                </mat-form-field>
+               
+                <auto-complete #productAutoComp type="product" (optionSelected) = "selectInventory(stepper, $event)"></auto-complete>
               </div>
               <div class="col">
                 <mat-form-field>
-                  <input #quantityField type= "number" (keydown.enter) = "rateRef.nativeElement.focus();false" [placeholder] = "this.productControl.value ? 'Enter '+this.productControl.value.baseUnits : 'Enter Qty'" matInput name ="qty" [formControl] = "qtyControl">
+                  <input #quantityField type= "number" (keydown.enter) = "rateRef.nativeElement.focus();false" [placeholder] = "this.productAutoComp.productControl.value ? 'Enter '+this.productAutoComplete.productControl.value.baseUnits : 'Enter Qty'" matInput name ="qty" [formControl] = "qtyControl">
                 </mat-form-field>
                 
               </div>
               <div class="col">
-                <mat-form-field *ngIf = "productControl.value">
+                <mat-form-field *ngIf = "this.productAutoComp.productControl.value">
                   <input #rateField type= "number" (keydown.enter) = "setRateInclusiveOfTax();false" placeholder="Enter Rate" matInput name ="rate" [formControl] = "rateControl">
                 </mat-form-field>
               </div>
               <div class="col">
-                <mat-form-field *ngIf = "productControl.value">
+                <mat-form-field *ngIf = "this.productAutoComp.productControl.value">
                   <input type= "number" readonly placeholder="Rate (inc of tax)"  matInput name ="rateIncTax" [formControl] = "rateIncControl">
                 </mat-form-field>
               </div>
               <div class="col">
-                <mat-form-field *ngIf = "productControl.value">
+                <mat-form-field *ngIf = "productAutoComp.productControl.value">
                   <mat-select #batchField placeholder = "Select batch" [formControl] = "batchControl"
                   (selectionChange) = "validateInventoryEntry()">
-                    <mat-option style="width: 400px;" *ngFor = "let batch of productControl.value.BATCHES" [value] = "batch">
+                    <mat-option style="width: 400px;" *ngFor = "let batch of productAutoComp.productControl.value.BATCHES" [value] = "batch">
                       <span>{{batch.NAME}}</span>
                       <span>
                         <small style="float: right;">EXP: {{batch.EXPIRYDATE}}</small>

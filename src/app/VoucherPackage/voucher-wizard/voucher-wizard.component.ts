@@ -17,8 +17,8 @@ import { Order } from 'src/app/Model/order';
 import { OrderService } from 'src/app/shared/order.service';
 import { StockItem } from 'src/app/Model/stock-item';
 import { Address } from 'src/app/Model/address';
-
-
+import { AutoCompleteComponent } from 'src/app/AgroComponent/auto-complete/auto-complete.component';
+import { ObjectId } from 'bson';
 
 @Component({
   selector: 'voucher-wizard',
@@ -58,6 +58,8 @@ export class VoucherWizardComponent implements OnInit, AfterViewInit {
   @ViewChild('cashRecievedField', { static: false }) cashRecievedRef: ElementRef;  
 
   @ViewChild('invField', { static: false }) productRef: ElementRef;
+  @ViewChild('productAutoComp', { static: false}) productAutoComplete: AutoCompleteComponent;
+  
   @ViewChild('batchField', { static: false }) batchRef: MatSelect;
   saveOffline: boolean = true;
   disableSaveOption: boolean;
@@ -104,57 +106,13 @@ export class VoucherWizardComponent implements OnInit, AfterViewInit {
       },
     )
     
-   }
+  }
+  
   ngAfterViewInit(): void {
     this.databaseService.openDatabase().then(() => {
 
-      //GETTING ALL THE CUSTOMERS FROM LOCAL STORAGE
-      this.databaseService.getCustomers().then((res) => {
-        this.customers = res.map((cus) => {
-          if (cus.addressId){
-            this.databaseService.getAddress(cus.addressId).then(
-              (add) => {
-                cus.fullAddress = add
-              }
-            )
-          }
-          
-          return cus;
-        });
-        
-        this.customer = this.customers.filter((cus) => cus.id == this.voucher.BASICBUYERNAME)[0];
+      
 
-        this.customerFilteredOptions = this.customerControl.valueChanges.pipe(
-          startWith(''),
-          map(value => this.customer_filter(value))
-        );
-      });
-
-      //GETTING ALL THE BATCHES
-       //GETTING ALL THE PRODUCTS FROM LOCAL STORAGE
-      this.databaseService.getProductBatch().then(
-        (batches)=> {
-          this.batches = batches;
-          this.databaseService.getAllStockItemsForBilling().then(
-            (res: StockItem[]) => {
-              
-     
-              this.products = res.map((pro) => {
-                pro.BATCHES = batches.filter((batch) => {
-                  return (batch.productId == pro.NAME) && (batch.CLOSINGBALANCE != 0) 
-                  && (batch.EXPIRYDATE ? new Date(batch.EXPIRYDATE) >= new Date(): true);
-                })
-                return pro;
-              })
-              this.productFilteredOptions = this.productControl.valueChanges.pipe(
-                startWith(''),
-                map(value => this.product_filter(value))
-              );
-              
-            }
-            );
-        }
-      )
         
       this.databaseService.getAddresses().then(
         res => {
@@ -201,32 +159,17 @@ export class VoucherWizardComponent implements OnInit, AfterViewInit {
 
 
   submit(stepper): void{
+    console.log(this.createCustomer);
     this.disableSaveButton = true;
     this.createCustomer.addressId = this.address._id
-    this.apiService.addCustomer(this.createCustomer).subscribe(
-      result =>{
-        this.createCustomer = new Customer();
-
-        if (result && result.id){
-          this.databaseService.addCustomer(result)
-          this.databaseService.getAddress(result.addressId).then(
-            (add) =>{
-              result.fullAddress = add;
-              this.customers.push(result);
-              this.disableSaveButton = false;
-              this.customerCreationActive = false;
-              this.customer = result;
-              this.addCustomer(this.customer, stepper);
-            })
-          
-        }
-        
-      },
-      err =>{
-        console.log(err);
-        alert("Cannot create customer at this point");
-      }
-    );
+    this.createCustomer.id = (new ObjectId()).toHexString();
+    this.createCustomer.fullAddress = this.address;
+    this.databaseService.addCustomer(this.createCustomer);
+    this.databaseService.addCacheCustomer(this.createCustomer);
+    this.disableSaveButton = false;
+    this.customerCreationActive = false;
+    this.customer = this.createCustomer
+    this.addCustomer(this.customer, stepper);
   }
 
   private customer_filter(value: string): Customer[] {
@@ -254,7 +197,6 @@ export class VoucherWizardComponent implements OnInit, AfterViewInit {
   }
 
   setNewVoucher(){
-    
     this.databaseService.countCacheVoucher();
     this.customer = new Customer();
     this.renew();
@@ -400,13 +342,15 @@ export class VoucherWizardComponent implements OnInit, AfterViewInit {
   }
 
   addCustomer(value, stepper){
+    console.log(value);
+    this.customer = value;
     this.voucher.BASICBUYERNAME = value.id;
     this.voucher.ADDRESS_LIST = new ADDRESSLIST(value.name, value.fullAddress.name,"", "");
     stepper._selectedIndex = 2;
     
     setTimeout(()=>{ // this will make the execution after the above boolean has changed
       this.cd.detectChanges();
-      this.productRef.nativeElement.focus();
+      this.productAutoComplete.focus();
     },1000);
 
   }
@@ -445,6 +389,7 @@ export class VoucherWizardComponent implements OnInit, AfterViewInit {
   
   async save() {
     this.saving = true;
+    
     this.voucher.LEDGERENTRIES_LIST.map((ledger) => {
       if (ledger.POSPAYMENTTYPE){
         ledger.AMOUNT = Math.abs(ledger.AMOUNT) * (-1);
@@ -462,8 +407,10 @@ export class VoucherWizardComponent implements OnInit, AfterViewInit {
       }  
     }
     if(!this.saveOffline) {
+      
       this.apiService.saveTallyVoucher(this.voucher).subscribe(
-        res => {
+        async res => {
+          
           if (res && res.RESPONSE){
             if (res.RESPONSE.CREATED == 1 || res.RESPONSE.UPDATED == 1){
               this.afterVoucherSaveProcess();
@@ -579,7 +526,8 @@ export class VoucherWizardComponent implements OnInit, AfterViewInit {
 
 
   selectInventory(stepper, pro:StockItem){
-    if (this.productControl.value == this.endVoucher){
+
+    if (pro.NAME == "END OF LIST"){
       stepper._selectedIndex = 3;
       this.getRemainingBalance();
       setTimeout(()=>{ // this will make the execution after the above boolean has changed
@@ -596,15 +544,15 @@ export class VoucherWizardComponent implements OnInit, AfterViewInit {
   }
 
   setRateInclusiveOfTax(){
-    var temp = Object.assign(new StockItem(), this.productControl.value);
+    var temp = Object.assign(new StockItem(), this.productAutoComplete.productControl.value);
     this.rateIncControl.setValue(temp.getRateInclusiveOfTax(this.rateControl.value, ""));
     this.batchRef.focus();
   }
 
   validateInventoryEntry(){
    
-    if (this.productControl.value == null || this.productControl.value ==""){
-      this.productRef.nativeElement.focus();
+    if (this.productAutoComplete.productControl.value == null || this.productAutoComplete.productControl.value ==""){
+      this.productAutoComplete.focus();
       return;
     }
    
@@ -617,7 +565,7 @@ export class VoucherWizardComponent implements OnInit, AfterViewInit {
       this.quantityRef.nativeElement.focus();
       return;
     }
-    const res: StockItem = this.productControl.value;
+    const res: StockItem = this.productAutoComplete.productControl.value;
     console.log(res);
     var inventoryEntry: ALLINVENTORYENTRIESLIST = new ALLINVENTORYENTRIESLIST();
     inventoryEntry.STOCKITEMNAME = res.NAME;
@@ -655,13 +603,13 @@ export class VoucherWizardComponent implements OnInit, AfterViewInit {
     this.adjustLedgers();
     this.renew()
     this.cd.detectChanges();
-    this.productRef.nativeElement.focus();
+    this.productAutoComplete.focus();
 
 }
 productFocus:boolean;
   renew(){
     
-    this.productControl.setValue("");
+    this.productAutoComplete.productControl.setValue("");
     this.qtyControl.setValue(null);
     this.rateControl.setValue(null);
     this.batchControl.setValue(null);

@@ -31,7 +31,7 @@ export class DatabaseService {
 
 
   database: Promise<any>;
-  db = new NgxIndexedDB('agrostop', 2);
+  db = new NgxIndexedDB('agrostop', 3);
   connected: boolean;
   stompClient: any;
   map: Map<string, string> = new Map();
@@ -46,6 +46,8 @@ export class DatabaseService {
       let objectStore = evt.currentTarget.result.createObjectStore('cacheVoucher', { keyPath: "_REMOTEID",autoIncrement: false, unique:true });
       let objectStore2 = evt.currentTarget.result.createObjectStore('items', { keyPath: "NAME",autoIncrement: false, unique: true });
       let objectStore3 = evt.currentTarget.result.createObjectStore('customers', {keyPath: "id", autoIncrement: false, unique: true });
+      let objectStore9 = evt.currentTarget.result.createObjectStore('cacheCustomers', {keyPath: "id", autoIncrement: false, unique: true });
+
       let objectStore4 = evt.currentTarget.result.createObjectStore('Ledgers', {keyPath: "NAME",autoIncrement: false, unique: true });
       let objectStore7 = evt.currentTarget.result.createObjectStore('Voucher Types', {keyPath: "NAME",autoIncrement: false, unique: true });
       let objectStore8 = evt.currentTarget.result.createObjectStore('Addresses', {    keyPath: "_id",autoIncrement: false, unique: true });
@@ -900,8 +902,24 @@ async vouchertypeQuickSync(){
       return this.db.getAll("Ledgers");
     }   
   
-        addCustomer(cus: any){
+    addCustomer(cus: any){
       this.db.update("customers", cus);
+    }
+
+    deleteCustomer(cus: string){
+      this.db.delete("customers", cus);
+    }
+
+    addCacheCustomer(cus: any){
+      this.db.update("cacheCustomers", cus);
+    }
+
+    deleteCacheCustomer(cus: string){
+      this.db.delete("cacheCustomers", cus);
+    }
+
+    getAllCacheCustomer(): Promise<any[]>{
+      return this.db.getAll("cacheCustomers");
     }
   
     saveCustomers(){
@@ -983,6 +1001,7 @@ async vouchertypeQuickSync(){
 
   
     syncAllCacheVouchers(){
+      this.uploadAllCacheCustomers();
       this.getAllCacheVouchers().then((vouchers: any[]) => {
         vouchers.sort((a,b) => a.DATE.getTime() - b.DATE.getTime())
                 .map(async (voucher) => {
@@ -1035,6 +1054,21 @@ async vouchertypeQuickSync(){
                   }
                 })
         
+      }
+
+
+      async uploadAllCacheCustomers(){
+        var customers: any[] = await this.getAllCacheCustomer();
+        for(let c of customers){
+          this.apiService.addCustomer(c).subscribe(
+            err => {
+              this.deleteCacheCustomer(c.id);
+            },
+            err => {
+              alert("Customer cannot be saved. Please check all the details")
+            }
+          )
+        }
       }
   
 }
