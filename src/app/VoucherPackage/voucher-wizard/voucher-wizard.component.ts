@@ -72,12 +72,13 @@ export class VoucherWizardComponent implements OnInit, AfterViewInit {
     this.databaseService = AppComponent.databaseService;
     this.user = this.databaseService.getUser();
     this.databaseService.openDatabase().then(
-      () => {
+      async () => {
         if (this.voucher.VOUCHERNUMBER && !this.voucher.ORDERNUMBER){
           console.log(this.voucher);
           this.godownName = this.voucher.ALLINVENTORYENTRIES_LIST[0].BATCHALLOCATIONS_LIST.GODOWNNAME
           this.voucherType = this.user.voucherTypes.filter((v) => v.voucherTypeName == this.voucher.VOUCHERTYPENAME)[0];
           this.saveOffline = !this.voucher.MASTERID;
+          this.customer = await this.databaseService.getCustomer(this.voucher.BASICBUYERNAME);
           this.voucher.LEDGERENTRIES_LIST
           .filter((l) => l.POSPAYMENTTYPE != null)
           .map((l) => {
