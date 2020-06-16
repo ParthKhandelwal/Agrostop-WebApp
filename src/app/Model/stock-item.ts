@@ -1,4 +1,3 @@
-import {Batch} from 'batch';
 
 export class TallyClass{
   public static getNumbers(temp: string): number{
@@ -73,7 +72,6 @@ export class StockItem {
     var priceLevelsList: PRICELEVELLIST[] = [];
     this.fullPriceList
     .filter((p) => (p.priceLevel == priceLevel)).forEach((pl) => {
-      console.log(pl);
       priceLevelsList.push(...pl.priceLevelList);
     });
     
@@ -81,7 +79,6 @@ export class StockItem {
       var sortedOrder = priceLevelsList
       .filter((p) => p.date <= new Date())
       .sort((a,b) => b.date.getTime() - a.date.getTime());
-      console.log(sortedOrder);
 
       var rate: number = priceLevelsList
     .filter((p) => p.date <= new Date())
@@ -94,7 +91,6 @@ export class StockItem {
   }
 
   getTaxRate(state: string, taxType: string): number{
-    console.log(this.gstDetailsList);
     var gstDetail: GSTDETAILS = this.gstDetailsList
     .filter((p) => p.applicableFrom <= new Date())
     .sort((a,b) => b.applicableFrom.getTime() - a.applicableFrom.getTime())[0];

@@ -1,13 +1,13 @@
 import { Component, OnInit, Inject } from '@angular/core';
 import {User} from '../Model/user';
-import { ApiService } from '../shared/api.service';
-import { CookieService } from 'ngx-cookie-service';
+
 import { Router } from '@angular/router';
 import { AuthenticationService } from '../shared/authentication.service';
 import { PosService } from '../shared/pos.service';
-import { NumberValueAccessor } from '@angular/forms';
 import { DatabaseService } from '../shared/database.service';
 import { AppComponent } from '../app.component';
+import { MatDialog, MatDialogConfig } from '@angular/material';
+import { ProductStatComponent } from '../Products/product-stat/product-stat.component';
 
 @Component({
   selector: 'app-navigation-bar',
@@ -33,6 +33,7 @@ export class NavigationBarComponent implements OnInit {
     private router: Router,
     private authenticationService: AuthenticationService,
     private posService: PosService,
+    private dialog?: MatDialog
     
   ) {
     this.authenticationService.currentUser.subscribe(x => {
@@ -94,6 +95,14 @@ export class NavigationBarComponent implements OnInit {
   logout() {
     this.authenticationService.logOut();
     this.router.navigate(['/login']);
+  }
+
+
+  itemDetails(){
+    const dialogConfig = new MatDialogConfig();
+    dialogConfig.autoFocus = true;
+    dialogConfig.width = "50%";
+    const dialogRef = this.dialog.open(ProductStatComponent, {maxHeight: '90vh'});
   }
 
 }

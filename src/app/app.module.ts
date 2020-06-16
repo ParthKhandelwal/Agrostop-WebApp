@@ -93,6 +93,7 @@ import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import {MatMenuModule} from '@angular/material/menu';
 import {MatSnackBarModule} from '@angular/material/snack-bar';
 import { AutoCompleteComponent } from './AgroComponent/auto-complete/auto-complete.component';
+import { ProductStatComponent } from './Products/product-stat/product-stat.component';
 
 
 @NgModule({
@@ -151,6 +152,7 @@ import { AutoCompleteComponent } from './AgroComponent/auto-complete/auto-comple
     UploadAddressesComponent,
     ProcessOrderFormComponent,
     AutoCompleteComponent,
+    ProductStatComponent,
    
   ],
   imports: [
@@ -200,6 +202,6 @@ import { AutoCompleteComponent } from './AgroComponent/auto-complete/auto-comple
     ],
   bootstrap: [AppComponent],
   entryComponents: [CreateCustomerFormComponent, CreateTaxDetailsFormComponent, InvoicePrintViewComponent, CashTenderedComponent, CreateStockItemFormComponent, CustomerTableComponent, ConfirmationBoxComponent, CreateAddressFormComponent,
-    PaymentOptionComponent, CustomerViewComponent, ProcessOrderFormComponent, CreateOrderFormComponent]
+    PaymentOptionComponent, CustomerViewComponent, ProcessOrderFormComponent, CreateOrderFormComponent, ProductStatComponent]
 })
 export class AppModule { }

@@ -169,6 +169,12 @@ The above copyright notice and this permission notice shall be included in all c
               </li>
               <li class="nav-item dropdown">
     
+                <button mat-icon-button (click) = "itemDetails()">
+                  <mat-icon>search</mat-icon>
+                </button>
+              </li>
+              <li class="nav-item dropdown">
+    
                 <button mat-icon-button (click) = "updateDatabaseStats()" [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
                   <mat-icon>sync</mat-icon>
                 </button>
