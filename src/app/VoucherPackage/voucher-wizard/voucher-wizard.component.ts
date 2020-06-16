@@ -111,6 +111,43 @@ export class VoucherWizardComponent implements OnInit, AfterViewInit {
   ngAfterViewInit(): void {
     this.databaseService.openDatabase().then(() => {
 
+
+      this.databaseService.getCustomers().then((res) => {
+        this.customers = res.map((cus) => {
+          if (cus.addressId){
+            this.databaseService.getAddress(cus.addressId).then(
+              (add) => {
+                cus.fullAddress = add
+              }
+            )
+          }
+          
+          return cus;
+        });
+      
+      });
+
+
+      this.databaseService.getProductBatch().then(
+        (batches)=> {
+          this.databaseService.getAllStockItemsForBilling().then(
+            (res: StockItem[]) => {
+              
+     
+              this.products = res.map((pro) => {
+                pro.BATCHES = batches.filter((batch) => {
+                  return (batch.productId == pro.NAME) && (batch.CLOSINGBALANCE != 0) 
+                  && (batch.EXPIRYDATE ? new Date(batch.EXPIRYDATE) >= new Date(): true);
+                })
+                return pro;
+              })
+            
+              
+            }
+            );
+        }
+      )
+
       
 
         
@@ -169,6 +206,7 @@ export class VoucherWizardComponent implements OnInit, AfterViewInit {
     this.disableSaveButton = false;
     this.customerCreationActive = false;
     this.customer = this.createCustomer
+    this.createCustomer = new Customer();
     this.addCustomer(this.customer, stepper);
   }
 

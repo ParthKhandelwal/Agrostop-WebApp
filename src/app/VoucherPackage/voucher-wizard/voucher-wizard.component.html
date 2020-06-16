@@ -88,7 +88,7 @@
             <ng-container *ngIf = "!customerCreationActive">
               <div class="row">
                 <div class = "col">
-                <auto-complete type="customer" name = "customer" (optionSelected) = "addCustomer($event.option.value, stepper)"></auto-complete>
+                <auto-complete type="customer" [list] = "customers" name = "customer" (optionSelected) = "addCustomer($event.option.value, stepper)"></auto-complete>
                 </div>
                 <div class = "col">
                   <button mat-button color="accent" (click)='createNewCustomer()' name="button" class="createButton">
@@ -254,8 +254,7 @@
         <div class = "row">
             <!-- PRODUCT ENTRY GOES HERE -->
               <div class="col">
-               
-                <auto-complete #productAutoComp type="product" (optionSelected) = "selectInventory(stepper, $event)"></auto-complete>
+                <auto-complete #productAutoComp [list] = "products" type="product" (optionSelected) = "selectInventory(stepper, $event)"></auto-complete>
               </div>
               <div class="col">
                 <mat-form-field>

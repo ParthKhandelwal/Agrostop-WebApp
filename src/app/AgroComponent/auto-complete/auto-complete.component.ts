@@ -19,6 +19,7 @@ export class AutoCompleteComponent implements OnInit {
   @ViewChild('ledgerField', { static: false }) ledgerRef: ElementRef;
 
   @Input("type") type: string;
+  @Input("list") list: any[];
   @Output() optionSelected: EventEmitter<any> = new EventEmitter();
 
   customerFilteredOptions: Observable<Customer[]>;
@@ -46,7 +47,12 @@ export class AutoCompleteComponent implements OnInit {
 
   ngOnInit() {
     this.databaseService.openDatabase().then((res) => {
-      this.get()
+      if(this.list){
+        this.tempget();
+      }else {
+        this.get()
+      }
+      
     });
    
   }
@@ -110,6 +116,38 @@ export class AutoCompleteComponent implements OnInit {
 
     }
   }
+
+
+  tempget(){
+    if(this.type == "customer"){
+      this.customers = this.list;
+      this.customerFilteredOptions = this.customerControl.valueChanges.pipe(
+        startWith(''),
+        map(value => this.customer_filter(value))
+      );
+     
+    } else if(this.type == "product") {
+
+      this.products = this.list
+              this.productFilteredOptions = this.productControl.valueChanges.pipe(
+                startWith(''),
+                map(value => this.product_filter(value))
+              );
+
+    }else if(this.type == "ledger") {
+      this.databaseService.getLedgers().then(
+        (res)=> {
+          this.ledgers = res
+          this.ledgerFilteredOptions = this.ledgerControl.valueChanges.pipe(
+            startWith(''),
+            map(value => this.ledger_filter(value))
+          );
+        }
+        );
+
+    }
+  }
+
 
 
   private customer_filter(value: string): Customer[] {
