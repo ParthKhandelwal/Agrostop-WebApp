@@ -280,16 +280,17 @@
               </div>
               <div class="col">
                 <mat-form-field *ngIf = "productAutoComp.productControl.value">
-                  <mat-select #batchField placeholder = "Select batch" [formControl] = "batchControl"
+                  <mat-select #batchField style= "widows: 200px;" placeholder = "Select batch" [formControl] = "batchControl"
                   (selectionChange) = "validateInventoryEntry()">
                     <mat-option style="width: 400px;" *ngFor = "let batch of productAutoComp.productControl.value.BATCHES" [value] = "batch">
                       <span>{{batch.NAME}}</span>
+                      <span style="padding-left: 20px;">BAL: {{batch.CLOSINGBALANCE}}</span>
                       <span>
                         <small style="float: right;">EXP: {{batch.EXPIRYDATE}}</small>
                       
                       </span>
                       <div>
-                        {{batch.CLOSINGBALANCE}}
+                        
                       </div>
                     </mat-option>
                   </mat-select>
