@@ -1,32 +1,16 @@
-import { Component, AfterViewInit, OnInit, ViewChild, ElementRef, ViewChildren, Inject, Input } from '@angular/core';
-import { Customer } from '../../Model/customer';
-import { Address } from '../../Model/address';
-import { StockItem } from '../../Model/stock-item';
-import { Batch } from '../../Model/batch';
-import { TallyVoucher } from '../../Model/tally-voucher';
+import { Component,  OnInit,  Input } from '@angular/core';
 import { ApiService } from '../../shared/api.service';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { MatDatepickerModule } from '@angular/material';
+import { FormControl,  Validators } from '@angular/forms';
 import { Observable, Observer, fromEvent, merge  } from 'rxjs';
-import { map, startWith } from 'rxjs/operators';
-import { MatAutocompleteSelectedEvent } from '@angular/material';
-import { MatTable } from '@angular/material/table';
-import { MatTableDataSource } from '@angular/material';
-import { MatDialog, MatDialogConfig, MAT_DIALOG_DATA } from '@angular/material';
-import { CreateCustomerFormComponent } from '../../create-form/create-customer-form/create-customer-form.component';
-import { CookieService } from 'ngx-cookie-service';
-import * as uniqid from 'uniqid';
-import { NgForm } from '@angular/forms';
-import { CashTenderedComponent } from '../../VoucherPackage/cash-tendered/cash-tendered.component';
-import { InvoicePrintViewComponent } from '../../PrintPackage/invoice-print-view/invoice-print-view.component';
-import { VoucherService } from '../../shared/voucher.service';
-import { PosService } from '../../shared/pos.service';
-import { AccountingVoucher, ALLINVENTORYENTRIESLIST, PrintConfiguration, LicenseNumbers } from '../../Model/voucher';
+import { map } from 'rxjs/operators';
+
+import { MatDialog, MatDialogConfig } from '@angular/material';
+
+import { PrintConfiguration, LicenseNumbers } from '../../Model/voucher';
 import { VOUCHER } from '../../Model/voucher';
-import { NgxIndexedDB } from 'ngx-indexed-db';
+
 import { PaymentServiceService } from 'src/app/shared/payment-service.service';
 import { User } from 'src/app/Model/user';
-import { analyzeAndValidateNgModules } from '@angular/compiler';
 import { ReceiptService } from 'src/app/shared/receipt.service';
 import { CreateOrderFormComponent } from '../create-order-form/create-order-form.component';
 import { DatabaseService } from 'src/app/shared/database.service';
@@ -64,7 +48,6 @@ export class CreateVoucherComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.databaseService.saveCompany();
     
   }
 

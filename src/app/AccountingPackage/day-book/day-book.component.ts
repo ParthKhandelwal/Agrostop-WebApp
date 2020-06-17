@@ -1,15 +1,11 @@
-import { Component, OnInit, Inject, ViewChild, Input } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { VOUCHER, LEDGERENTRIESLIST, ALLINVENTORYENTRIESLIST, ALLLEDGERENTRIESLIST } from '../../Model/voucher';
 import { ApiService } from '../../shared/api.service';
 import { VoucherTableComponent } from '../../tables/voucher-table/voucher-table.component';
-import { TallyVoucher, Request } from '../../Model/tally-voucher';
-import { VoucherService } from '../../shared/voucher.service';
 import { Observable, from } from 'rxjs';
 import { Router } from '@angular/router';
-import * as cloneDeep from 'lodash/cloneDeep';
 import { FormControl } from '@angular/forms';
-import { map, filter, startWith } from 'rxjs/operators';
-import { PosService } from 'src/app/shared/pos.service';
+import { map, startWith } from 'rxjs/operators';
 import { VoucherTypeClass } from 'src/app/Model/user';
 import * as Stomp from 'stompjs';
 import * as SockJS from 'sockjs-client';
@@ -17,9 +13,9 @@ import uniqid from 'uniqid';
 import { DatePipe } from '@angular/common';
 import { DatabaseService } from 'src/app/shared/database.service';
 import { AppComponent } from 'src/app/app.component';
-import { Address } from 'src/app/Model/address';
 import { MatDialogConfig, MatDialog } from '@angular/material';
 import { InvoicePrintViewComponent } from 'src/app/PrintPackage/invoice-print-view/invoice-print-view.component';
+import { Request } from 'src/app/Model/tally-voucher';
 
 
 

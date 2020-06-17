@@ -20,6 +20,8 @@ export class AutoCompleteComponent implements OnInit {
 
   @Input("type") type: string;
   @Input("list") list: any[];
+  @Input("listProvided") provided: boolean;
+
   @Output() optionSelected: EventEmitter<any> = new EventEmitter();
 
   customerFilteredOptions: Observable<Customer[]>;
@@ -47,7 +49,8 @@ export class AutoCompleteComponent implements OnInit {
 
   ngOnInit() {
     this.databaseService.openDatabase().then((res) => {
-      if(this.list){
+      console.log(this.provided);
+      if(this.provided){
         this.tempget();
       }else {
         this.get()

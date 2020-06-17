@@ -1,10 +1,16 @@
 
 <div>
   <mat-spinner *ngIf = "saving"></mat-spinner>
+  <div style="height: 250px; padding-top: 50px;" *ngIf = "loading">
+    <mat-spinner class="mx-auto" *ngIf = "loading"></mat-spinner>
+    <div class="blockquote text-center" style="padding-top: 20px;">
+      We are getting things ready...
+    </div>
+  </div>
 <form *ngIf = "!saving">
 
 
-  <mat-horizontal-stepper (selectionChange)="setSelect($event)" linear = true labelPosition="bottom" #stepper>
+  <mat-horizontal-stepper *ngIf = "!loading" (selectionChange)="setSelect($event)" linear = true labelPosition="bottom" #stepper>
     <mat-step [completed] = "this.voucher.VOUCHERTYPENAME && this.voucher.PRICELEVEL
      && this.godownName  && this.voucher.DATE">
         <ng-template matStepLabel>Voucher Details</ng-template>
@@ -77,7 +83,7 @@
         </div> -->
         
         <div class="row" style="float: right;">
-          <button  mat-button matStepperNext>Next</button>
+          <button mat-button matStepperNext>Next</button>
         </div>
     </mat-step>
     <mat-step [completed] = "this.customer && this.customer.id">
@@ -88,7 +94,7 @@
             <ng-container *ngIf = "!customerCreationActive">
               <div class="row">
                 <div class = "col">
-                <auto-complete type="customer" [list] = "customers" name = "customer" (optionSelected) = "addCustomer($event.option.value, stepper)"></auto-complete>
+                <auto-complete #customerAutoComp type="customer" [listProvided] = "true" [list] = "customers" name = "customer" (optionSelected) = "addCustomer($event.option.value, stepper)"></auto-complete>
                 </div>
                 <div class = "col">
                   <button mat-button color="accent" (click)='createNewCustomer()' name="button" class="createButton">
@@ -254,7 +260,7 @@
         <div class = "row">
             <!-- PRODUCT ENTRY GOES HERE -->
               <div class="col">
-                <auto-complete #productAutoComp [list] = "products" type="product" (optionSelected) = "selectInventory(stepper, $event)"></auto-complete>
+                <auto-complete #productAutoComp [listProvided] = "true"  [list] = "products" type="product" (optionSelected) = "selectInventory(stepper, $event)"></auto-complete>
               </div>
               <div class="col">
                 <mat-form-field>
@@ -280,7 +286,11 @@
                       <span>{{batch.NAME}}</span>
                       <span>
                         <small style="float: right;">EXP: {{batch.EXPIRYDATE}}</small>
+                      
                       </span>
+                      <div>
+                        {{batch.CLOSINGBALANCE}}
+                      </div>
                     </mat-option>
                   </mat-select>
                 </mat-form-field>

@@ -1,3 +1,5 @@
+import { ALLINVENTORYENTRIESLIST, ACCOUNTINGALLOCATIONSLIST, BATCHALLOCATIONSLIST, EXPIRYPERIOD } from './voucher';
+import { Batch } from './batch';
 
 export class TallyClass{
   public static getNumbers(temp: string): number{
@@ -129,6 +131,36 @@ export class StockItem {
     return  parseFloat((Math.round(value*100) / 100).toFixed(2));
   }
 
+
+  getVoucherEntry(rate: number, qty: number, batch:Batch, godown:string): ALLINVENTORYENTRIESLIST{
+    var inventoryEntry: ALLINVENTORYENTRIESLIST = new ALLINVENTORYENTRIESLIST();
+    inventoryEntry.STOCKITEMNAME = this.NAME;
+    inventoryEntry.BILLEDQTY = qty;
+    inventoryEntry.ACTUALQTY = qty;
+    inventoryEntry.ISDEEMEDPOSITIVE = "No";
+    inventoryEntry.RATE = rate;
+    inventoryEntry.BATCHALLOCATIONS_LIST = new BATCHALLOCATIONSLIST();
+    inventoryEntry.BATCHALLOCATIONS_LIST.BATCHNAME = batch.NAME;
+    inventoryEntry.BATCHALLOCATIONS_LIST.GODOWNNAME = godown;
+    inventoryEntry.BATCHALLOCATIONS_LIST.BILLEDQTY = qty;
+    inventoryEntry.BATCHALLOCATIONS_LIST.ACTUALQTY = qty;
+    inventoryEntry.BATCHALLOCATIONS_LIST.AMOUNT = Math.round(inventoryEntry.RATE * inventoryEntry.BILLEDQTY*100)/100;
+    inventoryEntry.BATCHALLOCATIONS_LIST.EXPIRYPERIOD = new EXPIRYPERIOD(batch.EXPIRYDATE 
+      ? new Date(batch.EXPIRYDATE)
+      : null);
+    inventoryEntry.AMOUNT =  Math.round(inventoryEntry.RATE * inventoryEntry.BILLEDQTY*100)/100;
+    inventoryEntry.ACCOUNTINGALLOCATIONS_LIST = new ACCOUNTINGALLOCATIONSLIST();
+    inventoryEntry.ACCOUNTINGALLOCATIONS_LIST.LEDGERNAME = this.salesList[0].name;
+    inventoryEntry.ACCOUNTINGALLOCATIONS_LIST.CLASSRATE = this.salesList[0].classRate;
+    inventoryEntry.ACCOUNTINGALLOCATIONS_LIST.LEDGERFROMITEM = this.salesList[0].ledgerFromItem;
+    inventoryEntry.ACCOUNTINGALLOCATIONS_LIST.GSTOVRDNNATURE = this.salesList[0].gstCLassificationNature;
+    inventoryEntry.ACCOUNTINGALLOCATIONS_LIST.REMOVEZEROENTRIES = this.salesList[0].removeZeroEntries;
+    inventoryEntry.ACCOUNTINGALLOCATIONS_LIST.AMOUNT = inventoryEntry.AMOUNT;
+    inventoryEntry.ACCOUNTINGALLOCATIONS_LIST.LEDGERFROMITEM = "Yes"
+    inventoryEntry.ACCOUNTINGALLOCATIONS_LIST.ISDEEMEDPOSITIVE = "No"
+    return inventoryEntry;
+
+  }
   
 
 }

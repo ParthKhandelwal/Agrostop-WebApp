@@ -30,9 +30,7 @@ export class ApiService {
     return this.httpClient.get<any>(this.BASE_URL + 'ledger/?id=' + ledgerEntry);
     }
   
-  getCompany(name: string): Observable<any>{
-    return this.httpClient.get<any>(this.BASE_URL + 'vouchers/getCompany?companyName=' + name);
-  }
+
 
   getVoucherNumber(name:string): Observable<any>{
     return this.httpClient.get<any>(this.BASE_URL + 'counters/getNext?voucherType='+name);

@@ -25,7 +25,7 @@ import { ObjectId } from 'bson';
   templateUrl: './voucher-wizard.component.html',
   styleUrls: ['./voucher-wizard.component.css']
 })
-export class VoucherWizardComponent implements OnInit, AfterViewInit {
+export class VoucherWizardComponent implements OnInit {
   printReady: boolean = false;
   
   printView: boolean = false;
@@ -59,6 +59,7 @@ export class VoucherWizardComponent implements OnInit, AfterViewInit {
 
   @ViewChild('invField', { static: false }) productRef: ElementRef;
   @ViewChild('productAutoComp', { static: false}) productAutoComplete: AutoCompleteComponent;
+  @ViewChild('customerAutoComp', { static: false}) customerAutoComplete: AutoCompleteComponent;
   
   @ViewChild('batchField', { static: false }) batchRef: MatSelect;
   saveOffline: boolean = true;
@@ -67,6 +68,8 @@ export class VoucherWizardComponent implements OnInit, AfterViewInit {
   saving:boolean;
   cacheVoucher: number;
   endVoucher: any ={"NAME": "END OF LIST"};
+  
+  loading: boolean;
   
   constructor( private cd?: ChangeDetectorRef,private apiService?: ApiService, private dialog?: MatDialog, private orderService?: OrderService) {
     this.databaseService = AppComponent.databaseService;
@@ -109,75 +112,49 @@ export class VoucherWizardComponent implements OnInit, AfterViewInit {
     
   }
   
-  ngAfterViewInit(): void {
-    this.databaseService.openDatabase().then(() => {
 
+  async initialize(){
+    await this.databaseService.openDatabase();
 
-      this.databaseService.getCustomers().then((res) => {
-        this.customers = res.map((cus) => {
-          if (cus.addressId){
-            this.databaseService.getAddress(cus.addressId).then(
-              (add) => {
-                cus.fullAddress = add
-              }
-            )
-          }
-          
-          return cus;
-        });
+    this.customers = await Promise.all((await this.databaseService.getCustomers()).map(async (cus) => {
+      if (cus.addressId){
+        cus.fullAddress = await this.databaseService.getAddress(cus.addressId);
+      }
       
-      });
-
-
-      this.databaseService.getProductBatch().then(
-        (batches)=> {
-          this.databaseService.getAllStockItemsForBilling().then(
-            (res: StockItem[]) => {
-              
-     
-              this.products = res.map((pro) => {
-                pro.BATCHES = batches.filter((batch) => {
-                  return (batch.productId == pro.NAME) && (batch.CLOSINGBALANCE != 0) 
-                  && (batch.EXPIRYDATE ? new Date(batch.EXPIRYDATE) >= new Date(): true);
-                })
-                return pro;
-              })
-            
-              
-            }
-            );
-        }
-      )
-
+      return cus;
+    }));  
+  
+    var batches: any[] = await this.databaseService.getProductBatch();
+    this.products = (await this.databaseService.getAllStockItemsForBilling())
+                    .map((pro) => {
+                      pro.BATCHES = batches.filter((batch) => {
+                        return (batch.productId == pro.NAME) && (batch.CLOSINGBALANCE != 0) 
+                        && (batch.EXPIRYDATE ? new Date(batch.EXPIRYDATE) >= new Date(): true);
+                      })
+                      return pro;
+                    })
       
+      this.addresses = await this.databaseService.getAddresses();
+      this.addressFilteredOptions = this.addressControl.valueChanges.pipe(
+        startWith(''),
+        map(value => this.address_filter(value))
+      );
 
-        
-      this.databaseService.getAddresses().then(
-        res => {
-          this.addresses = res;
-          this.addressFilteredOptions = this.addressControl.valueChanges.pipe(
-            startWith(''),
-            map(value => this.address_filter(value))
-          );
-        },
-        err=>{
-          console.log("Cannot fetch customer at this moment");
-        }
-      )
+      this.sundryDebtors = await this.databaseService.getLedgers();
+      this.loading = false;
+      this.cd.detectChanges();
 
-
-      
-    
-      this.databaseService.getLedgers().then((res)=> this.sundryDebtors = res);
-    })
-    
-    
   }
 
 
   ngOnInit() {        
-      
+    this.loading = true;
+    this.cd.detectChanges();
+    this.initialize().then(()=> {
+      this.loading = false
+    });
   }
+
 
   addresses: Address[] = [];
   addressFilteredOptions: Observable<any[]>;
@@ -238,7 +215,7 @@ export class VoucherWizardComponent implements OnInit, AfterViewInit {
   setNewVoucher(){
     this.databaseService.countCacheVoucher();
     this.customer = new Customer();
-    this.renew();
+    //this.renew();
     this.godownName = this.databaseService.getGodown();
     const voucherType = this.databaseService.getVoucherType();
     const posClass = this.databaseService.getPOSClass();
@@ -332,9 +309,10 @@ export class VoucherWizardComponent implements OnInit, AfterViewInit {
 
 
   createNewCustomer(){
-    this.createCustomer.phoneNumber = this.customerControl.value;
     this.customerCreationActive = true; 
     this.createCustomer.gSTREGISTRATIONTYPE = 'Consumer';
+    this.createCustomer.phoneNumber = this.customerAutoComplete.customerControl.value;
+    console.log()
     this.cd.detectChanges();
     this.newCustomerNameRef.nativeElement.focus();
   }
@@ -604,41 +582,47 @@ export class VoucherWizardComponent implements OnInit, AfterViewInit {
       this.quantityRef.nativeElement.focus();
       return;
     }
-    const res: StockItem = this.productAutoComplete.productControl.value;
-    console.log(res);
-    var inventoryEntry: ALLINVENTORYENTRIESLIST = new ALLINVENTORYENTRIESLIST();
-    inventoryEntry.STOCKITEMNAME = res.NAME;
-    inventoryEntry.BILLEDQTY = this.qtyControl.value;
-    inventoryEntry.ACTUALQTY = inventoryEntry.BILLEDQTY;
-    inventoryEntry.ISDEEMEDPOSITIVE = "No";
-    inventoryEntry.RATE = this.rateControl.value;
-    console.log(this.rateControl.value)
-    inventoryEntry.BATCHALLOCATIONS_LIST = new BATCHALLOCATIONSLIST();
-    inventoryEntry.BATCHALLOCATIONS_LIST.BATCHNAME = this.batchControl.value.NAME;
-    inventoryEntry.BATCHALLOCATIONS_LIST.GODOWNNAME = this.databaseService.getGodown();
-    inventoryEntry.BATCHALLOCATIONS_LIST.BILLEDQTY = inventoryEntry.BILLEDQTY;
-    inventoryEntry.BATCHALLOCATIONS_LIST.ACTUALQTY = inventoryEntry.ACTUALQTY;
-    inventoryEntry.BATCHALLOCATIONS_LIST.AMOUNT = Math.round(inventoryEntry.RATE * inventoryEntry.BILLEDQTY*100)/100;
-    inventoryEntry.BATCHALLOCATIONS_LIST.EXPIRYPERIOD = new EXPIRYPERIOD(this.batchControl.value.EXPIRYDATE 
-      ? new Date(this.batchControl.value.EXPIRYDATE)
-      : null);
+    const res: StockItem = Object.assign(new StockItem(),
+                                  this.productAutoComplete.productControl.value);
+    // console.log(res);
+    // var inventoryEntry: ALLINVENTORYENTRIESLIST = new ALLINVENTORYENTRIESLIST();
+    // inventoryEntry.STOCKITEMNAME = res.NAME;
+    // inventoryEntry.BILLEDQTY = this.qtyControl.value;
+    // inventoryEntry.ACTUALQTY = inventoryEntry.BILLEDQTY;
+    // inventoryEntry.ISDEEMEDPOSITIVE = "No";
+    // inventoryEntry.RATE = this.rateControl.value;
+    // console.log(this.rateControl.value)
+    // inventoryEntry.BATCHALLOCATIONS_LIST = new BATCHALLOCATIONSLIST();
+    // inventoryEntry.BATCHALLOCATIONS_LIST.BATCHNAME = this.batchControl.value.NAME;
+    // inventoryEntry.BATCHALLOCATIONS_LIST.GODOWNNAME = this.databaseService.getGodown();
+    // inventoryEntry.BATCHALLOCATIONS_LIST.BILLEDQTY = inventoryEntry.BILLEDQTY;
+    // inventoryEntry.BATCHALLOCATIONS_LIST.ACTUALQTY = inventoryEntry.ACTUALQTY;
+    // inventoryEntry.BATCHALLOCATIONS_LIST.AMOUNT = Math.round(inventoryEntry.RATE * inventoryEntry.BILLEDQTY*100)/100;
+    // inventoryEntry.BATCHALLOCATIONS_LIST.EXPIRYPERIOD = new EXPIRYPERIOD(this.batchControl.value.EXPIRYDATE 
+    //   ? new Date(this.batchControl.value.EXPIRYDATE)
+    //   : null);
     
 
-    inventoryEntry.AMOUNT =  Math.round(inventoryEntry.RATE * inventoryEntry.BILLEDQTY*100)/100;
-    inventoryEntry.ACCOUNTINGALLOCATIONS_LIST = new ACCOUNTINGALLOCATIONSLIST();
+    // inventoryEntry.AMOUNT =  Math.round(inventoryEntry.RATE * inventoryEntry.BILLEDQTY*100)/100;
+    // inventoryEntry.ACCOUNTINGALLOCATIONS_LIST = new ACCOUNTINGALLOCATIONSLIST();
     
       
     
-    inventoryEntry.ACCOUNTINGALLOCATIONS_LIST.LEDGERNAME = res.salesList[0].name;
-    inventoryEntry.ACCOUNTINGALLOCATIONS_LIST.CLASSRATE = res.salesList[0].classRate;
-    inventoryEntry.ACCOUNTINGALLOCATIONS_LIST.LEDGERFROMITEM = res.salesList[0].ledgerFromItem;
-    inventoryEntry.ACCOUNTINGALLOCATIONS_LIST.GSTOVRDNNATURE = res.salesList[0].gstCLassificationNature;
-    inventoryEntry.ACCOUNTINGALLOCATIONS_LIST.REMOVEZEROENTRIES = res.salesList[0].removeZeroEntries;
-    inventoryEntry.ACCOUNTINGALLOCATIONS_LIST.AMOUNT = inventoryEntry.AMOUNT;
-    inventoryEntry.ACCOUNTINGALLOCATIONS_LIST.LEDGERFROMITEM = "Yes"
-    inventoryEntry.ACCOUNTINGALLOCATIONS_LIST.ISDEEMEDPOSITIVE = "No"
+    // inventoryEntry.ACCOUNTINGALLOCATIONS_LIST.LEDGERNAME = res.salesList[0].name;
+    // inventoryEntry.ACCOUNTINGALLOCATIONS_LIST.CLASSRATE = res.salesList[0].classRate;
+    // inventoryEntry.ACCOUNTINGALLOCATIONS_LIST.LEDGERFROMITEM = res.salesList[0].ledgerFromItem;
+    // inventoryEntry.ACCOUNTINGALLOCATIONS_LIST.GSTOVRDNNATURE = res.salesList[0].gstCLassificationNature;
+    // inventoryEntry.ACCOUNTINGALLOCATIONS_LIST.REMOVEZEROENTRIES = res.salesList[0].removeZeroEntries;
+    // inventoryEntry.ACCOUNTINGALLOCATIONS_LIST.AMOUNT = inventoryEntry.AMOUNT;
+    // inventoryEntry.ACCOUNTINGALLOCATIONS_LIST.LEDGERFROMITEM = "Yes"
+    // inventoryEntry.ACCOUNTINGALLOCATIONS_LIST.ISDEEMEDPOSITIVE = "No"
   
-    this.voucher.ALLINVENTORYENTRIES_LIST.push(inventoryEntry);
+    //this.voucher.ALLINVENTORYENTRIES_LIST.push(inventoryEntry);
+    this.voucher.ALLINVENTORYENTRIES_LIST.push(
+                            res.getVoucherEntry(this.rateControl.value, this.qtyControl.value, 
+                            this.batchControl.value, 
+                            this.databaseService.getGodown())
+                            );
     this.adjustLedgers();
     this.renew()
     this.cd.detectChanges();
@@ -647,7 +631,6 @@ export class VoucherWizardComponent implements OnInit, AfterViewInit {
 }
 productFocus:boolean;
   renew(){
-    
     this.productAutoComplete.productControl.setValue("");
     this.qtyControl.setValue(null);
     this.rateControl.setValue(null);

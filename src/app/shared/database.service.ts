@@ -231,6 +231,7 @@ async vouchertypeQuickSync(){
       return await this.db.getByKey("Voucher Types", id);
     }
 
+
     initialSync(){
       this.openDatabase().then((res) => {
         this.itemsQuickSync();
@@ -870,16 +871,7 @@ async vouchertypeQuickSync(){
       return JSON.parse(sessionStorage.getItem("company"));
     }
   
-    saveCompany(){
-      this.apiService.getCompany("Tirupati Traders - Nalkheda").subscribe(
-        res => {
-          sessionStorage.setItem("company", JSON.stringify(res));
-        },
-        err => {
-          console.log(err);
-        }
-      )
-    }
+   
   
     getBatch(str: string){
   

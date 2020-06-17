@@ -489,16 +489,6 @@ export class PosService {
     return JSON.parse(sessionStorage.getItem("company"));
   }
 
-  saveCompany(){
-    this.apiService.getCompany("Tirupati Traders - Nalkheda").subscribe(
-      res => {
-        sessionStorage.setItem("company", JSON.stringify(res));
-      },
-      err => {
-        console.log(err);
-      }
-    )
-  }
 
   getBatch(str: string){
 
