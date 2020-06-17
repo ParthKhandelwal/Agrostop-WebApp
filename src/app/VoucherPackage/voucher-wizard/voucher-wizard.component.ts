@@ -644,7 +644,6 @@ productFocus:boolean;
   }
 
   adjustLedgers(){
-    console.log(this.voucher);
     this.voucher.LEDGERENTRIES_LIST.filter((ledger) => !ledger.POSPAYMENTTYPE && ledger.METHODTYPE == "GST")
     .forEach((ledger) => this.calculate(ledger));
     this.voucher.LEDGERENTRIES_LIST.filter((ledger) => !ledger.POSPAYMENTTYPE && ledger.METHODTYPE == "As Total Amount Rounding")

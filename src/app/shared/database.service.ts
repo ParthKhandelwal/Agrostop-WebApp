@@ -20,8 +20,10 @@ import { MatSnackBar } from '@angular/material';
 })
 export class DatabaseService {
 
-  public WEB_SOCKET_URL = "https://agrostop-web-server.herokuapp.com"
+  //public WEB_SOCKET_URL = "https://agrostop-web-server.herokuapp.com"
   //public WEB_SOCKET_URL = "http://localhost:5000";
+  public WEB_SOCKET_URL = "http://agrostopserver-env.eba-vei6xp54.ap-south-1.elasticbeanstalk.com";
+
   public batchPercent: number = 100;
   public itemPercent: number = 100;
   public ledgerPercent: number = 100;
