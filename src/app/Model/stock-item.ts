@@ -21,7 +21,7 @@ export class StockItem {
   salesList: SALESLIST[];
   BATCHES: any[];
 
-  convertFromJSON(json: any){
+  public convertFromJSON(json: any){
     if (json){
       this.NAME = json.NAME;
       this.parent = json.PARENT ? json.PARENT.content : "";
@@ -70,7 +70,7 @@ export class StockItem {
   }
 
 
-  getRate(priceLevel: string): number{
+  public getRate(priceLevel: string): number{
     var priceLevelsList: PRICELEVELLIST[] = [];
     this.fullPriceList
     .filter((p) => (p.priceLevel == priceLevel)).forEach((pl) => {
@@ -92,7 +92,7 @@ export class StockItem {
     
   }
 
-  getTaxRate(state: string, taxType: string): number{
+  public getTaxRate(state: string, taxType: string): number{
     var gstDetail: GSTDETAILS = this.gstDetailsList
     .filter((p) => p.applicableFrom <= new Date())
     .sort((a,b) => b.applicableFrom.getTime() - a.applicableFrom.getTime())[0];
@@ -108,14 +108,14 @@ export class StockItem {
     
   }
 
-  getTax(qty: number, rate: number,state: string, taxType: string): number{
+  public getTax(qty: number, rate: number,state: string, taxType: string): number{
     var tax: number = this.getTaxRate(state, taxType) * rate * qty;
     const value: number = parseFloat((Math.round(tax) / 100).toFixed(2));
    
     return value;
   }
 
-  getHSNCODE(): string{
+  public getHSNCODE(): string{
     var gstDetail :GSTDETAILS = this.gstDetailsList
                                 .filter((p) => p.applicableFrom <= new Date())
                                 .sort((a,b) => a.applicableFrom.getTime() - b.applicableFrom.getTime())[0]
@@ -126,13 +126,13 @@ export class StockItem {
     }
   }
 
-  getRateInclusiveOfTax(rate: number, state:string): number{
+  public getRateInclusiveOfTax(rate: number, state:string): number{
     const value: number = rate + this.getTax(1,rate, state, "Central Tax") + this.getTax(1,rate, state, "State Tax");
     return  parseFloat((Math.round(value*100) / 100).toFixed(2));
   }
 
 
-  getVoucherEntry(rate: number, qty: number, batch:Batch, godown:string): ALLINVENTORYENTRIESLIST{
+  public getVoucherEntry(rate: number, qty: number, batch:Batch, godown:string): ALLINVENTORYENTRIESLIST{
     var inventoryEntry: ALLINVENTORYENTRIESLIST = new ALLINVENTORYENTRIESLIST();
     inventoryEntry.STOCKITEMNAME = this.NAME;
     inventoryEntry.BILLEDQTY = qty;

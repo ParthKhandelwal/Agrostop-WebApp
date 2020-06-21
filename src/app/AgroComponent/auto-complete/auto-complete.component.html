@@ -34,7 +34,7 @@
            [formControl]="productControl"
            [matAutocomplete]="productAuto"
            style="width:100% !important" >
-    <mat-autocomplete  [panelWidth]="300" #productAuto="matAutocomplete" position = "above"
+    <mat-autocomplete  [panelWidth]="500" #productAuto="matAutocomplete" position = "above"
     (optionSelected) = "optionSelected.emit($event.option.value)"
                       [displayWith]= "displayFnProduct" autoActiveFirstOption>              
 

@@ -94,6 +94,8 @@ import {MatMenuModule} from '@angular/material/menu';
 import {MatSnackBarModule} from '@angular/material/snack-bar';
 import { AutoCompleteComponent } from './AgroComponent/auto-complete/auto-complete.component';
 import { ProductStatComponent } from './Products/product-stat/product-stat.component';
+import { PrivacyPolicyComponent } from './AgroComponent/privacy-policy/privacy-policy.component';
+import { HomeComponent } from './AgroComponent/home/home.component';
 
 
 @NgModule({
@@ -153,6 +155,8 @@ import { ProductStatComponent } from './Products/product-stat/product-stat.compo
     ProcessOrderFormComponent,
     AutoCompleteComponent,
     ProductStatComponent,
+    PrivacyPolicyComponent,
+    HomeComponent,
    
   ],
   imports: [

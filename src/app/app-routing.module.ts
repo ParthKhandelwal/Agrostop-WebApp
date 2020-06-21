@@ -24,6 +24,8 @@ import { UserTableComponent } from './tables/user-table/user-table.component';
 import { AuthGuard } from './_guard/auth-guard.service';
 import { StockCheckComponent } from './Products/stock-check/stock-check.component';
 import { CashBookComponent } from './AccountingPackage/cash-book/cash-book.component';
+import { PrivacyPolicyComponent } from './AgroComponent/privacy-policy/privacy-policy.component';
+import { HomeComponent } from './AgroComponent/home/home.component';
 
 
 const routes: Routes = [
@@ -132,6 +134,16 @@ const routes: Routes = [
     path: "login",
     component: LoginFormComponent
   },
+  {
+    path: "terms-and-conditions",
+    component: PrivacyPolicyComponent
+  },
+
+  {
+    path: "",
+    component: HomeComponent
+  },
+  
   {
     path: "customer/{id}",
     component: LoginFormComponent

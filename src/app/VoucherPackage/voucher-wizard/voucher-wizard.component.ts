@@ -1,5 +1,5 @@
 import { Component, OnInit, Input, EventEmitter, Output, ViewChild, AfterViewInit, ElementRef, ChangeDetectorRef } from '@angular/core';
-import { VOUCHER, LEDGERENTRIESLIST, OLDAUDITENTRYIDSLIST, ALLINVENTORYENTRIESLIST, BATCHALLOCATIONSLIST, EXPIRYPERIOD, ACCOUNTINGALLOCATIONSLIST, ADDRESSLIST } from '../../Model/voucher';
+import { VOUCHER, LEDGERENTRIESLIST, OLDAUDITENTRYIDSLIST, ALLINVENTORYENTRIESLIST, BATCHALLOCATIONSLIST, EXPIRYPERIOD, ACCOUNTINGALLOCATIONSLIST, ADDRESSLIST, PrintConfiguration } from '../../Model/voucher';
 import { User, VoucherTypeClass } from '../../Model/user';
 import { Customer } from '../../Model/customer';
 import { ApiService } from '../../shared/api.service';
@@ -7,11 +7,10 @@ import { merge, fromEvent, Observable, Observer } from 'rxjs';
 import { map, startWith, flatMap } from 'rxjs/operators';
 import { MatDialog, MatDialogConfig, MatSelect, MatStepper, MatHorizontalStepper, MatInput } from '@angular/material';
 import uniqid from 'uniqid'
-import { InvoicePrintViewComponent } from 'src/app/PrintPackage/invoice-print-view/invoice-print-view.component';
+import { InvoicePrintViewComponent, PrintTaxItem } from 'src/app/PrintPackage/invoice-print-view/invoice-print-view.component';
 import { DatabaseService } from 'src/app/shared/database.service';
 import { AppComponent } from 'src/app/app.component';
 import { FormControl } from '@angular/forms';
-import { CreateCustomerFormComponent } from 'src/app/create-form/create-customer-form/create-customer-form.component';
 import { CustomerViewComponent } from 'src/app/view/customer-view/customer-view.component';
 import { Order } from 'src/app/Model/order';
 import { OrderService } from 'src/app/shared/order.service';
@@ -77,34 +76,20 @@ export class VoucherWizardComponent implements OnInit {
     this.databaseService.openDatabase().then(
       async () => {
         if (this.voucher.VOUCHERNUMBER && !this.voucher.ORDERNUMBER){
-          console.log(this.voucher);
+          this.voucher = Object.assign(new VOUCHER(), this.voucher);
+          await this.voucher.getTallyObject();
           this.godownName = this.voucher.ALLINVENTORYENTRIES_LIST[0].BATCHALLOCATIONS_LIST.GODOWNNAME
           this.voucherType = this.user.voucherTypes.filter((v) => v.voucherTypeName == this.voucher.VOUCHERTYPENAME)[0];
           this.saveOffline = !this.voucher.MASTERID;
           this.customer = await this.databaseService.getCustomer(this.voucher.BASICBUYERNAME);
-          this.voucher.LEDGERENTRIES_LIST
-          .filter((l) => l.POSPAYMENTTYPE != null)
-          .map((l) => {
-
-            var ledgerEntry: LEDGERENTRIESLIST = new LEDGERENTRIESLIST();
-            ledgerEntry.AMOUNT = l.AMOUNT;
-            console.log(l);
-            ledgerEntry.POSPAYMENTTYPE = ledgerEntry.POSPAYMENTTYPE;
-            ledgerEntry.LEDGERNAME = ledgerEntry.LEDGERNAME;
-            return ledgerEntry;
-          })
           this.disableSaveOption = true;
         }else if(this.voucher.ORDERNUMBER){
           this.voucherType = this.user.voucherTypes.filter((v) => v.voucherTypeName == this.voucher.VOUCHERTYPENAME)[0];
           this.godownName = this.voucher.ALLINVENTORYENTRIES_LIST[0].BATCHALLOCATIONS_LIST.GODOWNNAME
-          this.adjustLedgers();
+          this.voucher.adjustLedgers();
           this.disableSaveOption = true;
           this.saveOffline = false;
 
-        }
-        
-        else {
-          this.setNewVoucher()
         }
         
       },
@@ -141,19 +126,27 @@ export class VoucherWizardComponent implements OnInit {
       );
 
       this.sundryDebtors = await this.databaseService.getLedgers();
-      this.loading = false;
       this.cd.detectChanges();
+    
+    
 
   }
 
 
-  ngOnInit() {        
+  ngOnInit() {  
     this.loading = true;
     this.cd.detectChanges();
+    console.log("started loading")
     this.initialize().then(()=> {
+      console.log("finished")
       this.loading = false
     });
   }
+
+
+  // CUSTOMER BLOCK
+
+  
 
 
   addresses: Address[] = [];
@@ -174,7 +167,6 @@ export class VoucherWizardComponent implements OnInit {
 
 
   submit(stepper): void{
-    console.log(this.createCustomer);
     this.disableSaveButton = true;
     this.createCustomer.addressId = this.address._id
     this.createCustomer.id = (new ObjectId()).toHexString();
@@ -188,128 +180,26 @@ export class VoucherWizardComponent implements OnInit {
     this.addCustomer(this.customer, stepper);
   }
 
-  private customer_filter(value: string): Customer[] {
-    const filterValue = value? value.toString().toLowerCase(): "";
-    return this.customers.filter(option => {
-      return (option.phoneNumber ? option.phoneNumber.toLowerCase().indexOf(filterValue) == 0 : false)
-      || option.name.toLowerCase().indexOf(filterValue) === 0;
-    }
-    )
-      
-  }
 
-  private product_filter(value: string): any[] {
-    const filterValue = value.toString().toLowerCase();
-    return this.products.filter(option => { 
-      return option.NAME.toLowerCase().indexOf(filterValue) >= 0 });
-  }
-
-  displayFnCustomer(user?: any): string | undefined {
-    return user && user.phoneNumber ? user.phoneNumber : '';
-  }
-
-  displayFnProduct(user?: any): string | undefined {
-    return user && user.NAME ? user.NAME : '';
-  }
-
-  setNewVoucher(){
-    this.databaseService.countCacheVoucher();
+  async setNewVoucher(){
+    let v = this.databaseService.getVoucherType();
+    this.voucherType = v 
+    ? this.user.voucherTypes.filter((v) => v.voucherTypeName == this.databaseService.getVoucherType().NAME)[0]
+    : null
     this.customer = new Customer();
-    //this.renew();
     this.godownName = this.databaseService.getGodown();
-    const voucherType = this.databaseService.getVoucherType();
-    const posClass = this.databaseService.getPOSClass();
-    const priceList = this.databaseService.getPriceList();
-    this.voucherType = this.user.voucherTypes.filter((v) => v.voucherTypeName == voucherType.NAME)[0];
-    if (!voucherType && !posClass && !this.godownName && !priceList ){
-      return;
-    }
-    this.voucher = new VOUCHER();
-    this.voucher.DATE = new Date();
-    this.voucher._REMOTEID = uniqid();
+    await this.voucher.setVoucherType(this.databaseService.getVoucherType(),
+                                this.databaseService.getPOSClass(),
+                                this.databaseService.getPriceList(),
+                                this.databaseService);
     
-    this.voucher.VOUCHERTYPENAME = voucherType.NAME;
-    this.voucher._VCHTYPE = voucherType.NAME;
-    this.voucher._OBJVIEW = "Invoice Voucher View";
-    this.voucher._ACTION = "Create";
-    this.voucher.CLASSNAME = posClass.CLASSNAME.content;
-    this.voucher.PERSISTEDVIEW = "Invoice Voucher View";
-    this.voucher.LEDGERENTRIES_LIST = [];
-    this.voucher.PRICELEVEL = priceList;
-
-    this.ledgerList = [];
-    var tempArray: any[] = [];
-    if (posClass["LEDGERENTRIESLIST.LIST"] instanceof Array){
-      tempArray = posClass["LEDGERENTRIESLIST.LIST"]
-    } else{
-      tempArray.push(posClass["LEDGERENTRIESLIST.LIST"])
-    }
-    for (let ledger of tempArray){
-      if (ledger.NAME){
-
-      this.databaseService.getLedger(ledger.NAME.content).then(
-        res1 =>{
-          if(res1){
-            console.log(res1);
-            var res: any = res1;
-            console.log(res.NAME);
-            var ledgerEntry: LEDGERENTRIESLIST = new LEDGERENTRIESLIST();
-            var oldaudit: OLDAUDITENTRYIDSLIST = new OLDAUDITENTRYIDSLIST();
-            oldaudit.OLDAUDITENTRYIDS = "-1";
-            ledgerEntry.OLDAUDITENTRYIDS_LIST = oldaudit;
-            ledgerEntry.LEDGERNAME = res.NAME;
-            ledgerEntry.METHODTYPE = ledger.METHODTYPE.content
-            ledgerEntry.ISDEEMEDPOSITIVE = res.ISDEEMEDPOSITIVE.content;
-            ledgerEntry.LEDGERFROMITEM = ledger.LEDGERFROMITEM.content;
-            ledgerEntry.ROUNDLIMIT = ledger.ROUNDLIMIT.content;
-            ledgerEntry.ROUNDTYPE = ledger.ROUNDTYPE.content;
-            ledgerEntry.REMOVEZEROENTRIES = ledger.REMOVEZEROENTRIES.content;
-            ledgerEntry.ISPARTYLEDGER = "No";
-            ledgerEntry.tallyObject = res;
-            this.voucher.LEDGERENTRIES_LIST.push(ledgerEntry);
-          }
-          
-        },
-        err=>{
-          console.log(err);
-        }
-      );
-      }
-    }
-
-    if (posClass.POSENABLECARDLEDGER){
-      var ledgerEntry: LEDGERENTRIESLIST = new LEDGERENTRIESLIST();
-      ledgerEntry.LEDGERNAME = posClass.POSCARDLEDGER.content
-      ledgerEntry.POSPAYMENTTYPE = "Card";
-      this.voucher.LEDGERENTRIES_LIST.push(ledgerEntry)
-    }
-
-    if (posClass.POSENABLECASHLEDGER){
-      var ledgerEntry: LEDGERENTRIESLIST = new LEDGERENTRIESLIST();
-      ledgerEntry.LEDGERNAME = posClass.POSCASHLEDGER.content
-      ledgerEntry.POSPAYMENTTYPE = "Cash";
-      this.voucher.LEDGERENTRIES_LIST.push(ledgerEntry);
-    }
-
-    if (posClass.POSENABLECHEQUELEDGER){
-      var ledgerEntry: LEDGERENTRIESLIST = new LEDGERENTRIESLIST();
-      ledgerEntry.LEDGERNAME = posClass.POSCHEQUELEDGER.content
-      ledgerEntry.POSPAYMENTTYPE = "Cheque";
-      this.voucher.LEDGERENTRIES_LIST.push(ledgerEntry)
-    }
-
-    if (posClass.POSENABLEGIFTLEDGER){
-      var ledgerEntry: LEDGERENTRIESLIST = new LEDGERENTRIESLIST();
-      ledgerEntry.LEDGERNAME = posClass.POSGIFTLEDGER.content
-      ledgerEntry.POSPAYMENTTYPE = "Gift";
-      this.voucher.LEDGERENTRIES_LIST.push(ledgerEntry);
-    }
-
+    console.log(this.voucherType);
   }
 
 
   createNewCustomer(){
     this.customerCreationActive = true; 
+    this.createCustomer = new Customer();
     this.createCustomer.gSTREGISTRATIONTYPE = 'Consumer';
     this.createCustomer.phoneNumber = this.customerAutoComplete.customerControl.value;
     console.log()
@@ -318,16 +208,15 @@ export class VoucherWizardComponent implements OnInit {
   }
 
 
-  getVoucherType(value){
+  async getVoucherType(value){
     
     const service = this.databaseService;
     
-
+    
     let voucherType: any;
-    this.databaseService.getVoucherTypeByName(value.voucherTypeName).then(
-      res => {voucherType = res;
-        console.log(service);
-        service.saveVoucherType(voucherType);
+    voucherType = await this.databaseService.getVoucherTypeByName(value.voucherTypeName)
+   
+      service.saveVoucherType(voucherType);
       if (voucherType["VOUCHERCLASSLIST.LIST"] instanceof Array){
         var found : boolean = false;
         for (let item of voucherType["VOUCHERCLASSLIST.LIST"]){
@@ -345,16 +234,13 @@ export class VoucherWizardComponent implements OnInit {
       } else {
         if (voucherType["VOUCHERCLASSLIST.LIST"].CLASSNAME.content == value.voucherClass){
           service.saveClass(voucherType["VOUCHERCLASSLIST.LIST"]);
+
         }else {
           alert("The POS Class does not exists. Please ask administrator to update your profile.")
         }
       }
 
-      },
-      err => {
-        console.log(err);
-      }
-    )
+      
     
   }
 
@@ -395,57 +281,88 @@ export class VoucherWizardComponent implements OnInit {
     
   }
 
-  setSelect(event){
+  setSelect(event, stepper){
     console.log("changed: "+ event.selectedIndex);
     this.cd.detectChanges();
+    if(event.selectedIndex == 0){
+      if (!this.voucher.VOUCHERNUMBER && !this.voucher.ORDERNUMBER){
+        this.setNewVoucher();
+      }
+    }
+    if(event.selectedIndex == 1){
+      console.log(this.customerAutoComplete);
+      setTimeout(()=>{ // this will make the execution after the above boolean has changed
+        this.cd.detectChanges();
+        this.customerAutoComplete.focus();
+      },0);
+    }
+    if(event.selectedIndex == 2){
+      setTimeout(()=>{ // this will make the execution after the above boolean has changed
+        this.cd.detectChanges();
+        this.productAutoComplete.focus();
+      },500);
+    }
+    if(event.selectedIndex == 3){
+      setTimeout(()=>{ // this will make the execution after the above boolean has changed
+        this.cd.detectChanges();
+        this.cashRecievedRef.nativeElement.focus();
+      },500);
+    }
     if(event.selectedIndex == 5){
       console.log("Now Saving "+ event.selectedIndex);
-      this.save();
+      this.save(stepper);
+    }
+    if(event.selectedIndex == 6){
+      console.log("Now Printing "+ event.selectedIndex);
+      
     }
   }
   
-  async save() {
+  async save(stepper) {
     this.saving = true;
-    
+    this.voucher.databaseService = null;
     this.voucher.LEDGERENTRIES_LIST.map((ledger) => {
       if (ledger.POSPAYMENTTYPE){
         ledger.AMOUNT = Math.abs(ledger.AMOUNT) * (-1);
-        this.cd.detectChanges();
       }
     });
+    this.cd.detectChanges();
     if (!this.voucher.VOUCHERNUMBER){
-      const num = await this.apiService.getVoucherNumber(this.voucher.VOUCHERTYPENAME).toPromise()
-      .catch((err) => console.log(err) );
-      
-      if(num && num.seq){
-        this.voucher.VOUCHERNUMBER = num.prefix + num.seq;
-      }else {
-        this.voucher.VOUCHERNUMBER = "DM-"+this.voucher._REMOTEID;
-      }  
-    }
-    if(!this.saveOffline) {
-      
-      this.apiService.saveTallyVoucher(this.voucher).subscribe(
-        async res => {
-          
-          if (res && res.RESPONSE){
-            if (res.RESPONSE.CREATED == 1 || res.RESPONSE.UPDATED == 1){
-              this.afterVoucherSaveProcess();
-              return
-            }
+      if(this.createOnline$){
+        this.apiService.getVoucherNumber(this.voucher.VOUCHERTYPENAME).subscribe(
+          async (num) => {
+            if(num && num.seq){
+              this.voucher.VOUCHERNUMBER = num.prefix + num.seq;
+            }else {
+              this.voucher.VOUCHERNUMBER = "DM-"+this.voucher._REMOTEID;
+            } 
+            await this.databaseService.addCacheVoucher(this.voucher);
+            this.afterVoucherSaveProcess(stepper);
+            return; 
+          },
+          async err => {
+            this.voucher.VOUCHERNUMBER = "DM-"+this.voucher._REMOTEID;
+            await this.databaseService.addCacheVoucher(this.voucher);
+            this.afterVoucherSaveProcess(stepper);
+            return; 
           }
-        },
-        async err => {
-          await this.databaseService.addCacheVoucher(this.voucher);
-          this.afterVoucherSaveProcess();
+        )
+      } else{
+        this.voucher.VOUCHERNUMBER = "DM-"+this.voucher._REMOTEID;
+        await this.databaseService.addCacheVoucher(this.voucher);
+        this.afterVoucherSaveProcess(stepper);
+        return; 
+      }
+      
+    }else{
+      this.databaseService.addCacheVoucher(this.voucher).then(
+        (res) => {
+          this.afterVoucherSaveProcess(stepper);
         }
       );
       
-    }else {
-      await this.databaseService.addCacheVoucher(this.voucher);
-      this.afterVoucherSaveProcess();
-      return; 
     }
+    console.log(this.voucher);
     
   }
 
@@ -453,10 +370,49 @@ export class VoucherWizardComponent implements OnInit {
     this.databaseService.addCacheVoucher(voucher);
   }
 
-  afterVoucherSaveProcess(){
-    this.printVoucher();
+  hsnDetails: Map<string, PrintTaxItem> = new Map();
+
+  afterVoucherSaveProcess(stepper){
     
-    this.saving = false;
+    this.hsnDetails = new Map();
+    this.voucher.ALLINVENTORYENTRIES_LIST.forEach(async (item: ALLINVENTORYENTRIESLIST) => {
+          
+          item.tallyObject = Object.assign(new StockItem(), item.tallyObject);
+          var tallyObject: StockItem =  item.tallyObject;
+          console.log(item.tallyObject);
+          var taxItem: PrintTaxItem = this.hsnDetails.get(tallyObject.getHSNCODE());
+          if (!taxItem && tallyObject){
+            taxItem = new PrintTaxItem();
+            taxItem.hsnCode = tallyObject.getHSNCODE();
+            taxItem.cgst.rate = tallyObject.getTaxRate("", "Central Tax");
+            taxItem.sgst.rate = tallyObject.getTaxRate("", "State Tax");
+            this.hsnDetails.set(taxItem.hsnCode, taxItem);
+          }
+          taxItem.cgst.amount = taxItem.cgst.amount + (taxItem.cgst.rate * item.AMOUNT);
+          taxItem.sgst.amount = taxItem.sgst.amount + (taxItem.sgst.rate * item.AMOUNT);
+          if(!this.printConf){
+            this.printConf = await this.databaseService.getPrintConfigurations(this.voucher.VOUCHERTYPENAME);   
+          }
+          this.cd.detectChanges();
+          this.printReady = true;
+          this.saving = false;
+          stepper._selectedIndex = 6;
+          document.getElementById("printButton").click();
+          stepper.reset();
+          this.renew();
+          this.voucher = new VOUCHER();
+          this.customer = new Customer();
+          this.customerAutoComplete.customerControl.setValue("");
+          await this.setNewVoucher()
+          
+         
+          
+          
+        }
+      )
+    
+    
+    
   }
 
   
@@ -481,34 +437,7 @@ export class VoucherWizardComponent implements OnInit {
 
   
 
-  
-  createCustomerAction() {
-    const dialogConfig = new MatDialogConfig();
-    dialogConfig.autoFocus = true;
-    dialogConfig.width = "50%";
-    const dialogRef = this.dialog.open(CreateCustomerFormComponent, { maxHeight: '90vh' });
-    dialogRef.afterClosed().subscribe((result: any) => {
-      //@TODO: Save the recently added customer to local storage andto the customer List
-      if (result && result.id){
-  
-          this.databaseService.addCustomer(result)
-          this.databaseService.getCustomers().then(
-            res => {
-              this.customers = res
-              this.customerFilteredOptions = this.customerControl.valueChanges.pipe(
-                startWith(''),
-                map(value => this.customer_filter(value))
-              );
-              
-            }
-        )
-     
-      
-    }
-  },
-    err => console.log(err)
-    );
-  }
+
 
   getRate(res: any){
         var returnObject = {rate : 0, exists: false}
@@ -584,52 +513,18 @@ export class VoucherWizardComponent implements OnInit {
     }
     const res: StockItem = Object.assign(new StockItem(),
                                   this.productAutoComplete.productControl.value);
-    // console.log(res);
-    // var inventoryEntry: ALLINVENTORYENTRIESLIST = new ALLINVENTORYENTRIESLIST();
-    // inventoryEntry.STOCKITEMNAME = res.NAME;
-    // inventoryEntry.BILLEDQTY = this.qtyControl.value;
-    // inventoryEntry.ACTUALQTY = inventoryEntry.BILLEDQTY;
-    // inventoryEntry.ISDEEMEDPOSITIVE = "No";
-    // inventoryEntry.RATE = this.rateControl.value;
-    // console.log(this.rateControl.value)
-    // inventoryEntry.BATCHALLOCATIONS_LIST = new BATCHALLOCATIONSLIST();
-    // inventoryEntry.BATCHALLOCATIONS_LIST.BATCHNAME = this.batchControl.value.NAME;
-    // inventoryEntry.BATCHALLOCATIONS_LIST.GODOWNNAME = this.databaseService.getGodown();
-    // inventoryEntry.BATCHALLOCATIONS_LIST.BILLEDQTY = inventoryEntry.BILLEDQTY;
-    // inventoryEntry.BATCHALLOCATIONS_LIST.ACTUALQTY = inventoryEntry.ACTUALQTY;
-    // inventoryEntry.BATCHALLOCATIONS_LIST.AMOUNT = Math.round(inventoryEntry.RATE * inventoryEntry.BILLEDQTY*100)/100;
-    // inventoryEntry.BATCHALLOCATIONS_LIST.EXPIRYPERIOD = new EXPIRYPERIOD(this.batchControl.value.EXPIRYDATE 
-    //   ? new Date(this.batchControl.value.EXPIRYDATE)
-    //   : null);
-    
-
-    // inventoryEntry.AMOUNT =  Math.round(inventoryEntry.RATE * inventoryEntry.BILLEDQTY*100)/100;
-    // inventoryEntry.ACCOUNTINGALLOCATIONS_LIST = new ACCOUNTINGALLOCATIONSLIST();
-    
-      
-    
-    // inventoryEntry.ACCOUNTINGALLOCATIONS_LIST.LEDGERNAME = res.salesList[0].name;
-    // inventoryEntry.ACCOUNTINGALLOCATIONS_LIST.CLASSRATE = res.salesList[0].classRate;
-    // inventoryEntry.ACCOUNTINGALLOCATIONS_LIST.LEDGERFROMITEM = res.salesList[0].ledgerFromItem;
-    // inventoryEntry.ACCOUNTINGALLOCATIONS_LIST.GSTOVRDNNATURE = res.salesList[0].gstCLassificationNature;
-    // inventoryEntry.ACCOUNTINGALLOCATIONS_LIST.REMOVEZEROENTRIES = res.salesList[0].removeZeroEntries;
-    // inventoryEntry.ACCOUNTINGALLOCATIONS_LIST.AMOUNT = inventoryEntry.AMOUNT;
-    // inventoryEntry.ACCOUNTINGALLOCATIONS_LIST.LEDGERFROMITEM = "Yes"
-    // inventoryEntry.ACCOUNTINGALLOCATIONS_LIST.ISDEEMEDPOSITIVE = "No"
-  
-    //this.voucher.ALLINVENTORYENTRIES_LIST.push(inventoryEntry);
-    this.voucher.ALLINVENTORYENTRIES_LIST.push(
-                            res.getVoucherEntry(this.rateControl.value, this.qtyControl.value, 
-                            this.batchControl.value, 
-                            this.databaseService.getGodown())
-                            );
-    this.adjustLedgers();
+    this.voucher.addInventory(this.rateControl.value, 
+                              this.qtyControl.value, 
+                              this.batchControl.value, 
+                              this.databaseService.getGodown(),
+                              res);
+    this.voucher.adjustLedgers();
     this.renew()
     this.cd.detectChanges();
     this.productAutoComplete.focus();
 
 }
-productFocus:boolean;
+
   renew(){
     this.productAutoComplete.productControl.setValue("");
     this.qtyControl.setValue(null);
@@ -640,20 +535,10 @@ productFocus:boolean;
 
   deleteStockItem(pos: number){
     this.voucher.ALLINVENTORYENTRIES_LIST.splice(pos,1);
-    this.adjustLedgers();
+    this.voucher.adjustLedgers();
   }
 
-  adjustLedgers(){
-    this.voucher.LEDGERENTRIES_LIST.filter((ledger) => !ledger.POSPAYMENTTYPE && ledger.METHODTYPE == "GST")
-    .forEach((ledger) => this.calculate(ledger));
-    this.voucher.LEDGERENTRIES_LIST.filter((ledger) => !ledger.POSPAYMENTTYPE && ledger.METHODTYPE == "As Total Amount Rounding")
-    .forEach((ledger) => this.calculate(ledger));
-  }
-
-  adjustRounding(){
-    this.voucher.LEDGERENTRIES_LIST.filter((ledger) => !ledger.POSPAYMENTTYPE && ledger.METHODTYPE == "As Total Amount Rounding")
-    .forEach((ledger) => this.calculate(ledger));
-  }
+ 
 
   calculate(ledger: LEDGERENTRIESLIST) {
     ledger.AMOUNT = 0
@@ -673,7 +558,7 @@ productFocus:boolean;
                 ledger.AMOUNT = ledger.AMOUNT + item.getTax(product.BILLEDQTY,product.RATE,"",gstDutyHead)
                 ledger.AMOUNT =  parseFloat((Math.round(ledger.AMOUNT * 100) / 100).toFixed(2));
                 this.cd.detectChanges();
-                this.adjustRounding();
+                this.voucher.adjustRounding();
                 
               
               } );
@@ -774,4 +659,12 @@ productFocus:boolean;
         sub.complete();
       }));
   }
+
+  match(){
+    return (this.voucher.VOUCHERNUMBER + "").match('^DM-');
+  }
+
+  printConf: PrintConfiguration;
+
+
 }

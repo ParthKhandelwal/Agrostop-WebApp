@@ -946,7 +946,7 @@ async vouchertypeQuickSync(){
   
     async addCacheVoucher(voucher: VOUCHER): Promise<any>{
       console.log(voucher);
-          return this.db.update('cacheVoucher', voucher);
+      return this.db.update('cacheVoucher', voucher);
       
     }
   

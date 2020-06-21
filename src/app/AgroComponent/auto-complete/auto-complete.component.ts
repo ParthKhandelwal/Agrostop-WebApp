@@ -196,8 +196,8 @@ export class AutoCompleteComponent implements OnInit {
       case "product" :
         this.productRef.nativeElement.focus();
         break;
-      case "product" :
-          this.productRef.nativeElement.focus();
+      case "customer" :
+          this.customerRef.nativeElement.focus();
           break;
       case "product" :
           this.productRef.nativeElement.focus();

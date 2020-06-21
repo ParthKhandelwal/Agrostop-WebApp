@@ -18,6 +18,8 @@ export class ProductStatComponent implements OnInit {
   databaseService: DatabaseService;
   user: any;
   displayedColumns: string[] = ['Name', 'Expiry Date', 'Closing Balance'];
+  products: any[] = []
+  loading : boolean;
 
 
   constructor() { 
@@ -26,7 +28,14 @@ export class ProductStatComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.loading = true;
     this.priceLevel = this.databaseService.getPriceList();
+    this.getProducts().then(res => this.loading = false)
+  }
+
+
+  async getProducts(){
+    this.products = await this.databaseService.getAllStockItemsForBilling();
   }
 
   optionSelected(value){

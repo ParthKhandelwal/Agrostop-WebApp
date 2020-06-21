@@ -1,7 +1,11 @@
-<div class="col">
+<div *ngIf = "loading">
+    <mat-spinner class="mx-auto" *ngIf = "loading"></mat-spinner>
+</div>
+
+<div class="col" *ngIf = "!loading">
     <div class="row">
         <div class="col">
-            <auto-complete type= "product" #autoComplete (optionSelected) = "optionSelected($event)"></auto-complete>
+            <auto-complete [list] = "products" [listProvided] = "true" type= "product" #autoComplete (optionSelected) = "optionSelected($event)"></auto-complete>
         </div>
         <div class="col">
             <mat-form-field>
@@ -55,7 +59,7 @@
             </mat-form-field>
         </div>
     </div>
-    <div class="row">
+    <div class="row" *ngIf = "item.BATCHES">
         <table mat-table [dataSource]="item.BATCHES" style="width: 100%;">
 
             <!--- Note that these columns can be defined in any order.

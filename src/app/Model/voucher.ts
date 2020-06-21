@@ -1,10 +1,8 @@
-import { User } from './user';
-import { Customer } from './customer';
-import { ApiService } from '../shared/api.service';
 import { DatePipe } from '@angular/common';
-import { TaxDetails } from './tax-details';
 import { Batch } from './batch';
-import { RateDetail } from './stock-item';
+import { StockItem } from './stock-item';
+import uniqid from 'uniqid'
+import { DatabaseService } from '../shared/database.service';
 
 
     export class HEADER {
@@ -88,32 +86,23 @@ export class LEDGERENTRIESLIST {
 
   }
 
-  public set(res: any, ledgerType: string, amount: number) {
-    console.log(res);
-    this.LEDGERNAME = res._NAME;
-    if (ledgerType == "GST") {
-      // GST Functionality
-      this.ISDEEMEDPOSITIVE = "No";
-      this.ISPARTYLEDGER = "No";
-      this.METHODTYPE = res.METHODTYPE;
-      this.VATEXPAMOUNT = amount;
 
-    } else if (ledgerType == "Cash-in-hand") {
-      //Cash-in-hand functionality
-      this.POSPAYMENTTYPE = "Cash";
-      this.ISDEEMEDPOSITIVE = "Yes";
-      this.ISPARTYLEDGER = "Yes";
-      this.ISLASTDEEMEDPOSITIVE = "Yes";
+  
 
-    } else if (ledgerType == "Round Off") {
-      this.ROUNDTYPE = "Normal Rounding";
-      this.METHODTYPE = "As Total Amount Rounding";
-      this.ISDEEMEDPOSITIVE = "No";
-      this.ROUNDLIMIT = 1;
-      this.VATEXPAMOUNT = amount;
-    }
-    this.AMOUNT = amount;
+  public set(ledger:any) {
+    var oldaudit: OLDAUDITENTRYIDSLIST = new OLDAUDITENTRYIDSLIST();
+    oldaudit.OLDAUDITENTRYIDS = "-1";
+    this.OLDAUDITENTRYIDS_LIST = oldaudit;
+    this.LEDGERNAME = ledger.NAME.content;
+    this.METHODTYPE = ledger.METHODTYPE.content
+    this.ISDEEMEDPOSITIVE = "No";
+    this.LEDGERFROMITEM = ledger.LEDGERFROMITEM.content;
+    this.ROUNDLIMIT = ledger.ROUNDLIMIT.content;
+    this.ROUNDTYPE = ledger.ROUNDTYPE.content;
+    this.REMOVEZEROENTRIES = ledger.REMOVEZEROENTRIES.content;
+    this.ISPARTYLEDGER = "No";
   }
+
 
 }
 
@@ -246,7 +235,7 @@ export class ACCOUNTINGALLOCATIONSLIST {
         REFVOUCHERDETAILS_LIST: string;
         EXCISEALLOCATIONS_LIST: string;
       EXPENSEALLOCATIONS_LIST: string;
-      tallyObject: any;
+      tallyObject: StockItem;
 
 
       constructor() {
@@ -450,7 +439,7 @@ export class VOUCHER {
   userId: string;
   COUNTRYOFRESIDENCE: string;   
   ORDERNUMBER: string;
-
+  databaseService: DatabaseService;
 
 
 
@@ -459,12 +448,9 @@ export class VOUCHER {
     this.ALLINVENTORYENTRIES_LIST = [];
     this.ALLLEDGERENTRIES_LIST = [];
     this.LEDGERENTRIES_LIST = [];
+
   }
 
-  public getCustomerId() {
-    let object: any = JSON.parse(this.NARRATION);
-    return object.agrostop.customerId
-  }
 
   public setAction(action: string) {
     this._ACTION = action;
@@ -474,95 +460,111 @@ export class VOUCHER {
     this.DATE = date;
   }
 
-  public setUser(user: User) {
-    this.userId = user.userName;
-    this._VCHTYPE = user.salesVoucherSettings.defaultVoucherType;
-    this.CLASSNAME = user.salesVoucherSettings.defaultClass;
-    this.POSCASHLEDGER = user.salesVoucherSettings.defaultCashLedger;
-    this.VOUCHERTYPENAME = user.salesVoucherSettings.defaultVoucherType;
-    this.PARTYLEDGERNAME = user.salesVoucherSettings.defaultCashLedger;
-    this.PLACEOFSUPPLY = user.defaultGodown;
-    this.ENTEREDBY = user.tallyUserName;
-  }
+ 
 
 
 
   public setCustomer(customer: any) {
     this.CUSTOMERID = customer.customerId;
     this.BASICBUYERNAME = customer.name
-      this.ADDRESS_LIST = new ADDRESSLIST(customer.addressName, customer.addressTehsilName, customer.addressDistrictName,
-        customer.addressStateName);
+    this.ADDRESS_LIST = new ADDRESSLIST(customer.name,customer.addressName, customer.addressTehsilName, customer.addressDistrictName);
     this.GSTREGISTRATIONTYPE = customer.gSTREGISTRATIONTYPE;
     this.STATENAME = customer.addressStateName;
   }
-  public addLedgerEntry(ledgerEntry: any, ledgerType: string, amount: number) {
-    if (this.LEDGERENTRIES_LIST == null) {
-      this.LEDGERENTRIES_LIST = [];
-    }
-    for (let item of this.LEDGERENTRIES_LIST) {
-      if (item.LEDGERNAME == ledgerEntry._NAME) {
-        item.AMOUNT = amount;
-        return;
-      }
-    }
-    var ledger: LEDGERENTRIESLIST = new LEDGERENTRIESLIST()
-    ledger.set(ledgerEntry, ledgerType, amount);
-    this.LEDGERENTRIES_LIST.push(ledger);
-  }
-
-  
-
  
 
-  public addInventoryEntry(inventoryEntry: any, batchId: Batch, qty: number) {
-   
-    var item = new ALLINVENTORYENTRIESLIST();
-    item.set(inventoryEntry, batchId, qty, this.PLACEOFSUPPLY);
-    this.ALLINVENTORYENTRIES_LIST.push(item)
-    this.updateTax(inventoryEntry, item, true);
+  public deleteInventoryEntry(index: number) {
+    this.ALLINVENTORYENTRIES_LIST.splice(index,1);
   }
 
-  updateTax(res, item, add: boolean) {
-    this.updateCGST(res, item, add)
-    this.updateSGST(res, item, add)
-  }
-
-  updateCGST(res, item, add:boolean) {
-    for (let entry of this.LEDGERENTRIES_LIST) {
-      if (entry.LEDGERNAME == "CGST") {
-        if (add) {
-          entry.AMOUNT = entry.AMOUNT + item.calculateCGST(res)
-        } else {
-          entry.AMOUNT = entry.AMOUNT - item.calculateCGST(res)
-        }
-        return;
+  public async getTallyObject(): Promise<void>{
+    if(this.databaseService){
+      for(let ledger of this.LEDGERENTRIES_LIST){
+        ledger.tallyObject = await this.databaseService.getLedger(ledger.LEDGERNAME);
+      }
+      for(let item of this.ALLINVENTORYENTRIES_LIST){
+        item.tallyObject = Object.assign(new StockItem(),await this.databaseService.getStockItem(item.STOCKITEMNAME));
       }
     }
   }
 
-  updateSGST(res, item, add: boolean) {
-    for (let entry of this.LEDGERENTRIES_LIST) {
-      if (entry.LEDGERNAME == "SGST") {
-        if (add) {
-          entry.AMOUNT = entry.AMOUNT + item.calculateSGST(res)
-        } else {
-          entry.AMOUNT = entry.AMOUNT - item.calculateSGST(res)
-        }
-        return;
+
+
+  public async setVoucherType(voucherType: any, posClass: any, priceList: string, databaseService: DatabaseService){
+    this.DATE = new Date();
+    this._REMOTEID = uniqid();
+    this.databaseService = databaseService;
+    this.VOUCHERTYPENAME = voucherType.NAME;
+    this._VCHTYPE = voucherType.NAME;
+    this._OBJVIEW = "Invoice Voucher View";
+    this._ACTION = "Create";
+    this.CLASSNAME = posClass.CLASSNAME.content;
+    this.PERSISTEDVIEW = "Invoice Voucher View";
+    this.LEDGERENTRIES_LIST = [];
+    this.PRICELEVEL = priceList;
+
+    var tempArray: any[] = [];
+    if (posClass["LEDGERENTRIESLIST.LIST"] instanceof Array){
+      tempArray = posClass["LEDGERENTRIESLIST.LIST"]
+    } else{
+      tempArray.push(posClass["LEDGERENTRIESLIST.LIST"])
+    }
+
+
+    for(let ledger of tempArray){
+      if(ledger.NAME){
+        var ledgerEntry: LEDGERENTRIESLIST = new LEDGERENTRIESLIST();
+        console.log(ledger.NAME.content);
+        ledgerEntry.tallyObject = await this.databaseService.getLedger(ledger.NAME.content);
+        ledgerEntry.set(ledger);
+        this.LEDGERENTRIES_LIST.push(ledgerEntry);
       }
     }
+
+
+    if (posClass.POSENABLECARDLEDGER){
+      var ledgerEntry: LEDGERENTRIESLIST = new LEDGERENTRIESLIST();
+      ledgerEntry.LEDGERNAME = posClass.POSCARDLEDGER.content
+      ledgerEntry.POSPAYMENTTYPE = "Card";
+      if(posClass.POSCARDLEDGER.content){
+        ledgerEntry.tallyObject = await this.databaseService.getLedger(posClass.POSCARDLEDGER.content)
+      }
+      this.LEDGERENTRIES_LIST.push(ledgerEntry)
+    }
+
+    if (posClass.POSENABLECASHLEDGER){
+      var ledgerEntry: LEDGERENTRIESLIST = new LEDGERENTRIESLIST();
+      ledgerEntry.LEDGERNAME = posClass.POSCASHLEDGER.content
+      ledgerEntry.POSPAYMENTTYPE = "Cash";
+      if(posClass.POSCARDLEDGER.content){
+        ledgerEntry.tallyObject = await this.databaseService.getLedger(posClass.POSCARDLEDGER.content)
+      }
+
+      this.LEDGERENTRIES_LIST.push(ledgerEntry);
+    }
+
+    if (posClass.POSENABLECHEQUELEDGER){
+      var ledgerEntry: LEDGERENTRIESLIST = new LEDGERENTRIESLIST();
+      ledgerEntry.LEDGERNAME = posClass.POSCHEQUELEDGER.content
+      ledgerEntry.POSPAYMENTTYPE = "Cheque";
+      if(posClass.POSCHEQUELEDGER.content){
+        ledgerEntry.tallyObject = await this.databaseService.getLedger(posClass.POSCHEQUELEDGER.content)
+      }
+
+      this.LEDGERENTRIES_LIST.push(ledgerEntry)
+    }
+
+    if (posClass.POSENABLEGIFTLEDGER){
+      var ledgerEntry: LEDGERENTRIESLIST = new LEDGERENTRIESLIST();
+      ledgerEntry.LEDGERNAME = posClass.POSGIFTLEDGER.content
+      ledgerEntry.POSPAYMENTTYPE = "Gift";
+      if(posClass.POSGIFTLEDGER.content){
+        ledgerEntry.tallyObject = await this.databaseService.getLedger(posClass.POSGIFTLEDGER.content);
+      }
+
+      this.LEDGERENTRIES_LIST.push(ledgerEntry);
+    }
   }
-
-  public deleteInventoryEntry(inventoryEntry: any) {
-   
-
-        this.ALLINVENTORYENTRIES_LIST.splice(inventoryEntry, 1);
- 
-
-
-  }
-
-
 
 
   public getSubTotal(): number{
@@ -573,6 +575,102 @@ export class VOUCHER {
     return total;
   }
 
+  public cashLedger(): LEDGERENTRIESLIST{
+    var array: LEDGERENTRIESLIST[] = this.LEDGERENTRIES_LIST.filter(v => v.POSPAYMENTTYPE ==='Cash');
+    return array.length == 0 ? null :array[0];
+  }
+
+  adjustLedgers(){
+    this.LEDGERENTRIES_LIST.filter((ledger) => !ledger.POSPAYMENTTYPE && ledger.METHODTYPE == "GST")
+    .forEach((ledger) => this.calculate(ledger));
+    this.LEDGERENTRIES_LIST.filter((ledger) => !ledger.POSPAYMENTTYPE && ledger.METHODTYPE == "As Total Amount Rounding")
+    .forEach((ledger) => this.calculate(ledger));
+  }
+
+  adjustRounding(){
+    this.LEDGERENTRIES_LIST.filter((ledger) => !ledger.POSPAYMENTTYPE && ledger.METHODTYPE == "As Total Amount Rounding")
+    .forEach((ledger) => this.calculate(ledger));
+  }
+
+  calculate(ledger: LEDGERENTRIESLIST) {
+    ledger.AMOUNT = 0
+    switch(ledger.METHODTYPE){
+      case "GST" :
+        var gstDutyHead: any;
+        var res = ledger.tallyObject;
+        gstDutyHead = res.GSTDUTYHEAD.content;
+        for (let product of this.ALLINVENTORYENTRIES_LIST){
+          var productItem = product.tallyObject;
+          var item = Object.assign(new StockItem(), productItem); 
+          ledger.AMOUNT = ledger.AMOUNT + item.getTax(product.BILLEDQTY,product.RATE,"",gstDutyHead)
+          ledger.AMOUNT =  parseFloat((Math.round(ledger.AMOUNT * 100) / 100).toFixed(2));    
+        }
+        break;
+
+      case "As Total Amount Rounding":
+          var total: number =0 
+          for (let item of this.LEDGERENTRIES_LIST){
+            if (item.AMOUNT != null && item.METHODTYPE !="As Total Amount Rounding"
+            && (item.POSPAYMENTTYPE == null || item.POSPAYMENTTYPE == "")){
+              total = total + item.AMOUNT;
+            }
+          }
+      
+          for (let item of this.ALLINVENTORYENTRIES_LIST){
+            if (item.AMOUNT != null){
+              total = total + item.AMOUNT;
+            }
+          }
+          ledger.AMOUNT =  Math.round((Math.round(total) - total)*100) *0.01;
+          break;
+      case "As User Defined Value":
+          break;
+
+    }
+  }
+
+
+
+  public getTotal(): number{
+    let total: number = this.getSubTotal();
+    for (let item of this.LEDGERENTRIES_LIST){
+      if (item.AMOUNT != null && (item.POSPAYMENTTYPE == null || item.POSPAYMENTTYPE == "")){
+        total = total + item.AMOUNT;
+      }
+    }
+    return total;
+  }
+
+
+  public addInventory(rate: number, qty: number, batch:Batch, godown:string, stockItem: StockItem){
+    var inventoryEntry: ALLINVENTORYENTRIESLIST = new ALLINVENTORYENTRIESLIST();
+    inventoryEntry.STOCKITEMNAME = stockItem.NAME;
+    inventoryEntry.tallyObject = stockItem;
+    inventoryEntry.BILLEDQTY = qty;
+    inventoryEntry.ACTUALQTY = qty;
+    inventoryEntry.ISDEEMEDPOSITIVE = "No";
+    inventoryEntry.RATE = rate;
+    inventoryEntry.BATCHALLOCATIONS_LIST = new BATCHALLOCATIONSLIST();
+    inventoryEntry.BATCHALLOCATIONS_LIST.BATCHNAME = batch.NAME;
+    inventoryEntry.BATCHALLOCATIONS_LIST.GODOWNNAME = godown;
+    inventoryEntry.BATCHALLOCATIONS_LIST.BILLEDQTY = qty;
+    inventoryEntry.BATCHALLOCATIONS_LIST.ACTUALQTY = qty;
+    inventoryEntry.BATCHALLOCATIONS_LIST.AMOUNT = Math.round(inventoryEntry.RATE * inventoryEntry.BILLEDQTY*100)/100;
+    inventoryEntry.BATCHALLOCATIONS_LIST.EXPIRYPERIOD = new EXPIRYPERIOD(batch.EXPIRYDATE 
+      ? new Date(batch.EXPIRYDATE)
+      : null);
+    inventoryEntry.AMOUNT =  Math.round(inventoryEntry.RATE * inventoryEntry.BILLEDQTY*100)/100;
+    inventoryEntry.ACCOUNTINGALLOCATIONS_LIST = new ACCOUNTINGALLOCATIONSLIST();
+    inventoryEntry.ACCOUNTINGALLOCATIONS_LIST.LEDGERNAME = stockItem.salesList[0].name;
+    inventoryEntry.ACCOUNTINGALLOCATIONS_LIST.CLASSRATE = stockItem.salesList[0].classRate;
+    inventoryEntry.ACCOUNTINGALLOCATIONS_LIST.LEDGERFROMITEM = stockItem.salesList[0].ledgerFromItem;
+    inventoryEntry.ACCOUNTINGALLOCATIONS_LIST.GSTOVRDNNATURE = stockItem.salesList[0].gstCLassificationNature;
+    inventoryEntry.ACCOUNTINGALLOCATIONS_LIST.REMOVEZEROENTRIES = stockItem.salesList[0].removeZeroEntries;
+    inventoryEntry.ACCOUNTINGALLOCATIONS_LIST.AMOUNT = inventoryEntry.AMOUNT;
+    inventoryEntry.ACCOUNTINGALLOCATIONS_LIST.LEDGERFROMITEM = "Yes"
+    inventoryEntry.ACCOUNTINGALLOCATIONS_LIST.ISDEEMEDPOSITIVE = "No"
+    this.ALLINVENTORYENTRIES_LIST.push(inventoryEntry);
+  }
   
 
 }
