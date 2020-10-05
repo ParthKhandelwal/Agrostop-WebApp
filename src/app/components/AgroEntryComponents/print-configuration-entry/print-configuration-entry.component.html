@@ -1,0 +1,241 @@
+<div class="col">
+  <div class="row">
+
+    <div class="col">
+      <mat-form-field>
+        <mat-select placeholder="Select Voucher Type" name="category" [(ngModel)]="voucherTypeConfig.voucherCategory"
+          (selectionChange)="selectCategory($event)">
+          <mat-option *ngFor="let item of parents" [value]="item">{{item}}</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <div class="col">
+      <mat-form-field>
+        <mat-select placeholder="Select Voucher Type" name="type" [(ngModel)]="voucherTypeConfig.voucherType">
+          <mat-option *ngFor="let item of tempVoucherTypes" [value]="item">{{item}}</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+  </div>
+  <div class="row">
+    <mat-tab-group>
+      <mat-tab label="Print Configuration">
+        <div class="col">
+          <div class="row">
+            <div class="col">
+              <mat-form-field>
+                <input matInput placeholder="Enter Company Name"
+                  [(ngModel)]="this.voucherTypeConfig.printConfiguration.name" name="name">
+              </mat-form-field>
+            </div>
+            <div class="col">
+              <mat-form-field>
+                <input matInput placeholder="Enter Contact Number"
+                  [(ngModel)]="this.voucherTypeConfig.printConfiguration.contactNumber" name="contactNumber">
+              </mat-form-field>
+            </div>
+            <div class="col">
+              <mat-form-field>
+                <input matInput placeholder="Enter Email Address"
+                  [(ngModel)]="this.voucherTypeConfig.printConfiguration.emailId" name="email">
+              </mat-form-field>
+            </div>
+          </div>
+          <div class="row">
+            <mat-tab-group style="width: 100%;" mat-stretch-tabs>
+              <mat-tab label="Addresses">
+
+                <mat-form-field style="width: 100%;">
+                  <mat-chip-list #chipList>
+                    <mat-chip *ngFor="let address of voucherTypeConfig.printConfiguration.address"
+                      [selectable]="selectable" [removable]="removable" (removed)="removeAddress(address)">
+                      {{address}}
+                      <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
+                    </mat-chip>
+                    <input placeholder="Enter Address Lines" [matChipInputFor]="chipList"
+                      [matChipInputSeparatorKeyCodes]="separatorKeysCodes" [matChipInputAddOnBlur]="addOnBlur"
+                      (matChipInputTokenEnd)="addAddress($event)">
+                  </mat-chip-list>
+                </mat-form-field>
+              </mat-tab>
+              <mat-tab label="License Numbers">
+                <div class="row">
+                  <div class="col">
+                    <mat-form-field>
+                      <input #lname matInput placeholder="Enter License Name" type="lname">
+                    </mat-form-field>
+                  </div>
+
+                  <div class="col">
+                    <mat-form-field>
+                      <input #lnumber matInput placeholder="Enter License Number" type="lnumber">
+                    </mat-form-field>
+                  </div>
+                  <div class="col">
+                    <button mat-icon-button
+                      (click)="addLicenseNumber(lname.value, lnumber.value); lname.value = ''; lnumber.value = ''">
+                      <mat-icon>add</mat-icon>
+                    </button>
+                  </div>
+                </div>
+                <div class="row" style="padding-left: 20px;">
+                  <ng-container *ngFor="let l of this.voucherTypeConfig.printConfiguration.licenseNumbers">
+                    <span><strong>{{l.licenseName}}: </strong> {{l.licenseNumber}}</span>
+                  </ng-container>
+                </div>
+              </mat-tab>
+              <mat-tab label="Terms And Conditions">
+                <mat-form-field style="width: 100%;">
+                  <mat-chip-list #chipListTC>
+                    <mat-chip *ngFor="let address of voucherTypeConfig.printConfiguration.termsAndConditions"
+                      [selectable]="selectable" [removable]="removable" (removed)="removeTC(address)">
+                      {{address}}
+                      <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
+                    </mat-chip>
+                    <input placeholder="Enter Terms and Conditions" [matChipInputFor]="chipListTC"
+                      [matChipInputSeparatorKeyCodes]="separatorKeysCodes" [matChipInputAddOnBlur]="addOnBlur"
+                      (matChipInputTokenEnd)="addTC($event)">
+                  </mat-chip-list>
+                </mat-form-field>
+              </mat-tab>
+            </mat-tab-group>
+
+
+          </div>
+        </div>
+      </mat-tab>
+      <mat-tab label="Coupons">
+        <div class="col">
+          <div class = "row">
+            <div class="col">
+              <mat-form-field style="width: 100%;">
+                <input matInput placeholder="Enter Coupon Title" name="title" [(ngModel)] = "coupon.title">
+              </mat-form-field>
+            </div>
+          </div>
+          <div class = "row">
+            <div class="col">
+              <mat-form-field>
+                <mat-label>Choose a Start Date</mat-label>
+                <input [(ngModel)] = "coupon.startDate" matInput [matDatepicker]="startpicker">
+                <mat-datepicker-toggle matSuffix [for]="startpicker"></mat-datepicker-toggle>
+                <mat-datepicker #startpicker></mat-datepicker>
+              </mat-form-field>
+            </div>
+            <div class="col">
+              <mat-form-field>
+                <mat-label>Choose an End Date</mat-label>
+                <input [(ngModel)] = "coupon.endDate" matInput [matDatepicker]="endpicker">
+                <mat-datepicker-toggle matSuffix [for]="endpicker"></mat-datepicker-toggle>
+                <mat-datepicker #endpicker></mat-datepicker>
+              </mat-form-field>
+            </div>
+            <div class="col">
+              <mat-form-field>
+                <mat-label>Valid Till</mat-label>
+                <input matInput [(ngModel)] = "coupon.validTill" [matDatepicker]="tillpicker">
+                <mat-datepicker-toggle matSuffix [for]="tillpicker"></mat-datepicker-toggle>
+                <mat-datepicker #tillpicker></mat-datepicker>
+              </mat-form-field>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col">
+              <mat-form-field>
+                <input matInput [(ngModel)] = "coupon.lessThan" type = "number" placeholder="Coupon Offered on amount less than">
+              </mat-form-field>
+            </div>
+            <div class="col">
+              <mat-form-field>
+                <input matInput [(ngModel)] = "coupon.greaterThan" type = "number" placeholder="Coupon Offered on amount greater than">
+              </mat-form-field>
+            </div>
+            <div class="col">
+              <mat-form-field>
+                <input matInput [(ngModel)] = "coupon.amountOffered" type = "number" placeholder="Coupon Offered on amount less than">
+              </mat-form-field>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col">
+              <mat-checkbox [(ngModel)]="coupon.printAfterSave">Print Coupon</mat-checkbox>
+            </div>
+            <div class="col">
+              <mat-checkbox [(ngModel)]="coupon.sendSMSAfterSave">Send Coupon through SMS</mat-checkbox>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col">
+              <button mat-raised-button (click) = "addCoupon()">Save Coupon</button>
+            </div>
+          </div>
+          <div class = "row">
+            <table #cTable style="width:100%" mat-table [dataSource]="voucherTypeConfig.coupons">
+
+              <!--- Note that these columns can be defined in any order.
+                    The actual rendered columns are set as a property on the row definition" -->
+
+              <!-- Position Column -->
+              <ng-container matColumnDef="title">
+                <th mat-header-cell *matHeaderCellDef> Title </th>
+                <td mat-cell *matCellDef="let element"> {{element.title}} </td>
+              </ng-container>
+
+              <!-- Name Column -->
+              <ng-container matColumnDef="date">
+                <th mat-header-cell *matHeaderCellDef> Start Date <br> End Date </th>
+                <td mat-cell *matCellDef="let element"> {{element.startDate | date: 'MMM dd, yyyy'}} <br> {{element.endDate | date: 'MMM dd, yyyy'}} </td>
+              </ng-container>
+
+
+
+              <ng-container matColumnDef="till">
+                <th mat-header-cell *matHeaderCellDef> Valid Till </th>
+                <td mat-cell *matCellDef="let element"> {{element.validTill | date: 'MMM dd, yyyy'}} </td>
+              </ng-container>
+
+              <!-- Weight Column -->
+              <ng-container matColumnDef="onAmount">
+                <th mat-header-cell *matHeaderCellDef> Invoice Amt Range </th>
+                <td mat-cell *matCellDef="let element"> {{element.greaterThan}} - {{element.lessThan}} </td>
+              </ng-container>
+
+              <!-- Symbol Column -->
+              <ng-container matColumnDef="amountOffered">
+                <th mat-header-cell *matHeaderCellDef> Amount Offered </th>
+                <td mat-cell *matCellDef="let element"> {{element.amountOffered}} </td>
+              </ng-container>
+
+              <ng-container matColumnDef="action">
+                <th mat-header-cell *matHeaderCellDef> Amount Offered </th>
+                <td mat-cell *matCellDef="let element; let i = index">
+                  <button mat-icon-button (click) = "deleteCoupon(i)">
+                    <mat-icon>delete</mat-icon>
+                  </button>
+                </td>
+              </ng-container>
+
+              <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+              <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+            </table>
+          </div>
+        </div>
+      </mat-tab>
+    </mat-tab-group>
+
+
+  </div>
+
+  <div class="row">
+    <div class="col">
+      <button mat-raised-button color="accent" (click)="delete()">Delete</button>
+
+    </div>
+    <div class="col">
+      <button style="float: right;" mat-raised-button color="primary" (click)="save()">Save</button>
+
+    </div>
+  </div>
+</div>

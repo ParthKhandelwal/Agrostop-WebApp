@@ -1,211 +1,255 @@
 import { BrowserModule } from '@angular/platform-browser';
-import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { NgModule } from '@angular/core';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
-import { CookieService } from 'ngx-cookie-service';
+
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import {DashboardComponent} from './dashboard/dashboard.component'
-import {LoginFormComponent} from './login-form/login-form.component'
-import {NotFoundComponent} from './not-found/not-found.component';
-import { NavigationBarComponent } from './navigation-bar/navigation-bar.component';
-import { CustomersComponent } from './customers/customers.component';
-import { OrdersComponent } from './orders/orders.component';
-import { ComplaintsComponent } from './complaints/complaints.component';
-import { UsersComponent } from './users/users.component';
-import { CreateCustomerFormComponent } from './create-form/create-customer-form/create-customer-form.component';
-import { CreateComplaintFormComponent } from './create-form/create-complaint-form/create-complaint-form.component';
-import { CreateOrderFormComponent } from './create-form/create-order-form/create-order-form.component';
-import { CreateUserFormComponent } from './create-form/create-user-form/create-user-form.component';
-import { AgroInterceptor } from './Interceptor/agro-interceptor';
-import { ApiService } from './shared/api.service';
-import { MatTableModule } from '@angular/material/table';
-import { MatPaginatorModule } from '@angular/material/paginator';
-import { MatSortModule } from '@angular/material/sort';
-import { CustomerTableComponent } from './tables/customer-table/customer-table.component';
-import { MatFormFieldModule, MatInputModule } from '@angular/material';
-import {MatButtonModule} from '@angular/material/button';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { PageNotFoundComponent } from './components/page-not-found/page-not-found.component';
+import { FormsModule } from '@angular/forms';
+import { LoginComponent } from './components/login/login.component';
+import {MatGridListModule} from '@angular/material/grid-list';
+import {MatInputModule} from '@angular/material/input';
 import {MatIconModule} from '@angular/material/icon';
-import {MatDialogModule, MatDialogConfig,MatDialog, MAT_DIALOG_DATA} from '@angular/material/dialog';
-import {MatSidenavModule} from '@angular/material/sidenav';
-import { CustomerViewComponent } from './view/customer-view/customer-view.component';
-import { ConfirmationBoxComponent } from './confirmation-box/confirmation-box.component';
-import { VoucherTableComponent } from './tables/voucher-table/voucher-table.component';
-import { SalesComponent } from './sales/sales.component';
-import { CreateVoucherComponent } from './create-form/create-voucher/create-voucher.component';
-import { OrderTableComponent } from './tables/order-table/order-table.component';
-import { StockItemTableComponent } from './tables/stock-item-table/stock-item-table.component';
-import { StockItemsComponent } from './stock-items/stock-items.component';
-import { VoucherViewComponent } from './view/voucher-view/voucher-view.component';
-import { ComplaintViewComponent } from './view/complaint-view/complaint-view.component';
-import { StockItemViewComponent } from './view/stock-item-view/stock-item-view.component';
-import { OrderViewComponent } from './view/order-view/order-view.component';
-import { BatchTableComponent } from './tables/batch-table/batch-table.component';
-import { ExpiredProductsComponent } from './Products/expired-products/expired-products.component';
-import {MatSelectModule} from '@angular/material/select';
-import {MatAutocompleteModule} from '@angular/material/autocomplete';
-import {MatDatepickerModule} from '@angular/material/datepicker';
-import {MatNativeDateModule} from '@angular/material';
-import {MatCardModule} from '@angular/material/card';
 import {MatListModule} from '@angular/material/list';
+import {MatButtonModule} from '@angular/material/button';
+import { DayBookComponent } from './components/day-book/day-book.component';
+import { DashboardComponent } from './components/dashboard/dashboard.component';
 import {MatToolbarModule} from '@angular/material/toolbar';
-import { CustomerListViewComponent } from './CustomerPackage/customer-list-view/customer-list-view.component';
-import { AddressListViewComponent } from './CustomerPackage/address-list-view/address-list-view.component';
-import { AddressTableComponent } from './tables/address-table/address-table.component';
-import { CreateAddressFormComponent } from './create-form/create-address-form/create-address-form.component';
-import { DayBookComponent } from './AccountingPackage/day-book/day-book.component';
-import { CreateStockItemFormComponent } from './create-form/create-stock-item-form/create-stock-item-form.component';
-import { CashTenderedComponent } from './VoucherPackage/cash-tendered/cash-tendered.component';
-import { InvoicePrintViewComponent } from './PrintPackage/invoice-print-view/invoice-print-view.component';
-import { StorageServiceModule } from 'ngx-webstorage-service';
-import { AgroStorageService } from './shared/agro-storage.service';
-import { SideNavigationBarComponent } from './side-navigation-bar/side-navigation-bar.component';
-import { ProductListViewComponent } from './Products/product-list-view/product-list-view.component';
-import { TaxDetailsTableComponent } from './tables/tax-details-table/tax-details-table.component';
-import { CreateTaxDetailsFormComponent } from './create-form/create-tax-details-form/create-tax-details-form.component';
-import { UserTableComponent } from './tables/user-table/user-table.component';
-import { DatePipe } from '@angular/common';
-import { PaymentOptionComponent } from './VoucherPackage/payment-option/payment-option.component';
-import { CustomerSelectionComponent } from './VoucherPackage/customer-selection/customer-selection.component';
-import { InventorySelectionComponent } from './VoucherPackage/inventory-selection/inventory-selection.component';
-import { VoucherWizardComponent } from './VoucherPackage/voucher-wizard/voucher-wizard.component';
-import { VoucherSettingComponent } from './VoucherPackage/voucher-setting/voucher-setting.component';
-import {MatProgressBarModule} from '@angular/material/progress-bar';
-
-import { ChartsModule } from 'ng2-charts';
-import {NgxPrintModule, NgxPrintDirective} from 'ngx-print';
-
-import { StockCheckComponent } from './Products/stock-check/stock-check.component';
-import { PaymentVoucherWizardComponent } from './VoucherPackage/payment-voucher-wizard/payment-voucher-wizard.component';
-import { ReceiptVoucherWizardComponent } from './VoucherPackage/receipt-voucher-wizard/receipt-voucher-wizard.component';
-import { CashBookComponent } from './AccountingPackage/cash-book/cash-book.component';
-import { NgxBarcodeModule } from 'ngx-barcode';
-import { UploadAddressesComponent } from './CustomerPackage/upload-addresses/upload-addresses.component';
-import {MatTabsModule} from '@angular/material/tabs';
-import { PapaParseModule } from 'ngx-papaparse';
-import {NgxImageCompressService} from 'ngx-image-compress';
-import { ProcessOrderFormComponent } from './create-form/process-order-form/process-order-form.component';
-import {MatStepperModule} from '@angular/material/stepper';
-import {MatCheckboxModule} from '@angular/material/checkbox';
-import {MatExpansionModule} from '@angular/material/expansion';
-import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import {MatMenuModule} from '@angular/material/menu';
+import {MatStepperModule} from '@angular/material/stepper';
 import {MatSnackBarModule} from '@angular/material/snack-bar';
-import { AutoCompleteComponent } from './AgroComponent/auto-complete/auto-complete.component';
-import { ProductStatComponent } from './Products/product-stat/product-stat.component';
-import { PrivacyPolicyComponent } from './AgroComponent/privacy-policy/privacy-policy.component';
-import { HomeComponent } from './AgroComponent/home/home.component';
+import {MatTabsModule} from '@angular/material/tabs';
+import {MatCardModule} from '@angular/material/card';
+import { AutoCompleteComponent } from './components/AgroComponents/auto-complete/auto-complete.component';
+import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
+import {MatDialogModule} from '@angular/material/dialog';
+import { ReactiveFormsModule} from '@angular/forms';
+import {MatAutocompleteModule} from '@angular/material/autocomplete';
+import {MatCheckboxModule} from '@angular/material/checkbox';
+import {MatSelectModule} from '@angular/material/select';
+import {MatDatepickerModule} from '@angular/material/datepicker';
+import { MatNativeDateModule, MAT_DATE_LOCALE } from '@angular/material/core';
+import {MatExpansionModule} from '@angular/material/expansion';
+import { InvoicePrintViewComponent } from './components/invoice-print-view/invoice-print-view.component';
+import {MatSlideToggleModule} from '@angular/material/slide-toggle';
+
+import {MatPaginatorModule} from '@angular/material/paginator';
+
+import { CommonModule, DatePipe } from '@angular/common';
+import { NgxIndexedDBModule, DBConfig } from 'ngx-indexed-db';
+import {MatProgressBarModule} from '@angular/material/progress-bar';
+import {MatSortModule} from '@angular/material/sort';
+import {MatBottomSheetModule} from '@angular/material/bottom-sheet';
+import {MatTableModule} from '@angular/material/table';
+import { CustomerSummaryComponent } from './components/customer-summary/customer-summary.component';
+import { TallyConsoleComponent } from './components/tally-console/tally-console.component';
+import { VoucherTableComponent } from './components/AgroComponents/voucher-table/voucher-table.component';
+import { VoucherSummaryComponent } from './components/AgroComponents/voucher-summary/voucher-summary.component';
+import { CustomerEntryComponent } from './components/AgroEntryComponents/customer-entry-components/customer-entry.component';
+import { VoucherStatsComponent } from './components/AgroComponents/voucher-stats/voucher-stats.component';
+import { InventoryBreakdownComponent } from './components/AgroComponents/inventory-breakdown/inventory-breakdown.component';
+import { AddressSummaryComponent } from './components/address-summary/address-summary.component';
+import { InventoryDetailComponent } from './components/inventory-detail/inventory-detail.component';
+import { StockTransferTableComponent } from './components/AgroComponents/stock-transfer-table/stock-transfer-table.component';
+import { CustomerTableComponent } from './components/AgroComponents/customer-table/customer-table.component';
+import { VoucherFilterComponent } from './components/AgroComponents/voucher-filter/voucher-filter.component';
+
+
+
+import {MatChipsModule} from '@angular/material/chips';
+
+import {MatSidenavModule} from '@angular/material/sidenav';
+import { InventoryInfoComponent } from './components/AgroEntryComponents/inventory-info/inventory-info.component';
+import { AdminToolkitComponent } from './components/AgroComponents/admin-toolkit/admin-toolkit.component';
+import { ProductProfileComponent } from './components/product-profile/product-profile.component';
+import { ChemicalGroupEntryComponent } from './components/AgroEntryComponents/chemical-group-entry/chemical-group-entry.component';
+import { ProductGroupTableComponent } from './components/AgroComponents/product-group-table/product-group-table.component';
+import { ProductGroupEntryComponentsComponent } from './components/AgroEntryComponents/product-group-entry-components/product-group-entry-components.component';
+import { ProductProfileTableComponent } from './components/AgroComponents/product-profile-table/product-profile-table.component';
+import { ProductProfileEntryComponentComponent } from './components/AgroEntryComponents/product-profile-entry-component/product-profile-entry-component.component';
+import { UserTableComponent } from './components/AgroComponents/user-table/user-table.component';
+import { ChemicalGroupTableComponent } from './components/AgroComponents/chemical-group-table/chemical-group-table.component';
+import { UserEntryComponentComponent } from './components/AgroEntryComponents/user-entry-component/user-entry-component.component';
+import { UserProfileComponent } from './components/user-profile/user-profile.component';
+import { SettingsComponent } from './components/settings/settings.component';
+import { PrintConfigurationEntryComponent } from './components/AgroEntryComponents/print-configuration-entry/print-configuration-entry.component';
+import { PrintConfigurationTableComponent } from './components/AgroComponents/print-configuration-table/print-configuration-table.component';
+import { StockSummaryComponent } from './components/stock-summary/stock-summary.component';
+import { BatchTableComponent } from './components/AgroComponents/batch-table/batch-table.component';
+import { ParticularTableComponent } from './components/Voucher/particular-table/particular-table.component';
+import { InventoryTableComponent } from './components/Voucher/inventory-table/inventory-table.component';
+import { BankAllocationComponent } from './components/Voucher/bank-allocation/bank-allocation.component';
+import { BillAllocationComponent } from './components/Voucher/bill-allocation/bill-allocation.component';
+
+import { AgroVoucherWizardComponent } from './components/Voucher/agro-voucher-wizard/agro-voucher-wizard.component';
+import { VoucherSettingsComponent } from './components/Voucher/voucher-settings/voucher-settings.component';
+import { CollectionComponent } from './components/Voucher/collection/collection.component';
+import { StockCheckComponent } from './components/stock-check/stock-check.component';
+import { CustomerProfileComponent } from './components/customer-profile/customer-profile.component';
+import { StockCheckPrintViewComponent } from './components/PrintComponents/stock-check-print-view/stock-check-print-view.component';
+import { MatTableExporterModule } from 'mat-table-exporter';
+import { AddressProfileComponent } from './components/address-profile/address-profile.component';
+import { CropEntryComponent } from './components/AgroEntryComponents/crop-entry/crop-entry.component';
+import { CropPatternEntryComponent } from './components/AgroEntryComponents/crop-pattern-entry/crop-pattern-entry.component';
+import { CropProfileComponent } from './components/crop-profile/crop-profile.component';
+import { CropProfileTableComponent } from './components/AgroComponents/crop-profile-table/crop-profile-table.component';
+import { ItemMovementAnalysisComponent } from './components/MovementAnalysis/item-movement-analysis/item-movement-analysis.component';
+import { MovementAnalysisComponent } from './components/MovementAnalysis/movement-analysis/movement-analysis.component';
+import { MonthlySummaryComponent } from './components/AgroComponents/monthly-summary/monthly-summary.component';
+import { LedgerMovementAnalysisComponent } from './components/MovementAnalysis/ledger-movement-analysis/ledger-movement-analysis.component';
+import { BatchAllocationComponent } from './components/Voucher/batch-allocation/batch-allocation.component';
+import { AccountingAllocationComponent } from './components/Voucher/accounting-allocation/accounting-allocation.component';
+import { VoucherDetailComponent } from './components/Voucher/voucher-detail/voucher-detail.component';
+import { BatchTransferComponent } from './components/AgroComponents/batch-transfer/batch-transfer.component';
+import { HomeComponent } from './components/AgroComponents/home/home.component';
+import { LayoutModule } from '@angular/cdk/layout';
+import { NavigationComponent } from './components/AgroComponents/navigation/navigation.component';
+import { RouterModule } from '@angular/router';
+import {MatRadioModule} from '@angular/material/radio';
+import { NotificationComponent } from './components/AgroComponents/notification/notification.component';
+import { CropPatternSummaryComponent } from './components/AgroComponents/crop-pattern-summary/crop-pattern-summary.component';
+import { CouponEntryComponent } from './components/Voucher/coupon-entry/coupon-entry.component';
+import { ConnectComponent } from './components/connect/connect.component';
+import { ApiService } from './services/API/api.service';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
+import { AgroInterceptor } from './services/Interceptor/agro-interceptor';
+import { ChartsModule } from 'ng2-charts';
+import {MatTooltipModule} from '@angular/material/tooltip';
+import {MatBadgeModule} from '@angular/material/badge';
+import {NgxPrintModule} from 'ngx-print';
+import { ServiceWorkerModule } from '@angular/service-worker';
+import { environment } from '../environments/environment';
+
+
+const dbConfig: DBConfig  = {
+  name: 'Agrostop',
+  version: 1,
+  objectStoresMeta: [{
+    store: 'Voucher Types',
+    storeConfig: { keyPath: 'NAME', autoIncrement: false },
+    storeSchema: [
+    ]
+  },
+  {
+    store: 'cacheVoucher',
+    storeConfig: { keyPath: '_REMOTEID', autoIncrement: false },
+    storeSchema: [
+    ]
+  },
+  {
+    store: 'items',
+    storeConfig: { keyPath: 'NAME', autoIncrement: false },
+    storeSchema: [
+    ]
+  },
+  {
+    store: 'customers',
+    storeConfig: { keyPath: 'id', autoIncrement: false },
+    storeSchema: [
+    ]
+  },
+  {
+    store: 'Ledgers',
+    storeConfig: { keyPath: 'NAME', autoIncrement: false },
+    storeSchema: [
+    ]
+  },
+  {
+    store: 'Addresses',
+    storeConfig: { keyPath: '_id', autoIncrement: false },
+    storeSchema: [
+    ]
+  },
+  {
+    store: 'Batches',
+    storeConfig: { keyPath: 'BATCHID', autoIncrement: false },
+    storeSchema: [
+      { name: 'productId', keypath: 'productId', options: { unique: false } },
+    ]
+  },
+  {
+    store: 'cacheCustomers',
+    storeConfig: { keyPath: 'id', autoIncrement: false },
+    storeSchema: [
+    ]
+  },
+  {
+    store: 'PrintConfiguration',
+    storeConfig: { keyPath: 'voucherType', autoIncrement: false },
+    storeSchema: [
+    ]
+  }
+
+]
+};
 
 
 @NgModule({
   declarations: [
     AppComponent,
-    LoginFormComponent,
-    DashboardComponent,
-    NotFoundComponent,
-    NavigationBarComponent,
-    CustomersComponent,
-    OrdersComponent,
-    ComplaintsComponent,
-    UsersComponent,
-    CreateCustomerFormComponent,
-    CreateComplaintFormComponent,
-    CreateOrderFormComponent,
-    CreateUserFormComponent,
-    CustomerTableComponent,
-    CustomerViewComponent,
-    ConfirmationBoxComponent,
-    VoucherTableComponent,
-    SalesComponent,
-    CreateVoucherComponent,
-    OrderTableComponent,
-    StockItemTableComponent,
-    StockItemsComponent,
-    VoucherViewComponent,
-    ComplaintViewComponent,
-    StockItemViewComponent,
-    OrderViewComponent,
-    BatchTableComponent,
-    ExpiredProductsComponent,
-    
-    CustomerListViewComponent,
-    AddressListViewComponent,
-    AddressTableComponent,
-    CreateAddressFormComponent,
+    PageNotFoundComponent,
+    LoginComponent,
     DayBookComponent,
-    CreateStockItemFormComponent,
-    CashTenderedComponent,
-    InvoicePrintViewComponent,
-    SideNavigationBarComponent,
-    ProductListViewComponent,
-    TaxDetailsTableComponent,
-    CreateTaxDetailsFormComponent,
-    UserTableComponent,
-    PaymentOptionComponent,
-    CustomerSelectionComponent,
-    InventorySelectionComponent,
-    VoucherWizardComponent,
-    VoucherSettingComponent,
-    StockCheckComponent,
-    PaymentVoucherWizardComponent,
-    ReceiptVoucherWizardComponent,
-    CashBookComponent,
-    UploadAddressesComponent,
-    ProcessOrderFormComponent,
+    DashboardComponent,
     AutoCompleteComponent,
-    ProductStatComponent,
-    PrivacyPolicyComponent,
-    HomeComponent,
-   
+    InvoicePrintViewComponent,
+    NavigationComponent,
+    CustomerSummaryComponent, TallyConsoleComponent, VoucherTableComponent, VoucherSummaryComponent, CustomerEntryComponent, VoucherStatsComponent, InventoryBreakdownComponent, AddressSummaryComponent, InventoryDetailComponent, StockTransferTableComponent, CustomerTableComponent, VoucherFilterComponent, InventoryInfoComponent, AdminToolkitComponent, ProductProfileComponent, ChemicalGroupEntryComponent, ProductGroupTableComponent, ProductGroupEntryComponentsComponent, ProductProfileTableComponent, ProductProfileEntryComponentComponent, UserTableComponent, ChemicalGroupTableComponent, UserEntryComponentComponent, UserProfileComponent, SettingsComponent, PrintConfigurationEntryComponent, PrintConfigurationTableComponent, StockSummaryComponent, BatchTableComponent, ParticularTableComponent, InventoryTableComponent, BankAllocationComponent, BillAllocationComponent,AgroVoucherWizardComponent, VoucherSettingsComponent, CollectionComponent, StockCheckComponent, CustomerProfileComponent, StockCheckPrintViewComponent, AddressProfileComponent, CropEntryComponent, CropPatternEntryComponent, CropProfileComponent, CropProfileTableComponent, ItemMovementAnalysisComponent, MovementAnalysisComponent, MonthlySummaryComponent, LedgerMovementAnalysisComponent, BatchAllocationComponent, AccountingAllocationComponent, VoucherDetailComponent, BatchTransferComponent, HomeComponent, NotificationComponent, CropPatternSummaryComponent, CouponEntryComponent, ConnectComponent
   ],
   imports: [
-    BrowserAnimationsModule,
+    HttpClientModule,
     BrowserModule,
     AppRoutingModule,
-    HttpClientModule,
+    BrowserAnimationsModule,
     FormsModule,
-    ReactiveFormsModule,
-    MatTableModule,
-    MatPaginatorModule,
-    MatSortModule,
-    MatFormFieldModule,
+    NgxPrintModule,
+    BrowserAnimationsModule,
+    MatTableExporterModule,
+    MatGridListModule,
+    MatBadgeModule,
     MatInputModule,
-    MatButtonModule,
     MatIconModule,
+    MatListModule,
+    MatButtonModule,
+    MatRadioModule,
+    MatToolbarModule,
+    MatTooltipModule,
+    MatMenuModule,
+    MatStepperModule,
+    MatTabsModule,
+    MatSnackBarModule,
+    MatCardModule,
     MatDialogModule,
-    MatSidenavModule,
-    MatSelectModule,
+    MatProgressSpinnerModule,
+    ReactiveFormsModule,
     MatAutocompleteModule,
+    MatCheckboxModule,
+    MatSelectModule,
     MatDatepickerModule,
     MatNativeDateModule,
-    MatCardModule,
-    MatListModule,
-    MatToolbarModule,
-    StorageServiceModule,
-    ChartsModule,
-    MatProgressBarModule,
-    NgxPrintModule,
-    NgxBarcodeModule,
-    PapaParseModule,
-    MatTabsModule,
-    MatStepperModule,
-    MatCheckboxModule,
     MatExpansionModule,
-    MatProgressSpinnerModule,
-    MatMenuModule,
-    MatSnackBarModule,
-    
-
+    MatSlideToggleModule,
+    MatTableModule,
+    MatBottomSheetModule,
+    MatSortModule,
+    MatProgressBarModule,
+    MatSidenavModule,
+    MatPaginatorModule,
+    MatChipsModule,
+    LayoutModule,
+    ChartsModule,
+    RouterModule,
+    CommonModule,
+    NgxIndexedDBModule.forRoot(dbConfig),
+    ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production, registrationStrategy: 'registerImmediately' })
   ],
-  providers: [CookieService, ApiService, DatePipe, MatDialog, NgxImageCompressService,AgroStorageService, MatDialogConfig, {
-      provide: HTTP_INTERCEPTORS,
-      useClass: AgroInterceptor,
-    multi: true
-  } 
-    ],
-  bootstrap: [AppComponent],
-  entryComponents: [CreateCustomerFormComponent, CreateTaxDetailsFormComponent, InvoicePrintViewComponent, CashTenderedComponent, CreateStockItemFormComponent, CustomerTableComponent, ConfirmationBoxComponent, CreateAddressFormComponent,
-    PaymentOptionComponent, CustomerViewComponent, ProcessOrderFormComponent, CreateOrderFormComponent, ProductStatComponent]
+  providers: [ApiService, DatePipe,{
+    provide: HTTP_INTERCEPTORS,
+    useClass: AgroInterceptor,
+  multi: true
+}, { provide: MAT_DATE_LOCALE, useValue: 'en-GB' }],
+  entryComponents: [InvoicePrintViewComponent, VoucherSummaryComponent, CustomerEntryComponent, VoucherFilterComponent],
+
+  bootstrap: [AppComponent]
 })
 export class AppModule { }

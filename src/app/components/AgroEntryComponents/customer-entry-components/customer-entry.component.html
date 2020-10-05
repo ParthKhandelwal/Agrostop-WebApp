@@ -1,0 +1,52 @@
+<form #customerForm = "ngForm">
+  <div *ngIf = "this.customer">
+    <div class="row">
+        <div class="col">
+        <mat-form-field>
+          <input #createCustomerNameRef matInput required [(ngModel)] = "customer.name" placeholder="Enter Name"  name = "customerName" (keydown.enter) ="fatherNameRef.focus();false" >
+        </mat-form-field>
+        </div>
+        <div class="col">
+        <mat-form-field>
+          <input #fatherNameRef required matInput placeholder="Enter Father Name" name = "fatherName" [(ngModel)]="customer.fatherName" (keydown.enter) ="landHolding.focus();false">
+        </mat-form-field>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col">
+          <mat-form-field>
+          <input #landHolding type= "number" matInput [(ngModel)] = "customer.landHolding" placeholder="Enter Land Holding" name = "landHolding" (keydown.enter) ="phoneNumber.focus();false">
+        </mat-form-field>
+        </div>
+        <div class="col">
+          <mat-form-field>
+          <input minlength = "10" maxlength="10" #phoneNumber matInput placeholder="Enter Phone Number" name = "phoneNumber" [(ngModel)]="customer.phoneNumber" (keydown.enter) ="phoneNumberEntered()" type= "phoneNumber">
+          <mat-error *ngIf="!validPhoneNumber()">
+            Invalid Phone Number.
+          </mat-error>
+          
+        </mat-form-field>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col">
+          <auto-complete #addressAutoComp type="address" (optionSelected) = "customer.fullAddress = $event; this.customer.addressId = $event._id; saveButton.focus()"></auto-complete>
+        </div>
+        <div class="col">
+          <mat-form-field>
+          <input #consumerType placeholder="Customer Type" matInput type="text" readonly name = "customerType" [(ngModel)]="customer.gSTREGISTRATIONTYPE">
+        </mat-form-field>
+        </div>
+
+      </div>
+      <div class="row">
+        <div class="col">
+
+        </div>
+        <div class="col">
+          <button style="float: right;" #saveButton mat-raised-button color = "primary" [disabled] = "!validPhoneNumber()&& customerForm.invalid" (click) = "saveCustomer()">{{newCustomer? 'Save' : 'Edit'}}</button>
+
+        </div>
+      </div>
+  </div>
+</form>

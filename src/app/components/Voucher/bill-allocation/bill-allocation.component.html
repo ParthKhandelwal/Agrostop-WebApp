@@ -1,0 +1,69 @@
+<div class="col">
+    <div class="row">
+        <div class="col">
+            <mat-form-field>
+                <mat-select id = "ref" placeholder = "Select Type Ref." [(ngModel)] = "this.billAllocation.billType" (selectionChange) = "typeRefSelected()">
+                    <mat-option *ngFor = "let item of typeRef" [value] = "item">{{item}}</mat-option>
+                </mat-select>
+            </mat-form-field>
+        </div>
+        <div class="col">
+            <mat-form-field>
+                <input name = "name" id = "name" matInput placeholder="Enter Name" [(ngModel)] = "this.billAllocation.name" (keydown.enter) = "amount.focus()">
+            </mat-form-field>
+        </div>
+        <div class="col">
+            <mat-form-field>
+                <input #amount name = "amount" id = "amount" matInput placeholder="Enter Amount" [(ngModel)] = "this.billAllocation.amount" (keydown.enter) = "add()">
+            </mat-form-field>
+        </div>
+            
+            
+
+        
+    </div>
+
+    <div class="row">
+        <table #table style="width: 100%;" mat-table [dataSource]="ledger.BILLALLOCATIONS_LIST" class="mat-elevation-z8">
+
+            <!--- Note that these columns can be defined in any order.
+                  The actual rendered columns are set as a property on the row definition" -->
+          
+            <!-- Position Column -->
+            <ng-container matColumnDef="ref">
+              <th mat-header-cell *matHeaderCellDef> Type Ref. </th>
+              <td mat-cell *matCellDef="let element"> {{element.position}} </td>
+            </ng-container>
+          
+            <!-- Name Column -->
+            <ng-container matColumnDef="name">
+              <th mat-header-cell *matHeaderCellDef> Name </th>
+              <td mat-cell *matCellDef="let element"> {{element.name}} </td>
+            </ng-container>
+          
+            <!-- Weight Column -->
+            <ng-container matColumnDef="dueDate">
+              <th mat-header-cell *matHeaderCellDef> DueDate </th>
+              <td mat-cell *matCellDef="let element"> {{element.weight}} </td>
+            </ng-container>
+          
+            <!-- Symbol Column -->
+            <ng-container matColumnDef="amount">
+              <th mat-header-cell *matHeaderCellDef> Amount </th>
+              <td mat-cell *matCellDef="let element"> {{element.symbol}} </td>
+            </ng-container>
+
+            <ng-container matColumnDef="action">
+                <th mat-header-cell *matHeaderCellDef> Action </th>
+                <td mat-cell *matCellDef="let element; let i = index">
+                    <button mat-icon-button (click) = "delete(i)">
+                        <mat-icon>delete</mat-icon>
+                    </button>
+                </td>
+            </ng-container>
+          
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+          </table>
+    </div>
+</div>

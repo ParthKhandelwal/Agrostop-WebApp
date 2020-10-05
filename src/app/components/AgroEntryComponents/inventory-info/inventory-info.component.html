@@ -1,0 +1,69 @@
+<div class="col">
+    <div class="row">
+        <div class="col">
+            <auto-complete #productAutoComp  [listProvided] = "true"  type="product" (optionSelected) = "selectInventory($event)"></auto-complete>
+        </div>
+        <div class="col">
+            <mat-form-field>
+                <mat-label>Select a Price Level</mat-label>
+                <mat-select required name = "priceSelect" [(ngModel)] = "priceList" (selectionChange) = "false">
+                        <mat-option [value] = "null">Not Applicable</mat-option>
+                        <mat-option *ngFor = 'let v of auth.user.salesVoucherSettings.priceLists' [value] = "v">
+                            {{v}}
+                        </mat-option>
+                </mat-select>
+              </mat-form-field>
+        </div>
+    </div>
+    <div class="row" *ngIf = "item">
+        <div class="col">
+            <mat-form-field>
+                <input matInput [(ngModel)] = "item.NAME" name="itemName" readonly placeholder="Name">
+            </mat-form-field>
+        </div>
+
+        <div class="col">
+            <mat-form-field>
+                <input matInput [(ngModel)] = "item.parent" name="parent" readonly placeholder="Parent">
+            </mat-form-field>
+        </div>
+
+        <div class="col">
+            <mat-form-field>
+                <input matInput [(ngModel)] = "item.category" name="category" readonly placeholder="Category">
+            </mat-form-field>
+        </div>
+    </div>
+
+
+    <div class="row" *ngIf = "item">
+        <div class="col">
+            <mat-form-field>
+                <input matInput [value] = "item.getRate(priceList)" name="rateExc" readonly placeholder="Rate Exclusive of Tax">
+            </mat-form-field>
+        </div>
+
+        <div class="col">
+            <mat-form-field>
+                <input matInput [value] = "item.getRateInclusiveOfTax(item.getRate(priceList), '')" name="rateInc" readonly placeholder="Rate Inclusive of Tax">
+            </mat-form-field>
+        </div>
+
+        <div class="col">
+            <mat-form-field>
+                <input matInput [value] = "item.getHSNCODE()" name="hsn" readonly placeholder="HSN Code">
+            </mat-form-field>
+        </div>
+    </div>
+
+
+    <div  class="row">
+        <div *ngIf = "connectedToClient" class="col">
+            <button mat-raised-button color="accent" (click) = "update()">Update From Tally</button>
+        </div>
+
+        <div class="col">
+            <button mat-raised-button color="accent" (click) = "getUpdates()">Get Updates</button>
+        </div>
+    </div>
+</div>

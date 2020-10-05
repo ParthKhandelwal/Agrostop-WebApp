@@ -1,0 +1,16 @@
+.row-link:hover {
+  background-color: rgba(0, 0, 0, .05);
+  cursor: pointer;
+}
+
+.rowSelected{
+  background-color:green;
+  color: white;
+  cursor: pointer;
+}
+
+h1 {
+  text-align: center;
+  font-family: 'Bowlby One SC', cursive;
+  font-size: 7.5vmin;
+}

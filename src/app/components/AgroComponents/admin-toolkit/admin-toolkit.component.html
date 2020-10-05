@@ -1,0 +1,167 @@
+<div class="col">
+  <mat-dialog-content>
+
+
+    <div class = "row">
+        <span style="padding-left: 20px; font-size: 24px; color: whitesmoke"><strong>Vouchers</strong></span>
+    </div>
+    <div class="row">
+        <div class="col">
+            <button class="salesVoucher adminButton" mat-raised-button (click) = "navigateTo('agro-voucher')">
+                    <mat-icon style="font-size: 40px; padding-right: 40px;">receipt</mat-icon><br>
+                    <span style="font-size: 16px;"><strong>Voucher</strong></span>
+            </button>
+        </div>
+
+        <div class="col">
+            <button disabled class="paymentVoucher adminButton" mat-raised-button (click) = 'navigateTo("payment-voucher")'>
+                    <mat-icon style="font-size: 40px; padding-right: 40px;">payments</mat-icon><br>
+                    <span style="font-size: 16px;"><strong>Payment</strong></span>
+            </button>
+        </div>
+
+        <div class="col">
+            <button disabled class="receiptVoucher adminButton" mat-raised-button (click) = 'navigateTo("receipt-voucher")'>
+                    <mat-icon style="font-size: 40px; padding-right: 40px;">receipt_long</mat-icon><br>
+                    <span style="font-size: 16px;"><strong>Receipt</strong></span>
+            </button>
+        </div>
+
+        <div class="col">
+            <button disabled class="materialOutVoucher adminButton" mat-raised-button (click) = 'navigateTo("create-material-out")'>
+                    <mat-icon style="font-size: 40px; padding-right: 40px;">publish</mat-icon><br>
+                    <span style="font-size: 16px;"><strong>Material Out</strong></span>
+            </button>
+        </div>
+    </div>
+
+
+
+
+    <div class = "row">
+        <span style="padding-left: 20px; font-size: 24px; color: whitesmoke;"><strong>Reports</strong></span>
+    </div>
+    <div class="row">
+        <div class="col">
+            <button class="salesRegister adminButton" mat-raised-button (click) = 'navigateTo("daybook")'>
+                    <mat-icon style="font-size: 40px; padding-right: 40px;">menu_book</mat-icon><br>
+                    <span style="font-size: 16px;"><strong>Sales Register</strong></span>
+            </button>
+        </div>
+
+        <div class="col">
+            <button [disabled]  = "this.auth.user.role !='Admin' " class="customerSummary adminButton" mat-raised-button (click) = 'navigateTo("customer")'>
+                    <mat-icon style="font-size: 40px; padding-right: 40px;">supervisor_account</mat-icon><br>
+                    <span style="font-size: 16px;"><strong>
+                        Customer
+                    </strong></span>
+            </button>
+        </div>
+
+        <div class="col">
+            <button [disabled]  = "this.auth.user.role !='Admin' " class="addressSummary adminButton" mat-raised-button (click) = 'navigateTo("address-summary")'>
+                    <mat-icon style="font-size: 40px; padding-right: 40px;">business</mat-icon><br>
+                    <span style="font-size: 16px;"><strong>Address</strong></span>
+            </button>
+        </div>
+
+        <div class="col">
+            <button class="adminButton" mat-raised-button (click) = "navigateTo('stock-summary')" >
+                    <mat-icon style="font-size: 40px; padding-right: 40px;">receipt_long</mat-icon><br>
+                    <span style="font-size: 16px;"><strong>Stock</strong></span>
+            </button>
+        </div>
+    </div>
+    <div class="row" style="padding-top: 10px;">
+      <div class="col">
+        <button class="adminButton" mat-raised-button (click) = "navigateTo('movement-analysis')" >
+          <mat-icon style="font-size: 40px; padding-right: 40px;">all_inbox</mat-icon><br>
+          <span style="font-size: 16px;"><strong>M. Analysis</strong></span>
+        </button>
+      </div>
+    </div>
+
+
+
+
+
+
+    <div class = "row">
+        <span style="padding-left: 20px; font-size: 24px; color: whitesmoke;"><strong>Profiles</strong></span>
+    </div>
+    <div class="row">
+        <div class="col">
+            <button class="customerTable adminButton" mat-raised-button (click) = 'navigateTo("customer-profile")'>
+                    <mat-icon style="font-size: 40px; padding-right: 40px;">group</mat-icon><br>
+                    <span style="font-size: 16px;"><strong>Customer</strong></span>
+            </button>
+        </div>
+
+        <div class="col">
+            <button [disabled]  = "this.auth.user.role !='Admin' " class="addressTable adminButton" mat-raised-button (click) = 'navigateTo("address-profile")'>
+                    <mat-icon style="font-size: 40px; padding-right: 40px;">domain</mat-icon><br>
+                    <span style="font-size: 16px;"><strong>
+                        Address
+                    </strong></span>
+            </button>
+        </div>
+
+        <div class="col">
+            <button [disabled]  = "this.auth.user.role !='Admin' " class="productTable adminButton" mat-raised-button (click) = "navigateTo('product-profile')">
+                    <mat-icon style="font-size: 40px; padding-right: 40px;">spa</mat-icon><br>
+                    <span style="font-size: 16px;"><strong>Product</strong></span>
+            </button>
+        </div>
+
+        <div class="col">
+            <button [disabled]  = "this.auth.user.role !='Admin' " class="userTable adminButton" mat-raised-button (click) = "navigateTo('user-profile')">
+                    <mat-icon style="font-size: 40px; padding-right: 40px;">supervised_user_circle</mat-icon><br>
+                    <span style="font-size: 16px;"><strong>User</strong></span>
+            </button>
+        </div>
+    </div>
+    <div class="row" style="padding-top: 10px;">
+      <div class="col">
+        <button class="userTable adminButton" mat-raised-button (click) = "navigateTo('crop-profile')">
+                <mat-icon style="font-size: 40px; padding-right: 40px;">category</mat-icon><br>
+                <span style="font-size: 16px;"><strong>Crop Profile</strong></span>
+        </button>
+      </div>
+    </div>
+
+
+
+
+    <div class = "row" style="padding-top: 20px;">
+        <span style="padding-left: 20px; font-size: 24px; color: whitesmoke;"><strong>Settings</strong></span>
+    </div>
+    <div class="row">
+        <div class="col">
+            <button [disabled]  = "this.auth.user.role !='Admin' " class="printConfiguration adminButton" mat-raised-button (click) = 'navigateTo("settings")'>
+                    <mat-icon style="font-size: 40px; padding-right: 40px;">print</mat-icon><br>
+                    <span style="font-size: 16px;"><strong>Print Config</strong></span>
+            </button>
+        </div>
+
+        <div class="col">
+            <button class="printConfiguration adminButton" mat-raised-button (click) = 'navigateTo("dashboard")'>
+                    <mat-icon style="font-size: 40px; padding-right: 40px;">dashboard</mat-icon><br>
+                    <span style="font-size: 16px;"><strong>Dashboard</strong></span>
+            </button>
+        </div>
+        <div class="col">
+        </div>
+
+        <div class="col">
+          <button class="salesRegister adminButton" mat-raised-button (click) = 'auth.logOut();navigateTo("")'>
+                  <mat-icon style="font-size: 40px; padding-right: 40px;">exit_to_app</mat-icon><br>
+                  <span style="font-size: 16px;"><strong>logout</strong></span>
+          </button>
+      </div>
+
+    </div>
+
+
+  </mat-dialog-content>
+
+</div>

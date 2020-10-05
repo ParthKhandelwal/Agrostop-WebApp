@@ -1,0 +1,91 @@
+<div class="grid-container" >
+  <h1 class="mat-h1">Dashboard</h1>
+  <mat-grid-list cols="2" rowHeight="350px">
+    <mat-grid-tile *ngFor="let card of desktopCards" [colspan]="card.cols" [rowspan]="card.rows">
+      <mat-card class="dashboard-card">
+        <mat-card-header>
+          <mat-card-title>
+            {{card.title}}
+            <button mat-icon-button class="more-button" [matMenuTriggerFor]="menu" aria-label="Toggle menu">
+              <mat-icon>more_vert</mat-icon>
+            </button>
+            <mat-menu #menu="matMenu" xPosition="before">
+              <button mat-menu-item>Expand</button>
+              <button mat-menu-item>Remove</button>
+            </mat-menu>
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content [style.overflow]="'auto'" [style.height.px]="card.rows ==1 ? '250' : '540'">
+          <div>
+            <ng-container [ngSwitch] = "card.id">
+              <ng-container *ngSwitchCase = "'stock-transfer'">
+                <stock-transfer-table #stockTransferTable style="width: 100%;"></stock-transfer-table>
+              </ng-container>
+              <ng-container *ngSwitchCase = "'cloud-voucher'">
+                <voucher-table #voucherTable></voucher-table>
+              </ng-container>
+              <ng-container *ngSwitchCase = "'sync'">
+                <ng-container *ngTemplateOutlet="sync"></ng-container>
+              </ng-container>
+              <ng-container *ngSwitchCase = "'notification'">
+                <mat-form-field style="width: 100%;" *ngIf = "auth.isAdmin()">
+                  <input matInput placeholder="Enter notification" name = "notification" [(ngModel)] = "notification.narration">
+                  <button mat-icon-button (click) = "addNotification()" matSuffix>
+                    <mat-icon>send</mat-icon>
+                  </button>
+                </mat-form-field>
+                <ng-container *ngFor = "let n of notificationService.notifications">
+                  <mat-card style="padding-top: 10px;">
+                    <mat-card-subtitle>{{n.narration}}</mat-card-subtitle>
+                  </mat-card>
+                </ng-container>
+              </ng-container>
+            </ng-container>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </mat-grid-tile>
+  </mat-grid-list>
+</div>
+
+
+
+<ng-template #sync>
+  <div class="col">
+    <div class="row">
+      <div class="col">
+        <button *ngIf = "!syncService.addressLoading" class = "jumboButton" mat-raised-button (click) = "syncService.saveAddresses()">Addresses</button>
+        <mat-spinner *ngIf = "syncService.addressLoading" [diameter] = "100"></mat-spinner>
+      </div>
+      <div class="col">
+        <button class = "jumboButton" *ngIf = "!syncService.customerLoading" mat-raised-button (click) = "syncService.saveCustomers()">Customers</button>
+        <mat-spinner *ngIf = "syncService.customerLoading" [diameter] = "100"></mat-spinner>
+      </div>
+      <div class="col">
+        <button *ngIf = "!syncService.itemLoading" class = "jumboButton" mat-raised-button (click) = "syncService.saveItems()">Items</button>
+        <mat-spinner *ngIf = "syncService.itemLoading" [diameter] = "100"></mat-spinner>
+      </div>
+
+    </div>
+    <div class="row" style = "padding-top:20px">
+      <div class="col">
+        <button *ngIf = "!syncService.ledgerLoading" class = "jumboButton" mat-raised-button (click) = "syncService.saveLedgers()">Ledgers</button>
+        <mat-spinner *ngIf = "syncService.ledgerLoading" [diameter] = "100"></mat-spinner>
+
+      </div>
+      <div class="col">
+        <button *ngIf = "!syncService.printConfigLoading" class = "jumboButton" mat-raised-button (click) = "syncService.savePrinConfiguration()">Print Config</button>
+        <mat-spinner *ngIf = "syncService.printConfigLoading" [diameter] = "100"></mat-spinner>
+
+      </div>
+      <div class="col">
+        <button *ngIf = "!syncService.voucherTypeLoading" class = "jumboButton" mat-raised-button (click) = "syncService.saveVoucherTypes()">Voucher Types</button>
+        <mat-spinner *ngIf = "syncService.voucherTypeLoading" [diameter] = "100"></mat-spinner>
+
+      </div>
+
+    </div>
+  </div>
+
+
+</ng-template>

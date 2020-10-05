@@ -1,0 +1,136 @@
+<div *ngIf = "!notVisible">
+
+
+<mat-form-field *ngIf = "type=='customer'">
+    <input #customerField type="text"
+           placeholder="Select Customer"
+           matInput
+           [formControl]="customerControl"
+
+           [matAutocomplete]="auto"
+           name = "customer">
+           <button *ngIf = "!this.service.customerLoading" mat-button matSuffix mat-icon-button aria-label="Clear" (click)="this.service.saveCustomers()">
+            <mat-icon>sync</mat-icon>
+          </button>
+          <mat-spinner *ngIf = "this.service.customerLoading" matSuffix [diameter]="18" style="float: right; margin-left: 8px"></mat-spinner>
+    <mat-autocomplete autoActiveFirstOption [panelWidth]="500"
+                      #auto="matAutocomplete"
+                      (optionSelected) = "optionSelected.emit($event)"
+                      [displayWith]="displayFnCustomer">
+
+
+      <mat-option *ngFor="let option of customerFilteredOptions | async" [value]="option">
+        <div class="far-end">
+          <span class="space-reducer" style = "font-size: 14px !important;">{{option.name}}, S/O {{option.fatherName}}</span>
+          <span class="space-reducer"><strong>Address: </strong>{{option.fullAddress?option.fullAddress.name: ""}} </span>
+        </div>
+
+
+      </mat-option>
+      <mat-option [value] = "customerField.value">Not Available</mat-option>
+    </mat-autocomplete>
+  </mat-form-field>
+
+
+
+
+
+
+  <mat-form-field *ngIf = "type == 'product'">
+    <input #invField
+     type="text"
+           placeholder="Pick one"
+           matInput
+           name = "selectProductAuto"
+           [formControl]="productControl"
+           [matAutocomplete]="productAuto"
+           style="width:100% !important" >
+           <button mat-button *ngIf = "!this.service.itemLoading" matSuffix mat-icon-button aria-label="Clear" (click)="this.service.saveItems()">
+            <mat-icon>sync</mat-icon>
+          </button>
+          <mat-spinner *ngIf = "this.service.itemLoading" matSuffix [diameter]="18" style="float: right; margin-left: 8px"></mat-spinner>
+
+    <mat-autocomplete  [panelWidth]="500" #productAuto="matAutocomplete" position = "above"
+    (optionSelected) = "optionSelected.emit($event.option.value)"
+                      [displayWith]= "displayFnProduct" autoActiveFirstOption>
+
+      <mat-option [value]="endVoucher">
+        <th scope="row">
+
+              <h4 class="mb-0 font-weight-bold">{{endVoucher.NAME}}</h4>
+
+        </th>
+      </mat-option>
+      <mat-option *ngFor="let option of productFilteredOptions | async" [value]="option">
+        <th scope="row">
+
+              <h4 class="mb-0 font-weight-bold">{{option.NAME}}</h4>
+
+        </th>
+      </mat-option>
+    </mat-autocomplete>
+  </mat-form-field>
+
+
+
+  <mat-form-field *ngIf = "type == 'ledger'">
+    <input #ledgerField
+     type="text"
+           placeholder="Pick one"
+           matInput
+           name = "selectLedgerAuto"
+           [formControl]="ledgerControl"
+           [matAutocomplete]="ledgerAuto"
+           style="width:100% !important" >
+           <button mat-button *ngIf = "!this.service.ledgerLoading" matSuffix mat-icon-button aria-label="Clear" (click)="this.service.saveLedgers()">
+            <mat-icon>sync</mat-icon>
+          </button>
+          <mat-spinner *ngIf = "this.service.ledgerLoading" matSuffix [diameter]="18" style="float: right; margin-left: 8px"></mat-spinner>
+
+    <mat-autocomplete  [panelWidth]="600" #ledgerAuto="matAutocomplete" position = "above"
+    (optionSelected) = "optionSelected.emit($event.option.value)"
+                      [displayWith]= "displayFnLedger" autoActiveFirstOption>
+
+
+      <mat-option *ngFor="let option of ledgerFilteredOptions | async" [value]="option">
+        <th scope="row">
+          <div class="p-2">
+            <div class="ml-3 d-inline-block align-middle">
+              <h4 class="mb-0 font-weight-bold">{{option.NAME}}</h4>
+            </div>
+          </div>
+        </th>
+      </mat-option>
+    </mat-autocomplete>
+  </mat-form-field>
+
+
+  <mat-form-field *ngIf = "type == 'address'">
+    <mat-label>Pick an Address</mat-label>
+    <input #addressField type="text"
+           name = "address"
+           matInput
+           required
+           [formControl]="addressControl"
+           [(ngModel)] = "address"
+           [matAutocomplete]="auto">
+           <button disabled *ngIf = "!this.service.addressLoading" matSuffix mat-icon-button (click)="this.service.saveAddresses()">
+            <mat-icon>sync</mat-icon>
+          </button>
+          <mat-spinner *ngIf = "this.service.addressLoading" matSuffix [diameter]="18" style="float: right; margin-left: 8px"></mat-spinner>
+
+    <mat-autocomplete [panelWidth]="600" #auto="matAutocomplete"
+                      [displayWith]= "displayFnAddress" (optionSelected) = "optionSelected.emit($event.option.value)">
+
+      <mat-option *ngFor="let option of addressFilteredOptions | async" [value]="option">
+        <th scope="row">
+          <div class="p-2">
+            <div class="ml-3 d-inline-block align-middle">
+              <h5 class="mb-0 font-weight-bold">{{option.name}}, {{option.tehsilName}}, {{option.districtName}}, {{option.stateName}}</h5>
+            </div>
+          </div>
+        </th>
+      </mat-option>
+    </mat-autocomplete>
+  </mat-form-field>
+</div>

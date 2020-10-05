@@ -1,0 +1,101 @@
+<div class="row" style="width: 1200px;">
+    <div class="col-sm-4">
+        <div class="row">
+            <div class="col-sm-8">
+                <auto-complete *ngIf = "!edit" #productAutoComp  [listProvided] = "true"  type="product" (optionSelected) = "selectInventory($event)"></auto-complete>
+                <mat-form-field *ngIf = "edit">
+                    <input matInput placeholder="Enter Name" [(ngModel)] = "productProfile.name" name = "name" readonly>
+                </mat-form-field>
+            </div>
+            <div class="col-sm-4" style="padding-top: 10px;">
+                <button  mat-raised-button (click) = "save()" color = "primary">Save</button>
+            </div>
+        </div>
+        <div class="row" *ngIf = "this.productProfile">
+            <div class="col">
+                <mat-form-field>
+                    <mat-select placeholder = "Select Product Group" name = "group" [(ngModel)] = "productProfile.productGroup">
+                        <mat-option *ngFor = "let item of productGroups" [value] = "item">{{item}}</mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+            <div class="col">
+                <mat-form-field>
+                    <input type="number" matInput placeholder="Enter Unit Conversion" [(ngModel)] = "productProfile.unitConversion" name = "unitConversion">
+                </mat-form-field>
+            </div>
+            
+            
+        </div>
+        
+    </div>
+    <div class="col-sm-8">
+        <div class="row" *ngIf = "this.productProfile"> 
+
+            <div class="col-sm-4">
+                <mat-form-field>
+                    <mat-label>Choose starting date</mat-label>
+                    <input matInput name = "startingDate" [(ngModel)] = "loyalty.startingDate" [matDatepicker]="startingDatePicker">
+                    <mat-datepicker-toggle matSuffix [for]="startingDatePicker"></mat-datepicker-toggle>
+                    <mat-datepicker #startingDatePicker></mat-datepicker>
+                </mat-form-field>
+                  
+            </div>
+            <div class="col-sm-4">
+                <mat-form-field>
+                    <mat-label>Choose ending date</mat-label>
+                    <input matInput name = "endingDate" [(ngModel)] = "loyalty.endingDate" [matDatepicker]="endingDatePicker">
+                    <mat-datepicker-toggle matSuffix [for]="endingDatePicker"></mat-datepicker-toggle>
+                    <mat-datepicker #endingDatePicker></mat-datepicker>
+                </mat-form-field>
+            </div>
+            <div class="col-sm-2">
+                <mat-form-field style="width: 100px;">
+                    <input type="number" matInput placeholder="Loyalty Points" [(ngModel)] = "loyalty.points" name = "points">
+                </mat-form-field>
+            </div>
+            <div class="col-sm-1">
+                <div style="padding-top: 8px;">
+                    <button *ngIf = "loyalty.startingDate && loyalty.endingDate && loyalty.points" mat-icon-button (click) ="addLoyalty()">
+                        <mat-icon>add</mat-icon>
+                    </button>
+                </div>
+                
+            </div>
+        </div>
+        <div class="row" style="width: 100%; padding-left: 10px;" *ngIf = "this.productProfile">
+            <mat-table #table style="width: 100%;" [dataSource]="this.productProfile.loyaltyPointDetailList" class="mat-elevation-z8">
+                <!-- Position Column -->
+                <ng-container matColumnDef="startingDate">
+                  <mat-header-cell *matHeaderCellDef> Starting Date </mat-header-cell>
+                  <mat-cell *matCellDef="let element"> {{element.startingDate | date: 'dd-MMM-yyyy'}} </mat-cell>
+                </ng-container>
+              
+                <!-- Name Column -->
+                <ng-container matColumnDef="endingDate">
+                  <mat-header-cell *matHeaderCellDef> Ending Date </mat-header-cell>
+                  <mat-cell *matCellDef="let element"> {{element.endingDate | date:'dd-MMM-yyyy'}} </mat-cell>
+                </ng-container>
+              
+                <!-- Weight Column -->
+                <ng-container matColumnDef="points">
+                  <mat-header-cell *matHeaderCellDef> Points </mat-header-cell>
+                  <mat-cell *matCellDef="let element"> {{element.points}} </mat-cell>
+                </ng-container>
+                <!-- Weight Column -->
+                <ng-container matColumnDef="action">
+                    <mat-header-cell *matHeaderCellDef> Action </mat-header-cell>
+                    <mat-cell *matCellDef="let element, let index">
+                        <button mat-icon-button (click) ="deleteLoyaltyEntry(index)">
+                            <mat-icon>delete</mat-icon>
+                          </button>
+                    </mat-cell>
+                </ng-container>
+              
+                <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+                <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+              </mat-table>
+        </div>
+    </div>
+
+</div>

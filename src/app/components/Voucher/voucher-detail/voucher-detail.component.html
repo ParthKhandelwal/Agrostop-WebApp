@@ -1,0 +1,114 @@
+<ng-container [ngSwitch] = "service.voucherParentType">
+  <ng-container *ngSwitchCase = "voucherParent.Purchase">
+    <div class="col">
+     <div class="row">
+       <div class="col">
+        <auto-complete id="primary" #ledgerAutoComp type = "ledger" (optionSelected) = "ledgerSelected($event.NAME);"></auto-complete>
+       </div>
+     </div>
+     <div class="row">
+       <div class="col">
+         <mat-form-field>
+           <input id = "reference" matInput placeholder="Enter Reference Number" [(ngModel)] = "this.service.voucher.REFERENCE" name = "reference" (keydown.enter) = "refdate.focus()">
+         </mat-form-field>
+       </div>
+       <div class="col">
+        <mat-form-field>
+          <mat-label>Reference date</mat-label>
+          <input #refdate id="refdate" matInput [(ngModel)] = "this.service.voucher.REFERENCEDATE" [matDatepicker]="picker"  (dateChange) = "complete.emit('complete')" (keydown.enter) = "refdate.value?complete.emit('complete'):false">
+          <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+        </mat-form-field>
+      </div>
+     </div>
+     <div class="row">
+       <div class="col">
+        <mat-form-field>
+          <input id = "gstin" matInput placeholder="Enter Party GSTin" [(ngModel)] = "this.service.voucher.PARTYGSTIN" name = "gstin" (keydown.enter) = "complete.emit('complete')">
+        </mat-form-field>
+       </div>
+     </div>
+     <div class="row">
+       <ng-container *ngTemplateOutlet = "ledgerMovementAnalysis"></ng-container>
+     </div>
+    </div>
+
+  </ng-container>
+
+  <ng-container *ngSwitchCase = "voucherParent.Contra">
+    <div class="col">
+      <div class="row">
+          <auto-complete id="primary" #ledgerAutoComp type = "ledger" [ledgerParent] = "this.service.contraLedger" (optionSelected) = "service.setPrimaryLedger($event.NAME);complete.emit('complete');" ></auto-complete>
+      </div>
+    </div>
+  </ng-container>
+  <ng-container *ngSwitchCase = "voucherParent.Payment">
+    <div class="col">
+      <div class="row">
+          <auto-complete id="primary" #ledgerAutoComp type = "ledger" (optionSelected) = "service.setPrimaryLedger($event.NAME);complete.emit('complete')"></auto-complete>
+      </div>
+    </div>
+  </ng-container>
+  <ng-container *ngSwitchCase = "voucherParent.Receipt">
+    <div class="col">
+      <div class="row">
+          <auto-complete id="primary" #ledgerAutoComp type = "ledger" (optionSelected) = "service.setPrimaryLedger($event.NAME);complete.emit('complete');"></auto-complete>
+      </div>
+    </div>
+  </ng-container>
+  <ng-container *ngSwitchCase = "voucherParent.Sales">
+    <div class="col">
+      <div class="row">
+          <div class="col">
+            <auto-complete id="primary" #ledgerAutoComp type = "customer" (optionSelected) = "selectCustomer($event);"></auto-complete>
+          </div>
+          <div class="col">
+            <mat-form-field *ngIf = "!this.service.godown">
+              <mat-select placeholder="Select Godown" [(ngModel)] = "this.service.godown" name = "godown" >
+                <mat-option *ngFor = "let item of auth.user.godownList" [value] = "item">{{item}}</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+      </div>
+      <div class="row">
+        <div class="col">
+          <div class="row">
+            <mat-form-field style="width: 100%;">
+              <input matInput placeholder="Enter Basic Buyer Name" [(ngModel)] = "this.service.voucher.BASICBUYERNAME" name = "basicbuyername">
+            </mat-form-field>
+          </div>
+
+        </div>
+        <div class="col">
+          <div class="row">
+          </div>
+        </div>
+
+      </div>
+      <div class="row" *ngIf = "this.service.voucher.BASICBUYERNAME">
+        <app-customer-summary  style="width: 100%;" [canChange] = 'false' *ngIf = "this.service.customer && this.auth.user.role =='Admin'" [(customer)] = "this.service.customer"></app-customer-summary>
+      </div>
+    </div>
+  </ng-container>
+  <ng-container *ngSwitchCase = "voucherParent.Journal">
+    <div class="col">
+      <div class="row">
+        <span><strong>*Please proceed to the next step</strong></span>
+      </div>
+    </div>
+  </ng-container>
+  <ng-container *ngSwitchCase = "voucherParent.Material_Out">
+    <div class="col">
+      <div class="row">
+        <auto-complete id="primary" #ledgerAutoComp type = "ledger" (optionSelected) = "service.setPrimaryLedger($event.NAME);complete.emit('complete')"></auto-complete>
+      </div>
+    </div>
+  </ng-container>
+</ng-container>
+
+
+
+<ng-template #ledgerMovementAnalysis>
+  <span style="font-size: larger;">Ledger Summary</span>
+  <ledger-movement-analysis [oneLedger] = "true" style="width: 100%; padding-top: 20px;" #ledgerSummary type = "ledger" ></ledger-movement-analysis>
+</ng-template>

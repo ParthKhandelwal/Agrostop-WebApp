@@ -1,0 +1,58 @@
+<div class="col">
+    <div class="row">
+        <auto-complete #customerAuto type="address" (optionSelected) = "addressSelected($event)"></auto-complete>
+    </div>
+    <div class="row">
+        <div class="col">
+            <mat-card>
+                <mat-card-header>
+                    <mat-card-title>{{customerCount}}</mat-card-title>
+                    <mat-card-subtitle>Customer Count</mat-card-subtitle>
+                </mat-card-header>
+            </mat-card>
+        </div>
+        <div class="col">
+            <mat-card>
+                <mat-card-header>
+                    <mat-card-title>{{landHoldingCount}}</mat-card-title>
+                    <mat-card-subtitle>Total Land Holding</mat-card-subtitle>
+                </mat-card-header>
+            </mat-card>
+        </div>
+        <div class="col">
+            <mat-card>
+                <mat-card-header>
+                    <mat-card-title>{{(landHoldingCount / customerCount)? (landHoldingCount / customerCount) : 0}}</mat-card-title>
+                    <mat-card-subtitle>Average Land Holding</mat-card-subtitle>
+                </mat-card-header>
+            </mat-card>
+        </div>
+        <div class="col">
+            <mat-card>
+                <mat-card-header>
+                    <mat-card-title>{{(voucherStats.totalSale / landHoldingCount) ? (voucherStats.totalSale / landHoldingCount) : 0  | currency: 'INR'}}</mat-card-title>
+                    <mat-card-subtitle>Expense per unit Land Holding</mat-card-subtitle>
+                </mat-card-header>
+            </mat-card>
+        </div>
+    </div>
+    <div class="row" style="padding-top: 20px;">
+        <voucher-stats #voucherStats [(vouchers)] = "vouchers" style="width: 100%;"></voucher-stats>
+    </div>
+    <mat-tab-group>
+        <mat-tab label="Voucher Summary">
+            <div class = "row" style="padding-top: 50px;">
+                <div class="col">
+                    <voucher-table #voucherTable [vouchers] = "vouchers"></voucher-table>
+                </div>
+
+            </div>
+        </mat-tab>
+        <mat-tab label="Customer Summary">
+            <customer-table #customerTable [(customers)] = "this.customers"></customer-table>
+        </mat-tab>
+
+    </mat-tab-group>
+
+
+</div>

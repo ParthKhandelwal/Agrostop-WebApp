@@ -1,0 +1,9 @@
+
+    
+
+    @media print{
+      #detailViewTable {
+        overflow: visible !important;
+    
+      }
+    }

@@ -1,0 +1,80 @@
+<div class="row" style="width: 1200px;">
+    <div class="col">
+        <div class="row">
+            <div class="col">
+                <mat-form-field>
+                    <input matInput placeholder="Enter Name" name = "name" [(ngModel)] = "this.productGroup.name" required>
+                </mat-form-field>
+            </div>
+            <div class="col">
+                <mat-form-field>
+                    <input matInput placeholder="Enter Company Name" name = "companyname" [(ngModel)] = "this.productGroup.companyName" required>
+                </mat-form-field>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <mat-form-field>
+                    <input matInput placeholder="Enter Category Name" name = "categoryname" [(ngModel)] = "this.productGroup.categoryName" required>
+                </mat-form-field>
+            </div>
+            <div class="col">
+                <mat-form-field>
+                    <input matInput placeholder="Enter Unit" name = "unit" [(ngModel)] = "this.productGroup.unit" required>
+                </mat-form-field>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <mat-form-field style="width: 100%;">
+                    <mat-label>Enter Description</mat-label>
+                    <textarea [(ngModel)] = "this.productGroup.description" matInput placeholder="Ex. It can be used in dry weather..."></textarea>
+                </mat-form-field>
+            </div>
+        </div>
+    </div>
+    <div class="col">
+        <mat-form-field style="width: 100%;">
+            <mat-chip-list #chipList aria-label="Fruit selection">
+              <mat-chip
+                *ngFor="let item of productGroup.technicalSet"
+                selectable
+                removable
+                (removed)="remove(item)">
+                {{item}}
+                <mat-icon matChipRemove>cancel</mat-icon>
+              </mat-chip>
+              <input
+                placeholder="Add chemical group"
+                #fruitInput
+                [formControl]="fruitCtrl"
+                [matAutocomplete]="auto"
+                [matChipInputFor]="chipList"
+                (matChipInputTokenEnd)="add($event)">
+                <button mat-button matSuffix mat-icon-button aria-label="Clear" (click)="addChemicalGroup()">
+                    <mat-icon>add</mat-icon>
+                </button>
+            </mat-chip-list>
+            
+            <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete" (optionSelected)="selected($event)">
+              <mat-option *ngFor="let item of filteredChemicals | async" [value]="item.name">
+                {{item.name}}
+              </mat-option>
+            </mat-autocomplete>
+          </mat-form-field>
+          
+    </div>
+    <div class="col">
+        <img style="width: 300px;" src="{{this.productGroup.image}}"/>
+    </div>
+</div>
+<div class="row">
+    <div class="col">
+        <button  mat-raised-button (click) = "delete()" color= "accent">Delete</button>
+    </div>
+    <div class="col">
+        <button style="float: right;" mat-raised-button (click) = "save()" color= "primary">Save</button>
+    </div>
+
+   
+</div>

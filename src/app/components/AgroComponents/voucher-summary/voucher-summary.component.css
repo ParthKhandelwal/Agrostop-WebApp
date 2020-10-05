@@ -1,0 +1,15 @@
+.mat-column-name {
+  flex: 0 0 70% !important;
+  width: 70% !important;
+}
+
+
+.mat-column-qty {
+  width: 10% !important;
+}
+
+.mat-column-rate {
+  width: 20% !important;
+}
+
+

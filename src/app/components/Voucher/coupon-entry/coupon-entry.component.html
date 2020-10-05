@@ -1,0 +1,43 @@
+<div class="row">
+  <div *ngIf = "!ledgerSelection" class="col">
+    <div class="card bg-default shadow">
+      <div class="card-header bg-transparent border-0">
+        <h3 class="text-white mb-0">Coupons</h3>
+      </div>
+      <div class="table-responsive">
+        <table class="table align-items-center table-dark table-flush">
+          <thead class="thead-dark">
+            <tr>
+              <th scope="col">Valid Upto</th>
+              <th scope="col">Offer Amount</th>
+              <th scope="col">Redeem</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor = "let coupon of this.service.coupons">
+              <th scope="row">
+                <div class="media align-items-center">
+
+
+                  <div class="media-body">
+                    <span class="mb-0 text-sm">{{coupon.validTill| date: "MMM dd, yyyy"}}</span>
+                  </div>
+                </div>
+              </th>
+              <td>
+                {{coupon.couponAmount | currency: "INR"}}
+              </td>
+              <td class="text-right">
+                <button mat-icon-button (click) = "couponSelected(coupon)" >
+                  <mat-icon>redeem</mat-icon>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <auto-complete *ngIf = "ledgerSelection" id="primary" #ledgerAutoComp type = "ledger" (optionSelected) = "addLedger(ledgerAutoComp.ledgerControl.value.NAME)" ></auto-complete>
+</div>

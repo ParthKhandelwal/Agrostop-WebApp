@@ -1,0 +1,54 @@
+<div class="col" style="padding: 20px 20px 20px 20px;">
+
+    <div class="row">
+      <ng-container *ngIf="!oneLedger">
+      <div class="col">
+        <auto-complete #productAutoComp [listProvided]="true" type="ledger" (optionSelected)="ledger = $event.NAME; from.focus()">
+        </auto-complete>
+      </div>
+    </ng-container>
+      <div class="col">
+        <mat-form-field>
+          <mat-label>From</mat-label>
+          <input #from matInput [matDatepicker]="frompicker" (dateChange)="to.focus()" [(ngModel)]="fromDate"
+            (keydown.enter)="from.value?to.focus():false">
+          <mat-datepicker-toggle matSuffix [for]="frompicker"></mat-datepicker-toggle>
+          <mat-datepicker #frompicker></mat-datepicker>
+        </mat-form-field>
+      </div>
+      <div class="col">
+        <mat-form-field>
+          <mat-label>To</mat-label>
+          <input #to matInput [matDatepicker]="topicker" (dateChange)="applyBtn.focus()" [(ngModel)]="toDate">
+          <mat-datepicker-toggle matSuffix [for]="topicker"></mat-datepicker-toggle>
+          <mat-datepicker #topicker></mat-datepicker>
+        </mat-form-field>
+      </div>
+      <div class="col">
+        <button #applyBtn mat-raised-button color="primary"
+          (click)="apply(ledger)">Apply</button>
+      </div>
+    </div>
+
+
+  <div class="row">
+    <mat-tab-group *ngIf = "!loading && ledgerSummaryList.length>0" mat-stretched-tabs style="width: 100%;">
+      <mat-tab *ngFor="let item of ledgerSummaryList;let i = index">
+        <ng-template mat-tab-label>
+          {{item.item}}<br>
+          {{item.fromDate | date:'MMM dd, yyyy'}} - {{item.toDate | date:'MMM dd, yyyy'}}
+        </ng-template>
+        <app-monthly-summary type="ledger" [(data)]="item.data">
+          <button mat-icon-button (click)="ledgerSummaryList.splice(i,1)">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </app-monthly-summary>
+      </mat-tab>
+    </mat-tab-group>
+    <div class="mx-auto" *ngIf = "loading || ledgerSummaryList.length == 0" style="height: 350px; padding-top: 50px;">
+      <p *ngIf = "!loading && ledgerSummaryList.length == 0">Please select a ledger to view its summary</p>
+      <mat-spinner *ngIf = "loading" diameter = "100"></mat-spinner>
+    </div>
+  </div>
+
+</div>

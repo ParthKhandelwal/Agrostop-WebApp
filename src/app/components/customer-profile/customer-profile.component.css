@@ -1,0 +1,5 @@
+#loading{
+    /* background-image: url("assets/img/waiting.png"); */
+    background-size: cover;
+    animation: zoomIn;
+}

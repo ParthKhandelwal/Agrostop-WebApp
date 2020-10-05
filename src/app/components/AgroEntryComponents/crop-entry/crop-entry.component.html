@@ -1,0 +1,72 @@
+
+
+
+
+
+
+<div class="col">
+  <div class="row">
+    <mat-form-field style="width: 100%;">
+      <input matInput placeholder="Enter Crop Name" name = "name" [(ngModel)] = "crop.name" required (keydown.enter) = "nameEntered()">
+    </mat-form-field>
+  </div>
+
+  <div class="row">
+    <div class="col-4">
+      <mat-form-field>
+        <input matInput id = "varName" placeholder="Enter Crop Variety" name = "varietyname" [(ngModel)] = "cropVariety.name" required (keydown.enter) = "narration.focus(); false">
+      </mat-form-field>
+    </div>
+    <div class="col-8">
+      <mat-form-field>
+        <input #narration matInput id = "narration" placeholder="Enter Narration" name = "narration" [(ngModel)] = "cropVariety.narration" (keydown.enter) = "addVariety();false">
+      </mat-form-field>
+    </div>
+  </div>
+  <div class="row">
+
+    <div class="mat-elevation-z8">
+      <table #table style="width: 100%;" mat-table [dataSource]="crop.varieties" matSort>
+
+        <!-- ID Column -->
+        <ng-container matColumnDef="name">
+          <th mat-header-cell *matHeaderCellDef> Name </th>
+          <td mat-cell *matCellDef="let row"> {{row.name}} </td>
+        </ng-container>
+
+        <!-- Progress Column -->
+        <ng-container matColumnDef="narration">
+          <th mat-header-cell *matHeaderCellDef> Narration </th>
+          <td mat-cell *matCellDef="let row"> {{row.narration}} </td>
+        </ng-container>
+
+        <!-- Name Column -->
+        <ng-container matColumnDef="action">
+          <th mat-header-cell *matHeaderCellDef> Action </th>
+          <td mat-cell *matCellDef="let row; let i = index">
+            <button mat-icon-button (click) = "deleteVariety(i)"><mat-icon>delete</mat-icon></button>
+          </td>
+        </ng-container>
+
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+      </table>
+
+      <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col">
+
+    </div>
+    <div class="col">
+      <button style="float: right;" #saveButton mat-raised-button color = "primary" [disabled] = "!crop.name" (click) = "save()">Save</button>
+
+    </div>
+  </div>
+</div>
+
+
+

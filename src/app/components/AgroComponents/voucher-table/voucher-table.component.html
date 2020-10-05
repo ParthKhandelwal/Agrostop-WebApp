@@ -1,0 +1,227 @@
+
+
+<div class="col">
+  <div class="row">
+    <div class="col">
+      <button id = "filterButton" mat-icon-button style="float: left;" (click) = "drawer.toggle()">
+        <mat-icon>filter_alt</mat-icon>
+      </button>
+      <button id = "filterButton" mat-icon-button style="float: left;" (click) = "reset()">
+        <mat-icon>cached</mat-icon>
+      </button>
+    </div>
+    <div class="col-6">
+      <ng-content></ng-content>
+    </div>
+    <div class="col">
+      <span style="float: right; padding-top: 10px;">Total: <strong>{{getTotal() | currency: 'INR'}}</strong></span>
+    </div>
+
+  </div>
+
+
+
+
+  <mat-drawer-container class="example-container" hasBackdrop = 'false'>
+    <mat-drawer #drawer mode="push">
+              <div class="col">
+
+
+                  <div class="row">
+                    <div class="col">
+                      <mat-form-field>
+                        <mat-select name = "filterField" (selectionChange) = "filterFieldSelected($event.value.value);" placeholder = "Select Filter Field" [formControl] = "filterFieldFC">
+                          <mat-option *ngFor = "let item of filterMap|keyvalue" [value] = "item"> {{item.key}}</mat-option>
+                        </mat-select>
+                      </mat-form-field>
+                    </div>
+                    <div class="col">
+                      <div *ngIf = "filterFieldFC.value">
+                        <mat-form-field  *ngIf = "filterFieldFC.value.key != 'Amount Greater Than' && filterFieldFC.value.key != 'Amount Smaller Than'">
+
+                          <input id ="field" type="text"
+                                 placeholder = "Select Filter Value"
+                                 matInput
+                                 (keyup.enter) = "filter();false"
+                                 [formControl]="filterValueFC"
+                                 [matAutocomplete]="auto">
+                          <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete">
+                            <mat-option *ngFor="let option of filteredOptions | async" [value]="option">
+                              {{option}}
+                            </mat-option>
+                          </mat-autocomplete>
+                        </mat-form-field>
+                        <mat-form-field *ngIf = "filterFieldFC.value.key == 'Amount Greater Than' || filterFieldFC.value.key == 'Amount Smaller Than'">
+                          <input id ="field" (keyup.enter) = "filter();false" type = 'number' matInput name = "filterVAlueText" placeholder = "Select Filter Value" [formControl] = "filterValueFC">
+
+                        </mat-form-field>
+                      </div>
+
+                    </div>
+
+                  </div>
+                  <div class = "row">
+                    <div class="col" >
+                      <button mat-raised-button  color = "primary" (click) = "filter()">Apply</button>
+                    </div>
+                    <div class="col">
+                      <button mat-raised-button  color = "accent" (click) = "reset()">Reset</button>
+                    </div>
+                    <div class="col">
+                      <button mat-raised-button  color = "warn" (click) = "addForAnanlysis(tab)">Analyse</button>
+                    </div>
+                  </div>
+              </div>
+
+    </mat-drawer>
+    <mat-drawer-content>
+      <mat-tab-group #tab  mat-stretch-tabs style="width: 100%;" (selectedTabChange) = "handleTabSelection($event)">
+        <mat-tab label="Voucher Breakdown">
+          <mat-progress-bar *ngIf = "loading" mode="indeterminate"></mat-progress-bar>
+          <table #table style="width: 100%;" mat-table [dataSource]="this.voucherDataSource" matSort class="mat-elevation-z8">
+                        <ng-container matColumnDef="date">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header> Date <br> Status </th>
+              <td mat-cell *matCellDef="let voucher">
+                {{ voucher.DATE | date: "dd-MMM-yyyy"}}<br>
+                <span *ngIf = "voucher.savedToTally" class="badge badge-success">Tally</span>
+                <span  *ngIf = "!voucher.savedToTally" class="badge badge-warning">Cloud</span>
+              </td>
+              <td mat-footer-cell *matFooterCellDef> </td>
+            </ng-container>
+
+            <!-- VoucherNumber Column -->
+            <ng-container matColumnDef="voucherNumber">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header> Voucher Number <br> Voucher Type </th>
+              <td mat-cell *matCellDef="let voucher">
+                {{voucher.VOUCHERNUMBER}} <br>
+                <span [class]="voucher.classname">{{voucher.VOUCHERTYPENAME}}</span>
+              </td>
+              <td mat-footer-cell *matFooterCellDef> <strong>Total</strong> </td>
+
+            </ng-container>
+
+            <!-- Customer Name Column -->
+            <ng-container matColumnDef="customer">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header> Customer </th>
+              <td mat-cell *matCellDef="let voucher">
+                {{ voucher.ADDRESS_LIST? voucher.ADDRESS_LIST.ADDRESS[0]:""}}   <br>
+                {{ voucher.ADDRESS_LIST? voucher.ADDRESS_LIST.ADDRESS[1]:""}}
+
+              </td>
+              <td mat-footer-cell *matFooterCellDef> </td>
+
+            </ng-container>
+
+            <!-- Address Column -->
+            <ng-container matColumnDef="address">
+              <th mat-header-cell *matHeaderCellDef> Payment Type </th>
+              <td mat-cell *matCellDef="let voucher">
+                <ng-container *ngFor = "let led of getLedgers(voucher)">
+                    <span class="badge ledger" >{{led.LEDGERNAME}}</span><br>
+
+                </ng-container>
+              </td>
+              <td mat-footer-cell *matFooterCellDef></td>
+
+            </ng-container>
+
+            <!-- Amount Column -->
+            <ng-container matColumnDef="amount">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header> Total </th>
+              <td mat-cell *matCellDef="let voucher">
+                {{ getVoucherTotal(voucher) | currency : 'INR'}}
+              </td>
+              <td mat-footer-cell *matFooterCellDef> <strong>{{getTotal() | currency: 'INR'}}</strong> </td>
+            </ng-container>
+
+            <!-- Action Column -->
+            <ng-container matColumnDef="action">
+              <th mat-header-cell *matHeaderCellDef> Action </th>
+              <td mat-cell *matCellDef="let voucher">
+                <button mat-icon-button [matMenuTriggerFor]="menu">
+                  <mat-icon>more_vert</mat-icon>
+                </button>
+                <mat-menu #menu="matMenu">
+                  <button mat-menu-item (click) = "edit(voucher)">
+                    <mat-icon>edit</mat-icon>
+                    <span>Edit</span>
+                  </button>
+                  <button mat-menu-item (click) = "print(voucher)">
+                    <mat-icon>print</mat-icon>
+                    <span>Print</span>
+                  </button>
+                  <button mat-menu-item (click)="viewInventory(voucher)">
+                    <mat-icon>view_list</mat-icon>
+                    <span>View Inventory</span>
+                  </button>
+                </mat-menu>
+              </td>
+              <td mat-footer-cell *matFooterCellDef></td>
+
+            </ng-container>
+
+
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row [class]="row.VOUCHERPARENTTYPE" class="row-link" (click) = "viewInventory(row)" *matRowDef="let row; columns: displayedColumns;"></tr>
+            <tr mat-footer-row *matFooterRowDef="displayedColumns"></tr>
+          </table>
+          <mat-paginator [pageSizeOptions]="[12,20, 50, 100]" showFirstLastButtons></mat-paginator>
+        </mat-tab>
+        <mat-tab label="Item Breakdown">
+          <inventory-breakdown #inventoryBreakdown [(vouchers)] = "this.vouchers"></inventory-breakdown>
+        </mat-tab>
+        <mat-tab label="Ledger Breakdown">
+
+          <mat-table [dataSource]="ledgerBreakdown" class="mat-elevation-z8">
+            <!-- Position Column -->
+            <ng-container matColumnDef="name">
+              <mat-header-cell *matHeaderCellDef> Name </mat-header-cell>
+              <mat-cell *matCellDef="let element"> {{element.name}} </mat-cell>
+            </ng-container>
+
+            <!-- Name Column -->
+            <ng-container matColumnDef="amount">
+              <mat-header-cell *matHeaderCellDef> Amount </mat-header-cell>
+              <mat-cell *matCellDef="let element"> {{element.amount | currency: 'INR'}} </mat-cell>
+            </ng-container>
+
+
+
+            <mat-header-row *matHeaderRowDef="displayedLedgerColumns"></mat-header-row>
+            <mat-row *matRowDef="let row; columns: displayedLedgerColumns;"></mat-row>
+          </mat-table>
+
+        </mat-tab>
+        <mat-tab label = "Item Movement Analysis">
+
+          <table mat-table [dataSource]="data" style="width: 100%;" class="mat-elevation-z8">
+
+            <ng-container [matColumnDef]="column" *ngFor="let column of columnsToDisplay">
+              <th mat-header-cell *matHeaderCellDef> {{column}}
+                <button *ngIf = "column != 'item'" mat-icon-button color="warn" (click) = "removeColumn(column)">
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </th>
+              <td mat-cell *matCellDef="let element"> {{element[column]}} </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="columnsToDisplay;sticky: true"></tr>
+            <tr mat-row *matRowDef="let row; columns: columnsToDisplay;"></tr>
+          </table>
+
+
+        </mat-tab>
+
+      </mat-tab-group>
+    </mat-drawer-content>
+  </mat-drawer-container>
+
+
+
+
+
+
+
+
+</div>

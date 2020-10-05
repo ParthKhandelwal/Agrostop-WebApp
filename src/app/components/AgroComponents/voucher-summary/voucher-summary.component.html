@@ -1,0 +1,91 @@
+
+
+
+
+
+
+<div *ngIf = "!voucher">Please Select a voucher first</div>
+
+
+<mat-card *ngIf = "voucher">
+  <mat-card-title>{{voucher.VOUCHERTYPENAME}}</mat-card-title>
+  <mat-card-subtitle>{{voucher.VOUCHERNUMBER}}</mat-card-subtitle>
+  <mat-divider></mat-divider>
+  <div class="row">
+    <div class="col">
+      <ng-container *ngIf = "voucher.ADDRESS_LIST">
+        <span *ngFor = "let address of voucher.ADDRESS_LIST.ADDRESS">{{address}}<br></span>
+
+      </ng-container>
+    </div>
+    <div class="col">
+      <span>{{voucher.DATE | date: "MMM dd, yyyy"}} <br></span>
+      <span>{{voucher.getTotal() | currency: "INR"}} <br></span>
+
+    </div>
+  </div>
+  <mat-divider></mat-divider>
+  <mat-card-content>
+    <mat-tab-group>
+      <mat-tab label = "Inventory">
+        <mat-table style="width: 50vh;" [dataSource]="getInventory()">
+          <!-- Item Name Column -->
+          <ng-container matColumnDef="name">
+            <mat-header-cell *matHeaderCellDef> Name </mat-header-cell>
+            <mat-cell *matCellDef="let element"> {{element.STOCKITEMNAME}} </mat-cell>
+          </ng-container>
+
+          <!-- Name Column -->
+          <ng-container matColumnDef="qty">
+            <mat-header-cell *matHeaderCellDef> Qty </mat-header-cell>
+            <mat-cell *matCellDef="let element"> {{element.ACTUALQTY}} </mat-cell>
+          </ng-container>
+
+          <!-- Weight Column -->
+          <ng-container matColumnDef="rate">
+            <mat-header-cell *matHeaderCellDef> Rate </mat-header-cell>
+            <mat-cell *matCellDef="let element"> {{element.RATE}} </mat-cell>
+          </ng-container>
+
+
+
+          <mat-header-row *matHeaderRowDef="inventoryColumns"></mat-header-row>
+          <mat-row *matRowDef="let row; columns: inventoryColumns;"></mat-row>
+      </mat-table>
+
+      </mat-tab>
+      <mat-tab label = "Ledgers">
+        <mat-table style="width: 50vh;" [dataSource]="getLedgers()" >
+          <!-- Item Name Column -->
+          <ng-container matColumnDef="name">
+            <mat-header-cell *matHeaderCellDef> Name </mat-header-cell>
+            <mat-cell *matCellDef="let element"> {{element.LEDGERNAME}} </mat-cell>
+          </ng-container>
+
+          <!-- Name Column -->
+          <ng-container matColumnDef="amount">
+            <mat-header-cell *matHeaderCellDef> Amount </mat-header-cell>
+            <mat-cell *matCellDef="let element"> {{element.AMOUNT}} </mat-cell>
+          </ng-container>
+
+
+
+
+          <mat-header-row *matHeaderRowDef="ledgerColumns"></mat-header-row>
+          <mat-row *matRowDef="let row; columns: ledgerColumns;"></mat-row>
+      </mat-table>
+      </mat-tab>
+    </mat-tab-group>
+  </mat-card-content>
+  <mat-card-actions>
+    <button #saveButton mat-icon-button  (click) = "print()">
+      <mat-icon>print</mat-icon>
+    </button>
+    <button mat-icon-button (click) = "edit()">
+      <mat-icon>edit</mat-icon>
+    </button>
+    <button [disabled] = "!auth.isAdmin()" mat-icon-button (click) = "deleteVoucher()">
+      <mat-icon>delete</mat-icon>
+    </button>
+  </mat-card-actions>
+</mat-card>

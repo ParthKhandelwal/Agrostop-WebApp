@@ -1,0 +1,46 @@
+.grid-container {
+  margin: 20px;
+}
+
+.dashboard-card {
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  right: 15px;
+  bottom: 15px;
+}
+
+.more-button {
+  position: absolute;
+  top: 5px;
+  right: 10px;
+}
+
+.dashboard-card-content {
+  text-align: center;
+}
+
+.success{
+  background-color: green;
+}
+
+.failure{
+  background-color: red;
+}
+
+.online{
+  color: green;
+}
+
+.offline{
+  color: red;
+}
+
+.status{
+  top: 100px;
+  right: 20px;
+  bottom: auto;
+  left: auto;
+  position: fixed;
+  z-index: 2;
+}

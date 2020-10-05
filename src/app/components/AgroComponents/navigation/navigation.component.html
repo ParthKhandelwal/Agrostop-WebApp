@@ -1,0 +1,66 @@
+<mat-toolbar *ngIf = "!matchRoute('/')" color="primary" style="z-index: 2;" class="navbar">
+    <button
+    type="button"
+    aria-label="Toggle sidenav"
+    mat-icon-button
+    (click)="toggle()">
+    <mat-icon aria-label="Side nav toggle icon">menu</mat-icon>
+  </button>
+  <div class="far-end">
+    <span class="space-reducer" style = "font-size: 24px !important;">Agrostop</span>
+    <span class="space-reducer">Welcome {{auth.user.name}}</span>
+  </div>
+  <span class="toolbar-spacer"></span>
+  <button mat-icon-button (click) = "databaseService.syncAllCacheVouchers()">
+    <mat-icon [matBadge]="daybookService.cachVouchers$.getValue().length"
+    #tooltip="matTooltip"
+    matTooltip="Upload offline vouchers"
+    matBadgeColor="warn">cloud_upload</mat-icon>
+  </button>
+  <button mat-icon-button [matMenuTriggerFor]="menu">
+    <mat-icon [matBadge]="notificationService.notifications.length"
+    #tooltip="matTooltip"
+    matTooltip="Notifications"
+
+    matBadgeColor="warn">notifications</mat-icon>
+  </button>
+
+  <mat-menu #menu="matMenu">
+    <button *ngFor = "let item of notificationService.notifications" mat-menu-item>{{item.narration}}</button>
+  </mat-menu>
+
+  <button mat-icon-button (click) = "searchInventory()">
+    <mat-icon>search</mat-icon>
+  </button>
+  <button mat-icon-button (click) = "this.auth.logOut()">
+    <mat-icon>logout</mat-icon>
+  </button>
+
+</mat-toolbar>
+<mat-sidenav-container class="sidenav-container"  autosize>
+  <mat-sidenav #drawer class="sidenav" fixedInViewport id= "drawer"
+      [attr.role]="(isHandset$ | async) ? 'dialog' : 'navigation'"
+      [mode]="(isHandset$ | async) ? 'over' : 'side'"
+      [opened]="!matchRoute('/')"
+      [class.menu-open] = "isOpen"
+      [class.menu-close] = "!isOpen"
+      >
+      <mat-toolbar></mat-toolbar>
+    <mat-nav-list>
+      <ng-container *ngFor = "let i of routes">
+        <mat-list-item *ngIf = "allowed(i.roles)" [routerLink] = "i.link" routerLinkActive= "active">
+          <mat-icon
+          matTooltipPosition = "right"
+          [matTooltip]="i.title"
+           mat-list-icon>{{i.icon}}</mat-icon>
+          <h4 mat-line >{{i.title}}</h4>
+        </mat-list-item>
+      </ng-container>
+    </mat-nav-list>
+  </mat-sidenav>
+  <mat-sidenav-content>
+
+    <!-- Add Content Here -->
+    <router-outlet></router-outlet>
+  </mat-sidenav-content>
+</mat-sidenav-container>

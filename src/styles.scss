@@ -1,0 +1,70 @@
+@import '~@angular/material/theming';
+@import "node_modules/bootstrap/scss/bootstrap";
+@include mat-core();
+
+/* ======== Angular material custom themes ======== */
+$my-custom-primary: mat-palette($mat-green, 600, 500);
+$my-custom-accent: mat-palette($mat-purple,500, 500, A100);
+$my-custom-warn: mat-palette($mat-red,500);
+
+$my-custom-theme: mat-light-theme($my-custom-primary, $my-custom-accent, $my-custom-warn);
+
+@include angular-material-theme($my-custom-theme);
+/* You can add global styles to this file, and also import other style files */
+
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+
+
+
+
+.mat-row:hover {
+  background-color: #455a64;
+  color: white;
+  cursor: pointer;
+  }
+
+  .mat-row:hover > .mat-cell {
+  color:  white
+  }
+
+  .mat-option.mat-active {
+  background: #455a64 !important;
+  color: white !important;
+  }
+
+
+
+  .Sales{
+  background-color: #CCE2A3;
+  color: white;
+  }
+
+  .Purchase{
+  background-color: #BCABAE;
+  }
+
+  .Material{
+  background-color:#52796F;
+
+  }
+
+  .Payment{
+  background-color: #69585F;
+  }
+
+  .Receipt{
+  background-color: #5F7470;
+  }
+
+  .custom_sneak_bar{
+  background-color: #455a64;
+  color: white;
+  cursor: pointer;
+  }
+
+  .jumboButton{
+    width: 150px;
+    height: 100px;
+   }

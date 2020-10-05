@@ -1,0 +1,10 @@
+.mat-column-particular {
+    flex: 0 0 80%;
+}
+.mat-column-amount {
+    flex: 0 0 15%;
+}
+.mat-header-row, .mat-row {
+    min-height: 40px;
+    max-height: 40px;
+  }

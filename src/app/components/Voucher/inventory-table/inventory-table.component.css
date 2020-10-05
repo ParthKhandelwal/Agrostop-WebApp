@@ -1,0 +1,35 @@
+.mat-column-sno {
+    flex: none;
+    width: 10%;
+}
+.mat-column-name {
+    flex: none;
+    width: 40%;
+}
+.mat-column-batch {
+    flex: none;
+    width: 20%;
+}
+
+.mat-column-qty {
+    flex: none;
+    width: 5%;
+}
+.mat-column-rate {
+    flex: none;
+    width: 10%;
+}
+
+.mat-column-amount {
+    flex: none;
+    width: 10%;
+}
+
+.mat-column-action {
+    flex: none;
+    width: 5%;
+}
+.mat-header-row, .mat-row {
+    min-height: 40px;
+    max-height: 40px;
+}

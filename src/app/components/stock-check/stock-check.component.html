@@ -1,0 +1,175 @@
+
+
+
+
+
+
+
+
+
+
+
+
+<div *ngIf = "!showDetailView" class="row noPrint" style="padding-top: 20px; padding-bottom: 20px;">
+    <div class="col-4" style="width: 100%; padding-left: 40px; padding-right: 20px;">
+        <div class="row">
+            <div style="margin: 10 10 10 10;">
+                <mat-card *ngIf = "!createMode">
+                    <mat-card-title>{{currentCheck? currentCheck.title: "Select a Stock Check"}}</mat-card-title>
+                    <mat-card-content>
+                        <form #selectCheckForm="ngForm" (ngSubmit) = "false">
+                            <div style="padding-left: 10px; padding-right: 10px;" >
+
+
+                                <mat-form-field>
+                                    <mat-label>Select a stock check</mat-label>
+
+                                    <mat-select [(ngModel)] = "currentCheck" required name = "voucherTypeSelect" (selectionChange)= "false">
+                                            <mat-option value = "">Not Applicable</mat-option>
+                                            <ng-container *ngFor = 'let v of checks$ | async'>
+                                                <mat-option [value] = "v" >
+                                                    {{v.title}}
+                                                </mat-option>
+                                            </ng-container>
+                                    </mat-select>
+                                </mat-form-field>
+
+                            </div>
+                            <p *ngIf = "!createMode && currentCheck && currentCheck.completed" class="card-text">The following check has been completed</p>
+                            <p *ngIf = "!createMode && currentCheck && !currentCheck.completed" class="card-text">The following check is pending</p>
+                             <button style = "align-self: flex-end;" mat-button type = "submit" [disabled] = 'selectCheckForm.invalid'>
+                                Begin
+                            </button>
+                            <button *ngIf = "auth.user.role =='Admin'" style = "align-self: flex-end;" mat-button (click) = "createMode = !createMode">
+
+                                <div *ngIf = "!createMode">
+                                    Request
+                                </div>
+                            </button>
+                            <button *ngIf = "currentCheck && !currentCheck.completed" type = "submit" style = "align-self: flex-end;" mat-button (click) = "completeCheck()">
+                                Complete
+                            </button>
+
+                            <div *ngIf = "this.auth.user.role == 'Admin' && currentCheck" style="float: right; ">
+                                <button mat-button (click) = "detailView()">Detail View</button>
+                            </div>
+                            <div *ngIf = "this.auth.user.role == 'Admin' && currentCheck" style="float: right; ">
+                                <button mat-button (click) = "deleteStockCheck()">Delete</button>
+                            </div>
+
+                        </form>
+                    </mat-card-content>
+                </mat-card>
+
+                <mat-card *ngIf = "createMode && auth.user.role == 'Admin'">
+                    <mat-card-title>Create Stock Check Request</mat-card-title>
+                    <mat-card-content>
+                        <form #selectCreateForm="ngForm" (ngSubmit) = "initiateCreateMode()">
+                            <div style="padding-left: 10px; padding-right: 10px;" >
+
+
+                                <mat-form-field>
+                                    <mat-label>Select godown</mat-label>
+                                    <mat-select required [(ngModel)] = "check.godown" required name = "voucherTypeSelect">
+                                            <mat-option value = "">Not Applicable</mat-option>
+                                            <ng-container *ngFor = 'let v of auth.user.godownList'>
+                                                <mat-option [value] = "v" >
+                                                    {{v}}
+                                                </mat-option>
+                                            </ng-container>
+                                    </mat-select>
+                                </mat-form-field>
+                                <mat-form-field>
+                                    <input matInput required placeholder="Enter Title" name = "title" [(ngModel)] = "check.title">
+                                </mat-form-field>
+
+                                <mat-form-field>
+                                    <mat-label>Choose a deadline</mat-label>
+                                    <input matInput required [matDatepicker]= "picker" [(ngModel)] = 'check.deadline' name = "date">
+                                    <mat-datepicker-toggle matSuffix [for]= "picker" ></mat-datepicker-toggle>
+                                    <mat-datepicker #picker></mat-datepicker>
+                                </mat-form-field>
+
+                            </div>
+                           <button *ngIf = "auth.user.role =='Admin'"  style = "align-self: flex-end;" mat-button (click) = "createMode = !createMode">
+                                Back
+                        </button>
+                            <button *ngIf = "auth.user.role =='Admin'" type = "submit" [disabled] = "selectCreateForm.invalid" style = "align-self: flex-end;" mat-button>
+                                   Request
+                            </button>
+
+
+                        </form>
+                    </mat-card-content>
+                </mat-card>
+            </div>
+
+          </div>
+        </div>
+
+
+    <div class="col-8" style="width: 80%; padding-left: 20px;">
+        <div class="row">
+            <div class="col">
+                <auto-complete #productAutoComp [listProvided]="true" type="product"
+                        (optionSelected)="itemSelected($event);qty.focus() "></auto-complete>
+            </div>
+            <div class="col">
+                <mat-form-field>
+                    <input #qty matInput [(ngModel)] = "this.stockCheckItem.actualQty" type = "number" name="actualQty" placeholder="Enter actual qty" (keydown.enter) = "addItem()">
+                </mat-form-field>
+            </div>
+            <div class="col">
+                <mat-form-field>
+                    <input readonly matInput [(ngModel)] = "this.stockCheckItem.expectedQty" type = "number" name="expectedQty" placeholder="Expected qty">
+                </mat-form-field>
+            </div>
+        </div>
+        <table style="width: 100%;" *ngIf = "currentCheck" mat-table [dataSource]="currentCheck.items" class="mat-elevation-z8">
+
+            <!--- Note that these columns can be defined in any order.
+                  The actual rendered columns are set as a property on the row definition" -->
+
+            <!-- Position Column -->
+            <ng-container matColumnDef="sno">
+              <th mat-header-cell *matHeaderCellDef> No. </th>
+              <td mat-cell *matCellDef="let element; let i = index"> {{i+1}} </td>
+            </ng-container>
+
+            <!-- Name Column -->
+            <ng-container matColumnDef="product">
+              <th mat-header-cell *matHeaderCellDef> Product </th>
+              <td mat-cell *matCellDef="let element"> {{element.itemName}} </td>
+            </ng-container>
+
+            <!-- Weight Column -->
+            <ng-container matColumnDef="expected">
+              <th mat-header-cell *matHeaderCellDef> Expected Qty </th>
+              <td mat-cell *matCellDef="let element"> {{element.expectedQty}} </td>
+            </ng-container>
+
+            <!-- Symbol Column -->
+            <ng-container matColumnDef="actual">
+              <th mat-header-cell *matHeaderCellDef> Actual Qty </th>
+              <td mat-cell *matCellDef="let element"> {{element.actualQty}} </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+          </table>
+    </div>
+</div>
+
+<div *ngIf = "showDetailView">
+    <div class="col">
+        <div class="row noPrint">
+            <button mat-icon-button (click) = "showDetailView =false">
+                <mat-icon>arrow_back</mat-icon>
+            </button>
+        </div>
+        <div class="row" style="padding-left: 20px; padding-right: 20px; padding-top: 20px;padding-bottom: 20px;">
+
+            <app-stock-check-print-view style="width: 100%;" [check] = "this.currentCheck"></app-stock-check-print-view>
+        </div>
+    </div>
+</div>

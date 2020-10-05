@@ -1,0 +1,82 @@
+<div class="col" style="padding: 20px 20px 20px 20px;">
+  <div class="row">
+    <div class="col">
+    <ng-container [ngSwitch] = "type">
+      <ng-container *ngSwitchCase = "'product'">
+        <auto-complete #productAutoComp [listProvided]="true" type="product" (optionSelected)="name = productAutoComp.productControl.value.NAME;from.focus()">
+        </auto-complete>
+      </ng-container>
+      <ng-container *ngSwitchCase = "'productGroup'">
+        <ng-container *ngTemplateOutlet = "autoComplete"></ng-container>
+      </ng-container>
+      <ng-container *ngSwitchCase = "'chemicalGroup'">
+        <ng-container *ngTemplateOutlet = "autoComplete"></ng-container>
+      </ng-container>
+    </ng-container>
+
+    </div>
+    <div class="col">
+      <mat-form-field>
+        <mat-label>From</mat-label>
+        <input #from matInput [matDatepicker]="frompicker" (dateChange)="to.focus()" [(ngModel)]="fromDate"
+          (keydown.enter)="from.value?to.focus():false">
+        <mat-datepicker-toggle matSuffix [for]="frompicker"></mat-datepicker-toggle>
+        <mat-datepicker #frompicker></mat-datepicker>
+      </mat-form-field>
+    </div>
+    <div class="col">
+      <mat-form-field>
+        <mat-label>To</mat-label>
+        <input #to matInput [matDatepicker]="topicker" (dateChange)="applyBtn.focus()" [(ngModel)]="toDate">
+        <mat-datepicker-toggle matSuffix [for]="topicker"></mat-datepicker-toggle>
+        <mat-datepicker #topicker></mat-datepicker>
+      </mat-form-field>
+    </div>
+    <div class="col">
+      <button #applyBtn mat-raised-button color="primary"
+        (click)="apply()">Apply</button>
+    </div>
+  </div>
+
+
+  <div class="row" >
+    <mat-tab-group *ngIf = "!loading && itemSummaryList.length>0" mat-stretched-tabs style="width: 100%;">
+      <mat-tab *ngFor = "let item of itemSummaryList;let i = index">
+        <ng-template mat-tab-label>
+          {{item.item}}<br>
+          {{item.fromDate | date:'MMM dd, yyyy'}} - {{item.toDate | date:'MMM dd, yyyy'}}
+        </ng-template>
+        <app-monthly-summary type="product" [(data)] = "item.data">
+          <button mat-icon-button (click) = "itemSummaryList.splice(i,1)">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </app-monthly-summary>
+      </mat-tab>
+    </mat-tab-group>
+
+    <div class="mx-auto" *ngIf = "loading || itemSummaryList.length == 0" style="height: 350px; padding-top: 50px;">
+      <p *ngIf = "!loading && itemSummaryList.length == 0">Please select an item to view its summary</p>
+      <mat-spinner *ngIf = "loading" diameter = "100"></mat-spinner>
+    </div>
+  </div>
+
+</div>
+
+
+
+
+<ng-template #autoComplete>
+  <mat-form-field class="example-full-width">
+    <input type="text"
+           placeholder="Pick one"
+           matInput
+           [formControl]="control"
+           [(ngModel)] = "name"
+           [matAutocomplete]="auto">
+    <mat-autocomplete [panelWidth] = "300" autoActiveFirstOption #auto="matAutocomplete" (optionSelected) ="from.focus();">
+      <mat-option *ngFor="let option of filteredOptions | async" [value]="option">
+        {{option}}
+      </mat-option>
+    </mat-autocomplete>
+  </mat-form-field>
+</ng-template>

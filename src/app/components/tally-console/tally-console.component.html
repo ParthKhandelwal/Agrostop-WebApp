@@ -1,0 +1,160 @@
+
+
+<div class="grid-container">
+
+  <div>
+    <h1 class="mat-h1">Tally Console
+      <mat-icon [ngClass] = "tallyService.connectedToClient.getValue()? 'more-button online':'more-button offline'">
+        {{tallyService.connectedToClient.getValue()? 'link' : 'link_off'}}
+      </mat-icon>
+    </h1>
+
+  </div>
+
+
+  <mat-grid-list cols="2" rowHeight="350px">
+    <mat-grid-tile colspan="1" [rowspan]="1">
+      <mat-card class="dashboard-card">
+        <mat-card-header>
+          <mat-card-title>
+            Back Up Vouchers
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content class="dashboard-card-content">
+          <div *ngIf = "!this.backing" class="col">
+            <div class="row">
+              <mat-form-field >
+                <mat-label>From</mat-label>
+                <input matInput [matDatepicker]="fromPicker" [(ngModel)] = "from">
+                <mat-datepicker-toggle matSuffix [for]="fromPicker"></mat-datepicker-toggle>
+                <mat-datepicker #fromPicker></mat-datepicker>
+              </mat-form-field>
+            </div>
+            <div class="row">
+              <mat-form-field>
+                <mat-label>To</mat-label>
+                <input matInput [matDatepicker]="picker">
+                <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                <mat-datepicker #picker></mat-datepicker>
+              </mat-form-field>
+            </div>
+          </div>
+          <div *ngIf = "backing">
+            <mat-spinner [diameter]="150" ></mat-spinner>
+          </div>
+        </mat-card-content>
+        <mat-card-actions>
+          <button mat-button (click) = "backUp()">Back Up</button>
+        </mat-card-actions>
+      </mat-card>
+    </mat-grid-tile>
+
+
+    <mat-grid-tile colspan="1" [rowspan]="2">
+      <mat-card class="dashboard-card">
+        <mat-card-header>
+          <mat-card-title>
+            Fetch From Tally
+            <button mat-icon-button class="more-button" [matMenuTriggerFor]="menu2" aria-label="Toggle menu">
+              <mat-icon>more_vert</mat-icon>
+            </button>
+            <mat-menu #menu2="matMenu" xPosition="before">
+              <button mat-menu-item (click) = "fetchItems('Ledgers')">Ledgers</button>
+              <button mat-menu-item (click) = "fetchItems('StockItems')">Stock Items</button>
+              <button mat-menu-item (click) = "fetchItems('VoucherTypes')">Voucher Types</button>
+              <button mat-menu-item (click) = "fetchItems('Godowns')">Godowns</button>
+            </mat-menu>
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content class="">
+          <div>
+
+            <mat-form-field>
+              <mat-label>Filter</mat-label>
+              <input matInput (keyup)="applyFilter($event)" placeholder="Enter an item" #input>
+            </mat-form-field>
+
+            <div>
+              <table style="width: 100%;" mat-table [dataSource]="dataSource" matSort>
+
+                <!-- ID Column -->
+                <ng-container matColumnDef="sno">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header> S.no. </th>
+                  <td mat-cell *matCellDef="let row; let i = index"> {{i+1}} </td>
+                </ng-container>
+
+                <!-- Progress Column -->
+                <ng-container matColumnDef="name">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header> Name </th>
+                  <td mat-cell *matCellDef="let row"> {{row.name}} </td>
+                </ng-container>
+
+                <!-- Name Column -->
+                <ng-container matColumnDef="select">
+                  <th mat-header-cell *matHeaderCellDef>
+                    <mat-checkbox (change)="selectAll($event.checked)"></mat-checkbox>
+                  </th>
+                  <td mat-cell *matCellDef="let row">
+                    <mat-checkbox [(ngModel)] = "row.select"></mat-checkbox>
+                  </td>
+                </ng-container>
+
+                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                <tr mat-row [class]= "row.classname" *matRowDef="let row; columns: displayedColumns;"></tr>
+
+                <!-- Row shown when there is no matching data. -->
+                <tr class="mat-row" *matNoDataRow>
+                  <td class="mat-cell" colspan="4">No data matching the filter "{{input.value}}"</td>
+                </tr>
+              </table>
+
+              <mat-paginator [pageSizeOptions]="[8, 25, 100]"></mat-paginator>
+            </div>
+
+          </div>
+        </mat-card-content>
+        <mat-card-actions>
+          <button mat-button (click) = "update()">Update</button>
+        </mat-card-actions>
+      </mat-card>
+    </mat-grid-tile>
+
+
+    <mat-grid-tile colspan="1" [rowspan]="1">
+      <mat-card class="dashboard-card">
+        <mat-card-header>
+          <mat-card-title>
+            Configuration
+            <button mat-icon-button class="more-button" [matMenuTriggerFor]="menu3" aria-label="Toggle menu">
+              <mat-icon>more_vert</mat-icon>
+            </button>
+            <mat-menu #menu3="matMenu" xPosition="before">
+              <button mat-menu-item (click) = "this.tallyService.initiateTallyClient()">Start Tally Connector</button>
+
+            </mat-menu>
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content class="dashboard-card-content">
+          <div class="col">
+            <div class="row">
+              <mat-form-field >
+                <input matInput [(ngModel)] = "tallyService.java_jdk" name="jdk" placeholder = "Enter JDK path">
+              </mat-form-field>
+            </div>
+            <div class="row">
+              <mat-form-field >
+                <input matInput [(ngModel)] = "tallyService.war_file" name="jdk" placeholder = "Enter War file address">
+              </mat-form-field>
+            </div>
+          </div>
+        </mat-card-content>
+        <mat-card-actions>
+          <button mat-button (click) = "this.tallyService.saveConfig()">Save</button>
+        </mat-card-actions>
+      </mat-card>
+    </mat-grid-tile>
+
+  </mat-grid-list>
+</div>
+
+

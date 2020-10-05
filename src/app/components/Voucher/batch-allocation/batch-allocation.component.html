@@ -1,0 +1,75 @@
+<div class="col" >
+  <div class="row">
+    <div class="col">
+      <mat-form-field>
+        <mat-label>Select a Godown</mat-label>
+        <mat-select readonly id = "batchGodown" [(ngModel)] = "inventory.BATCHALLOCATIONS_LIST.GODOWNNAME" required name= 'godownSelect'
+        (selectionChange) = "godownSelected()">
+                <mat-option *ngFor = 'let v of auth.user.godownList' [value] = "v">
+                    {{v}}
+                </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+    <div class="col">
+      <mat-form-field style="width: 100%;" >
+        <mat-select autofocus id = "batchSelect" style="width: 500px;" #batchField placeholder="Select batch" (selectionChange)="add($event.value)">
+          <ng-container  *ngFor="let batch of batches">
+            <mat-option [value]="batch">
+              <div class="row">
+                <div class="col">
+                  {{batch.name}}
+                </div>
+                <div class="col">
+                  <span [ngClass]='batch.closingBalance>0? "positiveBatch": "negativeBatch"'>BAL:
+                    {{batch.closingBalance}}</span>
+                </div>
+                <div class="col">
+                  <strong>EXP: </strong>{{batch.expiryDate|date: 'dd-MMM-yyyy'}}
+                </div>
+              </div>
+
+              <div>
+
+              </div>
+            </mat-option>
+          </ng-container>
+
+        </mat-select>
+      </mat-form-field>
+
+
+    </div>
+  </div>
+  <div class="row">
+    <div class="col">
+      <mat-form-field>
+        <input matInput [(ngModel)] = "this.inventory.BATCHALLOCATIONS_LIST.BATCHNAME" placeholder="Enter Batch name" name = "batchname" (keydown.enter) = "date.focus();false">
+      </mat-form-field>
+    </div>
+
+    <div class="col">
+      <mat-form-field>
+        <mat-label>Choose an expiry date</mat-label>
+        <input #date matInput [matDatepicker]="picker" (dateChange) = "dateSelected($event)" (keydown.enter) = "date.value?dateSelected($event):false">
+        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-datepicker #picker></mat-datepicker>
+      </mat-form-field>
+    </div>
+
+  </div>
+  <div class="row">
+    <div class="col">
+      <mat-form-field>
+        <input matInput type = "number" readonly [(ngModel)] = "inventory.BATCHALLOCATIONS_LIST.ACTUALQTY" placeholder="Qty" name = "qty">
+      </mat-form-field>
+    </div>
+
+    <div class="col">
+      <mat-form-field>
+        <input matInput type = "number" readonly [(ngModel)] = "inventory.BATCHALLOCATIONS_LIST.AMOUNT" placeholder="Amount" name = "amount">
+      </mat-form-field>
+    </div>
+
+  </div>
+</div>

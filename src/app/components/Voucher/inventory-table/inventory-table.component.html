@@ -1,0 +1,93 @@
+<div class="col">
+  <div class="row">
+    <!-- PRODUCT ENTRY GOES HERE -->
+    <div class="col">
+      <auto-complete #productAutoComp [listProvided]="true" type="product"
+        (optionSelected)="selectInventory($event)"></auto-complete>
+    </div>
+    <div class="col">
+      <mat-form-field>
+        <input id = "qty" #quantityField type="number" (keydown.enter) = "selectQty();false"
+          [placeholder]="this.productAutoComp && this.productAutoComp.productControl.value  ? 'Enter '+this.productAutoComplete.productControl.value.baseUnits : 'Enter Qty'"
+          matInput name="qty" [(ngModel)] = "item.ACTUALQTY" [formControl]="qtyControl">
+      </mat-form-field>
+
+    </div>
+    <div class="col">
+      <mat-form-field *ngIf="this.productAutoComp && this.productAutoComp.productControl.value">
+        <input #rateField id = "rate" type="number" (keydown.enter)="showBatchAllocation()" placeholder="Enter Rate"
+          matInput name="rate" [(ngModel)] = "item.RATE" [formControl]="rateControl">
+      </mat-form-field>
+    </div>
+    <div class="col">
+      <mat-form-field *ngIf="this.productAutoComp && this.productAutoComp.productControl.value">
+        <input type="number" readonly placeholder="Rate (inc of tax)" matInput name="rateIncTax"
+          [value] = "setRateInclusiveOfTax()">
+      </mat-form-field>
+    </div>
+
+
+
+  </div>
+
+
+  <div class="row">
+    <table #table style="width: 100%;" mat-table [dataSource]="getInventories()" class="mat-elevation-z8">
+
+        <!--- Note that these columns can be defined in any order.
+              The actual rendered columns are set as a property on the row definition" -->
+
+        <!-- Position Column -->
+        <ng-container matColumnDef="sno">
+          <th mat-header-cell *matHeaderCellDef> S.No. </th>
+          <td mat-cell *matCellDef="let element; let i = index"> {{i+1}} </td>
+        </ng-container>
+
+        <!-- Name Column -->
+        <ng-container matColumnDef="name">
+          <th mat-header-cell *matHeaderCellDef> Name </th>
+          <td mat-cell *matCellDef="let element"> {{element.STOCKITEMNAME}} </td>
+        </ng-container>
+
+        <!-- Weight Column -->
+        <ng-container matColumnDef="batch">
+          <th mat-header-cell *matHeaderCellDef> Batch </th>
+          <td mat-cell *matCellDef="let element"> {{element.BATCHALLOCATIONS_LIST.BATCHNAME}} </td>
+        </ng-container>
+
+        <!-- Symbol Column -->
+        <ng-container matColumnDef="qty">
+          <th mat-header-cell *matHeaderCellDef> Qty </th>
+          <td mat-cell *matCellDef="let element"> {{element.ACTUALQTY}} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="rate">
+            <th mat-header-cell *matHeaderCellDef> Rate </th>
+            <td mat-cell *matCellDef="let element"> {{element.RATE}} </td>
+        </ng-container>
+
+        <!-- Symbol Column -->
+        <ng-container matColumnDef="amount">
+            <th mat-header-cell *matHeaderCellDef> Amount </th>
+            <td mat-cell *matCellDef="let element"> {{element.AMOUNT}} </td>
+          </ng-container>
+
+          <ng-container matColumnDef="action">
+              <th mat-header-cell *matHeaderCellDef> Action </th>
+              <td mat-cell *matCellDef="let element; let i = index">
+                  <button mat-icon-button (click) = "delete(i)">
+                      <mat-icon>delete</mat-icon>
+                  </button>
+              </td>
+          </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+  </div>
+
+  <div class="row">
+      <particular-table #particularTable style="width: 100%" (complete) = "complete.emit('complete');"></particular-table>
+  </div>
+
+</div>

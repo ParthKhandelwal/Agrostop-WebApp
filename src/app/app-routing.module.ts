@@ -1,161 +1,109 @@
 import { NgModule } from '@angular/core';
-import {DashboardComponent} from './dashboard/dashboard.component'
-import {LoginFormComponent} from './login-form/login-form.component'
-import {NotFoundComponent} from './not-found/not-found.component'
-import { CustomersComponent } from './customers/customers.component';
-import { CustomerListViewComponent } from './CustomerPackage/customer-list-view/customer-list-view.component';
-import { AddressTableComponent } from './tables/address-table/address-table.component';
-import { OrdersComponent } from './orders/orders.component';
-import { ComplaintsComponent } from './complaints/complaints.component';
-import { SalesComponent } from './sales/sales.component';
-import { StockItemsComponent } from './stock-items/stock-items.component';
-import { ExpiredProductsComponent } from './Products/expired-products/expired-products.component';
-import { UsersComponent } from './users/users.component';
-import { CreateCustomerFormComponent } from './create-form/create-customer-form/create-customer-form.component';
-import { CreateComplaintFormComponent } from './create-form/create-complaint-form/create-complaint-form.component';
-import { CreateOrderFormComponent } from './create-form/create-order-form/create-order-form.component';
-import { CreateUserFormComponent } from './create-form/create-user-form/create-user-form.component'
 import { Routes, RouterModule } from '@angular/router';
-import { CreateVoucherComponent } from './create-form/create-voucher/create-voucher.component'
-import { DayBookComponent } from './AccountingPackage/day-book/day-book.component';
-import { ProductListViewComponent } from './Products/product-list-view/product-list-view.component';
-import { TaxDetailsTableComponent } from './tables/tax-details-table/tax-details-table.component';
-import { UserTableComponent } from './tables/user-table/user-table.component';
-import { AuthGuard } from './_guard/auth-guard.service';
-import { StockCheckComponent } from './Products/stock-check/stock-check.component';
-import { CashBookComponent } from './AccountingPackage/cash-book/cash-book.component';
-import { PrivacyPolicyComponent } from './AgroComponent/privacy-policy/privacy-policy.component';
-import { HomeComponent } from './AgroComponent/home/home.component';
+
+import { PageNotFoundComponent } from './components/page-not-found/page-not-found.component';
+
+import { LoginComponent } from './components/login/login.component';
+import { DashboardComponent } from './components/dashboard/dashboard.component';
+import { DayBookComponent } from './components/day-book/day-book.component';
+import { CustomerSummaryComponent } from './components/customer-summary/customer-summary.component';
+import { AddressSummaryComponent } from './components/address-summary/address-summary.component';
+import { ProductProfileComponent } from './components/product-profile/product-profile.component';
+import { UserProfileComponent } from './components/user-profile/user-profile.component';
+import { SettingsComponent } from './components/settings/settings.component';
+import { StockSummaryComponent } from './components/stock-summary/stock-summary.component';
+import { AgroVoucherWizardComponent } from './components/Voucher/agro-voucher-wizard/agro-voucher-wizard.component';
+import { CustomerTableComponent } from './components/AgroComponents/customer-table/customer-table.component';
+import { CustomerProfileComponent } from './components/customer-profile/customer-profile.component';
+import { StockCheckPrintViewComponent } from './components/PrintComponents/stock-check-print-view/stock-check-print-view.component';
+import { AddressProfileComponent } from './components/address-profile/address-profile.component';
+import { CropProfileComponent } from './components/crop-profile/crop-profile.component';
+import { MovementAnalysisComponent } from './components/MovementAnalysis/movement-analysis/movement-analysis.component';
+import { HomeComponent } from './components/AgroComponents/home/home.component';
+import { TallyConsoleComponent } from './components/tally-console/tally-console.component';
 
 
 const routes: Routes = [
-  {
-    path: "home",
-    component: DashboardComponent,
-    canActivate: [AuthGuard],
-    data: { roles: ["Admin", "Company User"] } 
-  },
-  {
-    path: "customers",
-    component: CustomersComponent,
-    canActivate: [AuthGuard],
-    data: { roles: ["Admin", "Company User"] },
-    children: [
-      {path: 'customerListView', 
-      component: CustomerListViewComponent,
-      canActivate: [AuthGuard],
-      data: { roles: ["Admin", "Company User"] } 
-    },
-      {path: 'addressListView', 
-      component: AddressTableComponent,
-      canActivate: [AuthGuard],
-      data: { roles: ["Admin", "Company User"] } }
-    ]
-
-  },
-  {
-    path: "orders",
-    component: OrdersComponent,
-    canActivate: [AuthGuard],
-    data: { roles: ["Admin", "Company User"] } 
-  },
-  {
-    path: "complaints",
-    component: ComplaintsComponent,
-    canActivate: [AuthGuard],
-    data: { roles: ["Admin", "Company User"] } 
-  },
-  {
-    path: "expired-products",
-    component: ExpiredProductsComponent,
-    canActivate: [AuthGuard],
-    data: { roles: ["Admin", "Company User"] } 
-  },
-  {
-    path: "users",
-    component: UsersComponent,
-    canActivate: [AuthGuard],
-    data: { roles: ["Admin"] },
-    children: [
-      {path: 'userListView', 
-      component: UserTableComponent,
-      canActivate: [AuthGuard],
-      data: { roles: ["Admin"] } },
-      {path: 'create-user', 
-      component: CreateUserFormComponent,
-      canActivate: [AuthGuard],
-      data: { roles: ["Admin"] } }
-    ]
-  },
-  {
-    path: "products",
-    component: StockItemsComponent,
-    children: [
-      {path: 'product-list', component: ProductListViewComponent},
-      {path: 'expired-batches', component: ExpiredProductsComponent},
-      {path: 'tax-details', component: TaxDetailsTableComponent},
-  
-    ]
-  },
-  {
-  path: "stock-check",
-    component: StockCheckComponent,
-    canActivate: [AuthGuard],
-    data: { roles: ["Admin", "Company User"] } 
-  },
 
   {
-    path: "sales",
-    component: SalesComponent,
-    children: [
-      {path: 'create-sales-voucher', component: CreateVoucherComponent},
-      {path: 'day-book', component: DayBookComponent},
-      {path: 'cash-book', component: CashBookComponent},
-      
-    ]
+    path: '',
+    component: LoginComponent
   },
   {
-    path: "create-customer",
-    component: CreateCustomerFormComponent
-  },
-  {
-    path: "create-order",
-    component: CreateOrderFormComponent
-  },
-  {
-    path: "create-user",
-    component: CreateUserFormComponent
-  },
-  {
-    path: "create-complaint",
-    component: CreateComplaintFormComponent
-  },
-  {
-    path: "login",
-    component: LoginFormComponent
-  },
-  {
-    path: "terms-and-conditions",
-    component: PrivacyPolicyComponent
-  },
-
-  {
-    path: "",
+    path: 'dashboard',
     component: HomeComponent
   },
-  
+
+
+
   {
-    path: "customer/{id}",
-    component: LoginFormComponent
+    path: 'daybook',
+    component: DayBookComponent
   },
   {
-    path: "**",
-    component: NotFoundComponent
-  }
+    path: 'customer',
+    component: CustomerSummaryComponent
+  },
+  {
+    path: 'address-summary',
+    component: AddressSummaryComponent
+  },
+
+  {
+    path: 'product-profile',
+    component: ProductProfileComponent
+  },
+  {
+    path: 'user-profile',
+    component: UserProfileComponent
+  },
+  {
+    path: 'settings',
+    component: SettingsComponent
+  },
+  {
+    path: 'stock-summary',
+    component: StockSummaryComponent,
+  },
+  {
+    path: 'agro-voucher',
+    component: AgroVoucherWizardComponent,
+  },
+  {
+    path: 'customer-profile',
+    component: CustomerProfileComponent,
+  },
+  {
+    path: 'stock-print',
+    component: StockCheckPrintViewComponent,
+  },
+  {
+    path: 'address-profile',
+    component: AddressProfileComponent,
+  },
+  {
+    path: 'crop-profile',
+    component: CropProfileComponent,
+  },
+  {
+    path: 'movement-analysis',
+    component: MovementAnalysisComponent,
+  },
+  {
+    path: 'tally-console',
+    component: TallyConsoleComponent,
+  },
+  {
+    path: '**',
+    component: PageNotFoundComponent
+  },
+
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes)],
+  imports: [
+    RouterModule.forRoot(routes),
+  ],
   exports: [RouterModule]
 })
 export class AppRoutingModule { }

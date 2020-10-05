@@ -1,0 +1,56 @@
+<div class="col">
+    <div class="row">
+        <div class="col-8">
+            <auto-complete #ledgerAutoComp [ledgerList] = "this.service.getLedgersList()" type = "ledger"  (optionSelected) = "this.ledgerSelected($event.NAME)" (keydown.enter) = "!ledgerAutoComp.ledgerControl.value?proceed(): false"></auto-complete>
+        </div>
+        <div class="col-4">
+            <mat-form-field>
+                <input #amount id = "amount" type = "number" name="amount" matInput placeholder="Enter Amount" [(ngModel)] = "ledger.AMOUNT" (keydown.enter) = "addLedger(); ledgerAutoComp.focus()">
+            </mat-form-field>
+        </div>
+    </div>
+
+    <div class="row">
+        <mat-table #table style="width: 100%;" [dataSource]="getParticulars()" class="mat-elevation-z8">
+          <ng-container matColumnDef="toBy">
+            <mat-header-cell *matHeaderCellDef>  </mat-header-cell>
+            <mat-cell *matCellDef="let element"> {{element.ISDEEMEDPOSITIVE == "Yes"? 'By' : 'To'}} </mat-cell>
+          </ng-container>
+
+          <!-- Position Column -->
+            <ng-container matColumnDef="particular">
+              <mat-header-cell *matHeaderCellDef> Particular </mat-header-cell>
+              <mat-cell *matCellDef="let element"> {{element.LEDGERNAME}} </mat-cell>
+            </ng-container>
+
+            <!-- Name Column -->
+            <ng-container matColumnDef="amount">
+              <mat-header-cell *matHeaderCellDef> Amount </mat-header-cell>
+              <mat-cell *matCellDef="let element"> {{element.AMOUNT}} </mat-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="debit">
+              <mat-header-cell *matHeaderCellDef> Debit </mat-header-cell>
+              <mat-cell *matCellDef="let element"> {{element.ISDEEMEDPOSITIVE == "Yes"? element.AMOUNT: null}} </mat-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="credit">
+              <mat-header-cell *matHeaderCellDef> Credit </mat-header-cell>
+              <mat-cell *matCellDef="let element"> {{element.ISDEEMEDPOSITIVE == "No"?element.AMOUNT: null}} </mat-cell>
+            </ng-container>
+
+            <!-- Symbol Column -->
+            <ng-container matColumnDef="action">
+              <mat-header-cell *matHeaderCellDef> Action </mat-header-cell>
+              <mat-cell *matCellDef="let element; let i = index">
+                <button mat-icon-button (click) = "deleteLedger(element.LEDGERNAME)">
+                    <mat-icon>delete</mat-icon>
+                </button>
+              </mat-cell>
+            </ng-container>
+
+            <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+            <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+          </mat-table>
+    </div>
+</div>

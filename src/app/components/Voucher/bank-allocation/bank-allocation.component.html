@@ -1,0 +1,132 @@
+<div class="col">
+    <div class="row" style="padding-bottom: 10px; padding-left: 20px;">
+        <span style="font-size: 20px;"><strong>{{ledger.LEDGERNAME}}</strong></span>
+    </div>
+    <div class="row">
+        <div class="col">
+            <mat-form-field>
+                <mat-select #typeS id = "typeS"  name= "trnType" [(ngModel)] = "bankAllocation.transactiontype" placeholder = "Select Transaction Type" (selectionChange) = "nextFromTransactionType()">
+                    <mat-option value = "Cash">Cash</mat-option>
+                    <mat-option value = "Cheque/DD">Cheque/DD</mat-option>
+                    <mat-option value = "e-Fund Transfer">e-Fund Transfer</mat-option>
+                    <mat-option value = "Others">Others</mat-option>
+                </mat-select>
+            </mat-form-field>
+        </div>
+        <div class="col">
+            <mat-form-field>
+                <input #amountF matInput placeholder="Enter Amount" [(ngModel)] = "bankAllocation.amount" name = "b_amount" readonly >
+            </mat-form-field>            
+        </div>
+        
+    </div>
+    <div id= "transactiontype">
+        <ng-container *ngIf = "this.ledger.ISDEEMEDPOSITIVE =='No'" [ngSwitch] = "typeS.value">
+            <ng-container *ngSwitchCase = "'Cheque/DD'">
+                <div class="row">
+                    <div class="col">
+                        <mat-form-field>
+                            <input #crossCmt matInput placeholder="Cross Using" [(ngModel)] = "bankAllocation.chequeCrossComment" name = "crossCmt" (keydown.enter) = "intrNo.focus();false">
+                        </mat-form-field>
+                    </div>
+                    <div class="col">
+
+                    </div>
+                </div>
+            </ng-container>
+            <ng-container *ngSwitchCase = "'e-Fund Transfer'">
+                <div class="row">
+                    <div class="col">
+                        <mat-form-field>
+                            <input #accNo matInput placeholder="Enter Account No." [(ngModel)] = "bankAllocation.accountnumber" name = "accNo" (keydown.enter) = "IFSC.focus(); false">
+                        </mat-form-field>
+                    </div>
+                    <div class="col">
+                        <mat-form-field>
+                            <input #IFSC matInput placeholder="Enter IFS Code" [(ngModel)] = "bankAllocation.ifscode" name = "IFSC" (keydown.enter) = "bank.focus(); false">
+                        </mat-form-field>
+                    </div>
+                    <div class="col">
+                        <mat-form-field>
+                            <input #bank matInput placeholder="Enter Bank" [(ngModel)] = "bankAllocation.bankbranchname" name = "bank" (keydown.enter) = "intrNo.focus(); false">
+                        </mat-form-field>
+                    </div>
+                </div>
+            </ng-container>
+        </ng-container>
+    </div>
+    <div id = "commonFields">
+        <div class="row">
+            <div class="col">
+                <mat-form-field>
+                    <input #intrNo matInput placeholder="Enter Instrument Number" name = "instno" [(ngModel)] = "this.bankAllocation.instrumentNumber"  (keydown.enter) = "intrDate.focus();false">
+                </mat-form-field>
+            </div>
+            <div class="col">
+                <mat-form-field>
+                    <input #intrDate matInput placeholder="Select Instrument Date" [(ngModel)] = "bankAllocation.instrumentdate" name = "instDate" [matDatepicker]="picker"  (keydown.enter) = "fvrName.focus();false">
+                    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                    <mat-datepicker #picker></mat-datepicker>
+                  </mat-form-field>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <mat-form-field>
+                    <input #fvrName matInput placeholder="Enter Favouring Name" name = "favoucringName" [(ngModel)] = "this.bankAllocation.paymentfavouring"  (keydown.enter) = "email.focus();false">
+                </mat-form-field>
+            </div>
+            <div class="col">
+                <mat-form-field>
+                    <input #email matInput placeholder="Enter Email Address" name = "email" [(ngModel)] = "this.bankAllocation.email"  (keydown.enter) = "narration.focus();false">
+                </mat-form-field>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <mat-form-field style="width: 100%;">
+                    <input #narration matInput placeholder="Enter Narration" name = "narration" [(ngModel)] = "this.bankAllocation.narration"  (keydown.enter) = "this.add()">
+                </mat-form-field>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <button mat-raised-button (click)="false" color = "primary">Save</button>
+        </div>
+    </div>
+
+    <div class="row" style="padding-top: 10px;">
+        <table style="width: 100%;" #table mat-table [dataSource]="this.ledger.BANKALLOCATIONS_LIST" class="mat-elevation-z8">
+
+            <!--- Note that these columns can be defined in any order.
+                  The actual rendered columns are set as a property on the row definition" -->
+          
+            <!-- Position Column -->
+            <ng-container matColumnDef="type">
+              <th mat-header-cell *matHeaderCellDef> Transaction Type</th>
+              <td mat-cell *matCellDef="let element"> {{element.transactiontype}} </td>
+            </ng-container>
+          
+            <!-- Name Column -->
+            <ng-container matColumnDef="amount">
+              <th mat-header-cell *matHeaderCellDef> Amount </th>
+              <td mat-cell *matCellDef="let element"> {{element.amount}} </td>
+            </ng-container>
+          
+            <!-- Symbol Column -->
+            <ng-container matColumnDef="action">
+              <th mat-header-cell *matHeaderCellDef> Action </th>
+              <td mat-cell *matCellDef="let element; let i = index">
+                  <button mat-icon-button (click) = "delete(i)">
+                      <mat-icon>delete</mat-icon>
+                  </button>
+              </td>
+            </ng-container>
+          
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+          </table>
+    </div>
+
+</div>

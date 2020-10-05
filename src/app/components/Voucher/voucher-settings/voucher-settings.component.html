@@ -1,0 +1,156 @@
+<mat-horizontal-stepper labelPosition="bottom" linear #stepper>
+  <mat-step [completed]="this.service.voucherParentType" disable>
+    <ng-template matStepLabel>Voucher Parent Type</ng-template>
+    <ng-container>
+      <div class="row">
+        <mat-form-field>
+            <mat-select id = "voucherparenttype" [(ngModel)] = "this.service.voucherParentType" placeholder = "Select Voucher Parent" (selectionChange) = "voucherParentTypeSelectionChange()">
+                <mat-option *ngFor = "let item of voucherParents()" [value] = "item">{{item}}</mat-option>
+            </mat-select>
+        </mat-form-field>
+    </div>
+    </ng-container>
+
+    <button mat-button matStepperPrevious>Back</button>
+    <button mat-button (click) = "voucherParentTypeSelectionChange()">Proceed</button>
+  </mat-step>
+
+
+  <mat-step [completed]="this.service.voucher.VOUCHERTYPENAME" disable>
+    <ng-template matStepLabel>Voucher Type</ng-template>
+    <ng-container>
+      <div class="row">
+        <mat-form-field>
+            <mat-select #voucherType id="voucherTypeSelect" [(ngModel)] = "this.service.voucher.VOUCHERTYPENAME" placeholder = "Select Voucher Type" (selectionChange) = "this.service.createNewVoucher($event.value);focus()">
+                <ng-container  *ngFor = "let item of voucherTypes">
+                    <mat-option *ngIf = "item.PARENT == this.service.voucherParentType" [value] = "item.NAME">{{item.NAME}}</mat-option>
+
+                </ng-container>
+            </mat-select>
+        </mat-form-field>
+    </div>
+    </ng-container>
+
+    <button mat-button matStepperPrevious>Back</button>
+    <button mat-button (click) = "focus()">Proceed</button>
+  </mat-step>
+
+  <mat-step *ngIf = "getClass() && getClass().length > 0" optional>
+    <ng-template matStepLabel>Class</ng-template>
+    <ng-container>
+      <div class="row">
+        <mat-form-field>
+            <mat-select id="class" [(ngModel)] = "this.service.voucher.CLASSNAME" placeholder = "Select Class" (selectionChange) = "classSelection()">
+                <ng-container >
+                    <mat-option [value] = "null">Not Applicable</mat-option>
+                    <mat-option  *ngFor = "let item of getClass()" [value] = "item">{{item}}</mat-option>
+                </ng-container>
+            </mat-select>
+        </mat-form-field>
+    </div>
+    </ng-container>
+
+    <button mat-button matStepperPrevious>Back</button>
+    <button mat-button (click) = "classSelection()">Proceed</button>
+  </mat-step>
+  <mat-step [completed] = "validDate()">
+    <ng-template matStepLabel>Date</ng-template>
+    <ng-container>
+      <div class="row">
+        <mat-form-field>
+            <mat-label>Choose a date</mat-label>
+            <input #date id="date" matInput [(ngModel)] = "this.service.voucher.DATE" [matDatepicker]="picker"  (dateChange) = "dateSelected()" (keydown.enter) = "date.value?dateSelected():false">
+            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+            <mat-datepicker #picker></mat-datepicker>
+          </mat-form-field>
+    </div>
+    </ng-container>
+
+    <button mat-button matStepperPrevious>Back</button>
+    <button mat-button (click) = "dateSelected()">Proceed</button>
+  </mat-step>
+  <mat-step *ngIf = "showPriceListAndGodown()" [completed] = "this.service.voucher.PRICELEVEL">
+    <ng-template matStepLabel>Price Level</ng-template>
+    <ng-container>
+      <div class="row">
+        <mat-form-field>
+            <mat-label>Select a Price Level</mat-label>
+            <mat-select id = "priceLevel" required name = "priceSelect" [(ngModel)] = "this.service.voucher.PRICELEVEL" (selectionChange) = "priceLevelSelected()">
+                    <mat-option [value] = "null">Not Applicable</mat-option>
+                    <mat-option *ngFor = 'let v of this.auth.user.salesVoucherSettings.priceLists' [value] = "v">
+                        {{v}}
+                    </mat-option>
+            </mat-select>
+          </mat-form-field>
+    </div>
+    </ng-container>
+
+    <button mat-button matStepperPrevious>Back</button>
+    <button mat-button (click) = "priceLevelSelected()">Proceed</button>
+  </mat-step>
+
+
+  <mat-step *ngIf = "showPriceListAndGodown()" [completed] = "this.service.godown">
+    <ng-template matStepLabel>Godown</ng-template>
+    <ng-container>
+      <div class="row">
+        <mat-form-field>
+            <mat-label>Select a Godown</mat-label>
+            <mat-select id = "godown" [(ngModel)] = "this.service.godown" required name= 'godownSelect'
+            (selectionChange) = "save()">
+                    <mat-option [value] = "null">Not Applicable</mat-option>
+                    <mat-option *ngFor = 'let v of auth.user.godownList' [value] = "v">
+                        {{v}}
+                    </mat-option>
+            </mat-select>
+          </mat-form-field>
+    </div>
+    </ng-container>
+
+    <button mat-button matStepperPrevious>Back</button>
+    <button mat-button (click) = "this.save()">Proceed</button>
+  </mat-step>
+
+  <mat-step *ngIf = "showVoucherSourceAndDestination()" [completed] = "this.service.voucher.VOUCHERSOURCEGODOWN">
+    <ng-template matStepLabel>Source Godown</ng-template>
+    <ng-container>
+      <div class="row">
+        <mat-form-field>
+            <mat-label>Select a Source Godown</mat-label>
+            <mat-select id = "source" [(ngModel)] = "this.service.voucher.VOUCHERSOURCEGODOWN" required name= 'godownSelect'
+            (selectionChange) = "sourceGodownSelected()">
+                    <mat-option [value] = "null">Not Applicable</mat-option>
+                    <mat-option *ngFor = 'let v of auth.user.godownList' [value] = "v">
+                        {{v}}
+                    </mat-option>
+            </mat-select>
+          </mat-form-field>
+    </div>
+    </ng-container>
+
+    <button mat-button matStepperPrevious>Back</button>
+    <button mat-button (click) = "sourceGodownSelected()">Proceed</button>
+  </mat-step>
+
+  <mat-step *ngIf = "showVoucherSourceAndDestination()" [completed] = "this.service.voucher.VOUCHERDESTINATIONGODOWN">
+    <ng-template matStepLabel>Destination Godown</ng-template>
+    <ng-container>
+      <div class="row">
+        <mat-form-field>
+            <mat-label>Select a Destination Godown</mat-label>
+            <mat-select #destination id = "destination" [(ngModel)] = "this.service.voucher.VOUCHERDESTINATIONGODOWN" required name= 'godownSelect'
+            (selectionChange) = "save()">
+                    <mat-option [value] = "null">Not Applicable</mat-option>
+                    <mat-option *ngFor = 'let v of destinationGodowns' [value] = "v">
+                        {{v}}
+                    </mat-option>
+            </mat-select>
+          </mat-form-field>
+    </div>
+    </ng-container>
+
+    <button mat-button matStepperPrevious>Back</button>
+    <button mat-button (click) = "save()">Proceed</button>
+  </mat-step>
+
+</mat-horizontal-stepper>

@@ -1,0 +1,88 @@
+.sidenav-container {
+  height: 100%;
+}
+
+.sidenav {
+  width: 200px;
+}
+
+.sidenav .mat-toolbar {
+  background: inherit;
+}
+
+.mat-toolbar.mat-primary {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+
+.navibar-brand {
+	color: #00ff00;
+	font-size:25px;
+    font-family: 'Kaushan Script','Helvetica Neue',Helvetica,Arial,cursive;
+	font-weight:700;
+	letter-spacing:0.1em;
+  padding-left: 30px;
+}
+.navibar-brand  span{
+	color: #fed136;
+	font-size:25px;font-weight:700;letter-spacing:0.1em;
+    font-family: 'Kaushan Script','Helvetica Neue',Helvetica,Arial,cursive;
+}
+
+.navbar{
+  justify-content: space-between;
+}
+.span{
+  padding-right: 1rem;
+}
+
+#drawer.menu-open{
+  width: 240px;
+}
+
+#drawer.menu-close{
+  width: 70px
+}
+
+.toolbar-spacer {
+  flex: 1 1 auto;
+}
+
+.connected{
+  color: green
+}
+
+.disconnected{
+  color: #455a64;
+}
+
+
+
+.mat-nav-list mat-list-item:hover {
+  background-color: #455a64;
+  color: white;
+}
+
+.mat-nav-list mat-list-item.active {
+  background-color: #455a64;
+  color: white;
+}
+
+.mat-nav-list mat-list-item{
+  background-color: white;
+  color: #455a64;
+}
+
+.far-end{
+  padding-left: 20px;
+  padding-top: 10px;
+  font-size: x-small;
+  display: inline-grid;
+  margin-bottom: auto;
+}
+
+.space-reducer{
+  max-height: 20px;
+}

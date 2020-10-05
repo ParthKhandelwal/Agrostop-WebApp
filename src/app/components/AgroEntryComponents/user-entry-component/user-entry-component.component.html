@@ -1,0 +1,233 @@
+<div class="row">
+    <div class="col">
+        <mat-form-field>
+            <input matInput placeholder="Enter Username" [(ngModel)] = "user.userName" name = "userName" required>
+        </mat-form-field>
+    </div>
+    <div class="col">
+        <mat-form-field>
+            <input matInput placeholder="Enter Name" [(ngModel)] = "user.name" name = "name" required>
+        </mat-form-field>
+    </div>
+
+    <div class="col">
+        <mat-form-field>
+            <input matInput placeholder="Enter Phone Number" [(ngModel)] = "user.contactNumber" name = "contactNumber" required>
+        </mat-form-field>
+    </div>
+    <div class="col">
+        <mat-form-field>
+            <input matInput placeholder="Enter Tally username" [(ngModel)] = "user.tallyUserName" name = "tallyUsername">
+        </mat-form-field>
+    </div>
+</div>
+
+<div class="row">
+
+    <div class="col-8">
+        <mat-form-field style="width: 100%;">
+            <input matInput placeholder="Enter Email address" [(ngModel)] = "user.emailId" name = "email">
+        </mat-form-field>
+    </div>
+
+    <div class="col-4">
+        <mat-form-field>
+            <mat-select placeholder="Select User Role" [(ngModel)] = "user.role" name = "role" required>
+                <mat-option value = "Admin">Admin</mat-option>
+                <mat-option value = "Company User">Company User</mat-option>
+                <mat-option value = "Field User">Field User</mat-option>
+            </mat-select>
+
+        </mat-form-field>
+    </div>
+</div>
+<div class="row">
+    <div class="col">
+        <mat-form-field style="width: 100%;">
+            <mat-chip-list #chipList>
+              <mat-chip *ngFor="let fruit of this.user.godownList" [selectable]="selectable"
+                       [removable]="removable" (removed)="removeGodown(fruit)">
+                {{fruit}}
+                <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
+              </mat-chip>
+              <input placeholder="Enter godowns"
+                     [matChipInputFor]="chipList"
+                     [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                     [matChipInputAddOnBlur]="addOnBlur"
+                     (matChipInputTokenEnd)="addGodown($event)">
+            </mat-chip-list>
+          </mat-form-field>
+
+    </div>
+</div>
+
+<div class="row">
+    <div class="col">
+        <mat-form-field style="width: 100%;">
+            <mat-chip-list #chipList2>
+              <mat-chip *ngFor="let fruit of this.user.salesVoucherSettings.priceLists" [selectable]="selectable"
+                       [removable]="removable" (removed)="removePriceList(fruit)">
+                {{fruit}}
+                <mat-icon matChipRemove>cancel</mat-icon>
+              </mat-chip>
+              <input placeholder="Enter godowns"
+                     [matChipInputFor]="chipList2"
+                     [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                     [matChipInputAddOnBlur]="addOnBlur"
+                     (matChipInputTokenEnd)="addPriceList($event)">
+            </mat-chip-list>
+          </mat-form-field>
+
+    </div>
+</div>
+
+<div class="row">
+    <mat-tab-group style="width: 100%;" mat-stretch-tabs>
+        <mat-tab label = "Voucher Types">
+            <div class="col">
+                <div class="row" *ngIf = "this.voucherTypeClass">
+                    <div class="col">
+                        <mat-form-field>
+                            <mat-select placeholder = "Select Voucher Category"[(ngModel)] = "this.voucherTypeClass.voucherCategory" name="category" (selectionChange) = "selectVoucherCategory($event)">
+                                <mat-option value = "Sales">Sales</mat-option>
+                                <mat-option value = "Receipt">Receipt</mat-option>
+                                <mat-option value = "Payment">Payment</mat-option>
+                                <mat-option value = "Material Out">Material Out</mat-option>
+                                <mat-option value = "Journal">Journal</mat-option>
+                                <mat-option value = "Contra">Contra</mat-option>
+                                <mat-option value = "Purchase">Purchase</mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
+                    <div class="col">
+                        <mat-form-field *ngIf = "this.voucherTypeClass.voucherCategory">
+                            <mat-select placeholder = "Select Voucher Type" [(ngModel)] = "this.voucherTypeClass.voucherTypeName" name="category" (selectionChange) = "selectVoucherType($event)">
+                                <mat-option *ngFor = "let item of voucherTypesTemp" [value] = "item.NAME">{{item.NAME}}</mat-option>
+
+                            </mat-select>
+                            <mat-spinner *ngIf = "voucherTypeLoading" [diameter]="18" matSuffix></mat-spinner>
+                        </mat-form-field>
+                    </div>
+                    <div class="col">
+                        <mat-form-field *ngIf = "this.voucherTypeClass.voucherTypeName">
+                            <mat-select placeholder = "Select Voucher Class" name="class" [(ngModel)] = "this.voucherTypeClass.voucherClass" (selectionChange) = "selectVoucherClass($event)">
+                                <mat-option *ngFor = "let item of posClassTemp" [value] = "item">{{item}}</mat-option>
+
+                            </mat-select>
+                            <mat-spinner *ngIf = "voucherTypeLoading" [diameter]="18" matSuffix></mat-spinner>
+                        </mat-form-field>
+                    </div>
+                </div>
+                <div style="height: 300px;" class="row">
+                    <table #voucherTypeTable style="width: 100%; padding-right: 20px; padding-left: 20px;" mat-table [dataSource]="this.user.voucherTypes" class="mat-elevation-z8">
+                        <!-- Position Column -->
+                        <ng-container matColumnDef="category">
+                          <th mat-header-cell *matHeaderCellDef> Voucher Category </th>
+                          <td mat-cell *matCellDef="let element"> {{element.voucherCategory}} </td>
+                        </ng-container>
+
+                        <!-- Name Column -->
+                        <ng-container matColumnDef="type">
+                          <th mat-header-cell *matHeaderCellDef> Voucher Type </th>
+                          <td mat-cell *matCellDef="let element"> {{element.voucherTypeName}} </td>
+                        </ng-container>
+
+                        <!-- Weight Column -->
+                        <ng-container matColumnDef="class">
+                          <th mat-header-cell *matHeaderCellDef> Voucher Class </th>
+                          <td mat-cell *matCellDef="let element"> {{element.voucherClass}} </td>
+                        </ng-container>
+
+                        <!-- Symbol Column -->
+                        <ng-container matColumnDef="action">
+                          <th mat-header-cell *matHeaderCellDef> Symbol </th>
+                          <td mat-cell *matCellDef="let element; let i = index">
+                            <button mat-icon-button (click) = "deleteVoucherType(i)">
+                                <mat-icon>delete</mat-icon>
+                              </button>
+                        </td>
+                        </ng-container>
+
+                        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+                      </table>
+
+
+                </div>
+
+
+            </div>
+        </mat-tab>
+        <mat-tab  label = "Cash/Bank Profile">
+            <div class="col">
+                <div class="row" *ngIf = "this.cashBankProfile">
+                    <div class="col">
+                        <mat-form-field>
+                            <mat-select placeholder = "Select Voucher Category"[(ngModel)] = "this.cashBankProfile.type" name="cashType" (selectionChange) = "selectCashType($event)">
+                                <mat-option value = "Cash-in-hand">Cash-in-hand</mat-option>
+                                <mat-option value = "Bank OD A/c">Bank OD A/c</mat-option>
+                                <mat-option value = "Bank Accounts">Bank Accounts</mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
+                    <div class="col">
+                        <mat-form-field *ngIf = "this.cashBankProfile.type">
+                            <mat-select placeholder = "Select Voucher Type" [(ngModel)] = "this.cashBankProfile.ledger" name="cashLedger" (selectionChange) = "selectCashLedger($event)">
+                                <mat-option *ngFor = "let item of ledgerTemp" [value] = "item.NAME">{{item.NAME}}</mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
+
+                </div>
+                <div style="height: 300px;" class="row">
+                    <table #cashTable style="width: 100%; padding-right: 20px; padding-left: 20px;" mat-table [dataSource]="this.user.cashBankProfile" class="mat-elevation-z8">
+
+
+                        <!-- Name Column -->
+                        <ng-container matColumnDef="type">
+                          <th mat-header-cell *matHeaderCellDef> Type </th>
+                          <td mat-cell *matCellDef="let element"> {{element.type}} </td>
+                        </ng-container>
+
+                        <!-- Weight Column -->
+                        <ng-container matColumnDef="ledger">
+                          <th mat-header-cell *matHeaderCellDef> Ledger </th>
+                          <td mat-cell *matCellDef="let element"> {{element.ledger}} </td>
+                        </ng-container>
+
+                        <!-- Symbol Column -->
+                        <ng-container matColumnDef="action">
+                          <th mat-header-cell *matHeaderCellDef> Action </th>
+                          <td mat-cell *matCellDef="let element; let i= index">
+                            <button mat-icon-button (click) = "deleteCash(i)">
+                                <mat-icon>delete</mat-icon>
+                              </button>
+                        </td>
+                        </ng-container>
+
+                        <tr mat-header-row *matHeaderRowDef="cashDisplayedColumns"></tr>
+                        <tr mat-row *matRowDef="let row; columns: cashDisplayedColumns;"></tr>
+                      </table>
+
+
+                </div>
+
+
+            </div>
+        </mat-tab>
+    </mat-tab-group>
+</div>
+
+
+
+
+<div class="row">
+    <div class="col">
+        <button mat-raised-button color ="accent" (click) = "delete()">Delete</button>
+
+    </div>
+    <div class="col">
+        <button style="float: right;" mat-raised-button color ="primary" (click) = "save()">Save</button>
+
+    </div>
+</div>

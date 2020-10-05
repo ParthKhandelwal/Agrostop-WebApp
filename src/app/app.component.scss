@@ -1,0 +1,50 @@
+.footer {
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  background-color: royalblue;
+  color: white;
+  text-align: left;
+}
+
+#add-button{
+  top: auto;
+  right: 10px;
+  bottom: 10px;
+  left: auto;
+  position: fixed;
+  z-index: 5;
+}
+
+#parent > * {
+  margin: 10px 0;
+}
+
+#book-button{
+  top: auto;
+  right: 20px;
+  bottom: 85px;
+  left: auto;
+  position: fixed;
+  z-index: 5;
+}
+
+::ng-deep .custom-dialog > mat-dialog-container {
+  background-color: var(--background);
+  border-radius: 0;
+  border: 0;
+  overflow: hidden;
+  box-shadow: none !important;
+ }
+
+ .custom-dialog{
+  max-height: 90vh;
+
+ }
+
+ .backdropBackground {
+  background-color: black;
+}
+
+

@@ -1,0 +1,59 @@
+<div class="col">
+<div class="row">
+    <div class="col">
+        <mat-card class="totalSale">
+            <mat-card-header>
+                <mat-card-title>{{totalSale | currency: 'INR'}}</mat-card-title>
+                <mat-card-subtitle>Total Sale</mat-card-subtitle>
+            </mat-card-header>
+        </mat-card>
+    </div>
+    <div class="col">
+        <mat-card class = "saleThisYear">
+            <mat-card-header>
+                <mat-card-title>{{saleThisYear | currency: 'INR'}}</mat-card-title>
+                <mat-card-subtitle>Sale This Year</mat-card-subtitle>
+            </mat-card-header>
+        </mat-card>
+    </div>
+    <div class="col">
+        <mat-card class="monthlySale">
+            <mat-card-header>
+                <mat-card-title>{{totalMonthlySale | currency: 'INR'}}</mat-card-title>
+                <mat-card-subtitle>Sale Last 30 days</mat-card-subtitle>
+            </mat-card-header>
+        </mat-card>
+    </div>
+    <div class="col">
+        <mat-card class="weeklySale">
+            <mat-card-header>
+                <mat-card-title>{{totalWeeklySale | currency: 'INR'}}</mat-card-title>
+                <mat-card-subtitle>Sale Last 7 days</mat-card-subtitle>
+            </mat-card-header>
+        </mat-card>
+    </div>
+
+</div>
+
+<div class="row">
+  <div class="col">
+    <div class="chart-wrapper">
+      <canvas baseChart 
+      [datasets]="barChartData"
+      [labels]="barChartLabels"
+      [options]="barChartOptions"
+      [colors] = "barChartColors"
+      [plugins]="barChartPlugins"
+      legend="true"
+      chartType="bar">
+    </canvas>
+    </div>
+  </div>
+  <div class="col">
+
+  </div>
+  <div class="col">
+
+  </div>
+</div>
+</div>

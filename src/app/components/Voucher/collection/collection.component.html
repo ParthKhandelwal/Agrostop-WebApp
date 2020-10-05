@@ -1,0 +1,74 @@
+<div class="col">
+    <div class="row">
+        <div class="col" *ngIf = "service.posInvoice">
+            <mat-form-field>
+                <mat-select id = "pmtType" placeholder = "Select Payment Type" [(ngModel)] ="ledger.POSPAYMENTTYPE" name = "paymentType" (selectionChange) = "paymentTypeSelected()">
+                    <mat-option value = "Cash">Cash</mat-option>
+                    <mat-option value = "Card">Card</mat-option>
+                    <mat-option value = "Cheque">Cheque</mat-option>
+                    <mat-option value = "Gift">On Account</mat-option>
+
+                </mat-select>
+            </mat-form-field>
+        </div>
+        <ng-container>
+
+            <div class="col">
+                <auto-complete *ngIf = "allowLedgerSelection" id="ledger" #ledgerAutoComp type = "ledger" [ledgerList] = "getLedgers()" (optionSelected) = "ledgerSelected($event.NAME)" ></auto-complete>
+                <mat-form-field *ngIf = "!allowLedgerSelection">
+                    <input matInput placeholder="Select Ledger" readonly [(ngModel)] = "this.ledger.LEDGERNAME" name  ="name">
+                </mat-form-field>
+            </div>
+
+            <div class="col">
+                <mat-form-field *ngIf = "this.ledger.LEDGERNAME">
+                    <input type = "number" oninput="this.value = -Math.abs(this.value)" id = "camount" matInput placeholder="Enter Amount" [(ngModel)] = "ledger.AMOUNT" name = "amount" (keydown.enter) = "ledger.POSPAYMENTTYPE == 'Cash' ? cashRecievedFocus():addLedger()">
+                </mat-form-field>
+            </div>
+            <div class="col" *ngIf = "showCashRecieved">
+              <mat-form-field *ngIf = "this.ledger.LEDGERNAME">
+                  <input type = "number" id = "cashRecieved" matInput placeholder="Enter Cash Recieved" [(ngModel)] = "service.voucher.POSCASHRECEIVED" name = "amount" (keydown.enter) = "service.voucher.POSCASHRECEIVED + ledger.AMOUNT >=0 ? addLedger(): false">
+              </mat-form-field>
+            </div>
+            <div class="col" *ngIf = "showCashRecieved">
+              <mat-form-field *ngIf = "this.ledger.LEDGERNAME">
+                  <input type = "number" readonly matInput placeholder="Cash Tendered" [value] = "service.voucher.POSCASHRECEIVED + ledger.AMOUNT">
+              </mat-form-field>
+            </div>
+        </ng-container>
+
+    </div>
+
+    <div class="row">
+        <mat-table #table style="width: 100%;" [dataSource]="getPosLedgers()" class="mat-elevation-z8">
+            <!-- Position Column -->
+            <ng-container matColumnDef="pmtType">
+              <mat-header-cell *matHeaderCellDef> Payment Type </mat-header-cell>
+              <mat-cell *matCellDef="let element"> {{element.POSPAYMENTTYPE}} </mat-cell>
+            </ng-container>
+
+            <!-- Name Column -->
+            <ng-container matColumnDef="ledger">
+              <mat-header-cell *matHeaderCellDef> Name of Ledger </mat-header-cell>
+              <mat-cell *matCellDef="let element"> {{element.LEDGERNAME}} </mat-cell>
+            </ng-container>
+
+            <!-- Weight Column -->
+            <ng-container matColumnDef="amount">
+              <mat-header-cell *matHeaderCellDef> Amount </mat-header-cell>
+              <mat-cell *matCellDef="let element"> {{element.AMOUNT}} </mat-cell>
+            </ng-container>
+
+            <!-- Symbol Column -->
+            <ng-container matColumnDef="action">
+              <mat-header-cell *matHeaderCellDef> Action </mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                  <mat-icon>delete</mat-icon>
+                </mat-cell>
+            </ng-container>
+
+            <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+            <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+          </mat-table>
+    </div>
+</div>

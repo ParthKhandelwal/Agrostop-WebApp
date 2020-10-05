@@ -1,0 +1,185 @@
+<div class="col">
+  <div  id="printCon" class="row noPrint" *ngIf = "!printReady">
+    <div class="row">
+      <!-- <button style="align-self: flex-end;float: left;" mat-button (click)="print()">
+        Print
+      </button> -->
+      <button style="align-self: flex-end;float: right;" mat-button (click)="adjust()">
+        Adjust Expected Qty
+      </button>
+
+      <!-- <mat-form-field>
+        <mat-label>Choose a date</mat-label>
+        <input [(ngModel)]= "date" matInput [matDatepicker]="picker">
+        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-datepicker #picker></mat-datepicker>
+      </mat-form-field> -->
+    </div>
+
+
+
+  </div>
+
+  <div class="row">
+      <div class="col">
+          <mat-form-field>
+              <mat-select name = "priceLevel" [(ngModel)] = "this.priceLevel" placeholder = "Price Level" (selectionChange) = "totalBalanceAmount()">
+                <mat-option [value] = "null">Purchase</mat-option>
+                <mat-option *ngFor = "let item of auth.currentUserValue.salesVoucherSettings.priceLists" [value] ="item">{{item}}</mat-option>
+              </mat-select>
+          </mat-form-field>
+      </div>
+
+      <div class="col">
+        <mat-form-field>
+            <input matInput readonly [value] = "totalNegativeBalance" placeholder="Total Negative Balance Amount">
+            <span matSuffix>Rs.</span>
+        </mat-form-field>
+      </div>
+
+      <div class="col">
+        <mat-form-field>
+            <input matInput readonly [value] = "totalPositiveBalance" placeholder="Total Positive Balance Amount">
+            <span matSuffix>Rs.</span>
+        </mat-form-field>
+      </div>
+
+
+      <div class="col">
+          <mat-form-field>
+              <input matInput readonly [value] = "totalBalance" placeholder="Total Balance Amount">
+              <span matSuffix>Rs.</span>
+          </mat-form-field>
+      </div>
+
+      <div class="col">
+        <mat-form-field>
+            <input matInput readonly [value] = "purchaseAmount" placeholder="Balance Amount as of Purc. Rate">
+            <span matSuffix>Rs.</span>
+        </mat-form-field>
+    </div>
+
+
+  </div>
+
+
+  <!-- <div style="float: right;">
+        <button  style = "align-self: flex-end;" mat-button (click) = "adjust()">
+            Adjust Expected Values
+        </button>
+
+    </div> -->
+
+  <div class="row">
+    <div style="width: 100%" id="detailViewTable">
+
+
+
+
+
+      <mat-form-field style="width: 100%" *ngIf = "!printReady">
+        <mat-label>Filter</mat-label>
+        <input matInput (keyup)="applyFilter($event)" placeholder="Ex. Mia" #input>
+        <button mat-icon-button matSuffix (click) = "exporter.exportTable('csv',{fileName:'Stock Check'})"><mat-icon>get_app</mat-icon>
+        </button>
+      </mat-form-field>
+
+      <div class="mat-elevation-z8">
+        <table matTableExporter #exporter="matTableExporter" style="width: 100%; padding: 10 10 10 10" mat-table [dataSource]="dataSource" matSort>
+
+          <!-- ID Column -->
+          <ng-container matColumnDef="sno">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> S.No. </th>
+            <td mat-cell *matCellDef="let row ; let i=index"> {{i+1}} </td>
+          </ng-container>
+
+          <!-- Progress Column -->
+          <ng-container matColumnDef="itemName">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Item Name </th>
+            <td mat-cell *matCellDef="let row"> {{row.itemName}} </td>
+          </ng-container>
+
+          <!-- Name Column -->
+          <ng-container matColumnDef="actualQty">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Actual Qty </th>
+            <td mat-cell *matCellDef="let row"> {{row.actualQty}} </td>
+          </ng-container>
+
+          <!-- Color Column -->
+          <ng-container matColumnDef="expectedQty">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Expected Qty </th>
+            <td mat-cell *matCellDef="let row"> {{row.expectedQty}} </td>
+          </ng-container>
+
+          <ng-container matColumnDef="balance">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Balance </th>
+            <td mat-cell *matCellDef="let row" > {{row.actualQty - row.expectedQty}} </td>
+          </ng-container>
+
+          <ng-container matColumnDef="rate">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Rate </th>
+            <td mat-cell *matCellDef="let row" > {{this.getPrice(row.itemName) | currency: "INR"}} </td>
+          </ng-container>
+
+          <ng-container matColumnDef="balanceAmt">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Balance Amount </th>
+            <td mat-cell *matCellDef="let row" > {{getAmount(row)  | currency: "INR"}} </td>
+          </ng-container>
+
+          <ng-container matColumnDef="user">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> User </th>
+            <td mat-cell *matCellDef="let row" > {{row.username}} </td>
+          </ng-container>
+
+          <ng-container matColumnDef="date">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Date </th>
+            <td mat-cell *matCellDef="let row" > {{row.dateOfCheck | date: "dd-MMM-yyyy"}} </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+          <!-- Row shown when there is no matching data. -->
+          <tr class="mat-row" *matNoDataRow>
+            <td class="mat-cell" colspan="4">No data matching the filter</td>
+          </tr>
+        </table>
+
+        <mat-paginator [pageSizeOptions]="[25, 100, dataSource.data.length]"></mat-paginator>
+      </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    </div>
+  </div>
+
+
+
+</div>

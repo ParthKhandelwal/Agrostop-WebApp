@@ -1,0 +1,14 @@
+.totalSale{
+    color: white;
+    background: rgb(2,0,36);
+    background: linear-gradient(90deg, rgba(2,0,36,1) 0%, rgba(9,121,15,1) 0%, rgba(187,255,0,1) 100%);
+}
+
+.saleThisYear{
+    color: white;
+    background: rgb(224,130,26);
+    background: linear-gradient(90deg, rgba(224,130,26,1) 0%, rgba(212,253,29,1) 100%);}
+
+    .demo-chart {
+        height: 400px;
+      }

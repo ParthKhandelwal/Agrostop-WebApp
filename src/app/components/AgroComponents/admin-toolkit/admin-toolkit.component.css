@@ -1,0 +1,62 @@
+.adminButton
+{
+ width: 150px;
+ height: 100px;
+ } 
+
+ .salesVoucher{
+     background-color: #FF5964;
+     color: white;
+ }
+
+ .paymentVoucher{
+    background-color: #F5D400;
+    color: white;
+ }
+
+ .receiptVoucher{
+    background-color: #38618C;
+    color: white;
+ }
+
+ .materialOutVoucher{
+    background-color: #35A7FF;
+    color: white;
+ }
+
+ .salesRegister{
+    background-color: #17183B;
+    color: white;
+ }
+ .customerSummary{
+    background-color: #A11692;
+    color: white;
+ }
+
+ .addressSummary{
+    background-color: #FFB49A;
+    color: white;
+ }
+
+ .addressTable{
+    background-color: #E4572E;
+    color: white;
+ }
+ .productTable{
+    background-color: #29335C;
+    color: white;
+ }
+ .userTable{
+    background-color: #F3A712;
+    color: white;
+ }
+
+ .customerTable{
+    background-color: #669BBC;
+    color: white;
+ }
+
+ .printConfiguration{
+   background-color: #C06198;
+   color: white;
+ }

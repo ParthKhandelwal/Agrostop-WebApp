@@ -1,0 +1,25 @@
+<div class="col">
+    <div class="row">
+        <mat-form-field style="width: 400px;">
+            <input matInput placeholder="Enter Chemical Group Name" name = "name" [(ngModel)] = " this.chemicalGroup.name" required>
+        </mat-form-field>
+    </div>
+    <div class="row">
+        <mat-form-field style="width: 400px;">
+            <mat-select placeholder="Select Parent" name = "parent" [(ngModel)] = " this.chemicalGroup.parent" required>
+                <mat-option *ngFor = "let item of chemicals" [value]= "item.name">{{item.name}}</mat-option>
+            </mat-select>
+        </mat-form-field>
+    </div>
+    <div class="row">
+        <div class="col">
+            <button mat-raised-button color ="accent" (click) = "delete()">Delete</button>
+            
+        </div>
+        <div class="col">
+            <button style="float: right;" mat-raised-button color ="primary" (click) = "save()">Save</button>
+
+        </div>
+        
+    </div>
+</div>

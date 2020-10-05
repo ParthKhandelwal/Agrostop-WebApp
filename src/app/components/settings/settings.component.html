@@ -1,0 +1,44 @@
+<mat-tab-group>
+    <mat-tab label="Print Configuration">
+      <div style="padding-left: 25%; padding-right: 25%;" >
+
+        <div class="mat-elevation-z8">
+          <print-configuration-table></print-configuration-table>
+        </div>
+      </div>
+    </mat-tab>
+    <mat-tab label = "Voucher Numbering">
+      <div *ngIf="auth.user && auth.user.role == 'Admin'">
+        <div class="col">
+            <div class="row">
+                <div class="col">
+                    <mat-form-field>
+                        <mat-select placeholder = "Select Voucher Type" [(ngModel)] = "this.object.voucherType" name = "VOucherType" (selectionChange) = "get();">
+                            <mat-option *ngFor = "let item of voucherTypes" [value] = "item">{{item}}</mat-option>
+
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+
+                <div class="col">
+                    <mat-form-field>
+                        <input #prefix id = "prefix" placeholder="Enter Prefix" matInput [(ngModel)] = "this.object.prefix" name = "prefix" (keydown.enter) = "seq.focus()">
+                    </mat-form-field>
+                </div>
+
+                <div class="col">
+                    <mat-form-field>
+
+                            <input #seq placeholder="Enter Sequence" type = "number" matInput [(ngModel)] = "this.object.seq" name = "seq" (keydown.enter) = "save()">
+
+                    </mat-form-field>
+                </div>
+            </div>
+            <div  class="row">
+
+            </div>
+        </div>
+
+    </div>
+    </mat-tab>
+</mat-tab-group>

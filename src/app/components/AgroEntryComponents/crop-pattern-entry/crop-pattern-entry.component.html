@@ -1,0 +1,78 @@
+<div class="col">
+
+  <div class="row">
+    <div class="col">
+      <mat-form-field>
+        <input type="text"
+               placeholder="Pick Crop"
+               name = "name"
+               matInput
+               [(ngModel)] = "cropPattern.cropName"
+               [formControl]="nameControl"
+
+               [matAutocomplete]="auto">
+        <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete"  (optionSelected) = "nameSelected();false">
+          <mat-option *ngFor="let option of cropFilteredOptions | async" [value]="option.name">
+            {{option.name}}
+          </mat-option>
+        </mat-autocomplete>
+      </mat-form-field>
+    </div>
+
+    <div class="col">
+      <mat-form-field>
+        <mat-select name = "variety" #variety id = "variety" [(ngModel)] = "this.cropPattern.cropVariety" (selectionChange) = "cropVarietySelected();false">
+          <mat-option *ngFor = "let item of varieties" [value] = "item.name">{{item.name}}</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col">
+      <mat-form-field>
+        <input matInput type= "number" name="land" id = "land" #land [(ngModel)] = "cropPattern.land" placeholder="Enter Land Amount" (keydown.enter) = "landEntered();false">
+      </mat-form-field>
+    </div>
+    <div class="col">
+      <mat-form-field>
+        <mat-select placeholder="Choose Season" name="season" id = "seasonField" #season [(ngModel)] = "cropPattern.season" (selectionChange) = "seasonSelected()">
+          <mat-option *ngFor = "let s of seasons" [value] = "s">{{s}}</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+
+  </div>
+  <div class="row">
+    <div class="col">
+      <mat-form-field style="width: 100%;" class="example-full-width">
+        <mat-label>Please enter additional Comments</mat-label>
+        <textarea #narration id = "narration" [(ngModel)] = "cropPattern.narration" matInput placeholder="Ex. It makes me feel..." (keydown.enter) = "narrationEntered(); false"></textarea>
+      </mat-form-field>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col">
+      <mat-form-field>
+        <input matInput readonly name = "customer" [(ngModel)] = "cropPattern.customerId" placeholder="Customer Id">
+      </mat-form-field>
+    </div>
+    <div class="col">
+      <mat-form-field>
+        <input matInput readonly name = "userId" [(ngModel)] = "cropPattern.userId" placeholder="User Id">
+      </mat-form-field>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col">
+
+    </div>
+    <div class="col">
+      <button id = "saveBtn" style="float: right;" #saveButton mat-raised-button color = "primary" [disabled] = "!cropPattern.cropName" (click) = "save()">Save</button>
+
+    </div>
+  </div>
+</div>

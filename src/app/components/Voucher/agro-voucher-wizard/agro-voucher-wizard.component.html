@@ -1,0 +1,113 @@
+<div class="col">
+
+
+  <div class="row" style="padding-top: 5px;">
+
+    <div class="col-8" style="width: 100%; float: left; padding-left: 5px;">
+      <mat-chip-list *ngIf="service.voucher">
+        <mat-chip class="voucherParentTypeChip" selected *ngIf="service.voucherParentType">{{service.voucherParentType}}
+        </mat-chip>
+        <mat-chip class="voucherTypeChip" selected *ngIf="service.voucher.VOUCHERTYPENAME">
+          {{service.voucher.VOUCHERTYPENAME}}</mat-chip>
+        <mat-chip class="classChip" selected *ngIf="service.voucher.CLASSNAME">{{service.voucher.CLASSNAME}}</mat-chip>
+        <mat-chip class="vnChip" (click) = "editVoucherNumber = true" selected *ngIf="service.voucher.VOUCHERNUMBER && !editVoucherNumber">{{service.voucher.VOUCHERNUMBER}}</mat-chip>
+        <mat-form-field *ngIf = "editVoucherNumber" (keydown.enter) = "editVoucherNumber = false; false">
+          <input matInput [(ngModel)] = "this.service.voucher.VOUCHERNUMBER" name = "vn" >
+        </mat-form-field>
+        <mat-chip class="dateChip" selected *ngIf="service.voucher.DATE">{{service.voucher.DATE | date: 'dd-MMM-yyyy'}}
+        </mat-chip>
+        <mat-chip class="prChip" selected *ngIf="service.voucher.PRICELEVEL">{{service.voucher.PRICELEVEL}}
+        </mat-chip>
+        <mat-chip class="gdwChip" selected *ngIf="service.godown">{{service.godown}}
+        </mat-chip>
+        <mat-chip class="ledgerChip" selected *ngIf="this.service.getPrimaryLedger()">{{this.service.getPrimaryLedger().LEDGERNAME}}
+        </mat-chip>
+
+      </mat-chip-list>
+
+
+    </div>
+
+    <div class="col-4" style="width: 100%; float: right; padding-right: 5px;">
+      <mat-chip-list style="float: right;" *ngIf="service.voucher">
+        <mat-chip class="voucherParentTypeChip" selected *ngIf="service.voucherParentType">{{service.voucher.getTotal() | currency: 'INR'}}
+        </mat-chip>
+        <mat-chip class="voucherTypeChip" mat-icon-button (click)="service.renew()">
+          <mat-icon>refresh</mat-icon>
+        </mat-chip>
+        <mat-chip class="vnChip" mat-icon-button (click)="voucherSettings()">
+          <mat-icon>settings</mat-icon>
+        </mat-chip>
+      </mat-chip-list>
+
+    </div>
+
+
+  </div>
+
+  <div class="row">
+    <mat-horizontal-stepper style="width: 100%;" linear #stepper (selectionChange) = "handleSelectionChange($event)">
+      <mat-step (completed) = "voucherSet()">
+
+              <div class="col">
+                <voucher-detail #voucherDetail (complete) = "stepper.next()"></voucher-detail>
+              </div>
+
+
+      </mat-step>
+
+
+      <mat-step >
+        <ng-template matStepLabel>Ledger/Inventory Entries</ng-template>
+
+        <ng-container [ngSwitch] = "this.service.voucherParentType">
+            <ng-container *ngSwitchCase = "voucherParent.Contra">
+                <particular-table #particularTable (complete) = "stepper.next()" style="width: 100%;"></particular-table>
+            </ng-container>
+            <ng-container *ngSwitchCase = "voucherParent.Payment">
+              <particular-table #particularTable (complete) = "stepper.next()" style="width: 100%;"></particular-table>
+            </ng-container>
+            <ng-container *ngSwitchCase = "voucherParent.Receipt">
+              <particular-table #particularTable (complete) = "stepper.next()" style="width: 100%;"></particular-table>
+            </ng-container>
+            <ng-container *ngSwitchCase = "voucherParent.Sales">
+              <inventory-table #inventoryTable (complete) = "stepper.next();" style="width: 100%;"></inventory-table>
+            </ng-container>
+            <ng-container *ngSwitchCase = "voucherParent.Purchase">
+              <inventory-table #inventoryTable (complete) = "stepper.next();" style="width: 100%;"></inventory-table>
+            </ng-container>
+
+            <ng-container *ngSwitchCase = "voucherParent.Journal">
+              <particular-table #particularTable (complete) = "stepper.next()" style="width: 100%;"></particular-table>
+            </ng-container>
+            <ng-container *ngSwitchCase = "voucherParent.Material_Out">
+              <inventory-table #inventoryTable (complete) = "stepper.next();" style="width: 100%;"></inventory-table>
+            </ng-container>
+        </ng-container>
+
+      </mat-step>
+      <mat-step >
+
+
+        <ng-template matStepLabel>Done</ng-template>
+        <ng-container *ngIf = "stepper.selectedIndex ==2 && this.service.voucherParentType == voucherParent.Sales">
+          <div class="row">
+            <collection #collection style="width:100%" (complete) = "narration.focus()"></collection>
+          </div>
+        </ng-container>
+        <div class="row">
+          <mat-form-field style="width: 100%;">
+            <input #narration id = "narration" matInput placeholder="Enter Narration" [(ngModel)] = "this.service.voucher.NARRATION" (keydown.enter) = "handleVoucherSave()">
+          </mat-form-field>
+        </div>
+        <div>
+          <button mat-button matStepperPrevious>Back</button>
+          <button mat-button (click)="save(stepper)">Save</button>
+          <button mat-button (click)="voucherSaveAndPrint()">Save & Print</button>
+          <button mat-button (click)="saveVoucherForVerification()" *ngIf = "this.service.voucherParentType == voucherParent.Material_Out">Save For Verification</button>
+        </div>
+
+      </mat-step>
+    </mat-horizontal-stepper>
+  </div>
+</div>
