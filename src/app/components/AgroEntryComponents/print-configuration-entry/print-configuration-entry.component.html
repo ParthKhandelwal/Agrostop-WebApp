@@ -20,7 +20,21 @@
 
   </div>
   <div class="row">
-    <mat-tab-group>
+    <div class="col">
+      <mat-form-field>
+        <input [(ngModel)] = "this.voucherTypeConfig.prefix" matInput placeholder="Enter Prefix" name = "prefix">
+
+      </mat-form-field>
+    </div>
+    <div class="col">
+      <mat-form-field>
+        <input [(ngModel)] = "this.voucherTypeConfig.suffix" matInput placeholder="Enter suffix" name = "suffix">
+      </mat-form-field>
+    </div>
+  </div>
+  
+  <div class="row">
+    <mat-tab-group style="height: 600px;">
       <mat-tab label="Print Configuration">
         <div class="col">
           <div class="row">
@@ -141,20 +155,24 @@
               </mat-form-field>
             </div>
           </div>
-          <div class="row">
-            <div class="col">
-              <mat-form-field>
+          <div class="row" style="width: 100%;">
+            <div class="col" style="width: 100%;">
+              <mat-form-field style="width: 100%;">
                 <input matInput [(ngModel)] = "coupon.lessThan" type = "number" placeholder="Coupon Offered on amount less than">
               </mat-form-field>
             </div>
-            <div class="col">
-              <mat-form-field>
+          </div>
+            <div class="row" style="width: 100%;">
+            <div class="col" style="width: 100%;">
+              <mat-form-field style="width: 100%;">
                 <input matInput [(ngModel)] = "coupon.greaterThan" type = "number" placeholder="Coupon Offered on amount greater than">
               </mat-form-field>
             </div>
-            <div class="col">
-              <mat-form-field>
-                <input matInput [(ngModel)] = "coupon.amountOffered" type = "number" placeholder="Coupon Offered on amount less than">
+          </div>
+            <div class="row" style="width: 100%;">
+            <div class="col" style="width: 100%;">
+              <mat-form-field style="width: 100%;">
+                <input matInput [(ngModel)] = "coupon.amountOffered" type = "number" placeholder="Coupon discount offered">
               </mat-form-field>
             </div>
           </div>

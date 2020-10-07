@@ -18,8 +18,9 @@
 
        <div class="data-box">
            <div class="data-separator d-block my-2"></div>
-           <h4 class="text-muted font-weight-light">No.</h4>
-           <h4 class="font-weight-bold">{{voucher.VOUCHERNUMBER}}</h4>
+           <h4 *ngIf = "isSales()" class="text-muted font-weight-light">{{voucher.VOUCHERNUMBER? 'No.': 'Delivery Memo'}}No.</h4>
+           <h4 *ngIf = "!isSales()" class="text-muted font-weight-light">No.</h4>
+           <h4 class="font-weight-bold">{{voucher.VOUCHERNUMBER? voucher.VOUCHERNUMBER: voucher._REMOTEID}}</h4>
        </div>
        <div class="data-box">
            <div class="data-separator d-block my-2"></div>
@@ -263,7 +264,7 @@
                     <li>{{tc}}</li>
                 </ng-container>
 
-                <li *ngIf = "match()">Due to troubles in internet connectivity we are unable to provide you an invoice at this point. Please collect it later</li>
+                <li *ngIf = "!voucher.VOUCHERNUMBER">Due to troubles in internet connectivity we are unable to provide you an invoice at this point. Please collect it later</li>
                 <li *ngIf = "voucher.NARRATION">NARRATION: {{voucher.NARRATION}}</li>
             </ul>
         </div>

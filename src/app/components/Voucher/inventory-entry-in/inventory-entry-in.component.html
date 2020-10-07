@@ -1,0 +1,31 @@
+<div class="row">
+    <!-- PRODUCT ENTRY GOES HERE -->
+    <div class="col">
+      <mat-form-field>
+        <input matInput placeholder="Stock Item" [(ngModel)] = "this.item.STOCKITEMNAME" readonly>
+      </mat-form-field>
+    </div>
+    <div class="col">
+      <mat-form-field>
+        <input id = "qty" #quantityField type="number"
+          [placeholder]="this.stockItem? this.stockItem.baseUnits : 'Enter Qty'"
+          matInput name="qty" [(ngModel)] = "item.ACTUALQTY">
+      </mat-form-field>
+
+    </div>
+    <div class="col">
+      <mat-form-field *ngIf="this.stockItem">
+        <input #rateField id = "rate" type="number" (keydown.enter)="showBatchAllocation()" placeholder="Enter Rate"
+          matInput name="rate" [(ngModel)] = "item.RATE">
+      </mat-form-field>
+    </div>
+    <div class="col">
+      <mat-form-field *ngIf="stockItem">
+        <input type="number" readonly placeholder="Rate (inc of tax)" matInput name="rateIncTax"
+          [value] = "setRateInclusiveOfTax()">
+      </mat-form-field>
+    </div>
+
+
+
+  </div>

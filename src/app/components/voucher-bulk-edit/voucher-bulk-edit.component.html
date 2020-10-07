@@ -1,0 +1,65 @@
+<div class="col">
+    <div class="row">
+        <div class="col">
+          <mat-form-field>
+            <mat-label>From</mat-label>
+            <input matInput [matDatepicker]="Frompicker" [(ngModel)]="this.daybookService.fromDate">
+            <mat-datepicker-toggle matSuffix [for]="Frompicker"></mat-datepicker-toggle>
+            <mat-datepicker #Frompicker></mat-datepicker>
+          </mat-form-field>
+        </div>
+        <div class="col">
+          <mat-form-field>
+            <mat-label>To</mat-label>
+            <input matInput [matDatepicker]="Topicker" [(ngModel)]="this.daybookService.toDate">
+            <mat-datepicker-toggle matSuffix [for]="Topicker"></mat-datepicker-toggle>
+            <mat-datepicker #Topicker></mat-datepicker>
+          </mat-form-field>
+        </div>
+        <div class="col">
+          <div style="padding-top: 10px;">
+            <button mat-raised-button color="primary"
+              (click)="daybookService.getOnlineVouchers()">Apply</button>
+          </div>
+
+        </div>
+
+      </div>
+
+    <div class="row">
+        <div class="col">
+            <mat-form-field>
+                <mat-select placeholder = "Select Voucher Property to Change" [(ngModel)] = "toChange">
+                    <mat-option value = "Voucher Type">VoucherType</mat-option>
+                    <mat-option value = "Voucher Number">Voucher Number</mat-option>
+
+                </mat-select>
+            </mat-form-field>
+        </div>
+        <div *ngIf = "toChange != 'Voucher Number'" class="col">
+            <mat-form-field>
+                <mat-select placeholder = "Select changedValue" [(ngModel)] = "vPrefix">
+                    <mat-option *ngFor = "let item of auth.user.voucherTypes" [value] = "item.voucherTypeName">{{item.voucherTypeName}}</mat-option>
+                </mat-select>
+            </mat-form-field>
+        </div>
+        <div *ngIf = "toChange == 'Voucher Number'" class="col">
+          <mat-form-field>
+              <input matInput placeholder = "Enter prefix" [(ngModel)] = "vPrefix">
+          </mat-form-field>
+      </div>
+      <div *ngIf = "toChange =='Voucher Number'" class="col">
+        <mat-form-field>
+          <input matInput placeholder = "Begining from" [(ngModel)] = "vSuffix">
+
+        </mat-form-field>
+    </div>
+        <div class="col">
+            <button mat-raised-button color = "primary" (click) = "processChange()">Proceed</button>
+        </div>
+        
+    </div>
+    <div class="row">
+        <voucher-table select = "true" #voucherTable style="width: 100%;"></voucher-table>
+    </div>
+</div>

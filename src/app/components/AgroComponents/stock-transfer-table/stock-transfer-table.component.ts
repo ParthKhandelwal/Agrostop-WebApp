@@ -1,8 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { ApiService } from '../../../services/API/api.service';
-import { INVENTORYENTRIESIN_LIST } from '../../../model/Voucher/voucher';
+import { INVENTORYENTRIESIN_LIST, VOUCHER } from '../../../model/Voucher/voucher';
 import { MatDialogConfig, MatDialog } from '@angular/material/dialog';
 import { InvoicePrintViewComponent } from '../../invoice-print-view/invoice-print-view.component';
+import { AgroVoucherService } from 'src/app/services/AgroVoucher/agro-voucher.service';
+import { AuthenticationService } from 'src/app/services/Authentication/authentication.service';
+import { Router } from '@angular/router';
+import { VoucherParentType } from 'src/app/model/VoucherType/voucher-type';
+import { InventoryEntryINComponent } from '../../Voucher/inventory-entry-in/inventory-entry-in.component';
 
 @Component({
   selector: 'stock-transfer-table',
@@ -15,7 +20,7 @@ export class StockTransferTableComponent implements OnInit {
   displayedColumns = ['date', 'item', 'godown', 'qty', 'rate', 'action']
   items: INVENTORYENTRIESIN_LIST[];
 
-  constructor(private apiService? : ApiService,  private dialog?: MatDialog) { }
+  constructor(private apiService? : ApiService,  private dialog?: MatDialog, private service?: AgroVoucherService, public auth?: AuthenticationService, private router?: Router) { }
 
   ngOnInit(): void {
     this.revisit();
@@ -76,5 +81,18 @@ export class StockTransferTableComponent implements OnInit {
       }
     )
 
+  }
+  edit(id){
+    const dialogConfig = new MatDialogConfig();
+      dialogConfig.autoFocus = true;
+      dialogConfig.width = "50%";
+      const dialogRef = this.dialog.open(InventoryEntryINComponent , {data: id});
+      dialogRef.afterClosed().subscribe(
+        res => {
+          if(res){
+            this.revisit();
+          }
+        }
+      )
   }
 }

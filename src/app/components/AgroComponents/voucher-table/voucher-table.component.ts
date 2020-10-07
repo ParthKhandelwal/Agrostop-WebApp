@@ -40,6 +40,7 @@ export class VoucherTableComponent implements OnInit {
   voucherDataSource: MatTableDataSource<VOUCHER> = new MatTableDataSource([]);
   colorsMap = new Map<string, string>();
   colors= ["purple", "cyan", "pink", "teal"];
+  @Input("select") select: boolean;
 
   constructor(private dialog?: MatDialog,
     private service?: AgroVoucherService,
@@ -54,6 +55,9 @@ export class VoucherTableComponent implements OnInit {
   ngOnInit(): void {
     this.voucherDataSource.sort = this.sort;
     this.voucherDataSource.paginator = this.paginator;
+    if(this.select){
+      this.displayedColumns.push('action')
+    }
   }
 
   setVouchers(vouchers: VOUCHER[]){

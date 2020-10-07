@@ -1,10 +1,9 @@
 import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef, ViewChild } from '@angular/core';
-import { VOUCHER} from '../../model/Voucher/voucher';
-import { FormControl } from '@angular/forms';
-import { Observable, Subscription } from 'rxjs';
-import { DatabaseService } from '../../services/Database/database.service';
+import {Subscription } from 'rxjs';
+
 import { DayBookService } from '../../services/DayBook/day-book.service';
 import { VoucherTableComponent } from '../AgroComponents/voucher-table/voucher-table.component';
+import { AuthenticationService } from 'src/app/services/Authentication/authentication.service';
 
 @Component({
   selector: 'app-day-book',
@@ -20,7 +19,7 @@ export class DayBookComponent implements OnInit {
   @ViewChild("offlineVoucherTable", {static: false}) offlineVoucherTable: VoucherTableComponent
 
 
-  constructor(public daybookService?:DayBookService,
+  constructor(public daybookService?:DayBookService, public auth?: AuthenticationService
 
      ) {
    }

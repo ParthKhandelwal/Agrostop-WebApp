@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 import { DatePipe } from '@angular/common';
 import { User, UserLogin } from "../../model/User/user";
 import { StockItem, ProductGroupFields, StockCheck, StockCheckItem, UpdateStockItemData, PackageRateItem } from "../../model/StockItem/stock-item";
-import { VOUCHER } from "../../model/Voucher/voucher";
+import { INVENTORYENTRIESIN_LIST, VOUCHER } from "../../model/Voucher/voucher";
 import { Customer } from "../../model/Customer/customer";
 import { Order } from "../../model/Order/order";
 import { ProductProfile } from "../../model/ProductProfile/product-profile";
@@ -45,20 +45,22 @@ export class ApiService {
     return this.httpClient.post(this.BASE_URL+"counters/save", counter);
   }
 
-  //public WEB_SOCKET_URL = "https://agrostop-web-server.herokuapp.com"
-  //private BASE_URL = "https://agrostop-web-server.herokuapp.com/api/";
-
   //private BASE_URL = "https://agrostopserver-env.eba-vei6xp54.ap-south-1.elasticbeanstalk.com/api/";
-  //public WEB_SOCKET_URL = "https://agrostopserver-env.eba-vei6xp54.ap-south-1.elasticbeanstalk.com/";
+  //public WEB_SOCKET_URL = "https://agrostopserver-env.eba-vei6xp54.ap-south-1.elasticbeanstalk.com";
 
-  private BASE_URL = "http://localhost:5000/api/";
-  public WEB_SOCKET_URL = "http://localhost:5000";
+  //private BASE_URL = "http://localhost:5000/api/";
+  //public WEB_SOCKET_URL = "http://localhost:5000";
   //public TALLY_HELPER_URL = "http://localhost:8082";
+   
+
+  private BASE_URL = "https://agrostop-web-server.herokuapp.com/api/";
+  public WEB_SOCKET_URL = "https://agrostop-web-server.herokuapp.com";
+  
+
 
   user: User;
   constructor(private httpClient: HttpClient, private datePipe?: DatePipe) {
   }
-
 
   getField(type: String): Observable<any>{
     return this.httpClient.get<any>(this.BASE_URL + 'groupField/getField?type='+type);
@@ -406,6 +408,10 @@ getStockItemGroupsByName(): Observable<any[]>{
     return this.httpClient.post(this.BASE_URL+'stockTransfer/addInventoryIn', voucher);
   }
 
+  saveInventoryIn(inventoryIn: INVENTORYENTRIESIN_LIST): Observable<any>{
+    return this.httpClient.post<any>(this.BASE_URL + 'stockTransfer/save', inventoryIn)
+  }
+
   verifyInventoryIN(remoteId: string,invetoryId: string){
     return this.httpClient.get<any[]>(this.BASE_URL + 'stockTransfer/verify?remoteId='+remoteId+"&inventoryId="+invetoryId);
   }
@@ -598,4 +604,7 @@ getStockItemGroupsByName(): Observable<any[]>{
     return this.httpClient.get<any[]>(this.BASE_URL + "customer/redeemCoupon?id=" + id);
   }
 
+  getAWSCred(){
+    return this.httpClient.get<any>(this.BASE_URL+ "user/awsCred");
+  }
 }

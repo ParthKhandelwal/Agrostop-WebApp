@@ -11,36 +11,41 @@ import { BehaviorSubject } from 'rxjs';
 })
 export class AWSServiceService {
 
-  private accessId = "AKIAUCSK3VFMFL5P6ZFS";
-  private accessKey = "0TMvKIOFVinn+uy+CnIrE5g/eRriQg2Su385vvhN";
   private sqs;
   private queueUrl : BehaviorSubject<string> = new BehaviorSubject("");
 
 
   constructor(private apiService?: ApiService, private syncService?: SyncService, public notificationService?: NotificationService) {
-    AWS.config.credentials = new AWS.Credentials(this.accessId, this.accessKey);
-      AWS.config.region = "ap-south-1";
-
-      this.sqs = new AWS.SQS();
-    this.queueUrl = new BehaviorSubject(sessionStorage.getItem("queueURL"));
-    this.listenMessages();
+    
+    
 
   }
 
   initiate(username: string){
+    this.apiService.getAWSCred().subscribe(
+      res => {
+        AWS.config.credentials = new AWS.Credentials(res.key, res.secret);
+        AWS.config.region = "ap-south-1";
 
-      var createParams = {
-        QueueName: "user-"+username, /* required */
-      };
-      let that = this;
-      this.sqs.createQueue(createParams, function(err, data) {
-          if(err){
-            console.log(err)
-          }else{
-            that.queueUrl.next(data.QueueUrl);
-            sessionStorage.setItem("queueURL", data.QueueUrl);
-          }
-      })
+        this.sqs = new AWS.SQS();
+        this.queueUrl = new BehaviorSubject(sessionStorage.getItem("queueURL"));
+        this.listenMessages();
+        var createParams = {
+          QueueName: "user-"+username, /* required */
+        };
+        let that = this;
+        this.sqs.createQueue(createParams, function(err, data) {
+            if(err){
+              console.log(err)
+            }else{
+              that.queueUrl.next(data.QueueUrl);
+              sessionStorage.setItem("queueURL", data.QueueUrl);
+            }
+        })
+      }
+    )
+
+      
 
 
     }

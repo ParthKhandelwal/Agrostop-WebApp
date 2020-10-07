@@ -63,8 +63,11 @@
                     <button *ngIf = "!element.rejected" mat-icon-button (click) = "print(element)">
                         <mat-icon>print</mat-icon>
                     </button>
-                    <button *ngIf = "element.rejected" mat-icon-button (click) = "delete(element)">
+                    <button *ngIf = "element.rejected && auth.isAdmin()" mat-icon-button (click) = "delete(element)">
                       <mat-icon>delete</mat-icon>
+                    </button>
+                    <button *ngIf = "element.rejected && auth.isAdmin()" mat-icon-button (click) = "edit(element)">
+                        <mat-icon>edit</mat-icon>
                     </button>
                 </td>
                 <td mat-footer-cell *matFooterCellDef></td>

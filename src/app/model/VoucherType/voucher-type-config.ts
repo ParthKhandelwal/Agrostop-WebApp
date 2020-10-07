@@ -6,7 +6,9 @@ export class VoucherTypeConfig {
   voucherType: string;
   voucherCategory: string;
   printConfiguration: PrintConfiguration;
-  coupons: Coupon[]
+  coupons: Coupon[];
+  prefix: string;
+  suffix: number;
 
   constructor(){
     this.printConfiguration = new PrintConfiguration();

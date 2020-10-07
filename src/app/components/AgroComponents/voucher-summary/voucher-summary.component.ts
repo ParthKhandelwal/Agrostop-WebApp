@@ -44,10 +44,13 @@ export class VoucherSummaryComponent implements OnInit {
     let voucherType = this.auth.user.voucherTypes.filter((v) => v.voucherTypeName === voucher.VOUCHERTYPENAME)[0];
     if(voucherType){
       this.service.voucherParentType = this.voucherParentType;
+      
+      this.service.setForEditing();
       if(voucher.CLASSNAME){
+        console.log("POS Class Recieved")
         this.service.setVoucherForClass();
       }
-      this.service.setForEditing();
+      
       this.router.navigateByUrl("/agro-voucher")
       this.dialogRef.close();
     }else{

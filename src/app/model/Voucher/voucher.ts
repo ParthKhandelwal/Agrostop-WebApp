@@ -333,6 +333,7 @@ export class ACCOUNTINGALLOCATIONSLIST {
         verified: boolean;
         verifiedBy: string;
         verifiedOn: Date;
+        rejected:boolean
 
     }
 

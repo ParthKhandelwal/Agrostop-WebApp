@@ -7,6 +7,10 @@ import { User } from '../../model/User/user';
 import { Customer } from '../../model/Customer/customer';
 import { AuthenticationService } from '../Authentication/authentication.service';
 import { Router } from '@angular/router';
+import { ApiService } from '../API/api.service';
+import { catchError, finalize, map } from 'rxjs/operators';
+import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
+import { InvoicePrintViewComponent } from 'src/app/components/invoice-print-view/invoice-print-view.component';
 
 @Injectable({
   providedIn: 'root'
@@ -25,7 +29,7 @@ export class AgroVoucherService {
   editMode: boolean = false;
   posInvoice: boolean;
   coupons: any[];
-  constructor(private db?: NgxIndexedDBService, public auth?: AuthenticationService, public router?: Router) {
+  constructor(private db?: NgxIndexedDBService,private dialog?: MatDialog, public auth?: AuthenticationService, public router?: Router, private apiService?: ApiService) {
 
     this.voucher = new VOUCHER();
    }
@@ -42,7 +46,6 @@ export class AgroVoucherService {
         this.posInvoice = (res.USEFORPOSINVOICE == 'Yes')
       }
     )
-    this.voucher.VOUCHERNUMBER = this.getVoucherNumber();
     this.voucher._ACTION = "Create";
     if(vClass){
       this.voucher.CLASSNAME = vClass;
@@ -249,8 +252,7 @@ export class AgroVoucherService {
   save(){
     this.voucher.EFFECTIVEDATE = this.voucher.DATE;
     if(this.voucher.getRemainingBalance() == 0){
-      switch (this.voucherParentType) {
-        case VoucherParentType.Material_Out:
+     
           this.addCacheVoucher(this.voucher).then(
             res => {
           let voucherType = this.voucher.VOUCHERTYPENAME;
@@ -260,22 +262,7 @@ export class AgroVoucherService {
               this.voucherNumberIncrement();
               this.createNewVoucher(voucherType, date, vClass, priceList);
             }).catch((e) => alert(e));
-          break;
-
-        default:
-          this.addCacheVoucher(this.voucher).then(
-            res => {
-              let voucherType = this.voucher.VOUCHERTYPENAME;
-              let date = this.voucher.DATE;
-              let vClass = this.voucher.CLASSNAME;
-              let priceList = this.voucher.PRICELEVEL
-              this.voucherNumberIncrement();
-              this.createNewVoucher(voucherType, date, vClass, priceList);
-
-            }
-          ).catch((e) => alert(e));
-          break;
-      }
+       
       if(this.editMode){
         this.router.navigateByUrl("/daybook");
         this.editMode = false;
@@ -286,6 +273,35 @@ export class AgroVoucherService {
     }
 
 
+  }
+
+  saveExposed(){
+    this.voucher.EFFECTIVEDATE = this.voucher.DATE;
+    return this.apiService.saveTallyVoucher(this.voucher)
+            
+  }
+
+  printVoucher(voucher){
+    switch (this.voucherParentType) {
+      case VoucherParentType.Sales:
+        const dialogConfig = new MatDialogConfig();
+        dialogConfig.autoFocus = true;
+        dialogConfig.width = "50%";
+        const dialogRef = this.dialog.open(InvoicePrintViewComponent, {data: voucher, maxHeight: '90vh'});
+        return dialogRef.afterClosed();
+    
+      default:
+        break;
+    };
+    
+  }
+
+  postVoucherSave(){
+    let voucherType = this.voucher.VOUCHERTYPENAME;
+    let date = this.voucher.DATE;
+    let vClass = this.voucher.CLASSNAME;
+    let priceList = this.voucher.PRICELEVEL
+    this.createNewVoucher(voucherType, date, vClass, priceList);
   }
 
   nextVocuher(){
@@ -392,7 +408,7 @@ export class AgroVoucherService {
     return this.posInvoice;
   }
 
-  setForEditing(){
+  async setForEditing(){
     console.log(this.voucher);
     this.editMode = true;
     switch (this.voucherParentType) {
@@ -406,6 +422,8 @@ export class AgroVoucherService {
           this.voucher.ALLINVENTORYENTRIES_LIST = this.voucher.ALLINVENTORYENTRIES_LIST.map((i) => Object.assign(new ALLINVENTORYENTRIESLIST(), i));
           this.godown = this.voucher.ALLINVENTORYENTRIES_LIST[0].BATCHALLOCATIONS_LIST.GODOWNNAME;
         }
+        let voucherType: any = await this.db.getByID("Voucher Types", this.voucher.VOUCHERTYPENAME);
+        this.posInvoice = voucherType.USEFORPOSINVOICE;
         break;
 
       default:

@@ -12,6 +12,7 @@ import { StockService } from '../../../services/Stock/stock.service';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { BatchAllocationComponent } from '../batch-allocation/batch-allocation.component';
 import { AccountingAllocationComponent } from '../accounting-allocation/accounting-allocation.component';
+import { SyncService } from 'src/app/services/Sync/sync.service';
 
 @Component({
   selector: 'inventory-table',
@@ -34,13 +35,14 @@ export class InventoryTableComponent implements OnInit {
   ledgerColumns: string[] = ["sno", "name", "amount", "action"];
   ledger: LEDGERENTRIESLIST = new LEDGERENTRIESLIST();
   item: ALLINVENTORYENTRIESLIST | INVENTORYENTRIESIN_LIST | INVENTORYENTRIESOUT_LIST;
+  
 
-  constructor(public service?: AgroVoucherService, private cd?: ChangeDetectorRef, public stockService?: StockService,private dialog?: MatDialog) {
+  constructor(public service?: AgroVoucherService, private cd?: ChangeDetectorRef, 
+    public stockService?: StockService,private dialog?: MatDialog, ) {
     this.newInventory();
    }
 
   ngOnInit(): void {
-
   }
 
 

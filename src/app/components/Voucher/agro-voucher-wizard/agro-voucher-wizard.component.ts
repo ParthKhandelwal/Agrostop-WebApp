@@ -19,6 +19,7 @@ import { AuthenticationService } from '../../../services/Authentication/authenti
 import { VoucherDetailComponent } from '../voucher-detail/voucher-detail.component';
 import { CompileTemplateMetadata } from '@angular/compiler';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
+import { catchError, finalize, map } from 'rxjs/operators';
 
 
 @Component({
@@ -310,6 +311,49 @@ editVoucherNumber: boolean;
           }, 700);
         }
       )
+  }
+
+  saveExposed(){
+    let completed = false;
+    let sub = this.service.saveExposed().pipe(
+      map((voucher) => this.service.voucher = voucher),
+      catchError(async error => {
+        await this.service.addCacheVoucher(this.service.voucher);
+      }),
+      finalize(() => {
+        completed = true;
+        this.service.printVoucher(this.service.voucher);
+        this.service.postVoucherSave();
+        this.stepper.reset();
+          setTimeout(() => {
+            this.cd.detectChanges();
+            this.handleTabOne();
+
+          }, 700);
+      })
+    ).subscribe();
+    setTimeout(() => {
+      sub.unsubscribe();
+      if(!completed){
+        
+        this.service.addCacheVoucher(this.service.voucher).then(
+          (res) => {
+            this.service.printVoucher(this.service.voucher);
+            this.service.postVoucherSave();
+            this.stepper.reset();
+            setTimeout(() => {
+              this.cd.detectChanges();
+              this.handleTabOne();
+
+            }, 700);
+          },
+          err =>{
+            alert("Voucher Could not be saved. Please contact administrator.")
+          }
+        );
+
+      }
+    }, 7000);
   }
 
   saveVoucherForVerification(){
