@@ -1,5 +1,5 @@
 {
-  "name": "Agrostop",
+  "name": "Frontend",
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
@@ -38,6 +38,7 @@
     "ngx-print": "^1.2.0-beta.5",
     "no-internet": "1.5.2",
     "node-machine-id": "1.1.12",
+    "qrcode": "^1.4.4",
     "rxjs": "~6.5.4",
     "sockjs-client": "1.4.0",
     "sqs-consumer": "5.4.0",
@@ -45,7 +46,7 @@
     "tslib": "^1.10.0",
     "typescript-aws-sqs-helper": "1.0.29",
     "uniqid": "5.2.0",
-    "upi-link": "1.0.1",
+    "upi-link": "^1.0.1",
     "zone.js": "~0.10.2"
   },
   "devDependencies": {

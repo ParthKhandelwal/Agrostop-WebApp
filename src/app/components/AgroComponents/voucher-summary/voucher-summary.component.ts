@@ -89,12 +89,30 @@ export class VoucherSummaryComponent implements OnInit {
   }
 
   deleteVoucher(){
-    this.voucher._ACTION = "Delete";
-    this.apiService.saveTallyVoucher(this.voucher).subscribe(
+    if(confirm("Do you wish to delete this voucher from Tally?")){
+      this.voucher._ACTION = "Delete";
+      this.voucher.savedToTally = false
+      this.apiService.saveTallyVoucher(this.voucher).subscribe(
+        res => {
+          this.dialogRef.close();
+
+        }
+      )
+    }
+    
+  }
+
+  deleteFromCloud(){
+    if(confirm("Do you wish to delete this voucher from Cloud?"))
+    this.apiService.deleteVoucher(this.voucher._REMOTEID).subscribe(
       res => {
+        console.log(res);
         this.dialogRef.close();
+      },
+      err => {
+        alert("Could not delete this voucher right now");
       }
-    )
+    );
   }
 
 }

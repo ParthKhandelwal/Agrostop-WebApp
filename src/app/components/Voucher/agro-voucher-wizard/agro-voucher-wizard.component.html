@@ -1,4 +1,7 @@
-<div class="col">
+<div *ngIf = "saving" class="mx-auto">
+  <mat-spinner [diameter] = '200'></mat-spinner>
+</div>
+<div class="col" *ngIf = "!saving">
 
 
   <div class="row" style="padding-top: 5px;">
@@ -97,17 +100,14 @@
         </ng-container>
         <div class="row">
           <mat-form-field style="width: 100%;">
-            <input #narration id = "narration" matInput placeholder="Enter Narration" [(ngModel)] = "this.service.voucher.NARRATION" (keydown.enter) = "true?false:handleVoucherSave()">
+            <input #narration id = "narration" matInput placeholder="Enter Narration" [(ngModel)] = "this.service.voucher.NARRATION" (keydown.enter) = "handleVoucherSave()">
           </mat-form-field>
         </div>
         <div>
 
           <button mat-button matStepperPrevious>Back</button>
-          <button mat-button (click) = "saveExposed()">Save Exposed</button>
-          
-          <!-- <button mat-button (click)="save(stepper)">Save</button>
-          <button mat-button (click)="voucherSaveAndPrint()">Save & Print</button>
-          <button mat-button (click)="saveVoucherForVerification()" *ngIf = "this.service.voucherParentType == voucherParent.Material_Out">Save For Verification</button> -->
+          <button mat-button (click) = "saveExposed()">Save</button>          
+          <button mat-button (click)="saveVoucherForVerification()" *ngIf = "this.service.voucherParentType == voucherParent.Material_Out">Save For Verification</button>
         
         </div>
 

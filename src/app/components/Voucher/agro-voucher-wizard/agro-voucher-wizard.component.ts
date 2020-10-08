@@ -284,37 +284,23 @@ editVoucherNumber: boolean;
 
   handleVoucherSave(){
     switch (this.service.voucherParentType) {
-      case VoucherParentType.Sales:
-        this.voucherSaveAndPrint()
+      case VoucherParentType.Material_Out:
+        this.saveVoucherForVerification();
         break;
 
+
       default:
-        this.save(this.stepper);
+        this.saveExposed();
         break;
     }
   }
 
 
-  voucherSaveAndPrint(){
-    this.service.save();
-    const dialogConfig = new MatDialogConfig();
-      dialogConfig.autoFocus = true;
-      dialogConfig.width = "50%";
-      const dialogRef = this.dialog.open(InvoicePrintViewComponent, {data: this.service.voucher, maxHeight: '90vh'});
-      dialogRef.afterClosed().subscribe(
-        res => {
-          this.stepper.reset();
-          setTimeout(() => {
-            this.cd.detectChanges();
-            this.handleTabOne();
-
-          }, 700);
-        }
-      )
-  }
+ saving: boolean;
 
   saveExposed(){
     let completed = false;
+    this.saving = true;
     let sub = this.service.saveExposed().pipe(
       map((voucher) => this.service.voucher = voucher),
       catchError(async error => {
@@ -322,6 +308,7 @@ editVoucherNumber: boolean;
       }),
       finalize(() => {
         completed = true;
+        this.saving= false;
         this.service.printVoucher(this.service.voucher);
         this.service.postVoucherSave();
         this.stepper.reset();
@@ -338,6 +325,7 @@ editVoucherNumber: boolean;
         
         this.service.addCacheVoucher(this.service.voucher).then(
           (res) => {
+            this.saving= false;
             this.service.printVoucher(this.service.voucher);
             this.service.postVoucherSave();
             this.stepper.reset();
@@ -355,6 +343,8 @@ editVoucherNumber: boolean;
       }
     }, 7000);
   }
+
+
 
   saveVoucherForVerification(){
     this.apiService.saveInventroyInForVerification(this.service.voucher).subscribe(

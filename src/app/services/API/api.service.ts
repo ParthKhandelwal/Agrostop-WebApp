@@ -607,4 +607,8 @@ getStockItemGroupsByName(): Observable<any[]>{
   getAWSCred(){
     return this.httpClient.get<any>(this.BASE_URL+ "user/awsCred");
   }
+
+  deleteVoucher(id: string): Observable<any>{
+    return this.httpClient.delete(this.BASE_URL+"voucher/delete?id="+id);
+  }
 }

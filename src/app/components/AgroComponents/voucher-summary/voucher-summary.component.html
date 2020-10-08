@@ -84,8 +84,12 @@
     <button mat-icon-button (click) = "edit()">
       <mat-icon>edit</mat-icon>
     </button>
-    <button [disabled] = "!auth.isAdmin()" mat-icon-button (click) = "deleteVoucher()">
-      <mat-icon>delete</mat-icon>
+    <button [disabled] = "!auth.isAdmin() && !voucher.savedToTally" mat-button (click) = "deleteVoucher()">
+      Delete From Tally
     </button>
+    <button [disabled] = "!auth.isAdmin() && voucher.savedToTally" mat-button (click) = "deleteFromCloud()">
+      Delete From Cloud
+    </button>
+    
   </mat-card-actions>
 </mat-card>

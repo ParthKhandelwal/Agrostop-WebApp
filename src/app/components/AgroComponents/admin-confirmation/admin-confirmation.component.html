@@ -1,0 +1,13 @@
+<div class="col">
+    <div class="row">
+        <mat-form-field>
+            <input matInput placeholder="Enter Admin Username" [(ngModel)] = "user.username" name= "username" (keydown.enter) = "password.focus()">
+        </mat-form-field>
+    </div>
+
+    <div class="row">
+        <mat-form-field>
+            <input #password matInput placeholder="Enter password" [(ngModel)] = "user.password" name= "username" type = "password" (keydown.enter) = "authenticate()">
+        </mat-form-field>
+    </div>
+</div>

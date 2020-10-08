@@ -38,7 +38,7 @@
         </div>
         <div *ngIf = "toChange != 'Voucher Number'" class="col">
             <mat-form-field>
-                <mat-select placeholder = "Select changedValue" [(ngModel)] = "vPrefix">
+                <mat-select placeholder = "Select changedValue" [(ngModel)] = "toChangeValue">
                     <mat-option *ngFor = "let item of auth.user.voucherTypes" [value] = "item.voucherTypeName">{{item.voucherTypeName}}</mat-option>
                 </mat-select>
             </mat-form-field>

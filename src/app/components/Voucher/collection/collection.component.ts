@@ -5,6 +5,9 @@ import { AutoCompleteComponent } from '../../AgroComponents/auto-complete/auto-c
 import { MatTable } from '@angular/material/table';
 import { AuthenticationService } from '../../../services/Authentication/authentication.service';
 import { VoucherParentType } from '../../../model/VoucherType/voucher-type';
+import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
+import { AdminConfirmationComponent } from '../../AgroComponents/admin-confirmation/admin-confirmation.component';
+import { UPILinkComponent } from '../../AgroComponents/upilink/upilink.component';
 
 @Component({
   selector: 'collection',
@@ -20,7 +23,7 @@ export class CollectionComponent implements OnInit {
 
   displayedColumns: string[] = ['pmtType', 'ledger', 'amount', 'action'];
 
-  constructor(public service?:AgroVoucherService, public auth?: AuthenticationService) { }
+  constructor(private dialog?: MatDialog,public service?:AgroVoucherService, public auth?: AuthenticationService) { }
 
   ngOnInit(): void {
     if(this.service.voucherParentType == VoucherParentType.Sales && !this.service.posInvoice){
@@ -127,6 +130,41 @@ export class CollectionComponent implements OnInit {
 
 
   addLedger(){
+    const dialogConfig = new MatDialogConfig();
+      dialogConfig.autoFocus = true;
+      dialogConfig.width = "50%";
+    switch (this.ledger.POSPAYMENTTYPE) {
+      case "Gift":
+        const dialogRef = this.dialog.open(AdminConfirmationComponent);
+        dialogRef.afterClosed().subscribe(
+          res => {
+            if(res){
+              this.addLedgerHelper();
+            }
+          }
+        )
+        break;
+      case "Card":
+        const dialogRef2 = this.dialog.open(UPILinkComponent, {data: {"id": this.service.voucher._REMOTEID, "payeeName": this.service.customer.name, "amount": this.ledger.AMOUNT}});
+        dialogRef2.afterClosed().subscribe(
+          res => {
+            if(res){
+              this.addLedgerHelper();
+            }
+          }
+        )
+        break;
+    
+      default:
+          this.addLedgerHelper();
+        break;
+    }
+      
+    
+    
+  }
+
+  addLedgerHelper(){
     let l = this.getPosLedgers().filter((l) =>l.POSPAYMENTTYPE === this.ledger.POSPAYMENTTYPE)[0];
     if(l){
       l.LEDGERNAME = this.ledger.LEDGERNAME;
