@@ -47,7 +47,7 @@ export class AuthenticationService {
           this.tokenSubject.next(user.token);
           let lastUpdate = JSON.parse(localStorage.getItem("lastUpdate"));
           if(!lastUpdate){
-            this.syncService.sync();
+            //this.syncService.sync();
           }
           this.router.navigateByUrl("/dashboard")
           this.aws.initiate(user.user.userName);
