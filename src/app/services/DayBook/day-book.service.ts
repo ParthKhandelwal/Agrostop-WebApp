@@ -4,6 +4,7 @@ import { BehaviorSubject, from, interval } from 'rxjs';
 import { DatabaseService } from '../Database/database.service';
 import { NgxIndexedDBService } from 'ngx-indexed-db';
 import { flatMap } from 'rxjs/operators';
+import { AuthenticationService } from '../Authentication/authentication.service';
 
 
 @Injectable({
@@ -17,7 +18,8 @@ export class DayBookService {
   toDate: Date = new Date();
   loading: boolean;
 
-  constructor(private apiService?: ApiService,private databaseService?: DatabaseService, private db?: NgxIndexedDBService) {
+  constructor(private apiService?: ApiService,public auth?: AuthenticationService,
+    private databaseService?: DatabaseService, private db?: NgxIndexedDBService) {
     interval(1000)
     .pipe(
         flatMap(() => from(this.getCacheVouchers())

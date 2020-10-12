@@ -32,32 +32,42 @@
                 <mat-select placeholder = "Select Voucher Property to Change" [(ngModel)] = "toChange">
                     <mat-option value = "Voucher Type">VoucherType</mat-option>
                     <mat-option value = "Voucher Number">Voucher Number</mat-option>
+                    <mat-option value = "Date">Date</mat-option>
 
                 </mat-select>
             </mat-form-field>
         </div>
-        <div *ngIf = "toChange != 'Voucher Number'" class="col">
+        <ng-container [ngSwitch] = "toChange">
+          <ng-container *ngSwitchCase = "'Voucher Number'">
             <mat-form-field>
-                <mat-select placeholder = "Select changedValue" [(ngModel)] = "toChangeValue">
-                    <mat-option *ngFor = "let item of auth.user.voucherTypes" [value] = "item.voucherTypeName">{{item.voucherTypeName}}</mat-option>
-                </mat-select>
-            </mat-form-field>
-        </div>
-        <div *ngIf = "toChange == 'Voucher Number'" class="col">
-          <mat-form-field>
               <input matInput placeholder = "Enter prefix" [(ngModel)] = "vPrefix">
           </mat-form-field>
-      </div>
-      <div *ngIf = "toChange =='Voucher Number'" class="col">
-        <mat-form-field>
-          <input matInput placeholder = "Begining from" [(ngModel)] = "vSuffix">
+          <mat-form-field>
+            <input matInput placeholder = "Begining from" [(ngModel)] = "vSuffix">
 
-        </mat-form-field>
-    </div>
+          </mat-form-field>
+          </ng-container>
+          <ng-container *ngSwitchCase = "'Voucher Type'">
+            <mat-form-field>
+              <mat-select placeholder = "Select changedValue" [(ngModel)] = "toChangeValue">
+                  <mat-option *ngFor = "let item of auth.user.voucherTypes" [value] = "item.voucherTypeName">{{item.voucherTypeName}}</mat-option>
+              </mat-select>
+          </mat-form-field>
+          </ng-container>
+          <ng-container *ngSwitchCase = "'Date'">
+            <mat-form-field>
+              <mat-label>Choose a date</mat-label>
+              <input matInput [matDatepicker]="picker" [(ngModel)] = "toDate">
+              <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+              <mat-datepicker #picker></mat-datepicker>
+            </mat-form-field>
+          </ng-container>
+        </ng-container>
+
         <div class="col">
             <button mat-raised-button color = "primary" (click) = "processChange()">Proceed</button>
         </div>
-        
+
     </div>
     <div class="row">
         <voucher-table select = "true" #voucherTable style="width: 100%;"></voucher-table>

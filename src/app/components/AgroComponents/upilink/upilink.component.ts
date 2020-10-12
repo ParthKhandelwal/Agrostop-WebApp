@@ -18,9 +18,9 @@ export class UPILinkComponent implements OnInit {
       .setTxRef(this.data.id)
       .getLink();
       console.log(uri);
-      QRCode.toCanvas(uri, { errorCorrectionLevel: 'H' }, function (err, canvas) {
+      QRCode.toCanvas("tirupatiagrostore@upi", { errorCorrectionLevel: 'H' }, function (err, canvas) {
         if (err) throw err
-       
+
         var container = document.getElementById('container')
         container.appendChild(canvas)
       })

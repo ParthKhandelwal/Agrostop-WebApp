@@ -80,15 +80,17 @@ export class BatchTransferComponent implements OnInit {
    ).map((r) => r.id)
  }
 
-  updatedBatch: Batch;
-  prevBatch: Batch;
+  updatedBatch: any;
+  prevBatch: any;
   proceedUpdate(){
+    console.log(this.prevBatch);
     let item : any = {
-      prevBatch: this.prevBatch.name,
-      updatedBatch: this.updatedBatch.name,
+
+      prevBatch: this.prevBatch.BATCHNAME,
+      updatedBatch: this.updatedBatch.BATCHNAME,
       ids: this.getSelectedIds(),
-      period: new EXPIRYPERIOD(this.updatedBatch.expiryDate? new Date(this.updatedBatch.expiryDate): null),
-      productId: this.prevBatch.productId
+      period: new EXPIRYPERIOD(this.updatedBatch.EXPIRYDATE? new Date(this.updatedBatch.EXPIRYDATE): null),
+      productId: this.prevBatch.ITEMNAME
     }
     this.apiService.updateBatchVoucher(item).subscribe(
       res => {

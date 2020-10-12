@@ -20,6 +20,7 @@ export class VoucherBulkEditComponent implements OnInit {
   @ViewChild("voucherTable", {static: false}) voucherTable: VoucherTableComponent
   vPrefix:string;
   vSuffix: number;
+  toDate: Date;
 
   constructor(public daybookService: DayBookService, public auth?: AuthenticationService, public apiService?: ApiService) { }
 
@@ -44,15 +45,19 @@ export class VoucherBulkEditComponent implements OnInit {
             voucher.VOUCHERTYPENAME = this.toChangeValue;
             voucher._VCHTYPE = this.toChangeValue;
             break;
-        
+
           case "Voucher Number":
             voucher.VOUCHERNUMBER = this.vPrefix + this.vSuffix;
             this.vSuffix = (this.vSuffix*1)+1;
             break;
+          case "Date":
+            voucher.DATE = this.toDate;
+            voucher.EFFECTIVEDATE = this.toDate;
+            break;
           default:
             break;
         }
-        
+
         this.apiService.saveTallyVoucher(voucher).subscribe();
       }
     }

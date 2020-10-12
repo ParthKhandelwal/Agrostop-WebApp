@@ -51,11 +51,11 @@ export class ApiService {
   //private BASE_URL = "http://localhost:5000/api/";
   //public WEB_SOCKET_URL = "http://localhost:5000";
   //public TALLY_HELPER_URL = "http://localhost:8082";
-   
+
 
   private BASE_URL = "https://agrostop-web-server.herokuapp.com/api/";
   public WEB_SOCKET_URL = "https://agrostop-web-server.herokuapp.com";
-  
+
 
 
   user: User;
@@ -610,5 +610,9 @@ getStockItemGroupsByName(): Observable<any[]>{
 
   deleteVoucher(id: string): Observable<any>{
     return this.httpClient.delete(this.BASE_URL+"voucher/delete?id="+id);
+  }
+
+  resetVoucher(id: string){
+    return this.httpClient.get<any>(this.BASE_URL+ "stockTransfer/resetVoucher?id="+id);
   }
 }

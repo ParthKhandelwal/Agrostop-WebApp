@@ -24,7 +24,7 @@ export class VoucherSettingsComponent implements OnInit {
     public service?: AgroVoucherService, private db?: NgxIndexedDBService,
     public apiService?: ApiService,
     public router?: Router, private cd?: ChangeDetectorRef) {
-    this.dialogRef.disableClose = true;
+    this.dialogRef.disableClose = false;
     router.events.subscribe(
       res => {
         if(res instanceof NavigationEnd){

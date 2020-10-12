@@ -95,6 +95,7 @@ export class BatchAllocationComponent implements OnInit {
                     console.log(b)
                     return b;
                   })
+                  .sort((a,b) => b.expiryDate.getTime() - a.expiryDate.getTime())
                   .sort((a, b) => b.closingBalance - a.closingBalance);
         case VoucherParentType.Material_Out:
           return this.stockService.stock$.getValue()

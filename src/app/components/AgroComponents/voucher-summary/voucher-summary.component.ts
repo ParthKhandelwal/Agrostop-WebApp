@@ -44,13 +44,13 @@ export class VoucherSummaryComponent implements OnInit {
     let voucherType = this.auth.user.voucherTypes.filter((v) => v.voucherTypeName === voucher.VOUCHERTYPENAME)[0];
     if(voucherType){
       this.service.voucherParentType = this.voucherParentType;
-      
+
       this.service.setForEditing();
       if(voucher.CLASSNAME){
         console.log("POS Class Recieved")
         this.service.setVoucherForClass();
       }
-      
+
       this.router.navigateByUrl("/agro-voucher")
       this.dialogRef.close();
     }else{
@@ -99,7 +99,7 @@ export class VoucherSummaryComponent implements OnInit {
         }
       )
     }
-    
+
   }
 
   deleteFromCloud(){
@@ -113,6 +113,17 @@ export class VoucherSummaryComponent implements OnInit {
         alert("Could not delete this voucher right now");
       }
     );
+  }
+
+  resetVoucher(){
+    this.apiService.resetVoucher(this.voucher._REMOTEID).subscribe(
+      res => {
+        this.dialogRef.close();
+      },
+      err => {
+        alert("Voucher reset failed! Try again later");
+      }
+    )
   }
 
 }

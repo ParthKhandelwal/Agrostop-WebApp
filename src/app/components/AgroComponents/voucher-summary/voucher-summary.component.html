@@ -28,7 +28,7 @@
   <mat-card-content>
     <mat-tab-group>
       <mat-tab label = "Inventory">
-        <mat-table style="width: 50vh;" [dataSource]="getInventory()">
+        <mat-table style="width: 100%;" [dataSource]="getInventory()">
           <!-- Item Name Column -->
           <ng-container matColumnDef="name">
             <mat-header-cell *matHeaderCellDef> Name </mat-header-cell>
@@ -55,7 +55,7 @@
 
       </mat-tab>
       <mat-tab label = "Ledgers">
-        <mat-table style="width: 50vh;" [dataSource]="getLedgers()" >
+        <mat-table style="width: 100%;" [dataSource]="getLedgers()" >
           <!-- Item Name Column -->
           <ng-container matColumnDef="name">
             <mat-header-cell *matHeaderCellDef> Name </mat-header-cell>
@@ -77,19 +77,27 @@
       </mat-tab>
     </mat-tab-group>
   </mat-card-content>
+  <mat-divider></mat-divider>
   <mat-card-actions>
-    <button #saveButton mat-icon-button  (click) = "print()">
-      <mat-icon>print</mat-icon>
-    </button>
-    <button mat-icon-button (click) = "edit()">
-      <mat-icon>edit</mat-icon>
-    </button>
-    <button [disabled] = "!auth.isAdmin() && !voucher.savedToTally" mat-button (click) = "deleteVoucher()">
+    <div class="col">
+      <div class="row">
+        <button #saveButton mat-icon-button  (click) = "print()">
+          <mat-icon>print</mat-icon>
+        </button>
+        <button mat-icon-button (click) = "edit()">
+          <mat-icon>edit</mat-icon>
+        </button>
+
+      </div>
+    </div>
+
+    <button [disabled] = "!auth.isAdmin() || !voucher.savedToTally" mat-button (click) = "deleteVoucher()">
       Delete From Tally
     </button>
-    <button [disabled] = "!auth.isAdmin() && voucher.savedToTally" mat-button (click) = "deleteFromCloud()">
+    <button [disabled] = "!auth.isAdmin() || voucher.savedToTally" mat-button (click) = "deleteFromCloud()">
       Delete From Cloud
     </button>
-    
+    <button [disabled] = "!auth.isAdmin()" mat-button (click) = "resetVoucher()">Reset Voucher</button>
+
   </mat-card-actions>
 </mat-card>

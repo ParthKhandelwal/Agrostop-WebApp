@@ -7,8 +7,7 @@ import { AutoCompleteComponent } from '../../AgroComponents/auto-complete/auto-c
 import { ObjectID } from 'bson';
 import { SyncService } from '../../../services/Sync/sync.service';
 import { NgxIndexedDBService } from 'ngx-indexed-db';
-import { FormControl, Validators } from '@angular/forms';
-import { NUMBER_TYPE } from '@angular/compiler/src/output/output_ast';
+import { Subscription } from 'rxjs';
 
 
 @Component({
@@ -46,33 +45,48 @@ export class CustomerEntryComponent implements OnInit {
     }, 300);
 
   }
-
+  loading: boolean = false;
   saveCustomer(){
+    this.loading = true;
+    let sub: Subscription;
     if(this.newCustomer){
 
-      this.apiService.addCustomer(this.customer).subscribe(
+      sub = this.apiService.addCustomer(this.customer).subscribe(
         async res => {
           await this.updateCustomerOffline(res)
           this.dialogRef.close(res);
+          this.loading = false;
         },
         async err => {
           console.log(err);
           await this.addCacheCustomer();
+          this.dialogRef.close(this.customer);
+          this.loading = false;
         }
       )
     } else {
-      this.apiService.updateCustomer(this.customer).subscribe(
+      sub = this.apiService.updateCustomer(this.customer).subscribe(
         async res => {
           console.log(res);
           await this.updateCustomerOffline(res)
           this.dialogRef.close(res);
+          this.loading = false;
         },
         async err => {
           console.log(err);
           alert("Cannot save customer right now");
+          this.loading = false;
         }
       )
     }
+    setTimeout(async () => {
+      if(sub){
+        sub.unsubscribe();
+        await this.addCacheCustomer();
+        this.loading = false;
+        this.dialogRef.close(this.customer);
+      }
+    }, 7000);
 
   }
 
@@ -83,10 +97,11 @@ export class CustomerEntryComponent implements OnInit {
     this.customer.addressId = this.customer.fullAddress ? this.customer.fullAddress._id: null;
     await this.db.update("cacheCustomers", this.customer);
     await this.updateCustomerOffline(this.customer);
+
   }
 
   async updateCustomerOffline(customer: Customer){
-    if(this.syncService.customers$.getValue().findIndex((c) => c.id == customer.id) > -1){
+    if(this.syncService.customers$.getValue().findIndex((c) => c.id == customer.id) <= -1){
       await this.db.update("customers", customer);
       this.syncService.customers$.getValue().push(customer);
     }

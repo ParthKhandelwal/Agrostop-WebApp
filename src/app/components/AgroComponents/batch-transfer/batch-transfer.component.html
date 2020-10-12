@@ -11,7 +11,7 @@
         </div>
         <div class="col-8">
           <mat-form-field style="width: 100%;" >
-            <mat-select id = "batchSelect" style="width: 400px;" #batchField placeholder="Update with batch" [(ngModel)] = "prevBatch" (selectionChange) = "batchSelected($event.value)" >
+            <mat-select id = "batchSelect" style="width: 400px;" #batchField placeholder="Update batch from" [(ngModel)] = "prevBatch" (selectionChange) = "batchSelected($event.value)" >
               <ng-container  *ngFor="let batch of batches">
                 <mat-option [value]="batch" >
                   <div class="row">
@@ -40,7 +40,7 @@
 
         <div class="col-8">
           <mat-form-field style="width: 100%;" >
-            <mat-select id = "batchUpdateSelect" style="width: 400px;" placeholder="Update with batch" [(ngModel)] = "updatedBatch" >
+            <mat-select id = "batchUpdateSelect" style="width: 400px;" placeholder="Update batch to" [(ngModel)] = "updatedBatch" >
               <ng-container  *ngFor="let batch of batches">
                 <mat-option [value]="batch" >
                   <div class="row">
@@ -48,14 +48,10 @@
                       {{batch.BATCHNAME}}
                     </div>
                     <div class="col">
-                      <span>BAL:
-                        {{batch.QTY}}</span>
+                        <strong>QTY:</strong>{{batch.QTY}}
                     </div>
                     <div class="col">
-                      <strong>EXP: </strong>{{batch.expiryDate|date: 'dd-MMM-yyyy'}}
-                    </div>
-                    <div class="col">
-                      <strong>GDWN: </strong>{{batch.GODOWN}}
+                      <strong>EXP:</strong>{{batch.EXPIRYDATE|date: 'dd-MMM-yyyy'}}
                     </div>
                   </div>
 
