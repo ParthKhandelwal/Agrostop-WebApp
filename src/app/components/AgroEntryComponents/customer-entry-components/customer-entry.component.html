@@ -1,4 +1,8 @@
-<form #customerForm = "ngForm">
+
+<div>
+  <mat-spinner *ngIf = "loading" [diameter] = 300></mat-spinner>
+</div>
+<form #customerForm = "ngForm" *ngIf = "!loading">
   <div *ngIf = "this.customer">
     <div class="row">
         <div class="col">
@@ -24,7 +28,7 @@
           <mat-error *ngIf="!validPhoneNumber()">
             Invalid Phone Number.
           </mat-error>
-          
+
         </mat-form-field>
         </div>
       </div>
