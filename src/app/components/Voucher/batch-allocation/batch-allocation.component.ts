@@ -95,7 +95,7 @@ export class BatchAllocationComponent implements OnInit {
                     console.log(b)
                     return b;
                   })
-                  .sort((a,b) => (a.expiryDate && b.expiryDate) ?(b.expiryDate.getTime() - a.expiryDate.getTime()): 0)
+                  .sort((a,b) => (a.expiryDate && b.expiryDate) ?(new Date(b.expiryDate).getTime() - new Date(a.expiryDate).getTime()): 0)
                   .sort((a, b) => (a && b)? (b.closingBalance - a.closingBalance):0);
         case VoucherParentType.Material_Out:
           return this.stockService.stock$.getValue()
@@ -111,7 +111,9 @@ export class BatchAllocationComponent implements OnInit {
       }
 
     }else{
-      return this.syncService.products$.getValue().filter((s)=>s.NAME == this.inventory.STOCKITEMNAME)[0].BATCHES;
+      return this.syncService.products$.getValue().filter((s)=>s.NAME == this.inventory.STOCKITEMNAME)[0].BATCHES
+      .sort((a,b) => (a.expiryDate && b.expiryDate) ?(new Date(b.expiryDate).getTime() - new Date(a.expiryDate).getTime()): 0)
+                  .sort((a, b) => (a && b)? (b.closingBalance - a.closingBalance):0);;
     }
 
   }

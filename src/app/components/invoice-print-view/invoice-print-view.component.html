@@ -30,7 +30,7 @@
        <div class="data-box">
            <div class="data-separator d-block my-2"></div>
            <h4 class="text-muted font-weight-light">TOTAL</h4>
-           <h4 class="font-weight-bold">{{getTotal() | currency: 'INR'}}</h4>
+           <h4 class="font-weight-bold">{{voucher.getTotal() | currency: 'INR'}}</h4>
        </div>
        <div class="data-box">
             <h5 class="font-weight-bold">LICENSES</h5>
@@ -159,7 +159,7 @@
                     </div>
                     <div class="col-1 text-center">{{item.RATE | currency: "INR"}}</div>
                     <div class="col-2 text-center">{{item.BILLEDQTY}} {{item.tallyObject? item.tallyObject.baseUnits : ""}}</div>
-                    <div class="col-1 text-right">{{isSales()? (item.RATE * item.BILLEDQTY) : (item.AMOUNT * (-1)) | currency: "INR"}}</div>
+                    <div class="col-1 text-right">{{(isSales()? (item.RATE * item.BILLEDQTY) : (item.AMOUNT * (-1))) | currency: "INR"}}</div>
                 </div>
                 <div class="row">
                     <div class="col-12 my-2">
@@ -201,7 +201,7 @@
                    <h3 class="font-weight-bold">TOTAL</h3>
                </div>
                <div class="col-3 text-right">
-                   <h3 class="font-weight-bold">{{getTotal()| currency:'INR'}}</h3>
+                   <h3 class="font-weight-bold">{{voucher.getTotal()| currency:'INR'}}</h3>
                </div>
            </div>
        </div>

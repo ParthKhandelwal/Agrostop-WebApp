@@ -4,6 +4,7 @@ import {Subscription } from 'rxjs';
 import { DayBookService } from '../../services/DayBook/day-book.service';
 import { VoucherTableComponent } from '../AgroComponents/voucher-table/voucher-table.component';
 import { AuthenticationService } from 'src/app/services/Authentication/authentication.service';
+import { VoucherFilter } from 'src/app/model/HelperClass/HelperClass';
 
 @Component({
   selector: 'app-day-book',
@@ -13,44 +14,21 @@ import { AuthenticationService } from 'src/app/services/Authentication/authentic
 
 })
 export class DayBookComponent implements OnInit {
-  subscription: Subscription;
-  anotherSub : Subscription;
-  @ViewChild("voucherTable", {static: false}) voucherTable: VoucherTableComponent
-  @ViewChild("offlineVoucherTable", {static: false}) offlineVoucherTable: VoucherTableComponent
-
+  @ViewChild("voucherTable") voucherTable: VoucherTableComponent
+  voucherFilter = new VoucherFilter()
 
   constructor(public daybookService?:DayBookService, public auth?: AuthenticationService
 
      ) {
    }
 
-  ngOnInit() {
-    this.subscription = this.daybookService.vouchers$.subscribe(
-      res =>{
-          setTimeout(() => {
-            this.voucherTable.setVouchers(res);
-          }, 300);
-
-        //
-      }
-    )
-
-    this.anotherSub = this.daybookService.cachVouchers$.subscribe(
-      res =>{
-        if(this.offlineVoucherTable){
-          this.offlineVoucherTable.setVouchers(res);
-        }
-        //
-      }
-    )
+   ngOnInit(){}
+  ngAfterViewInit() {
+    this.voucherTable.fetch();
 
   }
 
 
-  ngOnDestroy(){
-    this.subscription.unsubscribe();
-    this.anotherSub.unsubscribe();
-  }
 
 
 

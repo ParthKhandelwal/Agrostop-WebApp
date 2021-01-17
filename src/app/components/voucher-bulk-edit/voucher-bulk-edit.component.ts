@@ -25,15 +25,7 @@ export class VoucherBulkEditComponent implements OnInit {
   constructor(public daybookService: DayBookService, public auth?: AuthenticationService, public apiService?: ApiService) { }
 
   ngOnInit(): void {
-    this.subscription = this.daybookService.vouchers$.subscribe(
-      res =>{
-          setTimeout(() => {
-            this.voucherTable.setVouchers(res);
-          }, 300);
-
-        //
-      }
-    )
+    
 
   }
 

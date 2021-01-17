@@ -1,4 +1,4 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { map } from 'rxjs/operators';
 import { Breakpoints, BreakpointObserver } from '@angular/cdk/layout';
 import { StockTransferTableComponent } from '../stock-transfer-table/stock-transfer-table.component';
@@ -14,21 +14,24 @@ import { SyncService } from 'src/app/services/Sync/sync.service';
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css']
 })
-export class HomeComponent {
+export class HomeComponent implements OnInit {
 
   mobileCards = [
     { title: 'Stock Transfer', cols: 1, rows: 1, id: "stock-transfer" },
     { title: 'Card 2', cols: 1, rows: 1 },
     { title: 'Card 3', cols: 1, rows: 1 , id: "notification"},
-    { title: 'Card 4', cols: 1, rows: 1 },
+    { title: 'Cash Summary', cols: 1, rows: 1 ,id: "cashSummary"},
     { title: 'Cloud Voucher', cols: 1, rows: 1, id: "cloud-voucher" }
   ];
 
+
+
   desktopCards = [
     { title: 'Stock Transfer', cols: 2, rows: 1 , id: "stock-transfer" },
-    { title: 'Sync', cols: 1, rows: 1 , id: "sync"},
+    { title: 'Cash Summary', cols: 1, rows: 1, id: "cashSummary" },
     { title: 'Notifications', cols: 1, rows: 2 , id: "notification"},
-    { title: 'Card 4', cols: 1, rows: 1 },
+        { title: 'Sync', cols: 1, rows: 1 , id: "sync"},
+
     { title: 'Cloud Voucher', cols: 2, rows: 2 , id: "cloud-voucher" },
   ];
 
@@ -49,29 +52,20 @@ export class HomeComponent {
   @ViewChild('voucherTable') voucherTable: VoucherTableComponent;
   @ViewChild('stockTransferTable') stockTransferTable: StockTransferTableComponent;
 
+  cashLedgers: any[] = [];
   constructor(private breakpointObserver: BreakpointObserver,
     public apiService?: ApiService,public notificationService?: NotificationService,
      public auth?: AuthenticationService, public syncService?:SyncService) {
-    this.getOfflineVouchers();
     this.notification.type = NotificationType.NOTIFICATION;
   }
-
-
-  getOfflineVouchers(){
-    this.apiService.getCloudVouchers().subscribe(
-      res => {
-
-            this.voucherTable.setVouchers(res);
-
-
-
-      },
-      err => {
-        console.log(err);
-      }
+  ngOnInit(): void {
+    this.apiService.getCashLedgerClosingBalance().subscribe(
+      res => this.cashLedgers = res,
+      err => console.log(err)
     )
-
   }
+
+
 
 
 

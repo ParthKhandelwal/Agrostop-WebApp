@@ -36,6 +36,8 @@ export class NavigationComponent implements OnInit {
       {title: "Customer Profile", icon: "supervisor_account", link: "/customer", roles: ["Admin", "Company User"]},
       {title: "Address Profile", icon: "location_pin", link: "/address-summary", roles: ["Admin"]},
       {title: "Stock Report", icon: "inventory", link: "/stock-summary", roles: ["Admin", "Company User"]},
+      {title: "Stock Transfer Summary", icon: "inventory", link: "/stock-transfer-summary", roles: ["Admin"]},
+
       {title: "Movement Analysis", icon: "all_inbox", link: "/movement-analysis", roles: ["Admin"]},
       {title: "Customer List", icon: "list", link: "/customer-profile", roles: ["Admin"]},
       {title: "Address List", icon: "list", link: "/address-profile", roles: ["Admin"]},

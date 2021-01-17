@@ -1,5 +1,7 @@
 @import '~@angular/material/theming';
 @import "node_modules/bootstrap/scss/bootstrap";
+@import "../node_modules/ag-grid-community/dist/styles/ag-grid.css";
+@import "../node_modules/ag-grid-community/dist/styles/ag-theme-alpine.css";
 @include mat-core();
 
 /* ======== Angular material custom themes ======== */

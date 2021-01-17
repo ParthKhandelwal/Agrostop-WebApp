@@ -1,72 +1,37 @@
+<div class="container-fluid">
+  <div class="col">
+    <div style="float: left;">
+      <span style="font-size: large;">Voucher Register</span>
+    </div>
+    <div>
+      <!-- <button *ngIf="!daybookService.loading" mat-icon-button style="float: right;"
+        (click)="daybookService.getOnlineVouchers(); daybookService.getCacheVouchers()">
+        <mat-icon>autorenew</mat-icon>
+      </button> -->
+      <mat-spinner *ngIf="daybookService.loading" matSuffix [diameter]="24" style="float: right; margin-top: 8px">
+      </mat-spinner>
+    </div>
+
+    <div class="row" style="width: 100%; padding-left: 50px; padding-top: 30px;">
+      <voucher-table #voucherTable style="width: 100%;" [voucherFilter] = "voucherFilter"></voucher-table>
+
+
+
+    </div>
+
+
+
+
+
+  </div>
+</div>
+<!-- 
 <mat-tab-group mat-stretch-tabs>
   <mat-tab label = "Voucher Register">
     <div class="dayBook">
 
 
-      <div class="container-fluid">
-        <div class="col">
-          <div style="float: left;">
-            <span style="font-size: large;">Voucher Register</span>
-          </div>
-          <div>
-            <button *ngIf="!daybookService.loading" mat-icon-button style="float: right;"
-              (click)="daybookService.getOnlineVouchers(); daybookService.getCacheVouchers()">
-              <mat-icon>autorenew</mat-icon>
-            </button>
-            <mat-spinner *ngIf="daybookService.loading" matSuffix [diameter]="24" style="float: right; margin-top: 8px">
-            </mat-spinner>
-          </div>
 
-          <div class="row" style="width: 100%; padding-left: 50px; padding-top: 30px;">
-            <mat-tab-group style="width: 100%;">
-              <mat-tab label="Online Vouchers">
-                <voucher-table #voucherTable style="width: 100%;">
-                  <div class="row">
-                    <div class="col">
-                      <mat-form-field>
-                        <mat-label>From</mat-label>
-                        <input matInput [matDatepicker]="Frompicker" [(ngModel)]="this.daybookService.fromDate">
-                        <mat-datepicker-toggle matSuffix [for]="Frompicker"></mat-datepicker-toggle>
-                        <mat-datepicker #Frompicker></mat-datepicker>
-                      </mat-form-field>
-                    </div>
-                    <div class="col">
-                      <mat-form-field>
-                        <mat-label>To</mat-label>
-                        <input matInput [matDatepicker]="Topicker" [(ngModel)]="this.daybookService.toDate">
-                        <mat-datepicker-toggle matSuffix [for]="Topicker"></mat-datepicker-toggle>
-                        <mat-datepicker #Topicker></mat-datepicker>
-                      </mat-form-field>
-                    </div>
-                    <div class="col">
-                      <div style="padding-top: 10px;">
-                        <button mat-raised-button color="primary"
-                          (click)="daybookService.getOnlineVouchers()">Apply</button>
-                      </div>
-
-                    </div>
-
-                  </div>
-
-                </voucher-table>
-              </mat-tab>
-              <mat-tab *ngIf = "auth.isAdmin()" label="Offline Vouchers">
-                <voucher-table #offlineVoucherTable style="width: 100%;"></voucher-table>
-              </mat-tab>
-            </mat-tab-group>
-
-
-
-          </div>
-
-
-
-
-
-        </div>
-      </div>
-
-      <!--   Core JS Files   -->
 
 
 
@@ -74,7 +39,5 @@
     </div>
 
   </mat-tab>
-  <mat-tab *ngIf = "auth.isAdmin()" label = "Bulk Edit">
-    <app-voucher-bulk-edit></app-voucher-bulk-edit>
-  </mat-tab>
-</mat-tab-group>
+
+</mat-tab-group> -->

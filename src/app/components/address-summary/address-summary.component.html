@@ -2,7 +2,7 @@
     <div class="row">
         <auto-complete #customerAuto type="address" (optionSelected) = "addressSelected($event)"></auto-complete>
     </div>
-    <div class="row">
+    <!-- <div class="row">
         <div class="col">
             <mat-card>
                 <mat-card-header>
@@ -35,15 +35,15 @@
                 </mat-card-header>
             </mat-card>
         </div>
-    </div>
+    </div> -->
     <div class="row" style="padding-top: 20px;">
-        <voucher-stats #voucherStats [(vouchers)] = "vouchers" style="width: 100%;"></voucher-stats>
+        <!-- <voucher-stats #voucherStats [(vouchers)] = "vouchers" style="width: 100%;"></voucher-stats> -->
     </div>
     <mat-tab-group>
         <mat-tab label="Voucher Summary">
             <div class = "row" style="padding-top: 50px;">
                 <div class="col">
-                    <voucher-table #voucherTable [vouchers] = "vouchers"></voucher-table>
+                    <voucher-table #voucherTable [voucherFilter] = "voucherFilter"></voucher-table>
                 </div>
 
             </div>

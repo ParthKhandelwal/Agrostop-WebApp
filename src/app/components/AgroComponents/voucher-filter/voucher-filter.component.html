@@ -1,46 +1,54 @@
 <div class="col">
-
-
-                  <div class="row">
-                    <div class="col">
-                      <mat-form-field>
-                        <mat-select name = "filterField" (selectionChange) = "filterFieldSelected($event.value.value);" placeholder = "Select Filter Field" [formControl] = "filterFieldFC">
-                          <mat-option value = "SOme"> some</mat-option>
-                          <mat-option *ngFor = "let item of filterMap|keyvalue" [value] = "item"> {{item.key}}</mat-option>
-                        </mat-select>
-                      </mat-form-field>
-                    </div>
-                    <div class="col">
-                      <div *ngIf = "filterFieldFC.value">
-                        <mat-form-field  *ngIf = "filterFieldFC.value.key != 'Amount Greater Than' && filterFieldFC.value.key != 'Amount Smaller Than'">
-                          
-                          <input id ="field" type="text"
-                                 placeholder = "Select Filter Value"
-                                 matInput
-                                 [formControl]="filterValueFC"
-                                 [matAutocomplete]="auto">
-                          <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete">
-                            <mat-option *ngFor="let option of filteredOptions | async" [value]="option">
-                              {{option}}
-                            </mat-option>
-                          </mat-autocomplete>
-                        </mat-form-field>
-                        <mat-form-field *ngIf = "filterFieldFC.value.key == 'Amount Greater Than' || filterFieldFC.value.key == 'Amount Smaller Than'">
-                          <input id ="field" type = 'number' matInput name = "filterVAlueText" placeholder = "Select Filter Value" [formControl] = "filterValueFC">
-                            
-                        </mat-form-field>
-                      </div>
-                      
-                    </div>
-                    
-                  </div>
-                  <div class = "row">
-                    <div class="col" >
-                      <button mat-raised-button  color = "primary" (click) = "filter()">Apply</button>
-                    </div>
-                    <div class="col">
-                      <button mat-raised-button  color = "accent" (click) = "reset()">Reset</button>
-                    </div>
-                  </div>
+    <div class="row">
+        <div class="col">
+            <mat-form-field >
+                <mat-label>From</mat-label>
+                <input matInput [(ngModel)] = "this.data.from" [matDatepicker]="picker">
+                <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                <mat-datepicker #picker></mat-datepicker>
+            </mat-form-field>
+        </div>
+        <div class="col">
+            <mat-form-field >
+                <mat-label>To</mat-label>
+                <input matInput [(ngModel)] = "this.data.to" [matDatepicker]="topicker">
+                <mat-datepicker-toggle matSuffix [for]="topicker"></mat-datepicker-toggle>
+                <mat-datepicker #topicker></mat-datepicker>
+            </mat-form-field>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+                <auto-complete #customerAuto [(model)] = "data.customerId" type="customer" (optionSelected) = "this.data.customerId = $event.option.value.id"></auto-complete>
+        </div>
+        <div class="col">
+            <auto-complete #addressAuto type="address" [(model)] = "data.addressId" (optionSelected) = "this.data.addressId = $event.option.value.id"></auto-complete>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+                <auto-complete #customerAuto [(model)] = "data.ledgerId" type="ledger" (optionSelected) = "this.data.ledgerId = $event.NAME"></auto-complete>
+        </div>
+        <div class="col">
+            <auto-complete #addressAuto type="product" [(model)] = "data.inventoryId" (optionSelected) = "this.data.inventoryId = $event.NAME"></auto-complete>
+        </div>
+    </div>
+    <div class= "row">
+        <div class="col">
+            <mat-form-field>
+                <mat-select #voucherType id="voucherTypeSelect" [(ngModel)] = "this.data.voucherTypeId" placeholder = "Select Voucher Type">
+                    <mat-option value = "">Not Applicable</mat-option>
+                    <ng-container  *ngFor = "let item of voucherTypes">
+                        <mat-option [value] = "item.NAME">{{item.NAME}}</mat-option>
+    
+                    </ng-container>
+                </mat-select>
+            </mat-form-field>
+        </div>
+        
+    </div>
+    <div class="row">
+        <button mat-raised-button (click) = "reset()">Reset</button>
+        <button mat-raised-button (click) = "dialogRef.close(this.data)">Apply</button>
+    </div>
 </div>
-              

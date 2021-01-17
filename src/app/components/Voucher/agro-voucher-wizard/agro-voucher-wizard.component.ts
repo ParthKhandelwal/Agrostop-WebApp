@@ -10,16 +10,15 @@ import { SyncService } from '../../../services/Sync/sync.service';
 import { ALLLEDGERENTRIESLIST, ADDRESSLIST } from '../../../model/Voucher/voucher';
 import { InventoryTableComponent } from '../inventory-table/inventory-table.component';
 import { CollectionComponent } from '../collection/collection.component';
-import { CustomerEntryComponent } from '../../AgroEntryComponents/customer-entry-components/customer-entry.component';
-import { Customer } from '../../../model/Customer/customer';
 import { MatStepper } from '@angular/material/stepper';
 import { InvoicePrintViewComponent } from '../../invoice-print-view/invoice-print-view.component';
 import { ApiService } from '../../../services/API/api.service';
 import { AuthenticationService } from '../../../services/Authentication/authentication.service';
 import { VoucherDetailComponent } from '../voucher-detail/voucher-detail.component';
-import { CompileTemplateMetadata } from '@angular/compiler';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { catchError, finalize, map } from 'rxjs/operators';
+import { VoucherTypeConfig } from 'src/app/model/VoucherType/voucher-type-config';
+import { NgxIndexedDBService } from 'ngx-indexed-db';
 
 
 @Component({
@@ -32,6 +31,7 @@ export class AgroVoucherWizardComponent implements OnInit {
 
   constructor(public service?: AgroVoucherService, public auth?: AuthenticationService,
     private dialog?: MatDialog, private syncService?: SyncService,
+    private db?: NgxIndexedDBService,
     private cd?: ChangeDetectorRef,private apiService?: ApiService,
     private _bottomSheet?: MatBottomSheet ) { }
 
@@ -246,6 +246,7 @@ editVoucherNumber: boolean;
   setVoucherForClass(){
 
   }
+
   save(stepper){
     this.service.save();
     stepper.reset();
@@ -302,14 +303,22 @@ editVoucherNumber: boolean;
     let completed = false;
     this.saving = true;
     let sub = this.service.saveExposed().pipe(
-      map((voucher) => this.service.voucher = voucher),
+      map((voucher) => {
+        if(voucher._REMOTEID){
+          this.service.voucher = voucher
+          completed = true;
+
+        }
+      }),
       catchError(async error => {
         await this.service.addCacheVoucher(this.service.voucher);
       }),
-      finalize(() => {
-        completed = true;
+      finalize(async () => {
         this.saving= false;
-        this.service.printVoucher(this.service.voucher);
+        let v:VoucherTypeConfig = await this.db.getByKey("PrintConfiguration", this.service.voucher.VOUCHERTYPENAME);
+        if(v.printAfterSave){
+          this.service.printVoucher(this.service.voucher);
+        }
         this.service.postVoucherSave();
         this.stepper.reset();
           setTimeout(() => {
@@ -322,7 +331,7 @@ editVoucherNumber: boolean;
     setTimeout(() => {
       sub.unsubscribe();
       if(!completed){
-        
+
         this.service.addCacheVoucher(this.service.voucher).then(
           (res) => {
             this.saving= false;
@@ -347,15 +356,11 @@ editVoucherNumber: boolean;
 
 
   saveVoucherForVerification(){
+    this.saving = true
     this.apiService.saveInventroyInForVerification(this.service.voucher).subscribe(
       res => {
-        const dialogConfig = new MatDialogConfig();
-      dialogConfig.autoFocus = true;
-      dialogConfig.width = "50%";
-      const dialogRef = this.dialog.open(InvoicePrintViewComponent, {data: this.service.voucher, maxHeight: '90vh'});
-      dialogRef.afterClosed().subscribe(
-        res => {
-          this.service.nextVocuher();
+        this.saving = false;
+        this.service.nextVocuher();
           this.stepper.reset();
             setTimeout(() => {
               this.cd.detectChanges();
@@ -363,8 +368,6 @@ editVoucherNumber: boolean;
 
             }, 700);
             this.stepper.reset();
-        }
-      )
 
       }
     )

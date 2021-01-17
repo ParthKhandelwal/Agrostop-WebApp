@@ -1,0 +1,110 @@
+<div class="col">
+  <div class="row">
+    <div class="col">
+      <mat-form-field>
+        <mat-label>Choose a from date</mat-label>
+        <input name = "from" [(ngModel)] = "fromDate" matInput [matDatepicker]="picker">
+        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-datepicker #picker></mat-datepicker>
+      </mat-form-field>
+    </div>
+    <div class="col">
+      <mat-form-field>
+        <mat-label>Choose a to date</mat-label>
+        <input matInput name = "to" [(ngModel)] = "toDate" [matDatepicker]="picker2">
+        <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+        <mat-datepicker #picker2></mat-datepicker>
+      </mat-form-field>
+    </div>
+
+    <div class="col">
+     <button mat-raised-button color="primary" (click) = "fetch();false">Fetch</button>
+    </div>
+
+  </div>
+  <div  class="row">
+    <table style="width: 100%;" matSort mat-table [dataSource]="datasource" multiTemplateDataRows class="mat-elevation-z8">
+      <ng-container matColumnDef="{{column}}" *ngFor="let column of columnsToDisplay">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> {{column}} </th>
+        <td mat-cell *matCellDef="let element"> {{element[column]}} </td>
+      </ng-container>
+
+
+      <!-- Expanded Content Column - The detail row is made up of this one column that spans across all columns -->
+      <ng-container matColumnDef="expandedDetail">
+        <td mat-cell *matCellDef="let element" [attr.colspan]="columnsToDisplay.length">
+          <div class="example-element-detail" [@detailExpand]="element == expandedElement ? 'expanded' : 'collapsed'">
+            <div class="col">
+              <div class="row">
+                
+              </div>
+              <div class="row">
+                <table *ngIf = "expandedElement" mat-table [dataSource]="expandedElement.data" >
+
+                  <!--- Note that these columns can be defined in any order.
+                        The actual rendered columns are set as a property on the row definition" -->
+    
+                  <!-- Position Column -->
+                  <ng-container matColumnDef="itemname">
+                    <th mat-header-cell *matHeaderCellDef> Name </th>
+                    <td mat-cell *matCellDef="let element"> {{element.itemname}} </td>
+                  </ng-container>
+    
+                  <!-- Name Column -->
+                  <ng-container matColumnDef="transferqty">
+                    <th mat-header-cell *matHeaderCellDef> Transfer Qty </th>
+                    <td mat-cell *matCellDef="let element"> {{element.transferqty}} </td>
+                  </ng-container>
+    
+                  <!-- Weight Column -->
+                  <ng-container matColumnDef="billedqty">
+                    <th mat-header-cell *matHeaderCellDef> Billed Qty </th>
+                    <td mat-cell *matCellDef="let element"> {{element.billedqty}} </td>
+                  </ng-container>
+    
+                  <!-- Symbol Column -->
+                  <ng-container matColumnDef="verified">
+                    <th mat-header-cell *matHeaderCellDef> Verified </th>
+                    <td mat-cell *matCellDef="let element"> {{element.verified}} </td>
+                  </ng-container>
+                  <ng-container matColumnDef="action">
+                    <th mat-header-cell *matHeaderCellDef> Verified </th>
+                    <td mat-cell *matCellDef="let element">
+                    
+                  <button style="width: 100%;" mat-button (click) = "verify(element)">
+                    Verify Again
+                  </button>  
+                    </td>
+                  </ng-container>
+    
+                  
+    
+                  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                  <tr mat-row [ngClass]="row.match?'example-element-row':'mismatch'" *matRowDef="let row; columns: displayedColumns;"></tr>
+                </table>
+    
+    
+              </div>
+            </div>
+            
+
+        
+          </div>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="columnsToDisplay"></tr>
+      <tr mat-row *matRowDef="let element; columns: columnsToDisplay;" [ngClass]="element.match?'example-element-row':'mismatch'"
+        [class.example-expanded-row]="expandedElement === element"
+        (click)="expandedElement = expandedElement === element ? null : element">
+      </tr>
+      <tr mat-row *matRowDef="let row; columns: ['expandedDetail']" class="example-detail-row"></tr>
+    </table>
+
+    <mat-paginator style="width: 100%;" [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
+
+  </div>
+</div>
+
+
+

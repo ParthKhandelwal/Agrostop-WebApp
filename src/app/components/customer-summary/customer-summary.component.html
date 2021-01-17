@@ -38,11 +38,11 @@
       <mat-tab-group style="width: 100%;" mat-stretch-tabs>
         <mat-tab label = "Statistics">
           <div style="padding-top: 50px;">
-            <voucher-stats #voucherStats style="width: 100%;" [vouchers] = "this.vouchers"></voucher-stats>
+            <!-- <voucher-stats #voucherStats style="width: 100%;" [vouchers] = "this.vouchers"></voucher-stats> -->
           </div>
         </mat-tab>
         <mat-tab label = "Sale History">
-          <voucher-table #voucherTable [vouchers] = "vouchers"></voucher-table>
+          <voucher-table #voucherTable [voucherFilter] = "voucherFilter"></voucher-table>
         </mat-tab>
         <mat-tab label="Crop Profile">
 

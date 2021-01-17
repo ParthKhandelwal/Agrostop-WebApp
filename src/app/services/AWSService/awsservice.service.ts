@@ -16,8 +16,8 @@ export class AWSServiceService {
 
 
   constructor(private apiService?: ApiService, private syncService?: SyncService, public notificationService?: NotificationService) {
-    
-    
+
+
 
   }
 
@@ -45,7 +45,7 @@ export class AWSServiceService {
       }
     )
 
-      
+
 
 
     }
@@ -66,36 +66,42 @@ export class AWSServiceService {
             MaxNumberOfMessages: 10,
 
           };
-          sqs.receiveMessage(params, function(err, data) {
-            if (err) {
-              if(err.code == "NetworkingError"){
-                that.notificationService.internetConnected$.next(false);
-              }
-            } // an error occurred
-            else{
-              that.notificationService.internetConnected$.next(true);
-              data.Messages.forEach((message) => {
-                console.log(message.Body)
-                let notification: Notification = JSON.parse(message.Body);
-                that.handleNotification(notification);
-                that.notificationService.addNotification(notification);
-                var params = {
-                  QueueUrl: that.queueUrl.getValue(), /* required */
-                  ReceiptHandle: message.ReceiptHandle /* required */
-                };
-                sqs.deleteMessage(params, function(err, data) {
-                  if (err) console.log(err, err.stack); // an error occurred
-                  else     console.log(data);           // successful response
+          let dataRecieved = 10;
+       
+            sqs.receiveMessage(params, function(err, data) {
+              if (err) {
+                if(err.code == "NetworkingError"){
+                  that.notificationService.internetConnected$.next(false);
+                }
+              } // an error occurred
+              else{
+                that.notificationService.internetConnected$.next(true);
+                dataRecieved = data.Messages.length;
+                data.Messages.forEach((message) => {
+                  console.log(message.Body)
+                  let notification: Notification = JSON.parse(message.Body);
+                  that.handleNotification(notification);
+                  that.notificationService.addNotification(notification);
+                  var params = {
+                    QueueUrl: that.queueUrl.getValue(), /* required */
+                    ReceiptHandle: message.ReceiptHandle /* required */
+                  };
+                  sqs.deleteMessage(params, function(err, data) {
+                    if (err) console.log(err, err.stack); // an error occurred
+                  });
                 });
-              });
 
-            }              // successful response
-          });
+              }              // successful response
+            });
+
+          
 
         }
       }, 30000);
 
     }
+
+
 
     handleNotification(n: Notification){
 

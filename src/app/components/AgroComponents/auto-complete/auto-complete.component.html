@@ -9,6 +9,7 @@
 
            [matAutocomplete]="auto"
            name = "customer">
+           <mat-hint>{{model}}</mat-hint>
            <button *ngIf = "!this.service.customerLoading" mat-button matSuffix mat-icon-button aria-label="Clear" (click)="this.service.saveCustomers()">
             <mat-icon>sync</mat-icon>
           </button>
@@ -39,12 +40,13 @@
   <mat-form-field *ngIf = "type == 'product'">
     <input #invField
      type="text"
-           placeholder="Pick one"
+           placeholder="Pick a product"
            matInput
            name = "selectProductAuto"
            [formControl]="productControl"
            [matAutocomplete]="productAuto"
            style="width:100% !important" >
+           <mat-hint>{{model}}</mat-hint>
            <button mat-button *ngIf = "!this.service.itemLoading" matSuffix mat-icon-button aria-label="Clear" (click)="this.service.saveItems()">
             <mat-icon>sync</mat-icon>
           </button>
@@ -76,12 +78,13 @@
   <mat-form-field *ngIf = "type == 'ledger'">
     <input #ledgerField
      type="text"
-           placeholder="Pick one"
+           placeholder="Pick a ledger"
            matInput
            name = "selectLedgerAuto"
            [formControl]="ledgerControl"
            [matAutocomplete]="ledgerAuto"
            style="width:100% !important" >
+           <mat-hint>{{model}}</mat-hint>
            <button mat-button *ngIf = "!this.service.ledgerLoading" matSuffix mat-icon-button aria-label="Clear" (click)="this.service.saveLedgers()">
             <mat-icon>sync</mat-icon>
           </button>
@@ -114,6 +117,7 @@
            [formControl]="addressControl"
            [(ngModel)] = "address"
            [matAutocomplete]="auto">
+           <mat-hint>{{model}}</mat-hint>
            <button disabled *ngIf = "!this.service.addressLoading" matSuffix mat-icon-button (click)="this.service.saveAddresses()">
             <mat-icon>sync</mat-icon>
           </button>

@@ -54,7 +54,7 @@
             <ng-container matColumnDef="action">
                 <th mat-header-cell *matHeaderCellDef> Action </th>
                 <td mat-cell *matCellDef="let element">
-                    <button *ngIf = "!element.rejected" mat-icon-button (click) = "verify(element)">
+                    <button [disabled] = "element.verifying" *ngIf = "!element.rejected" mat-icon-button (click) = "verify(element)">
                         <mat-icon>done</mat-icon>
                     </button>
                     <button *ngIf = "!element.rejected" mat-icon-button (click) = "reject(element)">

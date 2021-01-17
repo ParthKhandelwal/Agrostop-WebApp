@@ -32,7 +32,16 @@
       </mat-form-field>
     </div>
   </div>
-  
+  <div class="row">
+    <div class="col">
+      <mat-checkbox [(ngModel)]="this.voucherTypeConfig.sendSMSAfterSave">SMS After Save</mat-checkbox>
+    </div>
+    <div class="col">
+      <mat-checkbox [(ngModel)]="this.voucherTypeConfig.printAfterSave">Print After Save</mat-checkbox>
+    </div>
+
+  </div>
+
   <div class="row">
     <mat-tab-group style="height: 600px;">
       <mat-tab label="Print Configuration">

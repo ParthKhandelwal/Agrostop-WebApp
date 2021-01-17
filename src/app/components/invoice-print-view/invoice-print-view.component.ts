@@ -135,30 +135,7 @@ print(){
     return total;
   }
 
-  public getTotal(): number{
-
-      var total: number =0
-      if(!this.isMO()){
-        for (let item of this.voucher.LEDGERENTRIES_LIST){
-          if (item.AMOUNT != null && (item.POSPAYMENTTYPE == null || item.POSPAYMENTTYPE == "")){
-            total = total + item.AMOUNT;
-          }
-        }
-      }
-
-
-        for (let item of this.stockItems){
-          if (item.AMOUNT != null){
-            total = total + item.AMOUNT;
-          }
-        }
-
-
-
-      return total;
-
-
-  }
+  
 
 
 

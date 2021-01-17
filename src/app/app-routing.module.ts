@@ -21,6 +21,7 @@ import { CropProfileComponent } from './components/crop-profile/crop-profile.com
 import { MovementAnalysisComponent } from './components/MovementAnalysis/movement-analysis/movement-analysis.component';
 import { HomeComponent } from './components/AgroComponents/home/home.component';
 import { TallyConsoleComponent } from './components/tally-console/tally-console.component';
+import { StockTransferComparisonComponent } from './components/stock-transfer-comparison/stock-transfer-comparison.component';
 
 
 const routes: Routes = [
@@ -68,6 +69,10 @@ const routes: Routes = [
   {
     path: 'agro-voucher',
     component: AgroVoucherWizardComponent,
+  },
+  {
+    path: 'stock-transfer-summary',
+    component: StockTransferComparisonComponent,
   },
   {
     path: 'customer-profile',

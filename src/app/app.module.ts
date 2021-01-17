@@ -123,6 +123,9 @@ import { VoucherBulkEditComponent } from './components/voucher-bulk-edit/voucher
 import { InventoryEntryINComponent } from './components/Voucher/inventory-entry-in/inventory-entry-in.component';
 import { AdminConfirmationComponent } from './components/AgroComponents/admin-confirmation/admin-confirmation.component';
 import { UPILinkComponent } from './components/AgroComponents/upilink/upilink.component';
+import { AgGridModule } from 'ag-grid-angular';
+import { StockTransferComparisonComponent } from './components/stock-transfer-comparison/stock-transfer-comparison.component';
+
 
 
 const dbConfig: DBConfig  = {
@@ -198,7 +201,7 @@ const dbConfig: DBConfig  = {
     AutoCompleteComponent,
     InvoicePrintViewComponent,
     NavigationComponent,
-    CustomerSummaryComponent, TallyConsoleComponent, VoucherTableComponent, VoucherSummaryComponent, CustomerEntryComponent, VoucherStatsComponent, InventoryBreakdownComponent, AddressSummaryComponent, InventoryDetailComponent, StockTransferTableComponent, CustomerTableComponent, VoucherFilterComponent, InventoryInfoComponent, AdminToolkitComponent, ProductProfileComponent, ChemicalGroupEntryComponent, ProductGroupTableComponent, ProductGroupEntryComponentsComponent, ProductProfileTableComponent, ProductProfileEntryComponentComponent, UserTableComponent, ChemicalGroupTableComponent, UserEntryComponentComponent, UserProfileComponent, SettingsComponent, PrintConfigurationEntryComponent, PrintConfigurationTableComponent, StockSummaryComponent, BatchTableComponent, ParticularTableComponent, InventoryTableComponent, BankAllocationComponent, BillAllocationComponent,AgroVoucherWizardComponent, VoucherSettingsComponent, CollectionComponent, StockCheckComponent, CustomerProfileComponent, StockCheckPrintViewComponent, AddressProfileComponent, CropEntryComponent, CropPatternEntryComponent, CropProfileComponent, CropProfileTableComponent, ItemMovementAnalysisComponent, MovementAnalysisComponent, MonthlySummaryComponent, LedgerMovementAnalysisComponent, BatchAllocationComponent, AccountingAllocationComponent, VoucherDetailComponent, BatchTransferComponent, HomeComponent, NotificationComponent, CropPatternSummaryComponent, CouponEntryComponent, ConnectComponent, VoucherBulkEditComponent, InventoryEntryINComponent, AdminConfirmationComponent, UPILinkComponent
+    CustomerSummaryComponent, TallyConsoleComponent, VoucherTableComponent, VoucherSummaryComponent, CustomerEntryComponent, VoucherStatsComponent, InventoryBreakdownComponent, AddressSummaryComponent, InventoryDetailComponent, StockTransferTableComponent, CustomerTableComponent, VoucherFilterComponent, InventoryInfoComponent, AdminToolkitComponent, ProductProfileComponent, ChemicalGroupEntryComponent, ProductGroupTableComponent, ProductGroupEntryComponentsComponent, ProductProfileTableComponent, ProductProfileEntryComponentComponent, UserTableComponent, ChemicalGroupTableComponent, UserEntryComponentComponent, UserProfileComponent, SettingsComponent, PrintConfigurationEntryComponent, PrintConfigurationTableComponent, StockSummaryComponent, BatchTableComponent, ParticularTableComponent, InventoryTableComponent, BankAllocationComponent, BillAllocationComponent,AgroVoucherWizardComponent, VoucherSettingsComponent, CollectionComponent, StockCheckComponent, CustomerProfileComponent, StockCheckPrintViewComponent, AddressProfileComponent, CropEntryComponent, CropPatternEntryComponent, CropProfileComponent, CropProfileTableComponent, ItemMovementAnalysisComponent, MovementAnalysisComponent, MonthlySummaryComponent, LedgerMovementAnalysisComponent, BatchAllocationComponent, AccountingAllocationComponent, VoucherDetailComponent, BatchTransferComponent, HomeComponent, NotificationComponent, CropPatternSummaryComponent, CouponEntryComponent, ConnectComponent, VoucherBulkEditComponent, InventoryEntryINComponent, AdminConfirmationComponent, UPILinkComponent, StockTransferComparisonComponent
   ],
   imports: [
     HttpClientModule,
@@ -245,6 +248,7 @@ const dbConfig: DBConfig  = {
     RouterModule,
     CommonModule,
     NgxIndexedDBModule.forRoot(dbConfig),
+    AgGridModule.withComponents([]),
     ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production, registrationStrategy: 'registerImmediately' })
   ],
   providers: [ApiService, DatePipe,{

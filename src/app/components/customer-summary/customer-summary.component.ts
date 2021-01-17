@@ -12,6 +12,7 @@ import { VoucherStatsComponent } from '../AgroComponents/voucher-stats/voucher-s
 import { InventoryBreakdownComponent } from '../AgroComponents/inventory-breakdown/inventory-breakdown.component';
 import { VoucherTableComponent } from '../AgroComponents/voucher-table/voucher-table.component';
 import { CropProfileTableComponent } from '../AgroComponents/crop-profile-table/crop-profile-table.component';
+import { VoucherFilter } from 'src/app/model/HelperClass/HelperClass';
 
 
 
@@ -22,8 +23,6 @@ import { CropProfileTableComponent } from '../AgroComponents/crop-profile-table/
 })
 export class CustomerSummaryComponent implements OnInit {
   loading: boolean = false
-
-  vouchers: VOUCHER[] = []
   addresses: Address[] = [];
 
   @Input("customer")  customer: Customer;
@@ -33,7 +32,7 @@ export class CustomerSummaryComponent implements OnInit {
 
   displayedColumns: string[] = ['date', 'voucherNumber', 'customer', 'address', 'amount', 'action'];
 
-
+  voucherFilter: VoucherFilter = new VoucherFilter();
 
 
 
@@ -53,17 +52,11 @@ export class CustomerSummaryComponent implements OnInit {
   }
 
 
+
   customerSelected(value){
     this.customer = value;
-    this.apiService.getCustomerVoucher(this.customer.id)
-    .subscribe(
-      (res) => {
-        this.vouchers = res;
-        this.voucherStats.calculateStats(this.vouchers);
-        this.voucherTable.setVouchers(this.vouchers);
-      },
-      err => console.log(err)
-    );
+    this.voucherFilter.customerId = this.customer.id;
+    this.voucherTable.fetch();
     this.apiService.getCropPatternsByCustomer(this.customer.id).subscribe(
       res => {
         res = res.map((r) => {

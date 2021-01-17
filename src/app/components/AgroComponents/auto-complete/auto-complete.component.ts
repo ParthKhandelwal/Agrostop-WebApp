@@ -25,6 +25,7 @@ export class AutoCompleteComponent implements OnInit {
   @Input("listProvided") provided: boolean;
   @Input("ledgerParent") ledgerParent: string[];
   @Input("ledgerList") ledgerList: string[];
+  @Input("model")model: string;
 
 
   @Output() optionSelected: EventEmitter<any> = new EventEmitter();

@@ -7,6 +7,8 @@ import { AuthenticationService } from '../../../services/Authentication/authenti
 import { AgroVoucherService } from '../../../services/AgroVoucher/agro-voucher.service';
 import { Router } from '@angular/router';
 import { ApiService } from '../../../services/API/api.service';
+import { VoucherDisplay } from 'src/app/model/HelperClass/HelperClass';
+import { NgxIndexedDBService } from 'ngx-indexed-db';
 
 @Component({
   selector: 'app-voucher-summary',
@@ -18,14 +20,22 @@ export class VoucherSummaryComponent implements OnInit {
   inventoryColumns = ["name", "qty", "rate"]
   ledgerColumns = ["name", "amount"]
   voucherParentType;
-  constructor(@Inject(MAT_DIALOG_DATA) public data?: VOUCHER,public dialogRef?: MatDialogRef<VoucherSummaryComponent>,private dialog?: MatDialog,
+  constructor(@Inject(MAT_DIALOG_DATA) public data?: VoucherDisplay,public dialogRef?: MatDialogRef<VoucherSummaryComponent>,private dialog?: MatDialog,
   public auth?: AuthenticationService,
+  private db?: NgxIndexedDBService,
    private service?: AgroVoucherService, private router?: Router, private apiService?: ApiService) {
-    this.voucher = Object.assign(new VOUCHER(),data);
-    this.voucherParentType = VoucherParentType[this.auth.user.voucherTypes.filter((v) => v.voucherTypeName === this.voucher.VOUCHERTYPENAME)[0].voucherCategory.replace(" ", "_")];
+    this.voucherParentType = data.voucherparenttype;
    }
 
   ngOnInit(): void {
+    this.apiService.getVoucher(this.data.id).subscribe(
+      res => {
+        this.voucher = Object.assign(new VOUCHER(),res);
+      },err => {
+        this.dialogRef.close();
+        alert("Error ocurred");
+      }
+    )
   }
 
 
@@ -126,4 +136,54 @@ export class VoucherSummaryComponent implements OnInit {
     )
   }
 
+
+  showSMSForm: boolean;
+  phoneNumber: string;
+  vehicleNumber: string;
+  arrivalTime: string;
+  contactNumber: string;
+  smsTemplate: string;
+
+  showSMS(){
+    this.db.getByKey("customers", this.voucher.BASICBUYERNAME).then(
+      res => {
+        this.phoneNumber = res.phoneNumber;
+      },
+    ).finally(() =>this.showSMSForm = true)
+  }
+
+  sendSMS(){
+    this.apiService.sendSMS(this.phoneNumber, this.voucher._REMOTEID, 
+      this.vehicleNumber, this.arrivalTime, this.contactNumber, this.smsTemplate).subscribe(
+      res => {
+        alert("Message sent successfully");
+        this.dialogRef.close();
+      },
+      err => {
+        alert("Message could not be sent")
+      }
+    )
+  }
+
+  valid(){
+    if(!this.phoneNumber || this.phoneNumber.length != 10){
+      return false;
+    }
+    if(!this.smsTemplate ){
+      return false;
+    }else {
+      if(this.smsTemplate == "ORDER_DISPATCHED"){
+        if(!this.contactNumber || this.contactNumber.length!= 10){
+          return false;
+        }
+        if(!this.vehicleNumber){
+          return false;
+        }
+        if(this.arrivalTime){
+          return false;
+        }
+      }
+    }
+    return true;
+  }
 }

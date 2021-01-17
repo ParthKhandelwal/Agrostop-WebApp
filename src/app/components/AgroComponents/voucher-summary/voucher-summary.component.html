@@ -7,9 +7,11 @@
 <div *ngIf = "!voucher">Please Select a voucher first</div>
 
 
-<mat-card *ngIf = "voucher">
-  <mat-card-title>{{voucher.VOUCHERTYPENAME}}</mat-card-title>
-  <mat-card-subtitle>{{voucher.VOUCHERNUMBER}}</mat-card-subtitle>
+<div *ngIf = "voucher && !showSMSForm">
+  <span mat-dialog-title>
+    <h2>{{voucher.VOUCHERTYPENAME}}</h2>
+  </span>
+  
   <mat-divider></mat-divider>
   <div class="row">
     <div class="col">
@@ -25,7 +27,7 @@
     </div>
   </div>
   <mat-divider></mat-divider>
-  <mat-card-content>
+  <mat-dialog-content>
     <mat-tab-group>
       <mat-tab label = "Inventory">
         <mat-table style="width: 100%;" [dataSource]="getInventory()">
@@ -76,9 +78,9 @@
       </mat-table>
       </mat-tab>
     </mat-tab-group>
-  </mat-card-content>
+  </mat-dialog-content>
   <mat-divider></mat-divider>
-  <mat-card-actions>
+  <mat-dialog-actions>
     <div class="col">
       <div class="row">
         <button #saveButton mat-icon-button  (click) = "print()">
@@ -90,7 +92,9 @@
 
       </div>
     </div>
-
+    <button  mat-button (click) = "showSMS()">
+      SMS
+    </button>
     <button [disabled] = "!auth.isAdmin() || !voucher.savedToTally" mat-button (click) = "deleteVoucher()">
       Delete From Tally
     </button>
@@ -99,5 +103,63 @@
     </button>
     <button [disabled] = "!auth.isAdmin()" mat-button (click) = "resetVoucher()">Reset Voucher</button>
 
-  </mat-card-actions>
-</mat-card>
+  </mat-dialog-actions>
+</div>
+<div *ngIf = "showSMSForm">
+  <div class="col">
+    <div class="row">
+      <div class="col">
+        <mat-form-field>
+          <input matInput name = "phone" placeholder="Enter Phone Number" maxlength = 10 [(ngModel)] = "this.phoneNumber">
+        </mat-form-field>
+      </div>
+      
+    </div>
+    <div class="row">
+      <div class="col">
+        <mat-form-field>
+          <mat-select name = "template" [(ngModel)] = "this.smsTemplate" placeholder = "Select a template">
+            <mat-option value = "INVOICE">Invoice</mat-option>
+            <mat-option value = "RECEIPT">Receipt</mat-option>
+            <mat-option value = "ORDER_DISPATCHED">Order Dispatched</mat-option>
+            
+          </mat-select>
+        </mat-form-field>
+      </div>
+      
+      
+    </div>
+    <div *ngIf = "this.smsTemplate=='ORDER_DISPATCHED'">
+      <div class="row">
+        <div class="col">
+          <mat-form-field>
+            <input name = "vehicleNumber" [(ngModel)] = "this.vehicleNumber" matInput placeholder="Enter Vehicle Number">
+          </mat-form-field>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col">
+          
+          <mat-form-field>
+            <input name = "arrivalTime" max="8" [(ngModel)] = "this.arrivalTime" matInput placeholder="Enter Arrival Time">
+          </mat-form-field>
+        </div>
+      </div><div class="row">
+        <div class="col">
+          <mat-form-field>
+            <input name = "contactNumber" maxlength="10" [(ngModel)] = "this.contactNumber" matInput placeholder="Enter Correspondence Number">
+          </mat-form-field>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <button  mat-button (click) = "this.showSMSForm = false">
+        Cancel
+      </button>
+      <button *ngIf = "valid()"  mat-button (click) = "this.sendSMS()">
+        Send
+      </button>
+    </div>
+    
+  </div>
+</div>

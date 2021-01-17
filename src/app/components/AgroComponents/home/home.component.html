@@ -22,10 +22,12 @@
                 <stock-transfer-table #stockTransferTable style="width: 100%;"></stock-transfer-table>
               </ng-container>
               <ng-container *ngSwitchCase = "'cloud-voucher'">
-                <voucher-table #voucherTable></voucher-table>
               </ng-container>
               <ng-container *ngSwitchCase = "'sync'">
                 <ng-container *ngTemplateOutlet="sync"></ng-container>
+              </ng-container>
+              <ng-container *ngSwitchCase = "'cashSummary'">
+                <ng-container *ngTemplateOutlet="cashSummary"></ng-container>
               </ng-container>
               <ng-container *ngSwitchCase = "'notification'">
                 <mat-form-field style="width: 100%;" *ngIf = "auth.isAdmin()">
@@ -88,4 +90,21 @@
   </div>
 
 
+</ng-template>
+
+
+<ng-template #cashSummary>
+  <ul class="list-group list-group-flush">
+    <li *ngFor = "let item of cashLedgers" class="list-group-item">
+      <div style= "widht:100%">
+        <span style="float: left;">
+          {{item._id}}
+        </span>
+        <span style="float: right">
+          {{item.value | currency: "INR"}}
+        </span>
+      </div>
+      
+    </li>
+  </ul>
 </ng-template>

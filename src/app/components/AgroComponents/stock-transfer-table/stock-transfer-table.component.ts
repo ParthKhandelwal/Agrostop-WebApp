@@ -19,6 +19,7 @@ export class StockTransferTableComponent implements OnInit {
 
   displayedColumns = ['date', 'item', 'godown', 'qty', 'rate', 'action']
   items: INVENTORYENTRIESIN_LIST[];
+  loading: boolean = false;
 
   constructor(private apiService? : ApiService,  private dialog?: MatDialog, private service?: AgroVoucherService, public auth?: AuthenticationService, private router?: Router) { }
 
@@ -29,13 +30,13 @@ export class StockTransferTableComponent implements OnInit {
   public revisit(){
     this.apiService.getStockTransfers().subscribe(
       res => {
-
         this.items = res;
       }
     )
   }
 
   verify(e){
+    e.verifying = true;
     this.apiService.verifyInventoryIN(e.remoteId, e.agroId).subscribe(
       res => {
         alert("Product verified successfully");

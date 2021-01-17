@@ -13,6 +13,7 @@ import { Crop } from '../../model/Crop/crop';
 import { CropPattern } from '../../model/CropPattern/crop-pattern';
 import { Notification } from '../../model/Notification/notification';
 import { VoucherTypeConfig, Coupon } from "../../model/VoucherType/voucher-type-config";
+import { TimePeriod, VoucherDisplay, VoucherFilter } from 'src/app/model/HelperClass/HelperClass';
 
 
 
@@ -48,13 +49,14 @@ export class ApiService {
   //private BASE_URL = "https://agrostopserver-env.eba-vei6xp54.ap-south-1.elasticbeanstalk.com/api/";
   //public WEB_SOCKET_URL = "https://agrostopserver-env.eba-vei6xp54.ap-south-1.elasticbeanstalk.com";
 
-  //private BASE_URL = "http://localhost:5000/api/";
-  //public WEB_SOCKET_URL = "http://localhost:5000";
+
+  private BASE_URL = "http://localhost:5000/api/";
+  public WEB_SOCKET_URL = "http://localhost:5000";
   //public TALLY_HELPER_URL = "http://localhost:8082";
 
 
-  private BASE_URL = "https://agrostop-web-server.herokuapp.com/api/";
-  public WEB_SOCKET_URL = "https://agrostop-web-server.herokuapp.com";
+  //private BASE_URL = "https://agrostop-web-server.herokuapp.com/api/";
+  //public WEB_SOCKET_URL = "https://agrostop-web-server.herokuapp.com";
 
 
 
@@ -615,4 +617,65 @@ getStockItemGroupsByName(): Observable<any[]>{
   resetVoucher(id: string){
     return this.httpClient.get<any>(this.BASE_URL+ "stockTransfer/resetVoucher?id="+id);
   }
+
+
+
+    getStockComparison(fromDate: Date, toDate: Date): Observable<any[]> {
+      return this.httpClient.get<any[]>(this.BASE_URL + 'stockTransfer/getComparisonReport?' +
+      "&fromDate=" + this.datePipe.transform(fromDate, "yyyyMMdd") + '&toDate=' + this.datePipe.transform(toDate, "yyyyMMdd"));
+    }
+
+    getVouchersForDisplay(voucherFilter: VoucherFilter): Observable<VoucherDisplay[]> {
+      voucherFilter.from.setHours(0);
+      voucherFilter.from.setMinutes(0);
+      voucherFilter.from.setSeconds(0);
+      voucherFilter.from.setMilliseconds(0);
+      
+      voucherFilter.to.setHours(23);
+      voucherFilter.to.setMinutes(59);
+      voucherFilter.to.setSeconds(59);
+      voucherFilter.to.setMilliseconds(999);
+      
+      return this.httpClient.post<VoucherDisplay[]>(this.BASE_URL + 'vouchers/getVouchers', voucherFilter);
+    }
+
+    getInventoryBreakdown(voucherFilter: VoucherFilter): Observable<any[]> {
+      voucherFilter.from.setHours(0);
+      voucherFilter.from.setMinutes(0);
+      voucherFilter.from.setSeconds(0);
+      voucherFilter.from.setMilliseconds(0);
+      
+      voucherFilter.to.setHours(23);
+      voucherFilter.to.setMinutes(59);
+      voucherFilter.to.setSeconds(59);
+      voucherFilter.to.setMilliseconds(999);
+      
+      return this.httpClient.post<any[]>(this.BASE_URL + 'vouchers/getInventoryBreakdown', voucherFilter);
+    }
+
+    getLedgerBreakdown(voucherFilter: VoucherFilter): Observable<any[]> {
+      voucherFilter.from.setHours(0);
+      voucherFilter.from.setMinutes(0);
+      voucherFilter.from.setSeconds(0);
+      voucherFilter.from.setMilliseconds(0);
+      
+      voucherFilter.to.setHours(23);
+      voucherFilter.to.setMinutes(59);
+      voucherFilter.to.setSeconds(59);
+      voucherFilter.to.setMilliseconds(999);
+      
+      return this.httpClient.post<any[]>(this.BASE_URL + 'vouchers/getLedgerBreakdown', voucherFilter);
+    }
+    
+
+    getCashLedgerClosingBalance(): Observable<any[]>{
+      return this.httpClient.get<any[]>(this.BASE_URL + 'ledger/cashLedgerClosingBalance');
+    }
+    sendSMS(phoneNumber: string, voucherId: string, 
+      vehicleNumber: string, arrivalTime: string, contact: string, smsTemplate: string): Observable<any[]>{
+      return this.httpClient.get<any[]>(this.BASE_URL + 
+        'voucher/sendSMS?phoneNumber='+phoneNumber
+        +"&voucherId="+voucherId+"&vehicleNumber="+vehicleNumber
+        +"&arrivalTime="+arrivalTime+"&contact="+contact+"&smsTemplate="+smsTemplate);
+    }
 }

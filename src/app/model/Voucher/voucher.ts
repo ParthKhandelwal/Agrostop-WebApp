@@ -643,12 +643,31 @@ export class VOUCHER {
 
 
   public getTotal(): number{
-    let total: number = this.getSubTotal();
-    for (let item of this.LEDGERENTRIES_LIST){
-      if (item.AMOUNT != null && (item.POSPAYMENTTYPE == null || item.POSPAYMENTTYPE == "")){
-        total = total + item.AMOUNT;
+    let total: number = 0;
+    if(this.LEDGERENTRIES_LIST){
+      for (let item of this.LEDGERENTRIES_LIST){
+        if (item.ISDEEMEDPOSITIVE == "No"){
+          total = total + item.AMOUNT;
+        }
       }
     }
+    if(this.ALLLEDGERENTRIES_LIST){
+      for (let item of this.ALLLEDGERENTRIES_LIST){
+        if (item.ISDEEMEDPOSITIVE == "No"){
+          total = total + item.AMOUNT;
+        }
+      }
+    }
+    
+    if(this.ALLINVENTORYENTRIES_LIST){
+      for (let item of this.ALLINVENTORYENTRIES_LIST){
+        if (item.ACCOUNTINGALLOCATIONS_LIST.ISDEEMEDPOSITIVE == "No"){
+          total = total + item.AMOUNT;
+        }
+      }
+    }
+    
+    
     return parseFloat((Math.round(total * 100) / 100).toFixed(2));
 
   }

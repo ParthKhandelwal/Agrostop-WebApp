@@ -193,7 +193,7 @@ export class SyncService {
   }
 
   updateCustomer(customer){
-    customer.id = customer._id
+    customer.id = customer.customerId;
     this.db.update("customers", customer)
     var index = this.customers$.getValue().findIndex((i) => i.id == customer.id);
     this.customers$.getValue()[index] = customer;

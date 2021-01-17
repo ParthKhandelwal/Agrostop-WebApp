@@ -107,7 +107,7 @@
 
           <button mat-button matStepperPrevious>Back</button>
           <button mat-button (click) = "saveExposed()">Save</button>          
-          <button mat-button (click)="saveVoucherForVerification()" *ngIf = "this.service.voucherParentType == voucherParent.Material_Out">Save For Verification</button>
+          <button mat-button [disabled] = "saving" (click)="saveVoucherForVerification()" *ngIf = "this.service.voucherParentType == voucherParent.Material_Out">Save For Verification</button>
         
         </div>
 

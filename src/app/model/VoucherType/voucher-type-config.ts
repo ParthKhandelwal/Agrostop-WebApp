@@ -9,6 +9,8 @@ export class VoucherTypeConfig {
   coupons: Coupon[];
   prefix: string;
   suffix: number;
+  sendSMSAfterSave: boolean;
+  printAfterSave: boolean;
 
   constructor(){
     this.printConfiguration = new PrintConfiguration();
