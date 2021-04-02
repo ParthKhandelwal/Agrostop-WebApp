@@ -27,6 +27,56 @@
             
             
         </div>
+        <div class="row" *ngIf = "this.productProfile">
+            <div class="col">
+                <mat-form-field>
+                    <input type="number" matInput placeholder="Enter MRP" [(ngModel)] = "productProfile.mrp" name = "mrp">
+                </mat-form-field>
+            </div>
+            <div class="col">
+                <mat-form-field>
+                    <input type="number" matInput placeholder="Enter Price" [(ngModel)] = "productProfile.price" name = "price">
+                </mat-form-field>
+            </div>
+        </div>
+        <div class="row" *ngIf = "this.productProfile">
+            <div class="col">
+                <mat-form-field>
+                    <input type="number" matInput placeholder="Enter CGST %" [(ngModel)] = "productProfile.cgstRate" name = "cgstRate">
+                </mat-form-field>
+            </div>
+            <div class="col">
+                <mat-form-field>
+                    <input type="number" matInput placeholder="Enter SGST %" [(ngModel)] = "productProfile.sgstRate" name = "sgstRate">
+                </mat-form-field>
+            </div>
+        </div>
+        <div class="row" *ngIf = "this.productProfile">
+            <div class="col">
+                <mat-form-field>
+                    <input type="number" matInput placeholder="Enter IGST %" [(ngModel)] = "productProfile.igstRate" name = "igstRate">
+                </mat-form-field>
+            </div>
+            <div class="col">
+                <mat-form-field>
+                    <input type="text" matInput placeholder="Enter Unit" [(ngModel)] = "productProfile.unit" name = "unit">
+                </mat-form-field>
+            </div>
+        </div>
+
+        <div class="row" *ngIf = "this.productProfile">
+            <div class="col">
+                <auto-complete placeholder = "Default Sales Ledger" #ledgerAutoComp type = "ledger" [model] = "this.productProfile.defaultSalesLedger"  (optionSelected) = "this.productProfile.defaultSalesLedger = $event.NAME"></auto-complete>
+            </div>
+            <div class="col">
+                
+                <auto-complete #ledgerAutoComp placeholder = "Default Purchase Ledger" type = "ledger" [model] = "this.productProfile.defaultPurchaseLedger"  (optionSelected) = "this.productProfile.defaultPurchaseLedger = $event.NAME"></auto-complete>
+            </div>
+        </div>
+        <div class="row" *ngIf = "productProfile">
+            <mat-checkbox class="example-margin" [(ngModel)]="productProfile.disable">Disable</mat-checkbox>
+        </div>
+
         
     </div>
     <div class="col-sm-8">

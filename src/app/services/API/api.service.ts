@@ -50,13 +50,13 @@ export class ApiService {
   //public WEB_SOCKET_URL = "https://agrostopserver-env.eba-vei6xp54.ap-south-1.elasticbeanstalk.com";
 
 
-  private BASE_URL = "http://localhost:5000/api/";
-  public WEB_SOCKET_URL = "http://localhost:5000";
+  //private BASE_URL = "http://localhost:5000/api/";
+  //public WEB_SOCKET_URL = "http://localhost:5000";
   //public TALLY_HELPER_URL = "http://localhost:8082";
 
 
-  //private BASE_URL = "https://agrostop-web-server.herokuapp.com/api/";
-  //public WEB_SOCKET_URL = "https://agrostop-web-server.herokuapp.com";
+  private BASE_URL = "https://agrostop-web-server.herokuapp.com/api/";
+  public WEB_SOCKET_URL = "https://agrostop-web-server.herokuapp.com";
 
 
 
@@ -678,4 +678,13 @@ getStockItemGroupsByName(): Observable<any[]>{
         +"&voucherId="+voucherId+"&vehicleNumber="+vehicleNumber
         +"&arrivalTime="+arrivalTime+"&contact="+contact+"&smsTemplate="+smsTemplate);
     }
+
+    addCampaignItems(campaignId:string, list: string[]){
+      return this.httpClient.post(this.BASE_URL+"campaign/addAll?campaignId="+campaignId, list);
+    }
+  
+    getAllCampaigns(){
+      return this.httpClient.get<any[]>(this.BASE_URL + "campaign/getAllCampaigns");
+    }
+
 }

@@ -78,7 +78,7 @@
   <mat-form-field *ngIf = "type == 'ledger'">
     <input #ledgerField
      type="text"
-           placeholder="Pick a ledger"
+           [placeholder]="placeholder? placeholder:'Pick a ledger'"
            matInput
            name = "selectLedgerAuto"
            [formControl]="ledgerControl"

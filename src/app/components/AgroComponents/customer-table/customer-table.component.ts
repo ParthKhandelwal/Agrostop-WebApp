@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, ViewChild } from '@angular/core';
+import { Component, OnInit, Input, ViewChild, EventEmitter, Output } from '@angular/core';
 import { Customer } from '../../../model/Customer/customer';
 import { MatDialogConfig, MatDialog } from '@angular/material/dialog';
 import { CustomerEntryComponent } from '../../AgroEntryComponents/customer-entry-components/customer-entry.component';
@@ -17,9 +17,11 @@ import { AuthenticationService } from '../../../services/Authentication/authenti
 })
 export class CustomerTableComponent implements OnInit {
   @Input("customers") customers: Customer[];
+  @Input("disableActions") disableActions: boolean = false;
   displayedColumns = ["name", "address", 'phoneNumber', "landHolding", "branch","action"]
   showCustomerSummary: boolean;
   customer: Customer;
+  @Output('onCustomerSelect') onCustomerSelect = new EventEmitter<Customer[]>()
 
   dataSource: MatTableDataSource<Customer>;
 
@@ -29,6 +31,14 @@ export class CustomerTableComponent implements OnInit {
   constructor(private dialog?: MatDialog, private apiService?: ApiService, public auth?: AuthenticationService) { }
 
   ngOnInit(): void {
+
+  }
+
+  ngAfterViewInit(){
+    this.displayedColumns = this.disableActions?
+    ["name", "address", 'phoneNumber', "landHolding", "branch"]
+    :["name", "address", 'phoneNumber', "landHolding", "branch","action"]
+
 
   }
 

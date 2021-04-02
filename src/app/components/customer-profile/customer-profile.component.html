@@ -4,7 +4,40 @@
 <mat-tab-group *ngIf = "!loading">
     <mat-tab label = "Customers">
         <div style="width: 80%; padding-left: 20%;">
-            <customer-table style="width: 100%;" #customerTable class="animate__animated animate__bounce" [(customers)] = "this.customers" ></customer-table>
+            <customer-table (onCustomerSelect) = "addCustomersToCampaign($event)" style="width: 100%;" #customerTable class="animate__animated animate__bounce" [(customers)] = "this.customers" ></customer-table>
         </div>
+    </mat-tab>
+
+    <mat-tab label = "Campaign">
+        <div style="padding: 30px;">
+            <div class="row">
+                <div class= "col-sm-8">
+                    <mat-form-field style="width: 100%;">
+                        <mat-label>Number</mat-label>
+                        <input type="text"
+                               placeholder="Pick one"
+                               aria-label="Number"
+                               matInput
+                               [formControl]="campaignControl"
+                               [matAutocomplete]="auto">
+                        <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete">
+                          <mat-option *ngFor="let option of filteredOptions | async" [value]="option">
+                            {{option}}
+                          </mat-option>
+                        </mat-autocomplete>
+                      </mat-form-field>
+                </div>
+                <div class="col-4">
+                    <button mat-raised-button color="primary" [disabled] = "!campaignControl.value && campaignCustomers" (click) = "submit">Submit</button>
+                </div>
+                
+            </div>
+        </div>
+        
+        <div style="padding: 30px;">
+            <customer-table [disableActions] = "true" style="width: 100%;" #campaignTable class="animate__animated animate__bounce" [(customers)] = "this.campaignCustomers" ></customer-table>
+
+        </div>
+        
     </mat-tab>
 </mat-tab-group>
